@@ -38,11 +38,24 @@ serve(async (req) => {
     });
 
     const path = `${order.order_number}.pdf`;
-    const { error: upErr } = await sb.storage.from('quotations').upload(path, pdfBytes, {
+    console.log('[generate-quotation] uploading', path, 'bytes=', pdfBytes.byteLength);
+    const { data: upData, error: upErr } = await sb.storage.from('quotations').upload(path, pdfBytes, {
       contentType: 'application/pdf', upsert: true,
     });
-    if (upErr) return json({ error: upErr.message }, 500);
-    await sb.from('orders').update({ quotation_url: path }).eq('id', order_id);
+    console.log('[generate-quotation] upload result', { upData, upErr });
+    if (upErr) return json({ error: `upload failed: ${upErr.message}` }, 500);
+
+    // Bucket is private — create a long-lived signed URL for admin access
+    const { data: signed, error: signErr } = await sb.storage
+      .from('quotations').createSignedUrl(path, 60 * 60 * 24 * 365);
+    console.log('[generate-quotation] signed url', { signed, signErr });
+    const quotation_url = signed?.signedUrl ?? path;
+
+    console.log('[generate-quotation] updating orders.quotation_url', { order_id, quotation_url });
+    const { data: updData, error: updErr } = await sb
+      .from('orders').update({ quotation_url }).eq('id', order_id).select('id, quotation_url');
+    console.log('[generate-quotation] update result', { updData, updErr });
+    if (updErr) return json({ error: `db update failed: ${updErr.message}` }, 500);
 
     const subject = `ใบเสนอราคา ENT Group — ${docNumber}`;
     const html = emailHtml({
@@ -55,7 +68,7 @@ serve(async (req) => {
       attachments: [{ filename: `${docNumber}.pdf`, content: u8ToBase64(pdfBytes) }],
     });
     await logEmail({ order_id, email_type: 'quotation', recipient: order.customer_email, subject, ok, data });
-    return json({ success: ok, id: data?.id, path }, ok ? 200 : 502);
+    return json({ success: ok, id: data?.id, path, quotation_url }, ok ? 200 : 502);
   } catch (e) {
     console.error(e);
     return json({ error: (e as Error).message }, 500);
