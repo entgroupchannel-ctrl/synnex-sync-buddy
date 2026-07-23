@@ -63,17 +63,18 @@ function CheckoutPage() {
   const [tax, setTax] = useState({ company_name: "", tax_id: "", company_address: "" });
   const [payment, setPayment] = useState<"transfer" | "cod">("transfer");
   const [submitting, setSubmitting] = useState(false);
+  const [orderCreated, setOrderCreated] = useState(false);
 
-  // Guard: cart must be non-empty
+  // Guard: cart must be non-empty (skip when order was just created so we can redirect to order page)
   useEffect(() => {
-    if (items.length === 0) {
+    if (items.length === 0 && !orderCreated) {
       // small delay so the effect can render toast, not thrash
       const t = setTimeout(() => {
-        if (items.length === 0) navigate({ to: "/cart" });
+        if (items.length === 0 && !orderCreated) navigate({ to: "/cart" });
       }, 50);
       return () => clearTimeout(t);
     }
-  }, [items.length, navigate]);
+  }, [items.length, navigate, orderCreated]);
 
   // Prefill from user profile
   useEffect(() => {
@@ -193,8 +194,14 @@ function CheckoutPage() {
         changed_by: user?.email ?? "customer",
       });
 
-      clear();
-      navigate({ to: "/order/$orderNumber", params: { orderNumber: order.order_number } });
+      if (order?.order_number) {
+        setOrderCreated(true);
+        await navigate({ to: "/order/$orderNumber", params: { orderNumber: order.order_number } });
+        clear();
+        localStorage.removeItem("ent_cart");
+      } else {
+        throw new Error("ไม่พบเลขที่คำสั่งซื้อ");
+      }
     } catch (err) {
       console.error("[checkout] submit failed:", err);
       const anyErr = err as { message?: string; details?: string; hint?: string; code?: string } | Error;
