@@ -6,6 +6,7 @@ import { useCart } from "@/lib/cart";
 import { CATEGORIES } from "@/lib/cart";
 import { useSupabaseUser } from "@/lib/auth-sheet";
 import { AddToCartSheet } from "@/components/add-to-cart-sheet";
+import { useLanguage } from "@/lib/i18n";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -25,6 +26,7 @@ export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { user } = useSupabaseUser();
+  const { lang, t, setLang } = useLanguage();
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,9 +35,24 @@ export function SiteHeader() {
 
   const signOut = async () => {
     await supabase.auth.signOut();
-    toast.success("ออกจากระบบแล้ว");
+    toast.success(lang === "th" ? "ออกจากระบบแล้ว" : "Signed out");
     navigate({ to: "/", replace: true });
   };
+
+  const LangToggle = ({ className = "" }: { className?: string }) => (
+    <div className={`inline-flex overflow-hidden rounded-full border border-white/20 bg-white/5 text-xs ${className}`}>
+      <button
+        onClick={() => setLang("th")}
+        className={`px-2.5 py-1 transition ${lang === "th" ? "bg-white text-[color:var(--brand-navy)] font-semibold" : "text-white/80 hover:bg-white/10"}`}
+        aria-label="ภาษาไทย"
+      >🇹🇭 TH</button>
+      <button
+        onClick={() => setLang("en")}
+        className={`px-2.5 py-1 transition ${lang === "en" ? "bg-white text-[color:var(--brand-navy)] font-semibold" : "text-white/80 hover:bg-white/10"}`}
+        aria-label="English"
+      >EN</button>
+    </div>
+  );
 
   return (
     <>
@@ -67,18 +84,20 @@ export function SiteHeader() {
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="ค้นหาสินค้า, SKU, ยี่ห้อ..."
+              placeholder={t("nav.search")}
               className="min-w-0 flex-1 bg-transparent px-4 py-2.5 text-sm outline-none placeholder:text-slate-400"
               maxLength={100}
             />
             <button
               type="submit"
               className="grid w-12 place-items-center bg-[color:var(--brand-orange)] text-white transition hover:bg-[color:var(--brand-orange-dark)]"
-              aria-label="ค้นหา"
+              aria-label="Search"
             >
               <Search className="h-5 w-5" />
             </button>
           </form>
+
+          <LangToggle className="hidden lg:inline-flex" />
 
           {user ? (
             <DropdownMenu>
@@ -91,18 +110,18 @@ export function SiteHeader() {
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel className="truncate">{user.email}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild><Link to="/my-account/orders"><Package className="mr-2 h-4 w-4" /> ประวัติการสั่งซื้อ</Link></DropdownMenuItem>
-                <DropdownMenuItem asChild><Link to="/my-account/profile"><User className="mr-2 h-4 w-4" /> ข้อมูลส่วนตัว</Link></DropdownMenuItem>
-                <DropdownMenuItem asChild><Link to="/my-account/addresses"><MapPin className="mr-2 h-4 w-4" /> ที่อยู่จัดส่ง</Link></DropdownMenuItem>
+                <DropdownMenuItem asChild><Link to="/my-account/orders"><Package className="mr-2 h-4 w-4" /> {t("nav.orders")}</Link></DropdownMenuItem>
+                <DropdownMenuItem asChild><Link to="/my-account/profile"><User className="mr-2 h-4 w-4" /> {t("nav.profile")}</Link></DropdownMenuItem>
+                <DropdownMenuItem asChild><Link to="/my-account/addresses"><MapPin className="mr-2 h-4 w-4" /> {t("nav.addresses")}</Link></DropdownMenuItem>
                 <DropdownMenuItem asChild><Link to="/admin/orders"><Building2 className="mr-2 h-4 w-4" /> Admin</Link></DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onSelect={signOut}><LogOut className="mr-2 h-4 w-4" /> ออกจากระบบ</DropdownMenuItem>
+                <DropdownMenuItem onSelect={signOut}><LogOut className="mr-2 h-4 w-4" /> {t("nav.signout")}</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
             <div className="hidden shrink-0 items-center gap-1 lg:flex">
-              <Link to="/auth" search={{ tab: "signin" } as never} className="rounded-md px-3 py-1.5 text-sm hover:bg-white/10">เข้าสู่ระบบ</Link>
-              <Link to="/auth" search={{ tab: "b2c" } as never} className="rounded-md bg-[color:var(--brand-green)] px-3 py-1.5 text-sm font-semibold hover:opacity-90">สมัครสมาชิก</Link>
+              <Link to="/auth" search={{ tab: "signin" } as never} className="rounded-md px-3 py-1.5 text-sm hover:bg-white/10">{t("nav.login")}</Link>
+              <Link to="/auth" search={{ tab: "b2c" } as never} className="rounded-md bg-[color:var(--brand-green)] px-3 py-1.5 text-sm font-semibold hover:opacity-90">{t("nav.register")}</Link>
             </div>
           )}
 
@@ -134,7 +153,7 @@ export function SiteHeader() {
                     active ? "text-[color:var(--brand-orange)]" : "text-white/85"
                   }`}
                 >
-                  {c}
+                  {c === "ทั้งหมด" ? t("nav.all") : c}
                 </Link>
               );
             })}
@@ -147,26 +166,32 @@ export function SiteHeader() {
           <div className="absolute inset-0 bg-black/50" />
           <div className="absolute inset-y-0 left-0 w-72 bg-white p-4 shadow-xl overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="mb-4 flex items-center justify-between">
-              <div className="font-bold text-[color:var(--brand-navy)]">เมนู</div>
+              <div className="font-bold text-[color:var(--brand-navy)]">{t("nav.categories")}</div>
               <button onClick={() => setMenuOpen(false)}><X className="h-5 w-5" /></button>
+            </div>
+            <div className="mb-3 flex justify-center">
+              <div className="inline-flex overflow-hidden rounded-full border text-xs">
+                <button onClick={() => setLang("th")} className={`px-3 py-1 ${lang === "th" ? "bg-[color:var(--brand-navy)] text-white" : "text-slate-600"}`}>🇹🇭 TH</button>
+                <button onClick={() => setLang("en")} className={`px-3 py-1 ${lang === "en" ? "bg-[color:var(--brand-navy)] text-white" : "text-slate-600"}`}>EN</button>
+              </div>
             </div>
             {user ? (
               <div className="mb-4 rounded-lg border p-3">
                 <div className="truncate text-xs text-slate-500">{user.email}</div>
                 <div className="mt-2 grid gap-1 text-sm">
-                  <Link to="/my-account/orders" onClick={() => setMenuOpen(false)} className="rounded px-2 py-1 hover:bg-slate-100">ประวัติการสั่งซื้อ</Link>
-                  <Link to="/my-account/profile" onClick={() => setMenuOpen(false)} className="rounded px-2 py-1 hover:bg-slate-100">ข้อมูลส่วนตัว</Link>
-                  <Link to="/my-account/addresses" onClick={() => setMenuOpen(false)} className="rounded px-2 py-1 hover:bg-slate-100">ที่อยู่จัดส่ง</Link>
-                  <button onClick={signOut} className="text-left rounded px-2 py-1 text-red-600 hover:bg-red-50">ออกจากระบบ</button>
+                  <Link to="/my-account/orders" onClick={() => setMenuOpen(false)} className="rounded px-2 py-1 hover:bg-slate-100">{t("nav.orders")}</Link>
+                  <Link to="/my-account/profile" onClick={() => setMenuOpen(false)} className="rounded px-2 py-1 hover:bg-slate-100">{t("nav.profile")}</Link>
+                  <Link to="/my-account/addresses" onClick={() => setMenuOpen(false)} className="rounded px-2 py-1 hover:bg-slate-100">{t("nav.addresses")}</Link>
+                  <button onClick={signOut} className="text-left rounded px-2 py-1 text-red-600 hover:bg-red-50">{t("nav.signout")}</button>
                 </div>
               </div>
             ) : (
               <div className="mb-4 grid gap-2">
-                <Link to="/auth" search={{ tab: "signin" } as never} onClick={() => setMenuOpen(false)} className="rounded-md border px-3 py-2 text-center text-sm">เข้าสู่ระบบ</Link>
-                <Link to="/auth" search={{ tab: "b2c" } as never} onClick={() => setMenuOpen(false)} className="rounded-md bg-[color:var(--brand-green)] px-3 py-2 text-center text-sm font-semibold text-white">สมัครสมาชิก</Link>
+                <Link to="/auth" search={{ tab: "signin" } as never} onClick={() => setMenuOpen(false)} className="rounded-md border px-3 py-2 text-center text-sm">{t("nav.login")}</Link>
+                <Link to="/auth" search={{ tab: "b2c" } as never} onClick={() => setMenuOpen(false)} className="rounded-md bg-[color:var(--brand-green)] px-3 py-2 text-center text-sm font-semibold text-white">{t("nav.register")}</Link>
               </div>
             )}
-            <div className="mb-2 text-xs font-bold uppercase text-slate-400">หมวดหมู่</div>
+            <div className="mb-2 text-xs font-bold uppercase text-slate-400">{t("nav.categories")}</div>
             <div className="space-y-1">
               {NAV_CATS.map((c) => (
                 <Link
@@ -176,7 +201,7 @@ export function SiteHeader() {
                   onClick={() => setMenuOpen(false)}
                   className="block rounded-md px-3 py-2 text-sm hover:bg-slate-100"
                 >
-                  {c}
+                  {c === "ทั้งหมด" ? t("nav.all") : c}
                 </Link>
               ))}
             </div>
@@ -186,14 +211,14 @@ export function SiteHeader() {
 
       <nav className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 border-t bg-white text-xs shadow-lg lg:hidden">
         <Link to="/" className="flex flex-col items-center gap-0.5 py-2 text-slate-700">
-          <Home className="h-5 w-5" /> หน้าแรก
+          <Home className="h-5 w-5" /> {t("nav.home")}
         </Link>
         <button onClick={() => setMenuOpen(true)} className="flex flex-col items-center gap-0.5 py-2 text-slate-700">
-          <Grid3x3 className="h-5 w-5" /> หมวดหมู่
+          <Grid3x3 className="h-5 w-5" /> {t("nav.categories")}
         </button>
         <Link to="/cart" className="relative flex flex-col items-center gap-0.5 py-2 text-slate-700">
           <ShoppingCart className="h-5 w-5" />
-          ตะกร้า
+          {t("nav.cart")}
           {count > 0 && (
             <span className="absolute right-4 top-1 grid h-4 min-w-4 place-items-center rounded-full bg-[color:var(--brand-orange)] px-1 text-[9px] font-bold text-white">
               {count}
@@ -201,7 +226,7 @@ export function SiteHeader() {
           )}
         </Link>
         <Link to={user ? "/my-account/orders" : "/auth"} search={user ? undefined : ({ tab: "signin" } as never)} className="flex flex-col items-center gap-0.5 py-2 text-slate-700">
-          <User className="h-5 w-5" /> {user ? "บัญชี" : "เข้าสู่ระบบ"}
+          <User className="h-5 w-5" /> {user ? t("nav.account") : t("nav.login")}
         </Link>
       </nav>
       <div className="h-14 lg:hidden" aria-hidden />

@@ -13,6 +13,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { toast } from "sonner";
 import { ShoppingCart, Search, Package, Grid2x2, List, SlidersHorizontal, Flame, ChevronRight } from "lucide-react";
+import { useLanguage } from "@/lib/i18n";
 import { SiteHeader } from "@/components/site-header";
 import { CATEGORIES, detectCategory, displayPrice, getSellingPrice, useCart } from "@/lib/cart";
 import { triggerAuthPrompt, useSupabaseUser } from "@/lib/auth-sheet";
@@ -67,6 +68,7 @@ function HomePage() {
   const { user } = useSupabaseUser();
   const [searchInput, setSearchInput] = useState(search.q);
   const countdown = useCountdown();
+  const { t } = useLanguage();
 
   // Debounce search input
   useEffect(() => {
@@ -249,14 +251,14 @@ function HomePage() {
           <div className="max-w-2xl">
             <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs text-white/90 backdrop-blur">
               <Flame className="h-3.5 w-3.5 text-[color:var(--brand-orange)]" />
-              ENT Group — Authorized Dealer ตั้งแต่ปี 2558
+              {t("hero.badge")}
             </div>
             <h1 className="text-3xl font-black leading-tight text-white md:text-5xl">
-              ราคา Dealer จริง<br />
-              <span className="text-[color:var(--brand-orange)]">ไม่ผ่านคนกลาง</span>
+              {t("hero.title_line1")}<br />
+              <span className="text-[color:var(--brand-orange)]">{t("hero.title_line2")}</span>
             </h1>
             <p className="mt-3 text-base text-white/80 md:text-lg">
-              Mini PC • Panel PC • IT Products จาก Synnex & VST ECS
+              {t("hero.sub")}
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Button
@@ -264,7 +266,7 @@ function HomePage() {
                 className="bg-[color:var(--brand-orange)] font-bold hover:bg-[color:var(--brand-orange-dark)]"
                 onClick={() => document.getElementById("catalog")?.scrollIntoView({ behavior: "smooth" })}
               >
-                ดูสินค้าทั้งหมด
+                {t("hero.cta")}
               </Button>
               <Button
                 size="lg"
@@ -272,7 +274,7 @@ function HomePage() {
                 className="border-white/30 bg-white/5 text-white hover:bg-white/10"
                 onClick={() => update({ ready: true })}
               >
-                เฉพาะพร้อมจัดส่ง
+                {t("hero.ready_only")}
               </Button>
             </div>
           </div>
