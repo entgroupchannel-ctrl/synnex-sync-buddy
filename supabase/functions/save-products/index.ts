@@ -99,11 +99,21 @@ Deno.serve(async (req) => {
     if (clean.length === 0) throw new Error("No valid products (need a sku)");
 
     const now = new Date().toISOString();
-    const rows = clean.map((p) => ({ ...p, synced_at: now }));
+    // Incoming price = distributor cost. Save to cost_price and mirror to
+    // `price` (legacy). selling_price is cleared and price_approved reset —
+    // admin must approve pricing before customers see it.
+    const rows = clean.map((p) => ({
+      ...p,
+      cost_price: p.price,
+      selling_price: null,
+      price_approved: false,
+      synced_at: now,
+    }));
     const { error: upErr } = await supabase
       .from("synnex_products")
       .upsert(rows, { onConflict: "sku" });
     if (upErr) throw new Error(`Upsert failed: ${upErr.message}`);
+
 
     await supabase
       .from("sync_logs")
