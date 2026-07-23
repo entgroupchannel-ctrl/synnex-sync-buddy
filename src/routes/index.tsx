@@ -401,6 +401,7 @@ function HomePage() {
                 const ready = p.stock_status === "พร้อมจัดส่ง";
                 const slug = p.slug || p.id;
                 const lowStock = ready && (p.stock_qty ?? 999) < 10;
+                const priced = getSellingPrice(p as { selling_price?: number | null }) != null && !!p.price_approved;
                 return (
                   <div key={p.id} className="flex gap-4 rounded-lg border bg-white p-3 transition hover:shadow-md">
                     <Link to="/product/$slug" params={{ slug }} className="grid h-28 w-28 shrink-0 place-items-center rounded-md bg-white">
@@ -417,12 +418,22 @@ function HomePage() {
                       </div>
                     </div>
                     <div className="flex w-40 shrink-0 flex-col items-end justify-between">
-                      <div className="text-xl font-black text-[color:var(--brand-orange)]">
-                        {displayPrice(p as { selling_price?: number | null })}
-                      </div>
-                      <Button disabled={!ready} onClick={() => addToCart(p as Record<string, unknown>)} className="w-full bg-[color:var(--brand-navy)] hover:bg-[color:var(--brand-navy-2)]" size="sm">
-                        <ShoppingCart className="mr-1.5 h-4 w-4" /> ใส่ตะกร้า
-                      </Button>
+                      {priced ? (
+                        <div className="text-xl font-black text-[color:var(--brand-orange)]">
+                          {displayPrice(p as { selling_price?: number | null })}
+                        </div>
+                      ) : (
+                        <span className="text-sm text-gray-400">ติดต่อสอบถาม</span>
+                      )}
+                      {priced ? (
+                        <Button disabled={!ready} onClick={() => addToCart(p as Record<string, unknown>)} className="w-full bg-[color:var(--brand-navy)] hover:bg-[color:var(--brand-navy-2)]" size="sm">
+                          <ShoppingCart className="mr-1.5 h-4 w-4" /> ใส่ตะกร้า
+                        </Button>
+                      ) : (
+                        <Button asChild className="w-full bg-[color:var(--brand-green)] hover:opacity-90" size="sm">
+                          <a href="tel:020456104">📞 สอบถามราคา</a>
+                        </Button>
+                      )}
                     </div>
                   </div>
                 );
@@ -434,6 +445,7 @@ function HomePage() {
                 const ready = p.stock_status === "พร้อมจัดส่ง";
                 const slug = p.slug || p.id;
                 const lowStock = ready && (p.stock_qty ?? 999) < 10;
+                const priced = getSellingPrice(p as { selling_price?: number | null }) != null && !!p.price_approved;
                 return (
                   <div key={p.id} className="group relative flex flex-col overflow-hidden rounded-lg border bg-white transition hover:shadow-lg">
                     {p.brand && (
@@ -459,22 +471,32 @@ function HomePage() {
                         {p.name ?? p.sku}
                       </Link>
                       <div className="mt-auto pt-1">
-                        <div className="text-xl font-black text-[color:var(--brand-orange)]">
-                          {displayPrice(p as { selling_price?: number | null })}
-                        </div>
+                        {priced ? (
+                          <div className="text-xl font-black text-[color:var(--brand-orange)]">
+                            {displayPrice(p as { selling_price?: number | null })}
+                          </div>
+                        ) : (
+                          <div className="text-sm text-gray-400">ติดต่อสอบถาม</div>
+                        )}
                         <div className="mt-1 flex items-center gap-1.5">
                           <span className={`inline-block h-2 w-2 rounded-full ${ready ? "bg-green-500" : "bg-red-500"}`} />
                           <span className="text-[11px] text-slate-600">{p.stock_status ?? "—"}</span>
                         </div>
                       </div>
-                      <Button
-                        disabled={!ready}
-                        onClick={() => addToCart(p as Record<string, unknown>)}
-                        className="mt-2 w-full bg-[color:var(--brand-navy)] font-semibold hover:bg-[color:var(--brand-navy-2)]"
-                        size="sm"
-                      >
-                        <ShoppingCart className="mr-1.5 h-4 w-4" /> ใส่ตะกร้า
-                      </Button>
+                      {priced ? (
+                        <Button
+                          disabled={!ready}
+                          onClick={() => addToCart(p as Record<string, unknown>)}
+                          className="mt-2 w-full bg-[color:var(--brand-navy)] font-semibold hover:bg-[color:var(--brand-navy-2)]"
+                          size="sm"
+                        >
+                          <ShoppingCart className="mr-1.5 h-4 w-4" /> ใส่ตะกร้า
+                        </Button>
+                      ) : (
+                        <Button asChild className="mt-2 w-full bg-[color:var(--brand-green)] font-semibold hover:opacity-90" size="sm">
+                          <a href="tel:020456104">📞 สอบถามราคา</a>
+                        </Button>
+                      )}
                     </div>
                   </div>
                 );
