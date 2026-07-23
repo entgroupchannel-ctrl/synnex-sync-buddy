@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Minus, Plus, Trash2, Package, ArrowLeft, ShoppingCart, ShoppingBag } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { CATEGORIES, priceFmt, useCart } from "@/lib/cart";
+import { useLanguage } from "@/lib/i18n";
 
 export const Route = createFileRoute("/cart")({
   ssr: false,
