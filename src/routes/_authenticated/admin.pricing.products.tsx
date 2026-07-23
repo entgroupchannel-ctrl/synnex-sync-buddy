@@ -24,8 +24,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Package, Search, CheckCircle2 } from "lucide-react";
+import { Package, Search, CheckCircle2, AlertTriangle, XCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  bahtFmt,
+  computeSelling,
+  effectiveMarkup,
+  indexPricingRules,
+  type PricingRule,
+} from "@/lib/pricing-helpers";
 
 const searchSchema = z.object({
   q: fallback(z.string(), "").default(""),
@@ -40,7 +47,6 @@ export const Route = createFileRoute("/_authenticated/admin/pricing/products")({
 });
 
 const PAGE_SIZE = 25;
-const priceFmt = new Intl.NumberFormat("th-TH", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 
 type FilterKey = "all" | "unapproved" | "zero" | "override";
 
@@ -66,6 +72,8 @@ function PricingProductsPage() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [markupChoice, setMarkupChoice] = useState<string>("15");
   const [markupCustom, setMarkupCustom] = useState<string>("");
+  // Per-row in-flight markup edits (unsaved)
+  const [markupEdits, setMarkupEdits] = useState<Record<string, string>>({});
 
   const productsQ = useQuery({
     queryKey: ["pricing-products", search],
@@ -85,6 +93,17 @@ function PricingProductsPage() {
       const { data, error, count } = await query;
       if (error) throw error;
       return { rows: (data ?? []) as Product[], count: count ?? 0 };
+    },
+  });
+
+  const rulesQ = useQuery({
+    queryKey: ["pricing-rules-idx"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("pricing_rules")
+        .select("id, rule_type, target, markup_percent, is_active")
+        .eq("is_active", true);
+      return indexPricingRules((data ?? []) as PricingRule[]);
     },
   });
 
@@ -113,22 +132,41 @@ function PricingProductsPage() {
     },
   });
 
+  const invalidateAll = () => {
+    qc.invalidateQueries({ queryKey: ["pricing-products"] });
+    qc.invalidateQueries({ queryKey: ["pricing-products-counts"] });
+    qc.invalidateQueries({ queryKey: ["pricing-unapproved-count"] });
+  };
+
   const updateMut = useMutation({
     mutationFn: async (p: { id: string; patch: Partial<Product> }) => {
       const { error } = await supabase.from("synnex_products").update(p.patch).eq("id", p.id);
       if (error) throw error;
     },
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["pricing-products"] });
-      qc.invalidateQueries({ queryKey: ["pricing-products-counts"] });
-      qc.invalidateQueries({ queryKey: ["pricing-unapproved-count"] });
+    onSuccess: () => invalidateAll(),
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const applyMarkupMut = useMutation({
+    mutationFn: async ({ id, cost, markup }: { id: string; cost: number; markup: number }) => {
+      const selling = computeSelling(cost, markup);
+      const { error } = await supabase
+        .from("synnex_products")
+        .update({ markup_override: markup, selling_price: selling, price_approved: true })
+        .eq("id", id);
+      if (error) throw error;
+      return { id };
+    },
+    onSuccess: ({ id }) => {
+      setMarkupEdits((m) => { const c = { ...m }; delete c[id]; return c; });
+      toast.success("Apply สำเร็จ");
+      invalidateAll();
     },
     onError: (e: Error) => toast.error(e.message),
   });
 
   const bulkApproveMut = useMutation({
     mutationFn: async ({ ids, markup }: { ids: string[]; markup: number }) => {
-      // Fetch cost prices then update per-row.
       const { data, error } = await supabase
         .from("synnex_products")
         .select("id, cost_price, price")
@@ -136,13 +174,14 @@ function PricingProductsPage() {
       if (error) throw error;
       let ok = 0;
       for (const row of data ?? []) {
-        const cost = Number((row as { cost_price: number | null; price: number | null }).cost_price ?? (row as { price: number | null }).price ?? 0);
+        const r = row as { id: string; cost_price: number | null; price: number | null };
+        const cost = Number(r.cost_price ?? r.price ?? 0);
         if (!cost || cost <= 0) continue;
-        const selling = Math.round((cost * (1 + markup / 100)) / 10) * 10;
+        const selling = computeSelling(cost, markup);
         const { error: uerr } = await supabase
           .from("synnex_products")
           .update({ selling_price: selling, price_approved: true })
-          .eq("id", (row as { id: string }).id);
+          .eq("id", r.id);
         if (!uerr) ok++;
       }
       return { updated: ok, requested: ids.length };
@@ -150,9 +189,7 @@ function PricingProductsPage() {
     onSuccess: (r) => {
       toast.success(`คำนวณ + Approve แล้ว ${r.updated}/${r.requested} รายการ`);
       setSelected(new Set());
-      qc.invalidateQueries({ queryKey: ["pricing-products"] });
-      qc.invalidateQueries({ queryKey: ["pricing-products-counts"] });
-      qc.invalidateQueries({ queryKey: ["pricing-unapproved-count"] });
+      invalidateAll();
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -201,6 +238,19 @@ function PricingProductsPage() {
     { key: "zero", label: "ราคา ฿0", count: counts?.zero },
     { key: "override", label: "Override", count: counts?.override },
   ];
+
+  // Bulk preview: average cost & average projected selling
+  const bulkPreview = useMemo(() => {
+    if (selected.size === 0) return null;
+    const markup = getMarkup();
+    const selectedRows = rows.filter((r) => selected.has(r.id));
+    const costs = selectedRows.map((r) => Number(r.cost_price ?? r.price ?? 0)).filter((n) => n > 0);
+    if (costs.length === 0 || markup == null) return null;
+    const avgCost = costs.reduce((s, n) => s + n, 0) / costs.length;
+    const avgSelling = computeSelling(avgCost, markup);
+    return { avgCost, avgSelling, markup, sample: costs.length, missing: selectedRows.length - costs.length };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selected, rows, markupChoice, markupCustom]);
 
   return (
     <div className="min-h-screen bg-slate-50 font-sarabun">
@@ -261,46 +311,59 @@ function PricingProductsPage() {
 
         {/* Bulk action bar */}
         {selected.size > 0 && (
-          <div className="flex flex-wrap items-center gap-3 rounded-lg border-2 border-[#1565c0] bg-blue-50 p-3">
-            <div className="flex items-center gap-2 text-sm font-medium text-[#0d47a1]">
-              <CheckCircle2 className="h-5 w-5" />
-              เลือก <b>{selected.size}</b> รายการ
+          <div className="space-y-2 rounded-lg border-2 border-[#1565c0] bg-blue-50 p-3">
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex items-center gap-2 text-sm font-medium text-[#0d47a1]">
+                <CheckCircle2 className="h-5 w-5" />
+                เลือก <b>{selected.size}</b> รายการ
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <span className="text-slate-600">Apply markup:</span>
+                <Select value={markupChoice} onValueChange={setMarkupChoice}>
+                  <SelectTrigger className="w-32 bg-white"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="10">10%</SelectItem>
+                    <SelectItem value="15">15%</SelectItem>
+                    <SelectItem value="20">20%</SelectItem>
+                    <SelectItem value="custom">กำหนดเอง</SelectItem>
+                  </SelectContent>
+                </Select>
+                {markupChoice === "custom" && (
+                  <div className="flex items-center gap-1">
+                    <Input
+                      type="number"
+                      step="0.5"
+                      value={markupCustom}
+                      onChange={(e) => setMarkupCustom(e.target.value)}
+                      placeholder="เช่น 12.5"
+                      className="h-9 w-24 bg-white"
+                    />
+                    <span className="text-slate-500">%</span>
+                  </div>
+                )}
+              </div>
+              <Button
+                onClick={runBulk}
+                disabled={bulkApproveMut.isPending}
+                className="ml-auto bg-[#1565c0] hover:bg-[#0d47a1]"
+              >
+                {bulkApproveMut.isPending ? "กำลังคำนวณ..." : `คำนวณ + Approve ${selected.size} รายการ`}
+              </Button>
+              <Button variant="ghost" size="sm" onClick={() => setSelected(new Set())}>
+                ล้างที่เลือก
+              </Button>
             </div>
-            <div className="flex items-center gap-2 text-sm">
-              <span className="text-slate-600">Apply markup:</span>
-              <Select value={markupChoice} onValueChange={setMarkupChoice}>
-                <SelectTrigger className="w-32 bg-white"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="10">10%</SelectItem>
-                  <SelectItem value="15">15%</SelectItem>
-                  <SelectItem value="20">20%</SelectItem>
-                  <SelectItem value="custom">กำหนดเอง</SelectItem>
-                </SelectContent>
-              </Select>
-              {markupChoice === "custom" && (
-                <div className="flex items-center gap-1">
-                  <Input
-                    type="number"
-                    step="0.5"
-                    value={markupCustom}
-                    onChange={(e) => setMarkupCustom(e.target.value)}
-                    placeholder="เช่น 12.5"
-                    className="h-9 w-24 bg-white"
-                  />
-                  <span className="text-slate-500">%</span>
-                </div>
-              )}
-            </div>
-            <Button
-              onClick={runBulk}
-              disabled={bulkApproveMut.isPending}
-              className="ml-auto bg-[#1565c0] hover:bg-[#0d47a1]"
-            >
-              {bulkApproveMut.isPending ? "กำลังคำนวณ..." : `คำนวณ + Approve ${selected.size} รายการ`}
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => setSelected(new Set())}>
-              ล้างที่เลือก
-            </Button>
+            {bulkPreview && (
+              <div className="rounded-md bg-white/70 px-3 py-2 text-sm text-slate-700">
+                จาก <b>฿{bahtFmt.format(bulkPreview.avgCost)}</b> ต้นทุนเฉลี่ย → markup <b>{bulkPreview.markup}%</b> → ราคาขายเฉลี่ย{" "}
+                <b className="text-[color:var(--brand-orange,#f97316)]">฿{bahtFmt.format(bulkPreview.avgSelling)}</b>
+                {bulkPreview.missing > 0 && (
+                  <span className="ml-2 text-xs text-amber-700">
+                    ({bulkPreview.missing} รายการไม่มีต้นทุน จะข้าม)
+                  </span>
+                )}
+              </div>
+            )}
           </div>
         )}
 
@@ -311,71 +374,117 @@ function PricingProductsPage() {
                 <TableHead className="w-10">
                   <Checkbox checked={allSelected} onCheckedChange={toggleAll} aria-label="เลือกทั้งหน้า" />
                 </TableHead>
-                <TableHead className="w-16">รูป</TableHead>
-                <TableHead>ชื่อ / SKU</TableHead>
-                <TableHead className="w-28">ต้นทุน</TableHead>
-                <TableHead className="w-28">Markup %</TableHead>
-                <TableHead className="w-32">ราคาขาย</TableHead>
-                <TableHead className="w-24">Override</TableHead>
-                <TableHead className="w-24">Approved</TableHead>
+                <TableHead className="w-8"></TableHead>
+                <TableHead className="w-[60px]">รูป</TableHead>
+                <TableHead>ชื่อสินค้า</TableHead>
+                <TableHead className="w-[120px]">SKU</TableHead>
+                <TableHead className="w-[100px] text-right">Dealer Price</TableHead>
+                <TableHead className="w-[180px] text-center">Markup %</TableHead>
+                <TableHead className="w-[130px] text-right">ราคาขาย</TableHead>
+                <TableHead className="w-[80px] text-center">Approved</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {productsQ.isLoading ? (
-                <TableRow><TableCell colSpan={8} className="p-8 text-center text-slate-400">กำลังโหลด...</TableCell></TableRow>
+                <TableRow><TableCell colSpan={9} className="p-8 text-center text-slate-400">กำลังโหลด...</TableCell></TableRow>
               ) : rows.length === 0 ? (
-                <TableRow><TableCell colSpan={8} className="p-8 text-center text-slate-400">ไม่พบสินค้า</TableCell></TableRow>
+                <TableRow><TableCell colSpan={9} className="p-8 text-center text-slate-400">ไม่พบสินค้า</TableCell></TableRow>
               ) : rows.map((p) => {
                 const cost = Number(p.cost_price ?? p.price ?? 0);
+                const selling = Number(p.selling_price ?? 0);
+                const approved = !!p.price_approved;
+                const idx = rulesQ.data;
+                const mk = idx ? effectiveMarkup(p, idx) : null;
+
+                const editedRaw = markupEdits[p.id];
+                const editedNum = editedRaw !== undefined ? Number(editedRaw) : null;
+                const hasEdit = editedRaw !== undefined && Number.isFinite(editedNum!);
+                const previewSelling = hasEdit && cost > 0 ? computeSelling(cost, editedNum!) : null;
+
                 const isSelected = selected.has(p.id);
+
+                let statusIcon: React.ReactNode;
+                if (approved && selling > 0) {
+                  statusIcon = <span title="Approved" className="inline-block h-3 w-3 rounded-full bg-green-500" />;
+                } else if (selling > 0) {
+                  statusIcon = <AlertTriangle className="h-4 w-4 text-amber-500" aria-label="รอ approve" />;
+                } else {
+                  statusIcon = <XCircle className="h-4 w-4 text-red-500" aria-label="ยังไม่มีราคาขาย" />;
+                }
+
+                const currentMarkup = mk?.pct ?? null;
+
                 return (
                   <TableRow key={p.id} className={isSelected ? "bg-blue-50/60" : undefined}>
                     <TableCell>
                       <Checkbox checked={isSelected} onCheckedChange={() => toggleOne(p.id)} aria-label={`เลือก ${p.sku}`} />
                     </TableCell>
+                    <TableCell className="text-center">{statusIcon}</TableCell>
                     <TableCell>
-                      <div className="grid h-12 w-12 place-items-center rounded border bg-white">
+                      <div className="grid h-[60px] w-[60px] place-items-center rounded border bg-white">
                         {p.image_url ? <img src={p.image_url} alt="" className="h-full w-full object-contain" loading="lazy" /> : <Package className="h-6 w-6 text-slate-300" />}
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="text-sm font-medium">{p.name ?? p.sku}</div>
                       <div className="text-xs text-slate-500">
-                        {p.sku}{p.brand && <> · <Badge variant="outline" className="ml-1 text-[10px]">{p.brand}</Badge></>}
+                        {p.brand && <Badge variant="outline" className="text-[10px]">{p.brand}</Badge>}
+                        {p.category && <span className="ml-1">· {p.category}</span>}
                       </div>
                     </TableCell>
-                    <TableCell className="text-sm text-slate-700">฿{priceFmt.format(cost)}</TableCell>
-                    <TableCell>
-                      <Input
-                        type="number"
-                        step="0.5"
-                        defaultValue={p.markup_override ?? ""}
-                        placeholder="—"
-                        onBlur={(e) => {
-                          const v = e.target.value === "" ? null : Number(e.target.value);
-                          if (v !== p.markup_override) updateMut.mutate({ id: p.id, patch: { markup_override: v } });
-                        }}
-                        className="h-8"
-                      />
+                    <TableCell className="font-mono text-xs">{p.sku}</TableCell>
+                    <TableCell className="text-right">
+                      <div className="text-[10px] uppercase tracking-wide text-slate-400">ต้นทุน</div>
+                      <div className="text-sm text-slate-500">{cost > 0 ? "฿" + bahtFmt.format(cost) : "—"}</div>
                     </TableCell>
                     <TableCell>
-                      <Input
-                        type="number"
-                        defaultValue={p.selling_price ?? ""}
-                        placeholder="—"
-                        onBlur={(e) => {
-                          const v = e.target.value === "" ? null : Number(e.target.value);
-                          if (v !== p.selling_price) updateMut.mutate({ id: p.id, patch: { selling_price: v } });
-                        }}
-                        className="h-8 font-semibold"
-                      />
+                      <div className="flex items-center justify-center gap-1">
+                        <Input
+                          type="number"
+                          step="0.5"
+                          value={editedRaw ?? (currentMarkup != null ? String(currentMarkup) : "")}
+                          placeholder="--"
+                          onChange={(e) => setMarkupEdits((m) => ({ ...m, [p.id]: e.target.value }))}
+                          onBlur={(e) => {
+                            // If value equals current effective markup, discard edit
+                            if (e.target.value === "" || Number(e.target.value) === currentMarkup) {
+                              setMarkupEdits((m) => { const c = { ...m }; delete c[p.id]; return c; });
+                            }
+                          }}
+                          className="h-8 w-16 text-center text-sm"
+                        />
+                        <span className="text-xs text-slate-400">%</span>
+                        {hasEdit && cost > 0 && (
+                          <Button
+                            size="sm"
+                            className="h-7 px-2 bg-[#1565c0] hover:bg-[#0d47a1]"
+                            disabled={applyMarkupMut.isPending}
+                            onClick={() => applyMarkupMut.mutate({ id: p.id, cost, markup: editedNum! })}
+                          >
+                            Apply
+                          </Button>
+                        )}
+                      </div>
+                      {!hasEdit && mk && (
+                        <div className="mt-1 text-center text-[10px] text-slate-400">
+                          {mk.source === "override" ? "override" : mk.source === "brand" ? "brand rule" : mk.source === "category" ? "category rule" : "global"}
+                        </div>
+                      )}
                     </TableCell>
-                    <TableCell>
-                      {p.markup_override != null && <Badge className="bg-amber-100 text-amber-900 hover:bg-amber-100">✓</Badge>}
+                    <TableCell className="text-right">
+                      {previewSelling != null ? (
+                        <div className="italic text-slate-400 text-sm">฿{bahtFmt.format(previewSelling)}</div>
+                      ) : approved && selling > 0 ? (
+                        <div className="text-base font-bold text-[color:var(--brand-orange,#f97316)]">฿{bahtFmt.format(selling)}</div>
+                      ) : selling > 0 ? (
+                        <Badge className="bg-red-100 text-red-700 hover:bg-red-100">รอ approve</Badge>
+                      ) : (
+                        <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">฿0 ?</Badge>
+                      )}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="text-center">
                       <Checkbox
-                        checked={!!p.price_approved}
+                        checked={approved}
                         onCheckedChange={(v) => updateMut.mutate({ id: p.id, patch: { price_approved: !!v } })}
                       />
                     </TableCell>
@@ -397,4 +506,3 @@ function PricingProductsPage() {
     </div>
   );
 }
-
