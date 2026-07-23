@@ -1,12 +1,46 @@
-export const BANK_ACCOUNT = {
-  bank: "ธนาคารกสิกรไทย (KBank)",
-  account: "123-4-56789-0",
+export type BankAccount = {
+  bank: string;
+  account: string;
+  name: string;
+  branch: string;
+  type: string;
+};
+
+export const BANK_ACCOUNTS: BankAccount[] = [
+  {
+    bank: "ธนาคารกสิกรไทย (KBank)",
+    account: "841-2-05851-9",
+    name: "บริษัท อี เอ็น ที กรุ๊ป จำกัด",
+    branch: "สาขาบางเดื่อ ปทุมธานี",
+    type: "ออมทรัพย์",
+  },
+  {
+    bank: "ธนาคารไทยพาณิชย์ (SCB)",
+    account: "406-817747-1",
+    name: "บริษัท อี เอ็น ที กรุ๊ป จำกัด",
+    branch: "สาขาบางเดื่อ (ปทุมธานี)",
+    type: "ออมทรัพย์",
+  },
+];
+
+// Back-compat alias — primary account
+export const BANK_ACCOUNT = BANK_ACCOUNTS[0];
+
+export const COMPANY_INFO = {
   name: "บริษัท อี เอ็น ที กรุ๊ป จำกัด",
-  branch: "สาขาสำนักงานใหญ่",
-  promptpay: "0-2045-6104",
+  tax_id: "0135558013167",
+  email: "accountant@entgroup.co.th",
+  phone: "02-045-6104",
+  purchase_phone: "082-249-7922",
 } as const;
 
-export const SUPPORT_PHONE = "02-045-6104";
+export const SUPPORT_PHONE = COMPANY_INFO.phone;
+
+export const VAT_NOTES = [
+  "อัตราค่าบริการยังไม่รวม VAT 7% (สำหรับนิติบุคคล)",
+  "นิติบุคคลยอดตั้งแต่ 1,000 บ. ขึ้นไป สามารถหักภาษี ณ ที่จ่าย 3%",
+  "ใบเสร็จ/ใบกำกับภาษีจะส่งหลังได้รับหนังสือหักฯ",
+] as const;
 
 export const ORDER_STATUSES = [
   "pending",
