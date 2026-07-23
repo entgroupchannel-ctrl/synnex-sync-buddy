@@ -1,0 +1,2 @@
+ALTER TABLE public.synnex_products ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.sync_logs ENABLE ROW LEVEL SECURITY;
