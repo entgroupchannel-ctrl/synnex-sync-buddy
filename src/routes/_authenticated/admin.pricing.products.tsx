@@ -83,15 +83,26 @@ function PricingProductsPage() {
     [search.brands],
   );
 
+  const sortMap: Record<string, { col: string; asc: boolean }> = {
+    sku_asc: { col: "sku", asc: true },
+    sku_desc: { col: "sku", asc: false },
+    name_asc: { col: "name", asc: true },
+    cost_asc: { col: "cost_price", asc: true },
+    cost_desc: { col: "cost_price", asc: false },
+    selling_asc: { col: "selling_price", asc: true },
+    selling_desc: { col: "selling_price", asc: false },
+  };
+
   const productsQ = useQuery({
     queryKey: ["pricing-products-v2", search],
     queryFn: async () => {
       const from = (search.page - 1) * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
+      const so = sortMap[search.sort] ?? sortMap.sku_asc;
       let qq = supabase
         .from("synnex_products")
         .select("id, sku, name, brand, category, distributor, image_url, cost_price, price, selling_price, markup_override, price_approved", { count: "exact" })
-        .order("sku", { ascending: true })
+        .order(so.col, { ascending: so.asc, nullsFirst: false })
         .range(from, to);
       const s = search.q.trim().replace(/[%,]/g, "");
       if (s) qq = qq.or(`sku.ilike.%${s}%,name.ilike.%${s}%`);
