@@ -114,13 +114,13 @@ function PricingProductsPage() {
             className="relative flex-1 min-w-[240px]"
             onSubmit={(e) => {
               e.preventDefault();
-              nav({ search: (s) => ({ ...s, q, page: 1 }) });
+              nav({ search: (s: { q: string; filter: string; page: number }) => ({ ...s, q, page: 1 }) });
             }}
           >
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
             <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="ค้นหา SKU หรือชื่อ..." className="pl-9" />
           </form>
-          <Select value={search.filter} onValueChange={(v) => nav({ search: (s) => ({ ...s, filter: v, page: 1 }) })}>
+          <Select value={search.filter} onValueChange={(v) => nav({ search: (s: { q: string; filter: string; page: number }) => ({ ...s, filter: v, page: 1 }) })}>
             <SelectTrigger className="w-56"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">ทั้งหมด</SelectItem>
@@ -211,9 +211,9 @@ function PricingProductsPage() {
 
         {totalPages > 1 && (
           <div className="flex items-center justify-center gap-2">
-            <Button variant="outline" size="sm" disabled={search.page <= 1} onClick={() => nav({ search: (s) => ({ ...s, page: s.page - 1 }) })}>← ก่อนหน้า</Button>
+            <Button variant="outline" size="sm" disabled={search.page <= 1} onClick={() => nav({ search: (s: { q: string; filter: string; page: number }) => ({ ...s, page: s.page - 1 }) })}>← ก่อนหน้า</Button>
             <span className="text-sm">หน้า {search.page} / {totalPages}</span>
-            <Button variant="outline" size="sm" disabled={search.page >= totalPages} onClick={() => nav({ search: (s) => ({ ...s, page: s.page + 1 }) })}>ถัดไป →</Button>
+            <Button variant="outline" size="sm" disabled={search.page >= totalPages} onClick={() => nav({ search: (s: { q: string; filter: string; page: number }) => ({ ...s, page: s.page + 1 }) })}>ถัดไป →</Button>
           </div>
         )}
       </main>
