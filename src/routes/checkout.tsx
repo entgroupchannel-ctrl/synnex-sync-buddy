@@ -194,8 +194,14 @@ function CheckoutPage() {
         changed_by: user?.email ?? "customer",
       });
 
-      clear();
-      navigate({ to: "/order/$orderNumber", params: { orderNumber: order.order_number } });
+      if (order?.order_number) {
+        setOrderCreated(true);
+        await navigate({ to: "/order/$orderNumber", params: { orderNumber: order.order_number } });
+        clear();
+        localStorage.removeItem("ent_cart");
+      } else {
+        throw new Error("ไม่พบเลขที่คำสั่งซื้อ");
+      }
     } catch (err) {
       console.error("[checkout] submit failed:", err);
       const anyErr = err as { message?: string; details?: string; hint?: string; code?: string } | Error;
