@@ -91,22 +91,22 @@ function CartPage() {
             </div>
 
             <aside className="h-fit rounded-lg border bg-white p-5">
-              <h2 className="mb-3 font-semibold">สรุปคำสั่งซื้อ</h2>
+              <h2 className="mb-3 font-semibold">{t("cart.summary")}</h2>
               <div className="flex justify-between text-sm">
-                <span>รวม</span>
+                <span>{t("cart.subtotal")}</span>
                 <span>{priceFmt.format(total)}</span>
               </div>
               <div className="mt-1 flex justify-between text-sm text-slate-500">
-                <span>ค่าจัดส่ง</span>
-                <span>คำนวณตอนชำระเงิน</span>
+                <span>{t("cart.shipping")}</span>
+                <span>{t("cart.shipping_calc")}</span>
               </div>
               <div className="my-4 h-px bg-slate-200" />
               <div className="flex justify-between text-lg font-bold text-[color:var(--brand-navy)]">
-                <span>ยอดรวม</span>
+                <span>{t("cart.total")}</span>
                 <span>{priceFmt.format(total)}</span>
               </div>
               <Button asChild className="mt-4 w-full bg-[color:var(--brand-orange)] hover:bg-[color:var(--brand-orange-dark)]" size="lg">
-                <Link to="/checkout">ดำเนินการชำระเงิน</Link>
+                <Link to="/checkout">{t("cart.checkout")}</Link>
               </Button>
             </aside>
           </div>
@@ -117,6 +117,8 @@ function CartPage() {
 }
 
 function EmptyCart({ recent, onBrowse }: { recent: RecentItem[]; onBrowse: () => void }) {
+  const { t, lang } = useLanguage();
+  const th = lang === "th";
   return (
     <div className="rounded-2xl border bg-white p-8 sm:p-12">
       <div className="mx-auto max-w-2xl text-center">
@@ -124,23 +126,23 @@ function EmptyCart({ recent, onBrowse }: { recent: RecentItem[]; onBrowse: () =>
           <ShoppingCart className="h-16 w-16" strokeWidth={1.5} style={{ color: "var(--border-strong, #cbd5e1)" }} />
         </div>
 
-        <h2 className="text-2xl font-black text-[color:var(--brand-navy)]">ตะกร้าสินค้าว่างเปล่า</h2>
-        <p className="mt-1 text-sm text-slate-400">Your cart is empty</p>
+        <h2 className="text-2xl font-black text-[color:var(--brand-navy)]">{t("cart.empty")}</h2>
+        <p className="mt-1 text-sm text-slate-400">{t("cart.empty_en")}</p>
 
-        <p className="mt-4 text-slate-600">ยังไม่มีสินค้าในตะกร้า</p>
-        <p className="text-sm text-slate-400">No items have been added yet</p>
+        <p className="mt-4 text-slate-600">{t("cart.empty_sub")}</p>
+        <p className="text-sm text-slate-400">{t("cart.empty_sub_en")}</p>
 
         <Button
           onClick={onBrowse}
           size="lg"
           className="mt-6 w-full bg-[#10b981] text-white hover:bg-[#0ea371] sm:w-auto sm:px-8"
         >
-          <ShoppingBag className="mr-2 h-5 w-5" /> เลือกสินค้า / Browse Products
+          <ShoppingBag className="mr-2 h-5 w-5" /> {th ? "เลือกสินค้า / Browse Products" : "Browse Products / เลือกสินค้า"}
         </Button>
 
         <div className="mt-10 flex items-center gap-3">
           <div className="h-px flex-1 bg-slate-200" />
-          <span className="text-xs uppercase tracking-wider text-slate-400">หรือดูหมวดหมู่ · Or browse categories</span>
+          <span className="text-xs uppercase tracking-wider text-slate-400">{t("cart.or_categories")}</span>
           <div className="h-px flex-1 bg-slate-200" />
         </div>
 
@@ -162,8 +164,7 @@ function EmptyCart({ recent, onBrowse }: { recent: RecentItem[]; onBrowse: () =>
             <div className="mb-3 flex items-center gap-2">
               <span className="text-lg">💡</span>
               <div>
-                <div className="font-bold text-[color:var(--brand-navy)]">สินค้าที่คุณดูล่าสุด</div>
-                <div className="text-xs text-slate-400">Recently viewed</div>
+                <div className="font-bold text-[color:var(--brand-navy)]">{t("cart.recently_viewed")}</div>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
