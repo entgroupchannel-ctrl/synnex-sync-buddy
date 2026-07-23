@@ -1,14 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { ArrowLeft, ExternalLink, Save } from "lucide-react";
+import { ArrowLeft, ExternalLink, Save, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteHeader } from "@/components/site-header";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ORDER_STATUSES, STATUS_META, PAYMENT_STATUS_META, distMeta, bahtFmt, isValidStatus } from "@/lib/order-helpers";
 
 export const Route = createFileRoute("/_authenticated/admin/orders/$id")({
   ssr: false,
@@ -17,39 +16,51 @@ export const Route = createFileRoute("/_authenticated/admin/orders/$id")({
 });
 
 type OrderItem = {
-  id?: string;
-  sku?: string;
-  name?: string;
-  price?: number;
-  qty?: number;
-  image_url?: string | null;
-  distributor?: string | null;
+  id: string;
+  product_sku: string;
+  product_name: string;
+  product_image_url: string | null;
+  distributor: string | null;
+  cost_price: number | null;
+  unit_price: number;
+  quantity: number;
+  subtotal: number;
 };
-
+type HistoryRow = {
+  id: string;
+  status: string;
+  note: string | null;
+  changed_by: string | null;
+  created_at: string;
+};
 type Order = {
   id: string;
+  order_number: string;
   created_at: string;
   customer_name: string | null;
   customer_phone: string | null;
   customer_email: string | null;
-  customer_address: string | null;
-  items: OrderItem[] | null;
+  customer_type: string | null;
+  shipping_name: string | null;
+  shipping_phone: string | null;
+  shipping_address: string | null;
+  shipping_district: string | null;
+  shipping_province: string | null;
+  shipping_postcode: string | null;
+  need_tax_invoice: boolean;
+  company_name: string | null;
+  tax_id: string | null;
+  company_address: string | null;
+  payment_method: string | null;
+  payment_status: string;
+  payment_slip_url: string | null;
+  subtotal: number | null;
+  cod_fee: number;
   total: number | null;
   status: string | null;
   notes: string | null;
-};
-
-const STATUSES = ["pending", "confirmed", "ordered", "shipped", "done"] as const;
-
-const DISTRIBUTOR_META: Record<string, { label: string; url: string; color: string; dot: string; ring: string; text: string; bg: string }> = {
-  SYNNEX: {
-    label: "SYNNEX", url: "https://www.synnex.co.th/Dealer", color: "blue",
-    dot: "bg-blue-500", ring: "ring-blue-200", text: "text-blue-700", bg: "bg-blue-50",
-  },
-  VSTECS: {
-    label: "VSTECS", url: "https://online.vstecs.co.th", color: "orange",
-    dot: "bg-orange-500", ring: "ring-orange-200", text: "text-orange-700", bg: "bg-orange-50",
-  },
+  order_items: OrderItem[];
+  history: HistoryRow[];
 };
 
 function AdminOrderDetail() {
@@ -57,38 +68,71 @@ function AdminOrderDetail() {
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState<string>("pending");
+  const [paymentStatus, setPaymentStatus] = useState<string>("pending");
   const [notes, setNotes] = useState<string>("");
+  const [statusNote, setStatusNote] = useState<string>("");
   const [saving, setSaving] = useState(false);
+  const [slipUrl, setSlipUrl] = useState<string | null>(null);
 
-  useEffect(() => {
-    (async () => {
-      const { data, error } = await supabase.from("orders").select("*").eq("id", id).maybeSingle();
-      if (!error && data) {
-        const o = data as unknown as Order;
-        setOrder(o);
-        setStatus(o.status ?? "pending");
-        setNotes(o.notes ?? "");
+  const load = async () => {
+    setLoading(true);
+    const [{ data: o }, { data: h }] = await Promise.all([
+      supabase.from("orders").select("*, order_items(*)").eq("id", id).maybeSingle(),
+      supabase.from("order_status_history").select("*").eq("order_id", id).order("created_at", { ascending: true }),
+    ]);
+    if (o) {
+      const merged = { ...(o as Record<string, unknown>), history: (h ?? []) as HistoryRow[] } as unknown as Order;
+      setOrder(merged);
+      setStatus(merged.status ?? "pending");
+      setPaymentStatus(merged.payment_status ?? "pending");
+      setNotes(merged.notes ?? "");
+      if (merged.payment_slip_url) {
+        const { data } = await supabase.storage.from("payment-slips").createSignedUrl(merged.payment_slip_url, 60 * 60);
+        setSlipUrl(data?.signedUrl ?? null);
+      } else {
+        setSlipUrl(null);
       }
-      setLoading(false);
-    })();
-  }, [id]);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => { load(); /* eslint-disable-next-line */ }, [id]);
 
   const grouped = useMemo(() => {
-    const groups = new Map<string, OrderItem[]>();
-    for (const it of order?.items ?? []) {
-      const key = (it.distributor ?? "").toString().trim().toUpperCase() || "OTHER";
-      if (!groups.has(key)) groups.set(key, []);
-      groups.get(key)!.push(it);
+    const g = new Map<string, OrderItem[]>();
+    for (const it of order?.order_items ?? []) {
+      const k = (it.distributor ?? "OTHER").toUpperCase();
+      if (!g.has(k)) g.set(k, []);
+      g.get(k)!.push(it);
     }
-    return [...groups.entries()];
+    return [...g.entries()];
   }, [order]);
 
   const save = async () => {
+    if (!order) return;
     setSaving(true);
-    const { error } = await supabase.from("orders").update({ status, notes }).eq("id", id);
+    const wasStatus = order.status ?? "pending";
+    const wasPay = order.payment_status ?? "pending";
+    const { error } = await supabase.from("orders").update({
+      status, payment_status: paymentStatus, notes,
+    }).eq("id", id);
+    if (error) { setSaving(false); toast.error(error.message); return; }
+
+    // Log history rows for changes
+    const changes: { note: string; status: string }[] = [];
+    if (status !== wasStatus) changes.push({ status, note: statusNote || `เปลี่ยนสถานะ: ${wasStatus} → ${status}` });
+    if (paymentStatus !== wasPay) changes.push({ status, note: `การชำระเงิน: ${wasPay} → ${paymentStatus}` });
+    if (changes.length) {
+      const { data: userData } = await supabase.auth.getUser();
+      const by = userData?.user?.email ?? "admin";
+      await supabase.from("order_status_history").insert(changes.map((c) => ({
+        order_id: id, status: c.status, note: c.note, changed_by: by,
+      })));
+    }
     setSaving(false);
-    if (error) { toast.error(error.message); return; }
+    setStatusNote("");
     toast.success("บันทึกแล้ว");
+    load();
   };
 
   if (loading) {
@@ -108,6 +152,9 @@ function AdminOrderDetail() {
     );
   }
 
+  const stMeta = STATUS_META[isValidStatus(order.status) ? order.status : "pending"];
+  const payMeta = PAYMENT_STATUS_META[order.payment_status === "paid" ? "paid" : "pending"];
+
   return (
     <div className="min-h-screen bg-slate-50">
       <SiteHeader />
@@ -115,23 +162,27 @@ function AdminOrderDetail() {
         <Link to="/admin/orders" className="mb-4 inline-flex items-center gap-1 text-sm text-slate-600 hover:text-[color:var(--brand-navy)]">
           <ArrowLeft className="h-4 w-4" /> กลับไปรายการออเดอร์
         </Link>
-        <div className="mb-6 flex items-center justify-between gap-4">
+        <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-[color:var(--brand-navy)]">
-              ออเดอร์ #{order.id.slice(0, 8).toUpperCase()}
+              <span className="font-mono">{order.order_number}</span>
             </h1>
             <p className="text-sm text-slate-500">{new Date(order.created_at).toLocaleString("th-TH")}</p>
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${stMeta.badge}`}><span className={`h-1.5 w-1.5 rounded-full ${stMeta.dot}`} />{stMeta.label}</span>
+              <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${payMeta.badge}`}>{payMeta.label}</span>
+              {order.customer_type === "b2b" && <span className="inline-flex items-center rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-semibold text-indigo-700 ring-1 ring-indigo-200">B2B</span>}
+              {order.need_tax_invoice && <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-700 ring-1 ring-blue-200"><FileText className="h-3 w-3" />ใบกำกับภาษี</span>}
+            </div>
           </div>
           <div className="text-right">
             <div className="text-xs uppercase text-slate-500">ยอดรวม</div>
-            <div className="text-2xl font-bold text-[color:var(--brand-accent,#f97316)]">
-              ฿{Number(order.total ?? 0).toLocaleString("th-TH")}
-            </div>
+            <div className="text-2xl font-bold text-[color:var(--brand-orange)]">{bahtFmt.format(Number(order.total ?? 0))}</div>
           </div>
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[360px_1fr]">
-          {/* LEFT: customer */}
+          {/* LEFT */}
           <div className="space-y-4">
             <div className="rounded-lg border bg-white p-5">
               <h2 className="mb-4 text-sm font-bold uppercase tracking-wide text-slate-500">ข้อมูลลูกค้า</h2>
@@ -139,93 +190,161 @@ function AdminOrderDetail() {
                 <Row k="ชื่อ" v={order.customer_name} />
                 <Row k="เบอร์โทร" v={order.customer_phone} />
                 <Row k="อีเมล" v={order.customer_email} />
-                <Row k="ที่อยู่" v={order.customer_address} multi />
+                <Row k="ประเภท" v={order.customer_type ?? "-"} />
               </dl>
             </div>
 
             <div className="rounded-lg border bg-white p-5">
-              <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-500">สถานะ</h2>
+              <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-500">ที่อยู่จัดส่ง</h2>
+              <div className="text-sm">
+                <div className="font-semibold">{order.shipping_name} · {order.shipping_phone}</div>
+                <div className="mt-1 whitespace-pre-line text-slate-700">
+                  {[order.shipping_address, order.shipping_district, order.shipping_province, order.shipping_postcode].filter(Boolean).join(" ")}
+                </div>
+              </div>
+            </div>
+
+            {order.need_tax_invoice && (
+              <div className="rounded-lg border bg-white p-5">
+                <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-500">ใบกำกับภาษี</h2>
+                <dl className="space-y-2 text-sm">
+                  <Row k="ชื่อ" v={order.company_name} />
+                  <Row k="เลขผู้เสียภาษี" v={order.tax_id} />
+                  <Row k="ที่อยู่" v={order.company_address} multi />
+                </dl>
+              </div>
+            )}
+
+            <div className="rounded-lg border bg-white p-5">
+              <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-500">การชำระเงิน</h2>
+              <div className="mb-3 text-sm">
+                วิธี: <b>{order.payment_method === "cod" ? "COD" : "โอนเงิน"}</b>
+              </div>
+              {slipUrl ? (
+                <a href={slipUrl} target="_blank" rel="noreferrer" className="block overflow-hidden rounded-lg border">
+                  <img src={slipUrl} alt="payment slip" className="max-h-64 w-full object-contain bg-slate-50" onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
+                  <div className="border-t bg-slate-50 px-3 py-2 text-xs">เปิดสลิป ↗</div>
+                </a>
+              ) : (
+                <div className="text-sm text-slate-500">ยังไม่มีสลิป</div>
+              )}
+              <div className="mt-3">
+                <label className="text-xs font-bold uppercase text-slate-500">สถานะการชำระ</label>
+                <Select value={paymentStatus} onValueChange={setPaymentStatus}>
+                  <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="pending">รอชำระ</SelectItem>
+                    <SelectItem value="paid">ชำระแล้ว</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="rounded-lg border bg-white p-5">
+              <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-500">สถานะออเดอร์</h2>
               <Select value={status} onValueChange={setStatus}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  {STATUSES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                  {ORDER_STATUSES.map((s) => <SelectItem key={s} value={s}>{STATUS_META[s].label}</SelectItem>)}
                 </SelectContent>
               </Select>
+              <Textarea value={statusNote} onChange={(e) => setStatusNote(e.target.value)} rows={2} className="mt-2" placeholder="โน๊ตการเปลี่ยนสถานะ (บันทึกใน timeline)" />
             </div>
 
             <div className="rounded-lg border bg-white p-5">
               <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-500">Admin Notes</h2>
-              <Textarea
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                rows={5}
-                placeholder="เช่น สั่ง Synnex แล้ว PO#12345 วันที่ 23/7/69"
-              />
+              <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={4} placeholder="โน๊ตภายใน" />
               <Button onClick={save} disabled={saving} className="mt-3 w-full bg-[color:var(--brand-green,#10B981)] hover:bg-emerald-600">
                 <Save className="mr-2 h-4 w-4" />
-                {saving ? "กำลังบันทึก..." : "บันทึก"}
+                {saving ? "กำลังบันทึก..." : "บันทึกการเปลี่ยนแปลง"}
               </Button>
             </div>
           </div>
 
-          {/* RIGHT: items grouped */}
+          {/* RIGHT */}
           <div className="space-y-4">
-            {grouped.length === 0 && (
-              <div className="rounded-lg border bg-white p-6 text-center text-sm text-slate-500">ไม่มีรายการสินค้า</div>
-            )}
+            {grouped.length === 0 && <div className="rounded-lg border bg-white p-6 text-center text-sm text-slate-500">ไม่มีรายการสินค้า</div>}
             {grouped.map(([dist, items]) => {
-              const meta = DISTRIBUTOR_META[dist] ?? {
-                label: dist, url: "", color: "slate",
-                dot: "bg-slate-400", ring: "ring-slate-200", text: "text-slate-700", bg: "bg-slate-100",
-              };
-              const subtotal = items.reduce((s, it) => s + Number(it.price ?? 0) * Number(it.qty ?? 0), 0);
+              const meta = distMeta(dist);
+              const subtotal = items.reduce((s, it) => s + Number(it.subtotal ?? 0), 0);
               return (
                 <div key={dist} className="overflow-hidden rounded-lg border bg-white">
                   <div className={`flex items-center justify-between gap-3 border-b px-4 py-3 ${meta.bg}`}>
                     <div className="flex items-center gap-2">
                       <span className={`h-2.5 w-2.5 rounded-full ${meta.dot}`} />
                       <span className={`font-bold ${meta.text}`}>{meta.label}</span>
-                      {meta.url && (
-                        <span className="text-xs text-slate-500">
-                          สั่งซื้อที่: {meta.url.replace(/^https?:\/\//, "")}
-                        </span>
-                      )}
+                      {meta.url && <span className="text-xs text-slate-500">สั่งซื้อที่: {meta.url.replace(/^https?:\/\//, "")}</span>}
                     </div>
                     {meta.url && (
                       <a href={meta.url} target="_blank" rel="noreferrer">
                         <Button size="sm" variant="outline" className={`${meta.text} border-current`}>
-                          <ExternalLink className="mr-1 h-3.5 w-3.5" />
-                          เปิด {meta.label}
+                          <ExternalLink className="mr-1 h-3.5 w-3.5" /> เปิด {meta.label}
                         </Button>
                       </a>
                     )}
                   </div>
                   <div>
-                    {items.map((it, i) => (
-                      <div key={i} className="flex items-center gap-3 border-b px-4 py-3 last:border-b-0">
-                        {it.image_url ? (
-                          <img src={it.image_url} alt="" className="h-12 w-12 rounded border object-contain" />
-                        ) : (
-                          <div className="h-12 w-12 rounded border bg-slate-50" />
-                        )}
+                    {items.map((it) => (
+                      <div key={it.id} className="flex items-center gap-3 border-b px-4 py-3 last:border-b-0">
+                        {it.product_image_url ? <img src={it.product_image_url} alt="" className="h-12 w-12 rounded border object-contain" /> : <div className="h-12 w-12 rounded border bg-slate-50" />}
                         <div className="min-w-0 flex-1">
-                          <div className="truncate text-sm font-medium">{it.name ?? it.sku}</div>
-                          <div className="text-xs text-slate-500">{it.sku}</div>
+                          <div className="truncate text-sm font-medium">{it.product_name}</div>
+                          <div className="text-xs text-slate-500">SKU: {it.product_sku}</div>
                         </div>
-                        <div className="text-sm text-slate-600">× {it.qty ?? 0}</div>
-                        <div className="w-28 text-right text-sm font-semibold">
-                          ฿{(Number(it.price ?? 0) * Number(it.qty ?? 0)).toLocaleString("th-TH")}
+                        <div className="text-right text-xs text-slate-500">
+                          {it.cost_price != null && <div>ทุน {bahtFmt.format(Number(it.cost_price))}</div>}
                         </div>
+                        <div className="text-sm text-slate-600">× {it.quantity}</div>
+                        <div className="w-28 text-right text-sm font-semibold">{bahtFmt.format(Number(it.subtotal))}</div>
                       </div>
                     ))}
                   </div>
                   <div className="flex items-center justify-between border-t bg-slate-50 px-4 py-3 text-sm">
                     <span className="font-semibold text-slate-600">รวม {meta.label}</span>
-                    <span className="text-base font-bold">฿{subtotal.toLocaleString("th-TH")}</span>
+                    <span className="text-base font-bold">{bahtFmt.format(subtotal)}</span>
                   </div>
                 </div>
               );
             })}
+
+            <div className="rounded-lg border bg-white p-5">
+              <div className="grid gap-1 text-sm">
+                <div className="flex justify-between text-slate-600">
+                  <span>รวมสินค้า</span><span>{bahtFmt.format(Number(order.subtotal ?? 0))}</span>
+                </div>
+                {order.cod_fee > 0 && (
+                  <div className="flex justify-between text-slate-600">
+                    <span>ค่า COD</span><span>{bahtFmt.format(order.cod_fee)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between border-t pt-2 text-lg font-black">
+                  <span>ยอดรวม</span><span className="text-[color:var(--brand-orange)]">{bahtFmt.format(Number(order.total ?? 0))}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-lg border bg-white p-5">
+              <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-500">Timeline</h2>
+              {order.history.length === 0 ? (
+                <div className="text-sm text-slate-500">ยังไม่มีประวัติ</div>
+              ) : (
+                <ol className="relative space-y-4 border-l-2 border-slate-200 pl-4">
+                  {order.history.map((h) => {
+                    const m = isValidStatus(h.status) ? STATUS_META[h.status] : null;
+                    return (
+                      <li key={h.id} className="relative">
+                        <span className={`absolute -left-[22px] top-1 h-3 w-3 rounded-full ring-2 ring-white ${m?.dot ?? "bg-slate-400"}`} />
+                        <div className="text-xs text-slate-500">
+                          {new Date(h.created_at).toLocaleString("th-TH")} · {h.changed_by ?? "system"}
+                        </div>
+                        <div className="text-sm font-semibold">{m?.label ?? h.status}</div>
+                        {h.note && <div className="text-sm text-slate-600">{h.note}</div>}
+                      </li>
+                    );
+                  })}
+                </ol>
+              )}
+            </div>
           </div>
         </div>
       </div>
