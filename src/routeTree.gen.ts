@@ -25,6 +25,7 @@ import { Route as AuthenticatedAccountProfileRouteImport } from './routes/_authe
 import { Route as AuthenticatedAccountOrdersRouteImport } from './routes/_authenticated/account.orders'
 import { Route as AuthenticatedAccountAddressesRouteImport } from './routes/_authenticated/account.addresses'
 import { Route as AuthenticatedAdminPricingProductsRouteImport } from './routes/_authenticated/admin.pricing.products'
+import { Route as AuthenticatedAdminPricingAuditRouteImport } from './routes/_authenticated/admin.pricing.audit'
 import { Route as AuthenticatedAdminOrdersIdRouteImport } from './routes/_authenticated/admin.orders.$id'
 
 const ContactRoute = ContactRouteImport.update({
@@ -113,6 +114,12 @@ const AuthenticatedAdminPricingProductsRoute =
     path: '/products',
     getParentRoute: () => AuthenticatedAdminPricingRoute,
   } as any)
+const AuthenticatedAdminPricingAuditRoute =
+  AuthenticatedAdminPricingAuditRouteImport.update({
+    id: '/audit',
+    path: '/audit',
+    getParentRoute: () => AuthenticatedAdminPricingRoute,
+  } as any)
 const AuthenticatedAdminOrdersIdRoute =
   AuthenticatedAdminOrdersIdRouteImport.update({
     id: '/$id',
@@ -136,6 +143,7 @@ export interface FileRoutesByFullPath {
   '/admin/pricing': typeof AuthenticatedAdminPricingRouteWithChildren
   '/admin/sync': typeof AuthenticatedAdminSyncRoute
   '/admin/orders/$id': typeof AuthenticatedAdminOrdersIdRoute
+  '/admin/pricing/audit': typeof AuthenticatedAdminPricingAuditRoute
   '/admin/pricing/products': typeof AuthenticatedAdminPricingProductsRoute
 }
 export interface FileRoutesByTo {
@@ -154,6 +162,7 @@ export interface FileRoutesByTo {
   '/admin/pricing': typeof AuthenticatedAdminPricingRouteWithChildren
   '/admin/sync': typeof AuthenticatedAdminSyncRoute
   '/admin/orders/$id': typeof AuthenticatedAdminOrdersIdRoute
+  '/admin/pricing/audit': typeof AuthenticatedAdminPricingAuditRoute
   '/admin/pricing/products': typeof AuthenticatedAdminPricingProductsRoute
 }
 export interface FileRoutesById {
@@ -174,6 +183,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/pricing': typeof AuthenticatedAdminPricingRouteWithChildren
   '/_authenticated/admin/sync': typeof AuthenticatedAdminSyncRoute
   '/_authenticated/admin/orders/$id': typeof AuthenticatedAdminOrdersIdRoute
+  '/_authenticated/admin/pricing/audit': typeof AuthenticatedAdminPricingAuditRoute
   '/_authenticated/admin/pricing/products': typeof AuthenticatedAdminPricingProductsRoute
 }
 export interface FileRouteTypes {
@@ -194,6 +204,7 @@ export interface FileRouteTypes {
     | '/admin/pricing'
     | '/admin/sync'
     | '/admin/orders/$id'
+    | '/admin/pricing/audit'
     | '/admin/pricing/products'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -212,6 +223,7 @@ export interface FileRouteTypes {
     | '/admin/pricing'
     | '/admin/sync'
     | '/admin/orders/$id'
+    | '/admin/pricing/audit'
     | '/admin/pricing/products'
   id:
     | '__root__'
@@ -231,6 +243,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/pricing'
     | '/_authenticated/admin/sync'
     | '/_authenticated/admin/orders/$id'
+    | '/_authenticated/admin/pricing/audit'
     | '/_authenticated/admin/pricing/products'
   fileRoutesById: FileRoutesById
 }
@@ -359,6 +372,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminPricingProductsRouteImport
       parentRoute: typeof AuthenticatedAdminPricingRoute
     }
+    '/_authenticated/admin/pricing/audit': {
+      id: '/_authenticated/admin/pricing/audit'
+      path: '/audit'
+      fullPath: '/admin/pricing/audit'
+      preLoaderRoute: typeof AuthenticatedAdminPricingAuditRouteImport
+      parentRoute: typeof AuthenticatedAdminPricingRoute
+    }
     '/_authenticated/admin/orders/$id': {
       id: '/_authenticated/admin/orders/$id'
       path: '/$id'
@@ -384,11 +404,13 @@ const AuthenticatedAdminOrdersRouteWithChildren =
   )
 
 interface AuthenticatedAdminPricingRouteChildren {
+  AuthenticatedAdminPricingAuditRoute: typeof AuthenticatedAdminPricingAuditRoute
   AuthenticatedAdminPricingProductsRoute: typeof AuthenticatedAdminPricingProductsRoute
 }
 
 const AuthenticatedAdminPricingRouteChildren: AuthenticatedAdminPricingRouteChildren =
   {
+    AuthenticatedAdminPricingAuditRoute: AuthenticatedAdminPricingAuditRoute,
     AuthenticatedAdminPricingProductsRoute:
       AuthenticatedAdminPricingProductsRoute,
   }
