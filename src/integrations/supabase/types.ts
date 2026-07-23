@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      orders: {
+        Row: {
+          created_at: string | null
+          customer_address: string | null
+          customer_email: string | null
+          customer_name: string | null
+          customer_phone: string | null
+          id: string
+          items: Json | null
+          status: string | null
+          total: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          customer_address?: string | null
+          customer_email?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          id?: string
+          items?: Json | null
+          status?: string | null
+          total?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          customer_address?: string | null
+          customer_email?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          id?: string
+          items?: Json | null
+          status?: string | null
+          total?: number | null
+        }
+        Relationships: []
+      }
       sync_logs: {
         Row: {
           created_at: string
@@ -47,14 +83,17 @@ export type Database = {
       synnex_products: {
         Row: {
           brand: string | null
+          category: string | null
           created_at: string
           description: string | null
+          distributor: string | null
           id: string
           image_url: string | null
           name: string | null
           price: number | null
           product_url: string | null
           sku: string
+          slug: string | null
           stock: string | null
           stock_qty: number | null
           stock_status: string | null
@@ -63,14 +102,17 @@ export type Database = {
         }
         Insert: {
           brand?: string | null
+          category?: string | null
           created_at?: string
           description?: string | null
+          distributor?: string | null
           id?: string
           image_url?: string | null
           name?: string | null
           price?: number | null
           product_url?: string | null
           sku: string
+          slug?: string | null
           stock?: string | null
           stock_qty?: number | null
           stock_status?: string | null
@@ -79,14 +121,17 @@ export type Database = {
         }
         Update: {
           brand?: string | null
+          category?: string | null
           created_at?: string
           description?: string | null
+          distributor?: string | null
           id?: string
           image_url?: string | null
           name?: string | null
           price?: number | null
           product_url?: string | null
           sku?: string
+          slug?: string | null
           stock?: string | null
           stock_qty?: number | null
           stock_status?: string | null
