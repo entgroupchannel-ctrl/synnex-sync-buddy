@@ -531,3 +531,59 @@ function PricingSummaryCard() {
   );
 }
 
+function SyncLogsSection() {
+  const q = useQuery({
+    queryKey: ["sync-logs-recent"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("sync_logs")
+        .select("id, started_at, finished_at, products_found, status, message")
+        .order("started_at", { ascending: false })
+        .limit(10);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+  const rows = q.data ?? [];
+  return (
+    <section className="mt-6 rounded-lg border bg-white shadow-sm">
+      <div className="border-b p-3 text-sm font-bold text-[#1a237e]">📋 Sync Logs ล่าสุด</div>
+      <div className="overflow-x-auto">
+        <Table>
+          <TableHeader className="bg-slate-50">
+            <TableRow>
+              <TableHead className="w-44">เริ่ม</TableHead>
+              <TableHead className="w-24">พบ</TableHead>
+              <TableHead className="w-28">สถานะ</TableHead>
+              <TableHead>รายละเอียด</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {rows.length === 0 ? (
+              <TableRow><TableCell colSpan={4} className="py-6 text-center text-sm text-slate-400">— ยังไม่มีประวัติ —</TableCell></TableRow>
+            ) : rows.map((r) => {
+              const pending = (r.message ?? "").toLowerCase().includes("pending price approval");
+              return (
+                <TableRow key={r.id} className={pending ? "border-l-4 border-l-amber-400 bg-amber-50/40" : undefined}>
+                  <TableCell className="text-xs text-slate-600">{formatDate(r.started_at)}</TableCell>
+                  <TableCell className="text-sm">{r.products_found ?? 0}</TableCell>
+                  <TableCell>
+                    <span className={
+                      "inline-flex rounded-full px-2 py-0.5 text-xs font-medium " +
+                      (r.status === "success" ? "bg-green-100 text-green-700"
+                        : r.status === "error" ? "bg-red-100 text-red-700"
+                        : "bg-amber-100 text-amber-700")
+                    }>{r.status}</span>
+                  </TableCell>
+                  <TableCell className="text-xs text-slate-700">{r.message ?? "—"}</TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </div>
+    </section>
+  );
+}
+
+
