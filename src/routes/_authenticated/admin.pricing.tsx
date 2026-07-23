@@ -67,6 +67,17 @@ function PricingPage() {
     },
   });
 
+  const unapprovedQ = useQuery({
+    queryKey: ["pricing-unapproved-count"],
+    queryFn: async () => {
+      const { count } = await supabase
+        .from("synnex_products")
+        .select("*", { count: "exact", head: true })
+        .or("price_approved.eq.false,selling_price.is.null");
+      return count ?? 0;
+    },
+  });
+
   const updateMut = useMutation({
     mutationFn: async (r: Partial<Rule> & { id: string }) => {
       const { error } = await supabase.from("pricing_rules").update(r).eq("id", r.id);
