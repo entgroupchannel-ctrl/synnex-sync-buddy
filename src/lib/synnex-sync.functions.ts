@@ -4,9 +4,10 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 export const runSynnexSync = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .handler(async () => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data, error } = await supabaseAdmin.functions.invoke("sync-synnex", {
+  .handler(async ({ context }) => {
+    // Invoke the edge function using the authenticated user's client — no
+    // service role key needed in the TanStack worker runtime.
+    const { data, error } = await context.supabase.functions.invoke("sync-synnex", {
       body: {},
     });
     if (error) {
