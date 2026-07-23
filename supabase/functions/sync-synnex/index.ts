@@ -310,12 +310,21 @@ Deno.serve(async (req) => {
 
     if (products.length > 0) {
       const now = new Date().toISOString();
-      const rows = products.map((p) => ({ ...p, synced_at: now }));
+      // Incoming price = distributor cost. Save to cost_price; clear
+      // selling_price and reset approval so admin must re-approve.
+      const rows = products.map((p) => ({
+        ...p,
+        cost_price: p.price,
+        selling_price: null,
+        price_approved: false,
+        synced_at: now,
+      }));
       const { error: upErr } = await supabase
         .from("synnex_products")
         .upsert(rows, { onConflict: "sku" });
       if (upErr) throw new Error(`Upsert failed: ${upErr.message}`);
     }
+
 
     await supabase
       .from("sync_logs")
