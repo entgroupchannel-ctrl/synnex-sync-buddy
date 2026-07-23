@@ -67,6 +67,17 @@ function PricingPage() {
     },
   });
 
+  const unapprovedQ = useQuery({
+    queryKey: ["pricing-unapproved-count"],
+    queryFn: async () => {
+      const { count } = await supabase
+        .from("synnex_products")
+        .select("*", { count: "exact", head: true })
+        .or("price_approved.eq.false,selling_price.is.null");
+      return count ?? 0;
+    },
+  });
+
   const updateMut = useMutation({
     mutationFn: async (r: Partial<Rule> & { id: string }) => {
       const { error } = await supabase.from("pricing_rules").update(r).eq("id", r.id);
@@ -118,6 +129,22 @@ function PricingPage() {
       </header>
 
       <main className="mx-auto max-w-7xl space-y-6 px-4 py-6">
+        {/* Approval warning banner */}
+        {(unapprovedQ.data ?? 0) > 0 && (
+          <div className="flex flex-wrap items-center gap-3 rounded-lg border border-amber-300 bg-amber-50 p-4 text-amber-900">
+            <div className="text-2xl">⚠️</div>
+            <div className="flex-1 text-sm">
+              มี <b>{unapprovedQ.data!.toLocaleString()}</b> รายการที่ยังไม่ได้ approve ราคา
+              — ลูกค้าจะเห็น "ติดต่อสอบถาม" แทนราคา จนกว่าจะ approve
+            </div>
+            <Button asChild size="sm" className="bg-amber-600 hover:bg-amber-700">
+              <Link to="/admin/pricing/products" search={{ filter: "unapproved", q: "", page: 1 }}>
+                ไปหน้า Approve ราคา →
+              </Link>
+            </Button>
+          </div>
+        )}
+
         {/* Apply pricing */}
         <section className="rounded-lg border bg-white p-5 shadow-sm">
           <div className="flex flex-wrap items-center gap-4">

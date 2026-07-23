@@ -102,13 +102,25 @@ Deno.serve(async (req) => {
     // Incoming price = distributor cost. Save to cost_price and mirror to
     // `price` (legacy). selling_price is cleared and price_approved reset —
     // admin must approve pricing before customers see it.
-    const rows = clean.map((p) => ({
-      ...p,
-      cost_price: p.price,
-      selling_price: null,
-      price_approved: false,
-      synced_at: now,
-    }));
+    // Explicit safe-field whitelist — strip any incoming selling_price /
+    // price_approved even if the Chrome Extension sends them.
+    const SAFE_FIELDS = [
+      "sku","name","description","brand","cost_price","stock_qty",
+      "stock_status","image_url","product_url","distributor","category","synced_at",
+    ] as const;
+    const rows = clean.map((p) => {
+      const merged: Record<string, unknown> = {
+        ...p,
+        cost_price: p.price,
+        synced_at: now,
+      };
+      const safe: Record<string, unknown> = {};
+      for (const k of SAFE_FIELDS) if (k in merged) safe[k] = merged[k];
+      // Admin must approve pricing before customers see it.
+      safe.selling_price = null;
+      safe.price_approved = false;
+      return safe;
+    });
     const { error: upErr } = await supabase
       .from("synnex_products")
       .upsert(rows, { onConflict: "sku" });
@@ -121,7 +133,7 @@ Deno.serve(async (req) => {
         finished_at: new Date().toISOString(),
         products_found: clean.length,
         status: "success",
-        message: `Imported ${clean.length} products from client`,
+        message: `Imported ${clean.length} products — ${clean.length} pending price approval`,
       })
       .eq("id", log.id);
 
