@@ -14,7 +14,75 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      sync_logs: {
+        Row: {
+          created_at: string
+          finished_at: string | null
+          id: string
+          message: string | null
+          products_found: number
+          started_at: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          finished_at?: string | null
+          id?: string
+          message?: string | null
+          products_found?: number
+          started_at?: string
+          status: string
+        }
+        Update: {
+          created_at?: string
+          finished_at?: string | null
+          id?: string
+          message?: string | null
+          products_found?: number
+          started_at?: string
+          status?: string
+        }
+        Relationships: []
+      }
+      synnex_products: {
+        Row: {
+          brand: string | null
+          created_at: string
+          id: string
+          image_url: string | null
+          name: string | null
+          price: number | null
+          sku: string
+          stock: string | null
+          synced_at: string
+          updated_at: string
+        }
+        Insert: {
+          brand?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          name?: string | null
+          price?: number | null
+          sku: string
+          stock?: string | null
+          synced_at?: string
+          updated_at?: string
+        }
+        Update: {
+          brand?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          name?: string | null
+          price?: number | null
+          sku?: string
+          stock?: string | null
+          synced_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
