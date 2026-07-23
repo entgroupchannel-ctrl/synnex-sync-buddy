@@ -21,9 +21,83 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { RefreshCw, Search, Package, LogOut, CheckCircle2, XCircle } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { RefreshCw, Search, Package, LogOut, CheckCircle2, XCircle, ClipboardPaste } from "lucide-react";
 import { getSyncStatus, listProducts, runSynnexSync } from "@/lib/synnex-sync.functions";
 import { supabase } from "@/integrations/supabase/client";
+
+interface ParsedProduct {
+  sku: string;
+  name: string | null;
+  description: string | null;
+  price: number | null;
+  stock_qty: number | null;
+  stock_status: string | null;
+  image_url: string | null;
+  product_url: string | null;
+  brand: string | null;
+}
+
+const BASE_URL = "https://www.synnex.co.th/Dealer/";
+
+function parseSynnexHtml(html: string): ParsedProduct[] {
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  const items = doc.querySelectorAll(".box-item-product");
+  const out: ParsedProduct[] = [];
+  const seen = new Set<string>();
+
+  items.forEach((el) => {
+    const skuInput = el.querySelector('input[id*="hdProductName"]') as HTMLInputElement | null;
+    const sku = skuInput?.value?.trim() || "";
+    if (!sku || seen.has(sku)) return;
+    seen.add(sku);
+
+    const name = el.querySelector(".product-name a.text-bold")?.textContent?.trim() || null;
+    const description = el.querySelector(".product-name .text-cut-line-2")?.textContent?.trim() || null;
+
+    const brandInput = el.querySelector('input[id*="hdItemBrand"]') as HTMLInputElement | null;
+    const brand = brandInput?.value?.trim() || null;
+
+    let price: number | null = null;
+    const priceText = el.querySelector(".discount-price")?.textContent ?? "";
+    const pm = priceText.replace(/[฿,\s]/g, "").match(/-?\d+(?:\.\d+)?/);
+    if (pm) {
+      const n = Number(pm[0]);
+      if (Number.isFinite(n)) price = n;
+    }
+
+    let stock_qty: number | null = null;
+    const stockText = el.querySelector(".product-onhand")?.textContent ?? "";
+    const sm = stockText.match(/(\d+)/);
+    if (sm) stock_qty = parseInt(sm[1], 10);
+
+    const stock_status = el.querySelector(".statusReady") ? "พร้อมจัดส่ง" : "สินค้าหมด";
+
+    const imgEl = el.querySelector(".product-img img.img-responsive") as HTMLImageElement | null;
+    let image_url = imgEl?.getAttribute("src") || null;
+    if (image_url && !/^https?:/i.test(image_url)) {
+      try { image_url = new URL(image_url, BASE_URL).toString(); } catch { /* ignore */ }
+    }
+
+    const linkEl = el.querySelector(".product-img a") as HTMLAnchorElement | null;
+    const href = linkEl?.getAttribute("href") || null;
+    const product_url = href
+      ? (/^https?:/i.test(href) ? href : BASE_URL + href.replace(/^\/+/, ""))
+      : null;
+
+    out.push({ sku, name, description, price, stock_qty, stock_status, image_url, product_url, brand });
+  });
+
+  return out;
+}
 
 export const Route = createFileRoute("/_authenticated/admin/sync")({
   head: () => ({
