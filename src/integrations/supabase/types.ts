@@ -48,36 +48,48 @@ export type Database = {
         Row: {
           brand: string | null
           created_at: string
+          description: string | null
           id: string
           image_url: string | null
           name: string | null
           price: number | null
+          product_url: string | null
           sku: string
           stock: string | null
+          stock_qty: number | null
+          stock_status: string | null
           synced_at: string
           updated_at: string
         }
         Insert: {
           brand?: string | null
           created_at?: string
+          description?: string | null
           id?: string
           image_url?: string | null
           name?: string | null
           price?: number | null
+          product_url?: string | null
           sku: string
           stock?: string | null
+          stock_qty?: number | null
+          stock_status?: string | null
           synced_at?: string
           updated_at?: string
         }
         Update: {
           brand?: string | null
           created_at?: string
+          description?: string | null
           id?: string
           image_url?: string | null
           name?: string | null
           price?: number | null
+          product_url?: string | null
           sku?: string
           stock?: string | null
+          stock_qty?: number | null
+          stock_status?: string | null
           synced_at?: string
           updated_at?: string
         }
