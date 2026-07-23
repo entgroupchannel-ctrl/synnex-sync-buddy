@@ -15,8 +15,19 @@ const sfetch = (url: string, init: RequestInit = {}) =>
 const BASE = "https://www.synnex.co.th/Dealer";
 const LOGIN_URL = `${BASE}/login.aspx`;
 const PRODUCT_URL = `${BASE}/online_product_list.aspx?Brand=QVNVUw==`;
-const UA =
-  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36";
+
+// Browser-like headers to bypass basic bot detection.
+const BROWSER_HEADERS: Record<string, string> = {
+  "User-Agent":
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+  "Accept":
+    "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+  "Accept-Language": "th-TH,th;q=0.9,en;q=0.8",
+  // NOTE: we intentionally do NOT send Accept-Encoding — undici would then
+  // hand us back compressed bytes we'd have to decode manually. Omitting it
+  // lets the server return identity encoding.
+  "Connection": "keep-alive",
+};
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -73,16 +84,20 @@ async function scrape(username: string, password: string): Promise<Product[]> {
   const jar: Jar = new Map();
 
   // 1) GET login page
+  console.log("[sync-synnex] step 1: GET", LOGIN_URL);
   const loginPage = await sfetch(LOGIN_URL, {
-    headers: { "User-Agent": UA, Accept: "text/html" },
+    headers: { ...BROWSER_HEADERS },
     redirect: "manual",
   });
+  console.log("[sync-synnex] step 1 status:", loginPage.status);
   mergeSetCookie(jar, loginPage);
+  console.log("[sync-synnex] step 1 cookies:", [...jar.keys()].join(","));
   const loginHtml = await loginPage.text();
   const vs = extractHidden(loginHtml, "__VIEWSTATE");
   const vsg = extractHidden(loginHtml, "__VIEWSTATEGENERATOR");
   const ev = extractHidden(loginHtml, "__EVENTVALIDATION");
-  if (!vs) throw new Error("Login page missing __VIEWSTATE — site changed");
+  console.log("[sync-synnex] hidden fields — VIEWSTATE:", !!vs, "VSG:", !!vsg, "EV:", !!ev);
+  if (!vs) throw new Error("Login page missing __VIEWSTATE — site changed or blocked");
 
   // 2) POST login
   const form = new URLSearchParams();
@@ -93,26 +108,33 @@ async function scrape(username: string, password: string): Promise<Product[]> {
   form.set("ctl00$ContentPlaceHolder1$txtPassword", password);
   form.set("ctl00$ContentPlaceHolder1$btnLogin", "Login");
 
+  console.log("[sync-synnex] step 2: POST", LOGIN_URL);
   const loginRes = await sfetch(LOGIN_URL, {
     method: "POST",
     headers: {
-      "User-Agent": UA,
+      ...BROWSER_HEADERS,
       "Content-Type": "application/x-www-form-urlencoded",
       Cookie: cookieHeader(jar),
       Referer: LOGIN_URL,
+      Origin: "https://www.synnex.co.th",
     },
     body: form.toString(),
     redirect: "manual",
   });
+  console.log("[sync-synnex] step 2 status:", loginRes.status, "location:", loginRes.headers.get("location"));
   mergeSetCookie(jar, loginRes);
+  console.log("[sync-synnex] step 2 cookies:", [...jar.keys()].join(","));
 
   if (loginRes.status >= 300 && loginRes.status < 400) {
     const loc = loginRes.headers.get("location");
     if (loc) {
-      const follow = await sfetch(new URL(loc, LOGIN_URL).toString(), {
-        headers: { "User-Agent": UA, Cookie: cookieHeader(jar) },
+      const followUrl = new URL(loc, LOGIN_URL).toString();
+      console.log("[sync-synnex] step 2b: follow redirect", followUrl);
+      const follow = await sfetch(followUrl, {
+        headers: { ...BROWSER_HEADERS, Cookie: cookieHeader(jar), Referer: LOGIN_URL },
         redirect: "manual",
       });
+      console.log("[sync-synnex] step 2b status:", follow.status);
       mergeSetCookie(jar, follow);
       const followHtml = await follow.text();
       if (!/logout|index\.aspx/i.test(followHtml) && !jar.has("ASP.NET_SessionId")) {
@@ -122,15 +144,19 @@ async function scrape(username: string, password: string): Promise<Product[]> {
   }
 
   // 3) GET product list
+  console.log("[sync-synnex] step 3: GET", PRODUCT_URL);
   const listRes = await sfetch(PRODUCT_URL, {
     headers: {
-      "User-Agent": UA,
+      ...BROWSER_HEADERS,
       Cookie: cookieHeader(jar),
       Referer: `${BASE}/`,
     },
     redirect: "manual",
   });
+  console.log("[sync-synnex] step 3 status:", listRes.status);
+  mergeSetCookie(jar, listRes);
   const listHtml = await listRes.text();
+  console.log("[sync-synnex] step 3 html length:", listHtml.length);
   if (/login\.aspx/i.test(listHtml) && !/box-item-product/i.test(listHtml)) {
     throw new Error("Redirected to login — credentials rejected");
   }
@@ -140,6 +166,7 @@ async function scrape(username: string, password: string): Promise<Product[]> {
   if (!doc) throw new Error("Failed to parse product page HTML");
 
   const items = doc.querySelectorAll(".box-item-product");
+  console.log("[sync-synnex] step 4: parsed", items.length, "product nodes");
   const out: Product[] = [];
   const seen = new Set<string>();
 
@@ -215,10 +242,21 @@ async function scrape(username: string, password: string): Promise<Product[]> {
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: cors });
 
-  const supabase = createClient(
-    Deno.env.get("SUPABASE_URL")!,
-    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-  );
+  // SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are auto-injected by the
+  // Edge Functions runtime — no manual secret configuration required.
+  const supabaseUrl = Deno.env.get("SUPABASE_URL");
+  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  console.log("[sync-synnex] env — SUPABASE_URL:", !!supabaseUrl, "SERVICE_ROLE:", !!serviceRoleKey);
+  if (!supabaseUrl || !serviceRoleKey) {
+    const msg = `Missing built-in secrets: ${!supabaseUrl ? "SUPABASE_URL " : ""}${!serviceRoleKey ? "SUPABASE_SERVICE_ROLE_KEY" : ""}`.trim();
+    console.error("[sync-synnex]", msg);
+    return new Response(JSON.stringify({ status: "error", error: msg }), {
+      status: 500,
+      headers: { ...cors, "Content-Type": "application/json" },
+    });
+  }
+
+  const supabase = createClient(supabaseUrl, serviceRoleKey);
 
   const started_at = new Date().toISOString();
   const { data: log, error: logErr } = await supabase
@@ -227,6 +265,7 @@ Deno.serve(async (req) => {
     .select("id")
     .single();
   if (logErr) {
+    console.error("[sync-synnex] failed to create sync_log:", logErr.message);
     return new Response(JSON.stringify({ error: logErr.message }), {
       status: 500,
       headers: { ...cors, "Content-Type": "application/json" },
@@ -242,7 +281,6 @@ Deno.serve(async (req) => {
       const pre = await fetch("https://httpbin.org/get");
       const preBody = await pre.text();
       console.log("[sync-synnex] httpbin status:", pre.status);
-      console.log("[sync-synnex] httpbin body (first 300):", preBody.slice(0, 300));
       diagnostics.httpbin = { ok: true, status: pre.status, bodyPreview: preBody.slice(0, 300) };
     } catch (pe) {
       const perr = pe instanceof Error ? { name: pe.name, message: pe.message, stack: pe.stack } : { message: String(pe) };
