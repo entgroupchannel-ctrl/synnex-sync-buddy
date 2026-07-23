@@ -132,7 +132,7 @@ function AdminOrderDetail() {
     const wasStatus = order.status ?? "pending";
     const wasPay = order.payment_status ?? "pending";
     const { error } = await supabase.from("orders").update({
-      status, payment_status: paymentStatus, notes,
+      status, payment_status: paymentStatus, notes, tracking_number: tracking || null,
     }).eq("id", id);
     if (error) { setSaving(false); toast.error(error.message); return; }
 
@@ -147,10 +147,36 @@ function AdminOrderDetail() {
         order_id: id, status: c.status, note: c.note, changed_by: by,
       })));
     }
+    // Auto-send shipping notification when status transitions to 'shipped'
+    if (status === "shipped" && wasStatus !== "shipped") {
+      supabase.functions.invoke("send-shipping-notification", {
+        body: { order_id: id, tracking_number: tracking || null },
+      }).catch((e) => console.warn("[send-shipping-notification]", e));
+      toast.info("กำลังส่งอีเมลแจ้งจัดส่ง...");
+    }
     setSaving(false);
     setStatusNote("");
     toast.success("บันทึกแล้ว");
     load();
+  };
+
+  const invokeFn = async (fn: string, label: string, extra?: Record<string, unknown>) => {
+    setEmailBusy(fn);
+    try {
+      const { data, error } = await supabase.functions.invoke(fn, {
+        body: { order_id: id, ...(extra ?? {}) },
+      });
+      if (error) throw error;
+      const payload = data as { success?: boolean; error?: string } | null;
+      if (payload && payload.success === false) throw new Error(payload.error ?? "ส่งไม่สำเร็จ");
+      toast.success(`${label} สำเร็จ`);
+      load();
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "ส่งไม่สำเร็จ";
+      toast.error(`${label} ล้มเหลว: ${msg}`);
+    } finally {
+      setEmailBusy(null);
+    }
   };
 
   if (loading) {
