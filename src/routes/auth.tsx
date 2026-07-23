@@ -159,7 +159,7 @@ function SignUpB2CForm() {
       email: form.email,
       password: form.password,
       options: {
-        emailRedirectTo: window.location.origin + "/account/orders",
+        emailRedirectTo: window.location.origin + "/auth/callback",
         data: {
           user_type: "b2c",
           full_name: form.full_name,
@@ -247,7 +247,7 @@ function SignUpB2BForm() {
       email: form.email,
       password: form.password,
       options: {
-        emailRedirectTo: window.location.origin + "/account/orders",
+        emailRedirectTo: window.location.origin + "/auth/callback",
         data: {
           user_type: "b2b",
           full_name: form.full_name,
