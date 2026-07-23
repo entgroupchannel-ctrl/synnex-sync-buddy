@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Phone, Mail, MapPin, Send, MessageCircle, Globe, ArrowLeft, CreditCard } from "lucide-react";
+import { Phone, Mail, MapPin, Send, MessageCircle, Globe, ArrowLeft, CreditCard, Printer, ExternalLink } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,17 @@ import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger,
+} from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
+
+const LINE_ID = "@entgroup";
+const LINE_ADD_URL = "https://line.me/R/ti/p/%40entgroup";
+const LINE_QR_URL = `https://api.qrserver.com/v1/create-qr-code/?size=360x360&margin=8&data=${encodeURIComponent(LINE_ADD_URL)}`;
+const PHONES = ["02-045-6104", "095-739-1053", "084-046-1315"];
+const FAX = "02-045-6105";
+const SALES_EMAIL = "Sales@entgroup.co.th";
 
 export const Route = createFileRoute("/contact")({
   ssr: false,
