@@ -293,6 +293,16 @@ function AdminOrderDetail() {
                 </SelectContent>
               </Select>
               <Textarea value={statusNote} onChange={(e) => setStatusNote(e.target.value)} rows={2} className="mt-2" placeholder="โน๊ตการเปลี่ยนสถานะ (บันทึกใน timeline)" />
+              <div className="mt-3">
+                <label className="text-xs font-semibold text-slate-500">เลขพัสดุ (tracking)</label>
+                <input
+                  value={tracking}
+                  onChange={(e) => setTracking(e.target.value)}
+                  placeholder="เช่น TH1234567890"
+                  className="mt-1 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-mono focus:border-emerald-400 focus:outline-none"
+                />
+                <p className="mt-1 text-xs text-slate-500">จะแนบในอีเมลแจ้งจัดส่ง (ส่งอัตโนมัติเมื่อเปลี่ยนสถานะเป็น &quot;จัดส่งแล้ว&quot;)</p>
+              </div>
             </div>
 
             <div className="rounded-lg border bg-white p-5">
