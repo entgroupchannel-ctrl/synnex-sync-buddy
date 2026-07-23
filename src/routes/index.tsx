@@ -70,7 +70,7 @@ function HomePage() {
   useEffect(() => {
     const t = setTimeout(() => {
       if (searchInput !== search.q) {
-        navigate({ to: "/", search: (p) => ({ ...p, q: searchInput, page: 1 }) });
+        navigate({ to: "/", search: (p: Record<string, unknown>) => ({ ...p, q: searchInput, page: 1 }) });
       }
     }, 300);
     return () => clearTimeout(t);
