@@ -399,6 +399,106 @@ function AdminOrderDetail() {
                 </ol>
               )}
             </div>
+
+            <div className="rounded-lg border bg-white p-5">
+              <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-500">📋 เอกสารและอีเมล</h2>
+              <div className="grid gap-2">
+                <Button
+                  variant="outline"
+                  disabled={emailBusy === "send-order-confirmation" || !order.customer_email}
+                  onClick={() => invokeFn("send-order-confirmation", "ส่งยืนยัน Order")}
+                >
+                  <FileText className="mr-2 h-4 w-4" />
+                  {emailBusy === "send-order-confirmation" ? "กำลังส่ง..." : "📧 ส่งยืนยัน Order อีกครั้ง"}
+                </Button>
+                <Button
+                  variant="outline"
+                  disabled={emailBusy === "generate-quotation" || !order.customer_email}
+                  onClick={() => invokeFn("generate-quotation", "ส่งใบเสนอราคา")}
+                >
+                  <FileText className="mr-2 h-4 w-4" />
+                  {emailBusy === "generate-quotation" ? "กำลังสร้าง..." : "📄 ส่งใบเสนอราคา (Quotation)"}
+                </Button>
+                <Button
+                  variant="outline"
+                  disabled={emailBusy === "generate-tax-invoice" || !order.tax_id || !order.customer_email}
+                  onClick={() => invokeFn("generate-tax-invoice", "ออกใบกำกับภาษี")}
+                  title={!order.tax_id ? "ต้องระบุเลขผู้เสียภาษีก่อน" : undefined}
+                >
+                  <FileText className="mr-2 h-4 w-4" />
+                  {emailBusy === "generate-tax-invoice"
+                    ? "กำลังสร้าง..."
+                    : `🧾 ออกใบกำกับภาษี${!order.tax_id ? " (ต้องระบุเลขผู้เสียภาษีก่อน)" : ""}`}
+                </Button>
+                {order.tracking_number && (
+                  <Button
+                    variant="outline"
+                    disabled={emailBusy === "send-shipping-notification"}
+                    onClick={() =>
+                      invokeFn("send-shipping-notification", "ส่งแจ้งจัดส่ง", {
+                        tracking_number: order.tracking_number,
+                      })
+                    }
+                  >
+                    <FileText className="mr-2 h-4 w-4" />
+                    {emailBusy === "send-shipping-notification" ? "กำลังส่ง..." : "📦 ส่งแจ้งจัดส่งอีกครั้ง"}
+                  </Button>
+                )}
+              </div>
+
+              {(order.quotation_url || order.tax_invoice_url) && (
+                <div className="mt-4 space-y-1 text-xs">
+                  {order.quotation_url && (
+                    <button
+                      onClick={async () => {
+                        const { data } = await supabase.storage.from("quotations").createSignedUrl(order.quotation_url!, 3600);
+                        if (data?.signedUrl) window.open(data.signedUrl, "_blank");
+                      }}
+                      className="text-emerald-700 underline"
+                    >
+                      📄 ดาวน์โหลดใบเสนอราคาล่าสุด
+                    </button>
+                  )}
+                  {order.tax_invoice_url && (
+                    <div>
+                      <button
+                        onClick={async () => {
+                          const { data } = await supabase.storage.from("tax-invoices").createSignedUrl(order.tax_invoice_url!, 3600);
+                          if (data?.signedUrl) window.open(data.signedUrl, "_blank");
+                        }}
+                        className="text-emerald-700 underline"
+                      >
+                        🧾 ดาวน์โหลดใบกำกับภาษีล่าสุด
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <h3 className="mt-5 mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">ประวัติการส่งอีเมล</h3>
+              {emailLogs.length === 0 ? (
+                <div className="text-xs text-slate-400">ยังไม่มีประวัติ</div>
+              ) : (
+                <ul className="space-y-1 text-xs">
+                  {emailLogs.map((log) => (
+                    <li key={log.id} className="flex items-start gap-2">
+                      <span>{log.status === "sent" ? "✅" : "❌"}</span>
+                      <div className="min-w-0 flex-1">
+                        <div>
+                          <span className="text-slate-500">{new Date(log.created_at).toLocaleString("th-TH")}</span>
+                          {" — "}
+                          <span className="font-semibold">{log.email_type}</span>
+                        </div>
+                        <div className="truncate text-slate-500">→ {log.recipient}</div>
+                        {log.status !== "sent" && log.error_message && (
+                          <div className="truncate text-red-600">{log.error_message}</div>
+                        )}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
         </div>
       </div>
