@@ -544,8 +544,10 @@ function HomePage() {
           <div className="text-sm">
             <div className="mb-2 font-bold text-white">ติดต่อเรา</div>
             <div className="space-y-1 text-xs">
-              <div>โทร: <a href="tel:020456104" className="hover:text-[color:var(--brand-green)]">02-045-6104</a></div>
-              <div>อีเมล: <a href="mailto:info@entgroup.co.th" className="hover:text-[color:var(--brand-green)]">info@entgroup.co.th</a></div>
+              <div>โทร: <a href="tel:020456104" className="hover:text-[color:var(--brand-green)]">02-045-6104</a>, <a href="tel:0957391053" className="hover:text-[color:var(--brand-green)]">095-739-1053</a>, <a href="tel:0840461315" className="hover:text-[color:var(--brand-green)]">084-046-1315</a></div>
+              <div>Fax: 02-045-6105</div>
+              <div>อีเมล: <a href="mailto:Sales@entgroup.co.th" className="hover:text-[color:var(--brand-green)]">Sales@entgroup.co.th</a></div>
+              <div>LINE: <Link to="/contact" className="hover:text-[color:var(--brand-green)]">@entgroup</Link></div>
               <div>เว็บไซต์: <a href="https://entgroup.co.th" target="_blank" rel="noopener noreferrer" className="hover:text-[color:var(--brand-green)]">www.entgroup.co.th</a></div>
             </div>
           </div>
