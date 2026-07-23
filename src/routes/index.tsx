@@ -276,24 +276,42 @@ function HomePage() {
               <div className="ml-auto text-xs text-slate-500">รีเซ็ตทุก 24 ชม.</div>
             </div>
             <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
-              {flashQ.data!.map((p) => (
-                <Link
-                  key={p.id}
-                  to="/product/$slug"
-                  params={{ slug: p.slug || p.id }}
-                  className="group w-40 shrink-0 overflow-hidden rounded-lg border-2 border-orange-200 bg-white transition hover:border-[color:var(--brand-orange)] hover:shadow-md"
-                >
-                  <div className="grid aspect-square place-items-center bg-white p-2">
-                    {p.image_url ? <img src={p.image_url} alt={p.name ?? p.sku} className="h-full w-full object-contain" loading="lazy" /> : <Package className="h-10 w-10 text-slate-300" />}
-                  </div>
-                  <div className="border-t p-2">
-                    <div className="line-clamp-2 min-h-9 text-xs font-medium">{p.name ?? p.sku}</div>
-                    <div className="mt-1 text-base font-black text-[color:var(--brand-orange)]">
-                      {displayPrice(p as { selling_price?: number | null })}
+              {flashQ.data!.map((p) => {
+                const selling = getSellingPrice(p as { selling_price?: number | null }) ?? 0;
+                const orig = (p as { price?: number | null }).price ?? 0;
+                const pct = orig > 0 && selling > 0 && selling < orig ? Math.round((1 - selling / orig) * 100) : 0;
+                const lowStock = p.stock_status === "พร้อมจัดส่ง" && (p.stock_qty ?? 999) < 10;
+                return (
+                  <Link
+                    key={p.id}
+                    to="/product/$slug"
+                    params={{ slug: p.slug || p.id }}
+                    className="group relative w-40 shrink-0 overflow-hidden rounded-lg border-2 border-orange-200 bg-white transition hover:border-[color:var(--brand-orange)] hover:shadow-md md:w-44"
+                  >
+                    {pct > 0 && (
+                      <div className="absolute left-1.5 top-1.5 z-10 rounded bg-red-600 px-1.5 py-0.5 text-[10px] font-black text-white shadow">-{pct}%</div>
+                    )}
+                    {lowStock && (
+                      <div className="absolute right-1.5 top-1.5 z-10 rounded bg-orange-600 px-1.5 py-0.5 text-[10px] font-bold text-white shadow">
+                        เหลือ {p.stock_qty} ชิ้น
+                      </div>
+                    )}
+                    <div className="grid aspect-square place-items-center bg-white p-2">
+                      {p.image_url ? <img src={p.image_url} alt={p.name ?? p.sku} className="h-full w-full object-contain" loading="lazy" /> : <Package className="h-10 w-10 text-slate-300" />}
                     </div>
-                  </div>
-                </Link>
-              ))}
+                    <div className="border-t p-2">
+                      <div className="line-clamp-2 min-h-9 text-xs font-medium">{p.name ?? p.sku}</div>
+                      <div className="mt-1 flex items-baseline gap-1.5">
+                        <div className="text-base font-black text-[color:var(--brand-orange)]">
+                          {displayPrice(p as { selling_price?: number | null })}
+                        </div>
+                        {pct > 0 && <div className="text-[10px] text-slate-400 line-through">฿{orig.toLocaleString()}</div>}
+                      </div>
+                      <div className="mt-1 font-mono text-[10px] font-bold text-red-600">⏱ {countdown}</div>
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           </div>
         </section>
