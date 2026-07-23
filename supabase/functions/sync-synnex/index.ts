@@ -233,12 +233,42 @@ Deno.serve(async (req) => {
     });
   }
 
+  const diagnostics: Record<string, unknown> = {};
+
   try {
+    // Preflight: verify outbound network works at all
+    console.log("[sync-synnex] preflight: fetching https://httpbin.org/get");
+    try {
+      const pre = await fetch("https://httpbin.org/get");
+      const preBody = await pre.text();
+      console.log("[sync-synnex] httpbin status:", pre.status);
+      console.log("[sync-synnex] httpbin body (first 300):", preBody.slice(0, 300));
+      diagnostics.httpbin = { ok: true, status: pre.status, bodyPreview: preBody.slice(0, 300) };
+    } catch (pe) {
+      const perr = pe instanceof Error ? { name: pe.name, message: pe.message, stack: pe.stack } : { message: String(pe) };
+      console.error("[sync-synnex] httpbin preflight FAILED:", perr);
+      diagnostics.httpbin = { ok: false, error: perr };
+      throw new Error(`Outbound network unavailable (httpbin failed): ${perr.message}`);
+    }
+
     const username = Deno.env.get("SYNNEX_USERNAME");
     const password = Deno.env.get("SYNNEX_PASSWORD");
     if (!username || !password) throw new Error("Missing Synnex credentials");
 
-    const products = await scrape(username, password);
+    console.log("[sync-synnex] starting Synnex scrape");
+    let products: Product[];
+    try {
+      products = await scrape(username, password);
+      console.log(`[sync-synnex] scrape ok, ${products.length} products`);
+      diagnostics.synnex = { ok: true, count: products.length };
+    } catch (se) {
+      const serr = se instanceof Error
+        ? { name: se.name, message: se.message, stack: se.stack, cause: se.cause ? String(se.cause) : undefined }
+        : { message: String(se) };
+      console.error("[sync-synnex] Synnex scrape FAILED (httpbin OK):", serr);
+      diagnostics.synnex = { ok: false, error: serr };
+      throw se;
+    }
 
     if (products.length > 0) {
       const now = new Date().toISOString();
@@ -246,7 +276,7 @@ Deno.serve(async (req) => {
       const { error: upErr } = await supabase
         .from("synnex_products")
         .upsert(rows, { onConflict: "sku" });
-      if (upErr) throw new Error(upErr.message);
+      if (upErr) throw new Error(`Upsert failed: ${upErr.message}`);
     }
 
     await supabase
@@ -260,21 +290,24 @@ Deno.serve(async (req) => {
       .eq("id", log.id);
 
     return new Response(
-      JSON.stringify({ status: "success", productsFound: products.length }),
+      JSON.stringify({ status: "success", productsFound: products.length, diagnostics }),
       { headers: { ...cors, "Content-Type": "application/json" } },
     );
   } catch (e) {
-    const msg = e instanceof Error ? e.message : String(e);
+    const err = e instanceof Error
+      ? { name: e.name, message: e.message, stack: e.stack, cause: e.cause ? String(e.cause) : undefined }
+      : { message: String(e) };
+    console.error("[sync-synnex] FATAL:", err);
     await supabase
       .from("sync_logs")
       .update({
         finished_at: new Date().toISOString(),
         status: "error",
-        message: msg.slice(0, 500),
+        message: err.message.slice(0, 500),
       })
       .eq("id", log.id);
     return new Response(
-      JSON.stringify({ status: "error", message: msg }),
+      JSON.stringify({ status: "error", error: err, diagnostics }),
       { status: 500, headers: { ...cors, "Content-Type": "application/json" } },
     );
   }
