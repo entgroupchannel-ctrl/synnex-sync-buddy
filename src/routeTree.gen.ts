@@ -22,9 +22,6 @@ import { Route as AuthenticatedAdminSyncRouteImport } from './routes/_authentica
 import { Route as AuthenticatedAdminPricingRouteImport } from './routes/_authenticated/admin.pricing'
 import { Route as AuthenticatedAdminOrdersRouteImport } from './routes/_authenticated/admin.orders'
 import { Route as AuthenticatedAdminCustomersRouteImport } from './routes/_authenticated/admin.customers'
-import { Route as AuthenticatedAccountProfileRouteImport } from './routes/_authenticated/account.profile'
-import { Route as AuthenticatedAccountOrdersRouteImport } from './routes/_authenticated/account.orders'
-import { Route as AuthenticatedAccountAddressesRouteImport } from './routes/_authenticated/account.addresses'
 import { Route as AuthenticatedAdminPricingProductsRouteImport } from './routes/_authenticated/admin.pricing.products'
 import { Route as AuthenticatedAdminPricingAuditRouteImport } from './routes/_authenticated/admin.pricing.audit'
 import { Route as AuthenticatedAdminOrdersIdRouteImport } from './routes/_authenticated/admin.orders.$id'
@@ -96,24 +93,6 @@ const AuthenticatedAdminCustomersRoute =
     path: '/admin/customers',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedAccountProfileRoute =
-  AuthenticatedAccountProfileRouteImport.update({
-    id: '/account/profile',
-    path: '/account/profile',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedAccountOrdersRoute =
-  AuthenticatedAccountOrdersRouteImport.update({
-    id: '/account/orders',
-    path: '/account/orders',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedAccountAddressesRoute =
-  AuthenticatedAccountAddressesRouteImport.update({
-    id: '/account/addresses',
-    path: '/account/addresses',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const AuthenticatedAdminPricingProductsRoute =
   AuthenticatedAdminPricingProductsRouteImport.update({
     id: '/products',
@@ -142,9 +121,6 @@ export interface FileRoutesByFullPath {
   '/auth/callback': typeof AuthCallbackRoute
   '/order/$orderNumber': typeof OrderOrderNumberRoute
   '/product/$slug': typeof ProductSlugRoute
-  '/account/addresses': typeof AuthenticatedAccountAddressesRoute
-  '/account/orders': typeof AuthenticatedAccountOrdersRoute
-  '/account/profile': typeof AuthenticatedAccountProfileRoute
   '/admin/customers': typeof AuthenticatedAdminCustomersRoute
   '/admin/orders': typeof AuthenticatedAdminOrdersRouteWithChildren
   '/admin/pricing': typeof AuthenticatedAdminPricingRouteWithChildren
@@ -162,9 +138,6 @@ export interface FileRoutesByTo {
   '/auth/callback': typeof AuthCallbackRoute
   '/order/$orderNumber': typeof OrderOrderNumberRoute
   '/product/$slug': typeof ProductSlugRoute
-  '/account/addresses': typeof AuthenticatedAccountAddressesRoute
-  '/account/orders': typeof AuthenticatedAccountOrdersRoute
-  '/account/profile': typeof AuthenticatedAccountProfileRoute
   '/admin/customers': typeof AuthenticatedAdminCustomersRoute
   '/admin/orders': typeof AuthenticatedAdminOrdersRouteWithChildren
   '/admin/pricing': typeof AuthenticatedAdminPricingRouteWithChildren
@@ -184,9 +157,6 @@ export interface FileRoutesById {
   '/auth/callback': typeof AuthCallbackRoute
   '/order/$orderNumber': typeof OrderOrderNumberRoute
   '/product/$slug': typeof ProductSlugRoute
-  '/_authenticated/account/addresses': typeof AuthenticatedAccountAddressesRoute
-  '/_authenticated/account/orders': typeof AuthenticatedAccountOrdersRoute
-  '/_authenticated/account/profile': typeof AuthenticatedAccountProfileRoute
   '/_authenticated/admin/customers': typeof AuthenticatedAdminCustomersRoute
   '/_authenticated/admin/orders': typeof AuthenticatedAdminOrdersRouteWithChildren
   '/_authenticated/admin/pricing': typeof AuthenticatedAdminPricingRouteWithChildren
@@ -206,9 +176,6 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/order/$orderNumber'
     | '/product/$slug'
-    | '/account/addresses'
-    | '/account/orders'
-    | '/account/profile'
     | '/admin/customers'
     | '/admin/orders'
     | '/admin/pricing'
@@ -226,9 +193,6 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/order/$orderNumber'
     | '/product/$slug'
-    | '/account/addresses'
-    | '/account/orders'
-    | '/account/profile'
     | '/admin/customers'
     | '/admin/orders'
     | '/admin/pricing'
@@ -247,9 +211,6 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/order/$orderNumber'
     | '/product/$slug'
-    | '/_authenticated/account/addresses'
-    | '/_authenticated/account/orders'
-    | '/_authenticated/account/profile'
     | '/_authenticated/admin/customers'
     | '/_authenticated/admin/orders'
     | '/_authenticated/admin/pricing'
@@ -363,27 +324,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminCustomersRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/account/profile': {
-      id: '/_authenticated/account/profile'
-      path: '/account/profile'
-      fullPath: '/account/profile'
-      preLoaderRoute: typeof AuthenticatedAccountProfileRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/account/orders': {
-      id: '/_authenticated/account/orders'
-      path: '/account/orders'
-      fullPath: '/account/orders'
-      preLoaderRoute: typeof AuthenticatedAccountOrdersRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/account/addresses': {
-      id: '/_authenticated/account/addresses'
-      path: '/account/addresses'
-      fullPath: '/account/addresses'
-      preLoaderRoute: typeof AuthenticatedAccountAddressesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/admin/pricing/products': {
       id: '/_authenticated/admin/pricing/products'
       path: '/products'
@@ -440,9 +380,6 @@ const AuthenticatedAdminPricingRouteWithChildren =
   )
 
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedAccountAddressesRoute: typeof AuthenticatedAccountAddressesRoute
-  AuthenticatedAccountOrdersRoute: typeof AuthenticatedAccountOrdersRoute
-  AuthenticatedAccountProfileRoute: typeof AuthenticatedAccountProfileRoute
   AuthenticatedAdminCustomersRoute: typeof AuthenticatedAdminCustomersRoute
   AuthenticatedAdminOrdersRoute: typeof AuthenticatedAdminOrdersRouteWithChildren
   AuthenticatedAdminPricingRoute: typeof AuthenticatedAdminPricingRouteWithChildren
@@ -450,9 +387,6 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedAccountAddressesRoute: AuthenticatedAccountAddressesRoute,
-  AuthenticatedAccountOrdersRoute: AuthenticatedAccountOrdersRoute,
-  AuthenticatedAccountProfileRoute: AuthenticatedAccountProfileRoute,
   AuthenticatedAdminCustomersRoute: AuthenticatedAdminCustomersRoute,
   AuthenticatedAdminOrdersRoute: AuthenticatedAdminOrdersRouteWithChildren,
   AuthenticatedAdminPricingRoute: AuthenticatedAdminPricingRouteWithChildren,
