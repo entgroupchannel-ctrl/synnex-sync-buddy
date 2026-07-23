@@ -539,152 +539,205 @@ function PricingProductsPage() {
               ไม่พบสินค้าที่ตรงเงื่อนไข
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-              {rows.map((p) => {
-                const cost = Number(p.cost_price ?? p.price ?? 0);
-                const selling = Number(p.selling_price ?? 0);
-                const approved = !!p.price_approved;
-                const idx = rulesQ.data;
-                const mk = idx ? effectiveMarkup(p, idx) : null;
-                const currentMarkup = mk?.pct ?? null;
-
-                const editedRaw = markupEdits[p.id];
-                const editedNum = editedRaw !== undefined ? Number(editedRaw) : null;
-                const hasEdit = editedRaw !== undefined && Number.isFinite(editedNum!) && editedNum! !== currentMarkup;
-                const previewSelling = hasEdit && cost > 0 ? computeSelling(cost, editedNum!) : null;
-
-                const isSelected = selected.has(p.id);
-                const ds = distStyle(p.distributor);
-
-                let statusIcon: React.ReactNode;
-                let statusLabel = "";
-                if (approved && selling > 0) {
-                  statusIcon = <CheckCircle2 className="h-4 w-4 text-green-500" />;
-                  statusLabel = "Approved";
-                } else if (selling > 0) {
-                  statusIcon = <AlertTriangle className="h-4 w-4 text-amber-500" />;
-                  statusLabel = "รอ approve";
-                } else {
-                  statusIcon = <XCircle className="h-4 w-4 text-red-500" />;
-                  statusLabel = "฿0";
+            <TooltipProvider delayDuration={200}>
+              <div
+                className={
+                  search.view === "list"
+                    ? "flex flex-col gap-3"
+                    : "grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3"
                 }
+              >
+                {rows.map((p) => {
+                  const cost = Number(p.cost_price ?? p.price ?? 0);
+                  const selling = Number(p.selling_price ?? 0);
+                  const approved = !!p.price_approved;
+                  const idx = rulesQ.data;
+                  const mk = idx ? effectiveMarkup(p, idx) : null;
+                  const currentMarkup = mk?.pct ?? null;
 
-                return (
-                  <div
-                    key={p.id}
-                    className={`group relative overflow-hidden rounded-lg border-2 bg-white transition ${
-                      isSelected ? "border-[color:var(--brand-navy)] shadow-md" : "border-slate-200 hover:border-slate-300 hover:shadow-sm"
-                    }`}
-                  >
-                    {/* Select checkbox */}
-                    <div className="absolute left-2 top-2 z-10 rounded bg-white/95 p-1 shadow-sm">
-                      <Checkbox checked={isSelected} onCheckedChange={() => toggleOne(p.id)} />
-                    </div>
+                  const editedRaw = markupEdits[p.id];
+                  const editedNum = editedRaw !== undefined ? Number(editedRaw) : null;
+                  const hasEdit =
+                    editedRaw !== undefined && Number.isFinite(editedNum!) && editedNum! !== currentMarkup;
+                  const previewSelling = hasEdit && cost > 0 ? computeSelling(cost, editedNum!) : null;
 
-                    {/* Distributor badge */}
-                    <div className={`absolute right-2 top-2 z-10 rounded px-2 py-0.5 text-[10px] font-bold shadow-sm ${ds.bg} ${ds.text}`}>
-                      {ds.label}
-                    </div>
+                  const isSelected = selected.has(p.id);
+                  const ds = distStyle(p.distributor);
+                  const supaImg = isSupabaseImage(p.image_url);
 
-                    <div className="flex gap-3 p-3">
-                      {/* Thumbnail */}
-                      <div className="grid h-[120px] w-[120px] shrink-0 place-items-center rounded-md border bg-white">
+                  const statusBadge = approved && selling > 0
+                    ? { icon: <CheckCircle2 className="h-3.5 w-3.5" />, label: "Approved", cls: "bg-green-100 text-green-800" }
+                    : selling > 0
+                    ? { icon: <AlertTriangle className="h-3.5 w-3.5" />, label: "รอ Approve", cls: "bg-amber-100 text-amber-800" }
+                    : { icon: <XCircle className="h-3.5 w-3.5" />, label: "฿0", cls: "bg-red-100 text-red-700" };
+
+                  const isListView = search.view === "list";
+
+                  return (
+                    <div
+                      key={p.id}
+                      className={`relative overflow-hidden rounded-lg border-2 bg-white transition ${
+                        isSelected
+                          ? "border-[color:var(--brand-navy)] shadow-md"
+                          : "border-slate-200 hover:border-slate-300 hover:shadow-sm"
+                      } ${isListView ? "flex" : ""}`}
+                    >
+                      {/* Image area */}
+                      <div
+                        className={`relative bg-slate-50 ${
+                          isListView ? "aspect-square w-40 shrink-0" : "aspect-square w-full"
+                        }`}
+                      >
+                        {/* Select checkbox */}
+                        <div className="absolute left-2 top-2 z-10 rounded bg-white/95 p-1 shadow-sm">
+                          <Checkbox checked={isSelected} onCheckedChange={() => toggleOne(p.id)} />
+                        </div>
+
+                        {/* Badges row: distributor + status */}
+                        <div className="pointer-events-none absolute right-2 top-2 z-10 flex flex-col items-end gap-1">
+                          <span className={`rounded px-2 py-0.5 text-[10px] font-bold shadow-sm ${ds.bg} ${ds.text}`}>
+                            {ds.label}
+                          </span>
+                          <span className={`inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-bold shadow-sm ${statusBadge.cls}`}>
+                            {statusBadge.icon}
+                            {statusBadge.label}
+                          </span>
+                        </div>
+
+                        {/* External-image warning */}
+                        {p.image_url && !supaImg && (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="absolute bottom-2 left-2 z-10 grid h-6 w-6 place-items-center rounded-full bg-amber-100 text-amber-700 shadow-sm">
+                                <AlertTriangle className="h-3.5 w-3.5" />
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent side="right">ภาพยังไม่ได้ import เข้า storage</TooltipContent>
+                          </Tooltip>
+                        )}
+
                         {p.image_url ? (
-                          <img src={p.image_url} alt={p.name ?? p.sku} className="max-h-full max-w-full object-contain p-1" loading="lazy" />
-                        ) : (
-                          <Package className="h-10 w-10 text-slate-300" />
-                        )}
-                      </div>
-
-                      {/* Info */}
-                      <div className="min-w-0 flex-1">
-                        <div className="line-clamp-2 min-h-10 text-sm font-semibold text-slate-900">
-                          {p.name ?? p.sku}
-                        </div>
-                        <div className="mt-0.5 font-mono text-[11px] text-slate-500">{p.sku}</div>
-                        {p.brand && (
-                          <Badge variant="outline" className="mt-1 h-4 px-1.5 text-[10px]">{p.brand}</Badge>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Price block */}
-                    <div className="grid grid-cols-3 gap-2 border-t bg-slate-50 px-3 py-2 text-sm">
-                      <div>
-                        <div className="text-[10px] uppercase text-slate-500">ต้นทุน</div>
-                        <div className="font-mono text-xs text-slate-700">
-                          {cost > 0 ? `฿${bahtFmt.format(cost)}` : "—"}
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-[10px] uppercase text-slate-500">Markup</div>
-                        <div className="flex items-center gap-1">
-                          <input
-                            type="number"
-                            value={editedRaw ?? (currentMarkup != null ? String(currentMarkup) : "")}
-                            onChange={(e) => setMarkupEdits((m) => ({ ...m, [p.id]: e.target.value }))}
-                            className={`h-6 w-14 rounded border px-1.5 text-xs font-bold outline-none ${
-                              hasEdit ? "border-[color:var(--brand-orange)] bg-orange-50 text-[color:var(--brand-orange-dark)]" : "border-slate-200 bg-white text-blue-700"
-                            }`}
-                            step="0.5"
+                          <img
+                            src={p.image_url}
+                            alt={p.name ?? p.sku}
+                            loading="lazy"
+                            className={`absolute inset-0 h-full w-full object-contain p-4 ${supaImg ? "" : "opacity-90 ring-1 ring-slate-300"}`}
                           />
-                          <span className="text-xs text-slate-500">%</span>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-[10px] uppercase text-slate-500">ราคาขาย</div>
-                        {previewSelling != null ? (
-                          <div className="font-bold text-[color:var(--brand-orange)] italic">
-                            ฿{bahtFmt.format(previewSelling)}
-                          </div>
-                        ) : selling > 0 ? (
-                          <div className="font-bold text-[color:var(--brand-orange)]">
-                            ฿{bahtFmt.format(selling)}
-                          </div>
                         ) : (
-                          <div className="text-xs text-slate-400">—</div>
+                          <div className="absolute inset-0 grid place-items-center text-slate-300">
+                            <ImageOff className="h-10 w-10" />
+                          </div>
                         )}
                       </div>
-                    </div>
 
-                    {/* Actions */}
-                    <div className="flex items-center justify-between gap-2 border-t px-3 py-2">
-                      <div className="flex items-center gap-1.5 text-xs">
-                        {statusIcon}
-                        <span className={`font-medium ${
-                          approved && selling > 0 ? "text-green-700" : selling > 0 ? "text-amber-700" : "text-red-600"
-                        }`}>
-                          {statusLabel}
-                        </span>
+                      {/* Info + pricing */}
+                      <div className="flex min-w-0 flex-1 flex-col">
+                        <div className="p-3">
+                          <div className="line-clamp-2 min-h-10 text-sm font-semibold text-slate-900">
+                            {p.name ?? p.sku}
+                          </div>
+                          <div className="mt-1 flex items-center gap-2 text-[11px] text-slate-500">
+                            <span className="font-mono">{p.sku}</span>
+                            {p.brand && (
+                              <>
+                                <span className="text-slate-300">·</span>
+                                <span>{p.brand}</span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="border-t bg-slate-50 px-3 py-2">
+                          <div className="text-[11px] text-slate-500">
+                            ต้นทุน:{" "}
+                            <span className="font-mono text-slate-700">
+                              {cost > 0 ? `฿${bahtFmt.format(cost)}` : "—"}
+                            </span>
+                          </div>
+                          <div className="mt-1 flex items-center gap-2">
+                            <div className="flex items-center gap-1 rounded-md border border-blue-200 bg-blue-50 px-2 py-0.5 text-[11px] font-bold text-blue-700">
+                              <span>+</span>
+                              <input
+                                type="number"
+                                value={editedRaw ?? (currentMarkup != null ? String(currentMarkup) : "")}
+                                onChange={(e) => setMarkupEdits((m) => ({ ...m, [p.id]: e.target.value }))}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter" && hasEdit && cost > 0) {
+                                    applyMut.mutate({ id: p.id, cost, markup: editedNum! });
+                                  }
+                                }}
+                                className="h-5 w-10 bg-transparent text-center outline-none"
+                                step="0.5"
+                                aria-label="Markup %"
+                              />
+                              <span>%</span>
+                            </div>
+                            <span className="text-slate-400">→</span>
+                            {previewSelling != null ? (
+                              <span className="font-bold italic text-[color:var(--brand-orange)]">
+                                ฿{bahtFmt.format(previewSelling)}
+                              </span>
+                            ) : selling > 0 ? (
+                              <span className="text-base font-bold text-[color:var(--brand-orange)]">
+                                ฿{bahtFmt.format(selling)}
+                              </span>
+                            ) : (
+                              <span className="text-xs text-slate-400">ยังไม่มีราคา</span>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 border-t px-3 py-2">
+                          {hasEdit && cost > 0 ? (
+                            <Button
+                              size="sm"
+                              className="h-8 flex-1 bg-[color:var(--brand-orange)] text-xs font-bold hover:bg-[color:var(--brand-orange-dark)]"
+                              onClick={() => applyMut.mutate({ id: p.id, cost, markup: editedNum! })}
+                              disabled={applyMut.isPending}
+                            >
+                              <Check className="mr-1 h-3.5 w-3.5" /> Apply markup
+                            </Button>
+                          ) : (
+                            <>
+                              <Button
+                                size="sm"
+                                disabled={approveMut.isPending || cost <= 0 || currentMarkup == null || (approved && selling > 0)}
+                                onClick={() =>
+                                  currentMarkup != null && approveMut.mutate({ id: p.id, cost, currentMarkup })
+                                }
+                                className="h-8 flex-1 bg-green-600 text-xs font-bold text-white hover:bg-green-700 disabled:bg-slate-200 disabled:text-slate-500"
+                              >
+                                <Check className="mr-1 h-3.5 w-3.5" />
+                                {approved && selling > 0 ? "Approved" : "Approve"}
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-8 px-3 text-xs"
+                                onClick={() => {
+                                  setMarkupEdits((m) => ({
+                                    ...m,
+                                    [p.id]: currentMarkup != null ? String(currentMarkup) : "15",
+                                  }));
+                                  setTimeout(() => {
+                                    const el = document.querySelector<HTMLInputElement>(
+                                      `input[aria-label="Markup %"]`,
+                                    );
+                                    el?.focus();
+                                  }, 0);
+                                }}
+                              >
+                                แก้ไข %
+                              </Button>
+                            </>
+                          )}
+                        </div>
                       </div>
-                      {hasEdit && cost > 0 ? (
-                        <Button
-                          size="sm"
-                          className="h-7 bg-[color:var(--brand-orange)] px-3 text-xs font-bold hover:bg-[color:var(--brand-orange-dark)]"
-                          onClick={() => applyMut.mutate({ id: p.id, cost, markup: editedNum! })}
-                          disabled={applyMut.isPending}
-                        >
-                          Apply
-                        </Button>
-                      ) : approved && selling > 0 ? (
-                        <span className="text-[10px] text-slate-400">พร้อมขาย</span>
-                      ) : (
-                        <Button
-                          size="sm"
-                          disabled={approveMut.isPending || cost <= 0 || currentMarkup == null}
-                          onClick={() =>
-                            currentMarkup != null && approveMut.mutate({ id: p.id, cost, currentMarkup })
-                          }
-                          className="h-7 bg-[color:var(--brand-navy)] px-3 text-xs font-bold hover:bg-[color:var(--brand-navy-2)]"
-                        >
-                          Approve
-                        </Button>
-                      )}
                     </div>
-                  </div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+            </TooltipProvider>
           )}
 
           {/* Pagination */}
