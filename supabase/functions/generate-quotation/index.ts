@@ -68,7 +68,7 @@ serve(async (req) => {
       attachments: [{ filename: `${docNumber}.pdf`, content: u8ToBase64(pdfBytes) }],
     });
     await logEmail({ order_id, email_type: 'quotation', recipient: order.customer_email, subject, ok, data });
-    return json({ success: ok, id: data?.id, path }, ok ? 200 : 502);
+    return json({ success: ok, id: data?.id, path, quotation_url }, ok ? 200 : 502);
   } catch (e) {
     console.error(e);
     return json({ error: (e as Error).message }, 500);
