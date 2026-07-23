@@ -243,10 +243,36 @@ function PricingProductsPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const resetBulkMut = useMutation({
+    mutationFn: async (ids: string[]) => {
+      const { error } = await supabase
+        .from("synnex_products")
+        .update({ selling_price: null, price_approved: false, markup_override: null })
+        .in("id", ids);
+      if (error) throw error;
+      return ids.length;
+    },
+    onSuccess: (n) => {
+      toast.success(`รีเซ็ตราคา ${n} รายการแล้ว`);
+      setSelected(new Set());
+      invalidateAll();
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   const rows = productsQ.data?.rows ?? [];
   const totalPages = Math.max(1, Math.ceil((productsQ.data?.count ?? 0) / PAGE_SIZE));
   const dCounts = distributorCountsQ.data;
   const sCounts = statusCountsQ.data;
+  const pageIds = useMemo(() => rows.map((r) => r.id), [rows]);
+  const allSelected = pageIds.length > 0 && pageIds.every((id) => selected.has(id));
+
+  const toggleAllOnPage = () => {
+    const s = new Set(selected);
+    if (allSelected) pageIds.forEach((id) => s.delete(id));
+    else pageIds.forEach((id) => s.add(id));
+    setSelected(s);
+  };
 
   const getMarkup = (): number | null => {
     if (markupChoice === "custom") {
@@ -275,6 +301,22 @@ function PricingProductsPage() {
     if (s.has(id)) s.delete(id); else s.add(id);
     setSelected(s);
   };
+
+  // Bulk preview: average cost & projected selling
+  const bulkPreview = useMemo(() => {
+    if (selected.size === 0) return null;
+    const markup = getMarkup();
+    const sel = rows.filter((r) => selected.has(r.id));
+    const costs = sel.map((r) => Number(r.cost_price ?? r.price ?? 0)).filter((n) => n > 0);
+    if (costs.length === 0) return { avgCost: 0, avgSelling: 0, markup: markup ?? 0, missing: sel.length };
+    const avgCost = costs.reduce((s, n) => s + n, 0) / costs.length;
+    const avgSelling = markup != null ? computeSelling(avgCost, markup) : 0;
+    return { avgCost, avgSelling, markup: markup ?? 0, missing: sel.length - costs.length };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selected, rows, markupChoice, markupCustom]);
+
+  const isSupabaseImage = (u: string | null | undefined) =>
+    !!u && (u.includes("supabase.co/storage") || u.includes("/storage/v1/object/"));
 
   const Sidebar = (
     <div className="space-y-6 text-sm">
