@@ -83,6 +83,7 @@ export type Database = {
       synnex_products: {
         Row: {
           brand: string | null
+          brand_name: string | null
           category: string | null
           created_at: string
           description: string | null
@@ -102,6 +103,7 @@ export type Database = {
         }
         Insert: {
           brand?: string | null
+          brand_name?: string | null
           category?: string | null
           created_at?: string
           description?: string | null
@@ -121,6 +123,7 @@ export type Database = {
         }
         Update: {
           brand?: string | null
+          brand_name?: string | null
           category?: string | null
           created_at?: string
           description?: string | null
