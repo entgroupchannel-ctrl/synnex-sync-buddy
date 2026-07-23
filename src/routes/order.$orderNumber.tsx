@@ -113,8 +113,8 @@ function OrderConfirm() {
     })();
   }, [order?.payment_slip_url]);
 
-  const copyAcct = async () => {
-    await navigator.clipboard.writeText(BANK_ACCOUNT.account);
+  const copyAcct = async (account: string) => {
+    await navigator.clipboard.writeText(account);
     toast.success("คัดลอกเลขบัญชีแล้ว");
   };
 
