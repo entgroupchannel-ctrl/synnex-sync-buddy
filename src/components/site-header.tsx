@@ -153,7 +153,7 @@ export function SiteHeader() {
                     active ? "text-[color:var(--brand-orange)]" : "text-white/85"
                   }`}
                 >
-                  {c}
+                  {c === "ทั้งหมด" ? t("nav.all") : c}
                 </Link>
               );
             })}
