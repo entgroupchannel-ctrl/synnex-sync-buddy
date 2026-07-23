@@ -890,6 +890,19 @@ function PricingProductsPage() {
             พบ <b className="text-white">{totalCount.toLocaleString()}</b> รายการ
           </div>
           <div className="ml-auto flex gap-2">
+            <Button
+              onClick={onExportClick}
+              disabled={exporting || totalCount === 0}
+              size="sm"
+              variant="secondary"
+              className="gap-1"
+            >
+              {exporting ? (
+                <><Loader2 className="h-4 w-4 animate-spin" /> กำลัง Export...</>
+              ) : (
+                <><Download className="h-4 w-4" /> Export CSV</>
+              )}
+            </Button>
             <Button asChild variant="ghost" size="sm" className="text-white hover:bg-white/10">
               <Link to="/admin/pricing/audit">Audit log</Link>
             </Button>
