@@ -2,3 +2,7 @@ project_id = "wuieuiohusgfdilemplj"
 
 [functions.sync-synnex]
 verify_jwt = false
+
+[functions.save-products]
+verify_jwt = true
+
