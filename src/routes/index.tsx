@@ -33,10 +33,10 @@ export const Route = createFileRoute("/")({
   validateSearch: zodValidator(searchSchema),
   head: () => ({
     meta: [
-      { title: "IT Dealer — ราคา Dealer จริง ส่งตรงจาก Distributor" },
-      { name: "description", content: "แหล่งรวมสินค้าไอทีจาก Synnex & VST ECS กว่า 1,000 รายการ ราคา Dealer จริง ไม่ผ่านคนกลาง" },
-      { property: "og:title", content: "IT Dealer — ราคา Dealer จริง" },
-      { property: "og:description", content: "แหล่งรวมสินค้าไอทีจาก Synnex & VST ECS ราคา Dealer จริง" },
+      { title: "ENT Group IT Shop — ราคา Dealer จริง" },
+      { name: "description", content: "ร้านค้าออนไลน์ ENT Group จำหน่ายสินค้าไอทีจาก Synnex และ VST ECS ราคา Dealer จริง" },
+      { property: "og:title", content: "ENT Group IT Shop — ราคา Dealer จริง" },
+      { property: "og:description", content: "ร้านค้าออนไลน์ ENT Group จำหน่ายสินค้าไอทีจาก Synnex และ VST ECS ราคา Dealer จริง" },
     ],
   }),
   component: HomePage,
@@ -241,14 +241,14 @@ function HomePage() {
           <div className="max-w-2xl">
             <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs text-white/90 backdrop-blur">
               <Flame className="h-3.5 w-3.5 text-[color:var(--brand-orange)]" />
-              Synnex & VST ECS Authorized Dealer
+              ENT Group — Authorized Dealer ตั้งแต่ปี 2558
             </div>
             <h1 className="text-3xl font-black leading-tight text-white md:text-5xl">
               ราคา Dealer จริง<br />
               <span className="text-[color:var(--brand-orange)]">ไม่ผ่านคนกลาง</span>
             </h1>
             <p className="mt-3 text-base text-white/80 md:text-lg">
-              สินค้าไอทีจาก Synnex & VST ECS กว่า 1,000 รายการ · ส่งตรงจาก Distributor
+              Mini PC • Panel PC • IT Products จาก Synnex & VST ECS
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Button
@@ -266,6 +266,36 @@ function HomePage() {
               >
                 เฉพาะพร้อมจัดส่ง
               </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* About / Trust */}
+      <section className="border-b bg-white">
+        <div className="mx-auto max-w-7xl px-4 py-8">
+          <div className="grid gap-6 md:grid-cols-[1.4fr_1fr] md:items-center">
+            <div>
+              <h2 className="text-xl font-black text-[color:var(--brand-navy)] md:text-2xl">เกี่ยวกับ ENT Group</h2>
+              <p className="mt-2 text-sm leading-relaxed text-slate-600 md:text-base">
+                บริษัท อี เอ็น ที กรุ๊ป จำกัด (ENT Group Co., Ltd.) ผู้จัดจำหน่ายสินค้าไอทีในประเทศไทย
+                เป็นตัวแทนจำหน่ายที่ได้รับการแต่งตั้งจาก Synnex Thailand และ VST ECS Thailand
+                ให้บริการ Mini PC, Panel PC และสินค้าไอทีอีกมากมายในราคา Dealer จริง ดำเนินงานมากว่า 10 ปีตั้งแต่ปี 2558
+              </p>
+            </div>
+            <div className="grid gap-2">
+              <div className="flex items-center gap-2 rounded-lg border bg-slate-50 px-3 py-2 text-sm">
+                <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[color:var(--brand-green)] text-xs font-bold text-white">✓</span>
+                Authorized Dealer — Synnex Thailand
+              </div>
+              <div className="flex items-center gap-2 rounded-lg border bg-slate-50 px-3 py-2 text-sm">
+                <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[color:var(--brand-green)] text-xs font-bold text-white">✓</span>
+                Authorized Dealer — VST ECS Thailand
+              </div>
+              <div className="flex items-center gap-2 rounded-lg border bg-slate-50 px-3 py-2 text-sm">
+                <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[color:var(--brand-green)] text-xs font-bold text-white">✓</span>
+                ดำเนินงานมากกว่า 10 ปี ตั้งแต่ปี 2558
+              </div>
             </div>
           </div>
         </div>
@@ -465,11 +495,37 @@ function HomePage() {
         </main>
       </div>
 
-      <footer className="mt-10 border-t bg-[color:var(--brand-navy)] py-8 text-white/70">
-        <div className="mx-auto max-w-7xl px-4 text-center text-sm">
-          <div className="font-bold text-white">IT Dealer</div>
-          <div className="mt-1 text-xs">ราคา Dealer จริง • ส่งตรงจาก Distributor</div>
-          <div className="mt-3 text-xs text-white/50">© {new Date().getFullYear()} IT Dealer. All rights reserved.</div>
+      <footer className="mt-10 border-t bg-[color:var(--brand-navy)] py-10 text-white/70">
+        <div className="mx-auto grid max-w-7xl gap-6 px-4 md:grid-cols-3">
+          <div>
+            <div className="flex items-center gap-2">
+              <div className="grid h-9 w-11 place-items-center rounded-md bg-[color:var(--brand-green)] font-black text-white">ENT</div>
+              <div>
+                <div className="font-bold text-white">Group IT Shop</div>
+                <div className="text-[11px] text-white/60">Authorized Dealer — Synnex & VST ECS</div>
+              </div>
+            </div>
+            <p className="mt-3 text-xs leading-relaxed">
+              บริษัท อี เอ็น ที กรุ๊ป จำกัด<br />
+              ENT Group Co., Ltd.<br />
+              นนทบุรี ประเทศไทย · ตั้งแต่ปี 2558
+            </p>
+          </div>
+          <div className="text-sm">
+            <div className="mb-2 font-bold text-white">ติดต่อเรา</div>
+            <div className="space-y-1 text-xs">
+              <div>โทร: <a href="tel:020456104" className="hover:text-[color:var(--brand-green)]">02-045-6104</a></div>
+              <div>อีเมล: <a href="mailto:info@entgroup.co.th" className="hover:text-[color:var(--brand-green)]">info@entgroup.co.th</a></div>
+              <div>เว็บไซต์: <a href="https://entgroup.co.th" target="_blank" rel="noopener noreferrer" className="hover:text-[color:var(--brand-green)]">www.entgroup.co.th</a></div>
+            </div>
+          </div>
+          <div className="text-sm">
+            <div className="mb-2 font-bold text-white">พันธมิตร</div>
+            <div className="text-xs">Authorized Dealer: Synnex Thailand & VST ECS Thailand</div>
+          </div>
+        </div>
+        <div className="mx-auto mt-8 max-w-7xl border-t border-white/10 px-4 pt-4 text-center text-xs text-white/50">
+          © {new Date().getFullYear()} ENT Group Co., Ltd. — All rights reserved.
         </div>
       </footer>
     </div>

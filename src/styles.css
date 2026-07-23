@@ -135,11 +135,12 @@
 }
 
 :root {
-  --brand-navy: #0a1628;
-  --brand-navy-2: #13233d;
+  --brand-navy: #064e3b;
+  --brand-navy-2: #065f46;
+  --brand-green: #10b981;
+  --brand-green-dark: #059669;
   --brand-orange: #f97316;
   --brand-orange-dark: #ea580c;
-  --brand-green: #16a34a;
 }
 
 @layer base {

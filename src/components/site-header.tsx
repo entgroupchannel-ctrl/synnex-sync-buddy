@@ -20,6 +20,12 @@ export function SiteHeader() {
 
   return (
     <>
+      <div className="bg-slate-900 text-white/80 text-xs">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-2 px-4 py-1.5">
+          <div>ส่วนหนึ่งของ <span className="font-semibold text-white">ENT Group Co., Ltd.</span> · โทร <a href="tel:020456104" className="hover:text-[color:var(--brand-green)]">02-045-6104</a></div>
+          <a href="https://entgroup.co.th" target="_blank" rel="noopener noreferrer" className="hover:text-[color:var(--brand-green)]">🔗 entgroup.co.th</a>
+        </div>
+      </div>
       <header className="sticky top-0 z-40 bg-[color:var(--brand-navy)] text-white shadow-lg">
         <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3">
           <button
@@ -30,10 +36,10 @@ export function SiteHeader() {
             <Menu className="h-5 w-5" />
           </button>
           <Link to="/" className="flex shrink-0 items-center gap-2">
-            <div className="grid h-9 w-9 place-items-center rounded-md bg-[color:var(--brand-orange)] font-black">IT</div>
+            <div className="grid h-9 w-11 place-items-center rounded-md bg-[color:var(--brand-green)] font-black tracking-tight">ENT</div>
             <div className="hidden sm:block">
-              <div className="text-lg font-bold leading-tight">IT Dealer</div>
-              <div className="text-[10px] leading-tight text-white/60">ราคา Dealer จริง</div>
+              <div className="text-lg font-bold leading-tight">Group IT Shop</div>
+              <div className="text-[10px] leading-tight text-white/60">Authorized Dealer — Synnex & VST ECS</div>
             </div>
           </Link>
 
