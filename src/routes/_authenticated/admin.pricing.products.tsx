@@ -10,7 +10,8 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Package, Search, CheckCircle2, AlertTriangle, XCircle, Check, X } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Package, Search, CheckCircle2, AlertTriangle, XCircle, Check, X, LayoutGrid, List, RotateCcw, ImageOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { bahtFmt, computeSelling, effectiveMarkup, indexPricingRules, type PricingRule } from "@/lib/pricing-helpers";
 import { CATEGORIES } from "@/lib/cart";
@@ -21,6 +22,8 @@ const searchSchema = z.object({
   category: fallback(z.string(), "all").default("all"),
   status: fallback(z.string(), "all").default("all"),
   brands: fallback(z.string(), "").default(""),
+  sort: fallback(z.string(), "sku_asc").default("sku_asc"),
+  view: fallback(z.string(), "grid").default("grid"),
   page: fallback(z.number().int(), 1).default(1),
 });
 
