@@ -32,6 +32,7 @@ import {
   Loader2,
   ChevronLeft,
   ChevronRight,
+  Download,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -44,7 +45,9 @@ import {
 import { CATEGORIES } from "@/lib/cart";
 import { logAudit, logAuditBulk, newSessionId } from "@/lib/pricing-audit";
 
-const LS_KEY = "ent_pricing_filters";
+const LS_KEY = "ent_pricing_v2";
+const PAGE_SIZE_OPTIONS = [25, 50, 100, 200] as const;
+const EXPORT_WARN_THRESHOLD = 5000;
 
 const searchSchema = z.object({
   q: fallback(z.string(), "").default(""),
@@ -55,6 +58,7 @@ const searchSchema = z.object({
   sort: fallback(z.string(), "sku_asc").default("sku_asc"),
   view: fallback(z.string(), "grid").default("grid"),
   page: fallback(z.number().int(), 1).default(1),
+  pageSize: fallback(z.number().int(), 50).default(50),
 });
 
 export const Route = createFileRoute("/_authenticated/admin/pricing/products")({
@@ -69,8 +73,6 @@ export const Route = createFileRoute("/_authenticated/admin/pricing/products")({
   }),
   component: PricingProductsPage,
 });
-
-const PAGE_SIZE = 50;
 
 type Product = {
   id: string;
@@ -145,6 +147,9 @@ function PricingProductsPage() {
   const gridTopRef = useRef<HTMLDivElement>(null);
   const hydrated = useRef(false);
 
+  const [exporting, setExporting] = useState(false);
+  const [exportConfirmCount, setExportConfirmCount] = useState<number | null>(null);
+
   // Restore filters from localStorage on first mount (only if URL has no explicit params)
   useEffect(() => {
     if (hydrated.current) return;
@@ -160,6 +165,7 @@ function PricingProductsPage() {
       for (const k of ["q", "distributor", "category", "status", "brands", "sort", "view"]) {
         if (typeof saved[k] === "string") patch[k] = saved[k];
       }
+      if (typeof saved.pageSize === "number") patch.pageSize = saved.pageSize;
       if (Object.keys(patch).length > 0) {
         setQ(String(patch.q ?? ""));
         nav({ search: (s: Record<string, unknown>) => ({ ...s, ...patch, page: 1 }), replace: true });
@@ -184,18 +190,19 @@ function PricingProductsPage() {
           brands: search.brands,
           sort: search.sort,
           view: search.view,
+          pageSize: search.pageSize,
         }),
       );
     } catch {
       /* ignore */
     }
-  }, [search.q, search.distributor, search.category, search.status, search.brands, search.sort, search.view]);
+  }, [search.q, search.distributor, search.category, search.status, search.brands, search.sort, search.view, search.pageSize]);
 
   const update = (patch: Record<string, unknown>) =>
-    nav({ search: (s: Record<string, unknown>) => ({ ...s, ...patch, page: 1 }) });
+    nav({ search: (s: Record<string, unknown>) => ({ ...s, ...patch, page: 1 }), replace: true });
 
   const goToPage = (page: number) => {
-    nav({ search: (s: Record<string, unknown>) => ({ ...s, page }) });
+    nav({ search: (s: Record<string, unknown>) => ({ ...s, page }), replace: true });
     setTimeout(() => gridTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 30);
   };
 
@@ -207,8 +214,8 @@ function PricingProductsPage() {
   const productsQ = useQuery({
     queryKey: ["pricing-products-v3", search],
     queryFn: async () => {
-      const from = (search.page - 1) * PAGE_SIZE;
-      const to = from + PAGE_SIZE - 1;
+      const from = (search.page - 1) * search.pageSize;
+      const to = from + search.pageSize - 1;
       const so = sortMap[search.sort] ?? sortMap.sku_asc;
       let qq = supabase
         .from("synnex_products")
@@ -555,9 +562,110 @@ function PricingProductsPage() {
       toast.error("Reset ไม่สำเร็จ", { description: e.message, duration: Infinity, closeButton: true }),
   });
 
+  // Build the same filtered query used for the grid, without .range() — for CSV export.
+  const buildFilteredQuery = () => {
+    const so = sortMap[search.sort] ?? sortMap.sku_asc;
+    let qq = supabase
+      .from("synnex_products")
+      .select(
+        "sku, name, brand, category, distributor, cost_price, price, selling_price, markup_override, price_approved, updated_at",
+        { count: "exact" },
+      )
+      .order(so.col, { ascending: so.asc, nullsFirst: false });
+    const s = search.q.trim().replace(/[%,]/g, "");
+    if (s) qq = qq.or(`sku.ilike.%${s}%,name.ilike.%${s}%`);
+    if (search.distributor !== "all") qq = qq.eq("distributor", search.distributor);
+    if (search.category !== "all") qq = qq.eq("category", search.category);
+    if (selectedBrands.length > 0) qq = qq.in("brand", selectedBrands);
+    if (search.status === "unapproved") qq = qq.or("price_approved.eq.false,selling_price.is.null");
+    else if (search.status === "zero") qq = qq.or("selling_price.is.null,selling_price.eq.0");
+    else if (search.status === "approved") qq = qq.eq("price_approved", true);
+    return qq;
+  };
+
+  const runExport = async () => {
+    setExporting(true);
+    try {
+      // Paginate through the filtered set with .range() to avoid the 1000-row default cap.
+      const CHUNK = 1000;
+      let start = 0;
+      const all: Array<Record<string, unknown>> = [];
+      // First call also returns count
+      const first = await buildFilteredQuery().range(start, start + CHUNK - 1);
+      if (first.error) throw first.error;
+      const total = first.count ?? (first.data?.length ?? 0);
+      for (const row of first.data ?? []) all.push(row as Record<string, unknown>);
+      start += CHUNK;
+      while (start < total) {
+        const r = await buildFilteredQuery().range(start, start + CHUNK - 1);
+        if (r.error) throw r.error;
+        for (const row of r.data ?? []) all.push(row as Record<string, unknown>);
+        start += CHUNK;
+      }
+      const headers = [
+        "SKU", "ชื่อสินค้า", "แบรนด์", "Distributor", "หมวดหมู่",
+        "ราคาต้นทุน", "Markup%", "ราคาขาย", "สถานะ", "อัปเดตล่าสุด",
+      ];
+      const esc = (v: unknown) => {
+        const s = v == null ? "" : String(v);
+        return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+      };
+      const isoLocal = (d: string | null | undefined) => {
+        if (!d) return "";
+        const dt = new Date(d);
+        const pad = (n: number) => String(n).padStart(2, "0");
+        return `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())} ${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
+      };
+      const lines = [headers.join(",")];
+      for (const r of all) {
+        const cost = r.cost_price ?? r.price ?? "";
+        const status = r.price_approved
+          ? "approved"
+          : (r.selling_price == null || Number(r.selling_price) === 0)
+            ? "no_price"
+            : "pending";
+        lines.push([
+          esc(r.sku),
+          esc(r.name),
+          esc(r.brand),
+          esc(r.distributor),
+          esc(r.category),
+          esc(cost),
+          esc(r.markup_override ?? ""),
+          esc(r.selling_price ?? ""),
+          esc(status),
+          esc(isoLocal(r.updated_at as string | null)),
+        ].join(","));
+      }
+      const csv = "\ufeff" + lines.join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      const now = new Date();
+      const pad = (n: number) => String(n).padStart(2, "0");
+      const stamp = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+      a.href = url;
+      a.download = `products_export_${stamp}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success(`Export สำเร็จ (${all.length.toLocaleString()} รายการ)`);
+    } catch (e) {
+      toast.error("Export ไม่สำเร็จ", { description: (e as Error).message });
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const onExportClick = () => {
+    const n = productsQ.data?.count ?? 0;
+    if (n > EXPORT_WARN_THRESHOLD) setExportConfirmCount(n);
+    else runExport();
+  };
+
+
   const rows = productsQ.data?.rows ?? [];
   const totalCount = productsQ.data?.count ?? 0;
-  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+  const totalPages = Math.max(1, Math.ceil(totalCount / search.pageSize));
   const dCounts = distributorCountsQ.data;
   const sCounts = statusCountsQ.data;
   const pageIds = useMemo(() => rows.map((r) => r.id), [rows]);
@@ -769,8 +877,8 @@ function PricingProductsPage() {
     </div>
   );
 
-  const from = totalCount === 0 ? 0 : (search.page - 1) * PAGE_SIZE + 1;
-  const to = Math.min(search.page * PAGE_SIZE, totalCount);
+  const from = totalCount === 0 ? 0 : (search.page - 1) * search.pageSize + 1;
+  const to = Math.min(search.page * search.pageSize, totalCount);
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -782,6 +890,19 @@ function PricingProductsPage() {
             พบ <b className="text-white">{totalCount.toLocaleString()}</b> รายการ
           </div>
           <div className="ml-auto flex gap-2">
+            <Button
+              onClick={onExportClick}
+              disabled={exporting || totalCount === 0}
+              size="sm"
+              variant="secondary"
+              className="gap-1"
+            >
+              {exporting ? (
+                <><Loader2 className="h-4 w-4 animate-spin" /> กำลัง Export...</>
+              ) : (
+                <><Download className="h-4 w-4" /> Export CSV</>
+              )}
+            </Button>
             <Button asChild variant="ghost" size="sm" className="text-white hover:bg-white/10">
               <Link to="/admin/pricing/audit">Audit log</Link>
             </Button>
@@ -1141,6 +1262,21 @@ function PricingProductsPage() {
                   ถัดไป <ChevronRight className="h-4 w-4" />
                 </Button>
               </div>
+              <div className="flex items-center gap-2 text-sm text-slate-600">
+                <span>แสดง</span>
+                <Select
+                  value={String(search.pageSize)}
+                  onValueChange={(v) => update({ pageSize: Number(v) })}
+                >
+                  <SelectTrigger className="h-9 w-24"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {PAGE_SIZE_OPTIONS.map((n) => (
+                      <SelectItem key={n} value={String(n)}>{n}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <span>รายการต่อหน้า</span>
+              </div>
             </div>
           )}
 
@@ -1311,6 +1447,27 @@ function PricingProductsPage() {
             >
               <Check className="mr-1 h-4 w-4" />
               {confirmReady ? "ยืนยัน Approve" : "รอ 2 วินาที..."}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Large-export confirmation */}
+      <Dialog open={exportConfirmCount != null} onOpenChange={(o) => !o && setExportConfirmCount(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>ยืนยันการ Export</DialogTitle>
+            <DialogDescription>
+              ข้อมูล <b>{exportConfirmCount?.toLocaleString()}</b> รายการ อาจใช้เวลาสักครู่ ต้องการดำเนินการต่อไหม?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button variant="outline" onClick={() => setExportConfirmCount(null)}>ยกเลิก</Button>
+            <Button
+              onClick={() => { setExportConfirmCount(null); runExport(); }}
+              className="bg-[color:var(--brand-navy)] font-bold text-white"
+            >
+              <Download className="mr-1 h-4 w-4" /> Export
             </Button>
           </DialogFooter>
         </DialogContent>

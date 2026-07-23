@@ -1,20 +1,23 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ChevronDown, ChevronRight, Download, Search } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, Download, Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { bahtFmt } from "@/lib/pricing-helpers";
+
+const AUDIT_PAGE_SIZE = 100;
 
 const searchSchema = z.object({
   from: fallback(z.string(), "").default(""),
   to: fallback(z.string(), "").default(""),
   action: fallback(z.string(), "all").default("all"),
   sku: fallback(z.string(), "").default(""),
+  page: fallback(z.number().int(), 1).default(1),
 });
 
 export const Route = createFileRoute("/_authenticated/admin/pricing/audit")({
@@ -77,16 +80,21 @@ function AuditPage() {
   const [skuInput, setSkuInput] = useState(search.sku);
 
   const update = (patch: Record<string, unknown>) =>
-    nav({ search: (s: Record<string, unknown>) => ({ ...s, ...patch }) });
+    nav({ search: (s: Record<string, unknown>) => ({ ...s, ...patch, page: 1 }), replace: true });
+
+  const goToPage = (page: number) =>
+    nav({ search: (s: Record<string, unknown>) => ({ ...s, page }), replace: true });
 
   const auditQ = useQuery({
     queryKey: ["price-audit", search],
     queryFn: async () => {
+      const fromIdx = (search.page - 1) * AUDIT_PAGE_SIZE;
+      const toIdx = fromIdx + AUDIT_PAGE_SIZE - 1;
       let q = supabase
         .from("price_audit_log")
-        .select("*")
+        .select("*", { count: "exact" })
         .order("created_at", { ascending: false })
-        .limit(1000);
+        .range(fromIdx, toIdx);
       if (search.action !== "all") q = q.eq("action", search.action);
       if (search.sku.trim()) q = q.ilike("product_sku", `%${search.sku.trim()}%`);
       if (search.from) q = q.gte("created_at", new Date(search.from).toISOString());
@@ -95,13 +103,16 @@ function AuditPage() {
         end.setHours(23, 59, 59, 999);
         q = q.lte("created_at", end.toISOString());
       }
-      const { data, error } = await q;
+      const { data, error, count } = await q;
       if (error) throw error;
-      return (data ?? []) as Row[];
+      return { rows: (data ?? []) as Row[], count: count ?? 0 };
     },
   });
 
-  const rows = auditQ.data ?? [];
+  const rows = auditQ.data?.rows ?? [];
+  const totalCount = auditQ.data?.count ?? 0;
+  const totalPages = Math.max(1, Math.ceil(totalCount / AUDIT_PAGE_SIZE));
+
 
   // Group bulk_approve by session_id; single rows stay standalone
   const groups = useMemo(() => {
@@ -171,7 +182,7 @@ function AuditPage() {
         <div className="mx-auto flex max-w-[100rem] items-center gap-3 px-4 py-4">
           <h1 className="text-lg font-bold md:text-xl">Audit Log ราคาสินค้า</h1>
           <div className="text-xs text-white/70">
-            {rows.length.toLocaleString()} รายการล่าสุด
+            {totalCount.toLocaleString()} รายการ
           </div>
           <div className="ml-auto flex gap-2">
             <Button onClick={exportCsv} size="sm" variant="secondary" className="gap-1">
@@ -302,9 +313,8 @@ function AuditPage() {
                   const isOpen = expanded.has(g.key);
                   const label = head.action === "bulk_approve" ? "Bulk Approve" : "Bulk Reset";
                   return (
-                    <>
+                    <Fragment key={g.key}>
                       <tr
-                        key={g.key}
                         onClick={() => toggleGroup(g.key)}
                         className="cursor-pointer bg-emerald-50/40 font-semibold hover:bg-emerald-50"
                       >
@@ -348,13 +358,47 @@ function AuditPage() {
                             <td className="px-3 py-1.5 text-slate-600">{r.approved_by ?? "—"}</td>
                           </tr>
                         ))}
-                    </>
+                    </Fragment>
                   );
                 })
               )}
             </tbody>
           </table>
         </div>
+
+        {/* Pagination */}
+        {totalCount > 0 && (
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+            <div className="text-sm text-slate-600">
+              แสดง <b>{((search.page - 1) * AUDIT_PAGE_SIZE + 1).toLocaleString()}–
+              {Math.min(search.page * AUDIT_PAGE_SIZE, totalCount).toLocaleString()}</b> จาก{" "}
+              <b>{totalCount.toLocaleString()}</b> รายการ
+            </div>
+            <div className="flex items-center gap-1">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={search.page <= 1}
+                onClick={() => goToPage(search.page - 1)}
+                className="gap-1"
+              >
+                <ChevronLeft className="h-4 w-4" /> ก่อนหน้า
+              </Button>
+              <span className="px-3 text-sm text-slate-600">
+                หน้า {search.page} / {totalPages}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={search.page >= totalPages}
+                onClick={() => goToPage(search.page + 1)}
+                className="gap-1"
+              >
+                ถัดไป <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
