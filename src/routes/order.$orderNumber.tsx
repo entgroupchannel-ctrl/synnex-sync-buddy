@@ -304,7 +304,7 @@ function OrderConfirm() {
             <Link to="/">เลือกซื้อสินค้าเพิ่มเติม</Link>
           </Button>
           <Button asChild>
-            <Link to="/account/orders">ดูประวัติคำสั่งซื้อ</Link>
+            <Link to="/my-account/orders">ดูประวัติคำสั่งซื้อ</Link>
           </Button>
         </div>
       </div>
