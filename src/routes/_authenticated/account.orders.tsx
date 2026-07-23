@@ -2,9 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteHeader } from "@/components/site-header";
-import { Badge } from "@/components/ui/badge";
 import { priceFmt } from "@/lib/cart";
 import { Package } from "lucide-react";
+import { STATUS_META, PAYMENT_STATUS_META, isValidStatus } from "@/lib/order-helpers";
 
 export const Route = createFileRoute("/_authenticated/account/orders")({
   head: () => ({
@@ -18,15 +18,25 @@ export const Route = createFileRoute("/_authenticated/account/orders")({
   component: AccountOrders,
 });
 
+type Row = {
+  id: string;
+  order_number: string;
+  created_at: string | null;
+  status: string | null;
+  payment_status: string;
+  total: number | null;
+  order_items: { product_name: string; quantity: number }[];
+};
+
 function AccountOrders() {
   const q = useQuery({
     queryKey: ["my-orders"],
     queryFn: async () => {
       const { data } = await supabase
         .from("orders")
-        .select("*")
+        .select("id,order_number,created_at,status,payment_status,total,order_items(product_name,quantity)")
         .order("created_at", { ascending: false });
-      return data ?? [];
+      return (data ?? []) as unknown as Row[];
     },
   });
 
@@ -46,26 +56,29 @@ function AccountOrders() {
         ) : (
           <div className="space-y-3">
             {q.data!.map((o) => {
-              const items = Array.isArray(o.items) ? (o.items as Array<{ name: string; qty: number }>) : [];
+              const stMeta = STATUS_META[isValidStatus(o.status) ? o.status : "pending"];
+              const payMeta = PAYMENT_STATUS_META[o.payment_status === "paid" ? "paid" : "pending"];
+              const items = o.order_items ?? [];
               return (
-                <div key={o.id} className="rounded-lg border bg-white p-4">
+                <Link key={o.id} to="/order/$orderNumber" params={{ orderNumber: o.order_number }} className="block rounded-lg border bg-white p-4 transition hover:shadow-md">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div>
-                      <div className="font-mono text-xs text-slate-500">#{o.id.slice(0, 8).toUpperCase()}</div>
-                      <div className="text-xs text-slate-500">{new Date(o.created_at ?? Date.now()).toLocaleString("th-TH")}</div>
+                      <div className="font-mono text-xs font-semibold text-slate-800">{o.order_number}</div>
+                      <div className="text-xs text-slate-500">{o.created_at ? new Date(o.created_at).toLocaleString("th-TH") : ""}</div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Badge variant="outline">{o.status ?? "pending"}</Badge>
+                      <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${stMeta.badge}`}><span className={`h-1.5 w-1.5 rounded-full ${stMeta.dot}`} />{stMeta.label}</span>
+                      <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${payMeta.badge}`}>{payMeta.label}</span>
                       <div className="text-lg font-black text-[color:var(--brand-orange)]">{priceFmt.format(Number(o.total ?? 0))}</div>
                     </div>
                   </div>
                   <div className="mt-3 border-t pt-3 text-sm text-slate-700">
                     {items.slice(0, 3).map((i, idx) => (
-                      <div key={idx} className="truncate">• {i.name} × {i.qty}</div>
+                      <div key={idx} className="truncate">• {i.product_name} × {i.quantity}</div>
                     ))}
                     {items.length > 3 && <div className="text-xs text-slate-500">และอีก {items.length - 3} รายการ</div>}
                   </div>
-                </div>
+                </Link>
               );
             })}
           </div>

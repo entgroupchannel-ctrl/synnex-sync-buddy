@@ -1,9 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteHeader } from "@/components/site-header";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { STATUS_META, PAYMENT_STATUS_META, ORDER_STATUSES, distMeta, bahtFmt, isValidStatus } from "@/lib/order-helpers";
 
 export const Route = createFileRoute("/_authenticated/admin/orders")({
   ssr: false,
@@ -11,126 +13,125 @@ export const Route = createFileRoute("/_authenticated/admin/orders")({
   component: AdminOrdersPage,
 });
 
-type OrderItem = { distributor?: string | null };
-type OrderRow = {
+type Row = {
   id: string;
-  created_at: string;
+  order_number: string;
+  created_at: string | null;
   customer_name: string | null;
+  customer_phone: string | null;
   total: number | null;
   status: string | null;
-  items: OrderItem[] | null;
+  payment_status: string;
+  payment_method: string | null;
+  order_items: { distributor: string | null }[];
 };
 
-function shortId(id: string) {
-  return id.slice(0, 8).toUpperCase();
-}
-
-function distributorsOf(items: OrderItem[] | null): string[] {
-  if (!Array.isArray(items)) return [];
-  const set = new Set<string>();
-  for (const it of items) {
-    const d = (it?.distributor ?? "").toString().trim().toUpperCase();
-    if (d) set.add(d);
-  }
-  return [...set];
-}
-
-function DistBadge({ d }: { d: string }) {
-  const isSynnex = d === "SYNNEX";
-  return (
-    <span
-      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${
-        isSynnex ? "bg-blue-50 text-blue-700 ring-1 ring-blue-200" : "bg-orange-50 text-orange-700 ring-1 ring-orange-200"
-      }`}
-    >
-      <span className={`h-2 w-2 rounded-full ${isSynnex ? "bg-blue-500" : "bg-orange-500"}`} />
-      {d}
-    </span>
-  );
-}
-
 function AdminOrdersPage() {
-  const [rows, setRows] = useState<OrderRow[]>([]);
-  const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [payFilter, setPayFilter] = useState<string>("all");
 
-  useEffect(() => {
-    (async () => {
+  const query = useQuery({
+    queryKey: ["admin-orders"],
+    queryFn: async () => {
       const { data, error } = await supabase
         .from("orders")
-        .select("id,created_at,customer_name,total,status,items")
+        .select("id,order_number,created_at,customer_name,customer_phone,total,status,payment_status,payment_method,order_items(distributor)")
         .order("created_at", { ascending: false })
         .limit(500);
-      if (!error && data) setRows(data as unknown as OrderRow[]);
-      setLoading(false);
-    })();
-  }, []);
-
-  const filtered = rows.filter((r) => {
-    if (!q.trim()) return true;
-    const s = q.toLowerCase();
-    return (
-      shortId(r.id).toLowerCase().includes(s) ||
-      (r.customer_name ?? "").toLowerCase().includes(s) ||
-      (r.status ?? "").toLowerCase().includes(s)
-    );
+      if (error) throw error;
+      return (data ?? []) as unknown as Row[];
+    },
   });
+
+  const rows = query.data ?? [];
+
+  const filtered = useMemo(() => {
+    return rows.filter((r) => {
+      if (statusFilter !== "all" && r.status !== statusFilter) return false;
+      if (payFilter !== "all" && r.payment_status !== payFilter) return false;
+      if (q.trim()) {
+        const s = q.toLowerCase();
+        if (
+          !(r.order_number ?? "").toLowerCase().includes(s) &&
+          !(r.customer_name ?? "").toLowerCase().includes(s) &&
+          !(r.customer_phone ?? "").includes(s)
+        ) return false;
+      }
+      return true;
+    });
+  }, [rows, q, statusFilter, payFilter]);
 
   return (
     <div className="min-h-screen bg-slate-50">
       <SiteHeader />
       <div className="mx-auto max-w-7xl px-4 py-6">
-        <div className="mb-6 flex items-center justify-between gap-4">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <div>
             <h1 className="text-2xl font-bold text-[color:var(--brand-navy)]">จัดการออเดอร์</h1>
-            <p className="text-sm text-slate-500">รวม {rows.length} ออเดอร์</p>
+            <p className="text-sm text-slate-500">รวม {rows.length} ออเดอร์ · แสดง {filtered.length}</p>
           </div>
-          <Input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="ค้นหา: เลขออเดอร์ / ชื่อลูกค้า / สถานะ"
-            className="max-w-sm"
-          />
+          <div className="flex flex-wrap gap-2">
+            <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="ค้นหา: เลขออเดอร์ / ชื่อ / เบอร์" className="w-64" />
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">สถานะทั้งหมด</SelectItem>
+                {ORDER_STATUSES.map((s) => <SelectItem key={s} value={s}>{STATUS_META[s].label}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <Select value={payFilter} onValueChange={setPayFilter}>
+              <SelectTrigger className="w-36"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">การชำระทั้งหมด</SelectItem>
+                <SelectItem value="pending">รอชำระ</SelectItem>
+                <SelectItem value="paid">ชำระแล้ว</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         <div className="overflow-hidden rounded-lg border bg-white">
-          <div className="grid grid-cols-[110px_150px_1fr_120px_120px_180px_90px] gap-3 border-b bg-slate-50 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
+          <div className="grid grid-cols-[170px_150px_1fr_120px_120px_130px_180px_70px] gap-3 border-b bg-slate-50 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
             <div>Order #</div>
             <div>วันที่</div>
-            <div>ชื่อลูกค้า</div>
+            <div>ลูกค้า</div>
             <div className="text-right">ยอดรวม</div>
+            <div>ชำระ</div>
             <div>สถานะ</div>
             <div>Distributor</div>
             <div className="text-right">Action</div>
           </div>
-          {loading ? (
+          {query.isLoading ? (
             <div className="p-6 text-center text-sm text-slate-500">กำลังโหลด...</div>
           ) : filtered.length === 0 ? (
             <div className="p-6 text-center text-sm text-slate-500">ไม่พบออเดอร์</div>
           ) : (
             filtered.map((r) => {
-              const dists = distributorsOf(r.items);
+              const st = isValidStatus(r.status) ? r.status : "pending";
+              const stMeta = STATUS_META[st];
+              const payKey = r.payment_status === "paid" ? "paid" : "pending";
+              const pMeta = PAYMENT_STATUS_META[payKey];
+              const dists = [...new Set((r.order_items ?? []).map((i) => (i.distributor ?? "").toUpperCase()).filter(Boolean))];
               return (
-                <div
-                  key={r.id}
-                  className="grid grid-cols-[110px_150px_1fr_120px_120px_180px_90px] items-center gap-3 border-b px-4 py-3 text-sm last:border-b-0 hover:bg-slate-50"
-                >
-                  <div className="font-mono text-xs font-semibold text-slate-700">{shortId(r.id)}</div>
-                  <div className="text-slate-600">{new Date(r.created_at).toLocaleString("th-TH")}</div>
-                  <div className="truncate">{r.customer_name ?? "-"}</div>
-                  <div className="text-right font-semibold">฿{Number(r.total ?? 0).toLocaleString("th-TH")}</div>
-                  <div>
-                    <Badge variant="outline" className="capitalize">{r.status ?? "pending"}</Badge>
+                <div key={r.id} className="grid grid-cols-[170px_150px_1fr_120px_120px_130px_180px_70px] items-center gap-3 border-b px-4 py-3 text-sm last:border-b-0 hover:bg-slate-50">
+                  <div className="font-mono text-xs font-semibold">{r.order_number}</div>
+                  <div className="text-slate-600">{r.created_at ? new Date(r.created_at).toLocaleString("th-TH") : "-"}</div>
+                  <div className="min-w-0">
+                    <div className="truncate">{r.customer_name ?? "-"}</div>
+                    <div className="truncate text-xs text-slate-500">{r.customer_phone ?? ""}</div>
                   </div>
+                  <div className="text-right font-semibold">{bahtFmt.format(Number(r.total ?? 0))}</div>
+                  <div><span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${pMeta.badge}`}>{pMeta.label}</span></div>
+                  <div><span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${stMeta.badge}`}><span className={`h-1.5 w-1.5 rounded-full ${stMeta.dot}`} />{stMeta.label}</span></div>
                   <div className="flex flex-wrap gap-1">
-                    {dists.length === 0 ? <span className="text-xs text-slate-400">—</span> : dists.map((d) => <DistBadge key={d} d={d} />)}
+                    {dists.length === 0 ? <span className="text-xs text-slate-400">—</span> : dists.map((d) => {
+                      const m = distMeta(d);
+                      return <span key={d} className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${m.bg} ${m.text} ring-1 ${m.ring}`}><span className={`h-1.5 w-1.5 rounded-full ${m.dot}`} />{m.label}</span>;
+                    })}
                   </div>
                   <div className="text-right">
-                    <Link
-                      to="/admin/orders/$id"
-                      params={{ id: r.id }}
-                      className="text-sm font-semibold text-[color:var(--brand-green,#10B981)] hover:underline"
-                    >
+                    <Link to="/admin/orders/$id" params={{ id: r.id }} className="text-sm font-semibold text-[color:var(--brand-green,#10B981)] hover:underline">
                       ดู →
                     </Link>
                   </div>

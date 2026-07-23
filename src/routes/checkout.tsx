@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { ArrowLeft, Banknote, Truck, Building2, User } from "lucide-react";
+import { ArrowLeft, Banknote, Truck, Building2, User, Loader2 } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { priceFmt, useCart } from "@/lib/cart";
 import { useSupabaseUser } from "@/lib/auth-sheet";
@@ -28,41 +28,70 @@ export const Route = createFileRoute("/checkout")({
 });
 
 const COD_FEE = 50;
+const phoneRe = /^0\d{8,9}$/;
 
-const baseSchema = z.object({
+const shippingSchema = z.object({
   customer_name: z.string().trim().min(1, "กรอกชื่อ").max(100),
-  customer_phone: z.string().trim().regex(/^0\d{8,9}$/, "เบอร์โทรไม่ถูกต้อง (เช่น 0812345678)"),
+  customer_phone: z.string().trim().regex(phoneRe, "เบอร์โทรไม่ถูกต้อง (เช่น 0812345678)"),
   customer_email: z.string().trim().email("อีเมลไม่ถูกต้อง").max(255),
-  customer_address: z.string().trim().min(5, "กรอกที่อยู่").max(500),
+  shipping_name: z.string().trim().min(1, "กรอกชื่อผู้รับ").max(100),
+  shipping_phone: z.string().trim().regex(phoneRe, "เบอร์ผู้รับไม่ถูกต้อง"),
+  shipping_address: z.string().trim().min(5, "กรอกที่อยู่").max(500),
+  shipping_district: z.string().trim().min(1, "กรอกเขต/อำเภอ").max(100),
+  shipping_province: z.string().trim().min(1, "กรอกจังหวัด").max(100),
+  shipping_postcode: z.string().trim().regex(/^\d{5}$/, "รหัสไปรษณีย์ 5 หลัก"),
 });
 const taxSchema = z.object({
   company_name: z.string().trim().min(2, "กรอกชื่อบริษัท/ผู้เสียภาษี").max(200),
   tax_id: z.string().trim().regex(/^\d{13}$/, "เลขประจำตัวผู้เสียภาษีต้อง 13 หลัก"),
   company_address: z.string().trim().min(5, "กรอกที่อยู่ออกใบกำกับ").max(500),
 });
+type Fields = z.infer<typeof shippingSchema>;
 
 function CheckoutPage() {
-  const { items, total, clear } = useCart();
+  const { items, total: subtotal, clear } = useCart();
   const navigate = useNavigate();
   const { user } = useSupabaseUser();
 
-  const [form, setForm] = useState({ customer_name: "", customer_phone: "", customer_email: "", customer_address: "" });
+  const [f, setF] = useState<Fields>({
+    customer_name: "", customer_phone: "", customer_email: "",
+    shipping_name: "", shipping_phone: "",
+    shipping_address: "", shipping_district: "", shipping_province: "", shipping_postcode: "",
+  });
+  const [errors, setErrors] = useState<Partial<Record<keyof Fields | keyof z.infer<typeof taxSchema>, string>>>({});
   const [wantsTaxInvoice, setWantsTaxInvoice] = useState(false);
   const [tax, setTax] = useState({ company_name: "", tax_id: "", company_address: "" });
   const [payment, setPayment] = useState<"transfer" | "cod">("transfer");
   const [submitting, setSubmitting] = useState(false);
 
-  // Prefill from user profile if logged in
+  // Guard: cart must be non-empty
+  useEffect(() => {
+    if (items.length === 0) {
+      // small delay so the effect can render toast, not thrash
+      const t = setTimeout(() => {
+        if (items.length === 0) navigate({ to: "/cart" });
+      }, 50);
+      return () => clearTimeout(t);
+    }
+  }, [items.length, navigate]);
+
+  // Prefill from user profile
   useEffect(() => {
     if (!user) return;
     (async () => {
       const { data: profile } = await supabase.from("user_profiles").select("*").eq("id", user.id).maybeSingle();
       const { data: addr } = await supabase.from("user_addresses").select("*").eq("user_id", user.id).order("is_default", { ascending: false }).limit(1).maybeSingle();
-      setForm((f) => ({
-        customer_name: profile?.full_name ?? addr?.recipient ?? f.customer_name,
-        customer_phone: profile?.phone ?? addr?.phone ?? f.customer_phone,
-        customer_email: user.email ?? f.customer_email,
-        customer_address: addr ? [addr.address_line, addr.district, addr.province, addr.postcode].filter(Boolean).join(" ") : f.customer_address,
+      setF((prev) => ({
+        ...prev,
+        customer_name: profile?.full_name ?? prev.customer_name,
+        customer_phone: profile?.phone ?? prev.customer_phone,
+        customer_email: user.email ?? prev.customer_email,
+        shipping_name: addr?.recipient ?? profile?.full_name ?? prev.shipping_name,
+        shipping_phone: addr?.phone ?? profile?.phone ?? prev.shipping_phone,
+        shipping_address: addr?.address_line ?? prev.shipping_address,
+        shipping_district: addr?.district ?? prev.shipping_district,
+        shipping_province: addr?.province ?? prev.shipping_province,
+        shipping_postcode: addr?.postcode ?? prev.shipping_postcode,
       }));
       if (profile?.user_type === "b2b" && profile?.wants_tax_invoice) {
         setWantsTaxInvoice(true);
@@ -75,51 +104,109 @@ function CheckoutPage() {
     })();
   }, [user]);
 
-  const shipping = 0;
   const codFee = payment === "cod" ? COD_FEE : 0;
-  const grandTotal = total + shipping + codFee;
+  const grandTotal = subtotal + codFee;
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (items.length === 0) { toast.error("ตะกร้าว่างเปล่า"); return; }
-    const base = baseSchema.safeParse(form);
-    if (!base.success) { toast.error(base.error.issues[0].message); return; }
+    setErrors({});
+    const base = shippingSchema.safeParse(f);
+    if (!base.success) {
+      const errs: Record<string, string> = {};
+      for (const iss of base.error.issues) errs[iss.path.join(".")] = iss.message;
+      setErrors(errs);
+      toast.error(base.error.issues[0].message);
+      return;
+    }
     let taxInvoice: z.infer<typeof taxSchema> | null = null;
     if (wantsTaxInvoice) {
       const t = taxSchema.safeParse(tax);
-      if (!t.success) { toast.error(t.error.issues[0].message); return; }
+      if (!t.success) {
+        const errs: Record<string, string> = {};
+        for (const iss of t.error.issues) errs[iss.path.join(".")] = iss.message;
+        setErrors(errs);
+        toast.error(t.error.issues[0].message);
+        return;
+      }
       taxInvoice = t.data;
     }
+
     setSubmitting(true);
-    const customerType = user ? (taxInvoice ? "b2b" : "b2c") : "guest";
-    const { data, error } = await supabase.from("orders").insert({
-      ...base.data,
-      items: items.map((i) => ({ id: i.id, sku: i.sku, name: i.name, price: i.price, qty: i.qty, image_url: i.image_url, distributor: i.distributor ?? null })),
-      total: grandTotal,
-      status: "pending",
-      user_id: user?.id ?? null,
-      is_guest: !user,
-      customer_type: customerType,
-      tax_invoice: taxInvoice,
-      payment_method: payment,
-    }).select("id").single();
-    setSubmitting(false);
-    if (error || !data) { toast.error(error?.message ?? "ผิดพลาด"); return; }
-    const orderId = data.id;
-    if (typeof window !== "undefined") {
-      sessionStorage.setItem(`order-${orderId}`, JSON.stringify({
-        id: orderId,
-        payment,
-        total: grandTotal,
-        items,
-        customer: base.data,
-        tax_invoice: taxInvoice,
-        is_guest: !user,
-        created_at: new Date().toISOString(),
+    try {
+      const customerType = user ? (taxInvoice ? "b2b" : "b2c") : "guest";
+      const fullAddr = [f.shipping_address, f.shipping_district, f.shipping_province, f.shipping_postcode].filter(Boolean).join(" ");
+
+      const { data: order, error: oErr } = await supabase
+        .from("orders")
+        .insert({
+          order_number: "", // trigger will fill
+          user_id: user?.id ?? null,
+          is_guest: !user,
+          customer_type: customerType,
+          customer_name: base.data.customer_name,
+          customer_phone: base.data.customer_phone,
+          customer_email: base.data.customer_email,
+          customer_address: fullAddr,
+          shipping_name: base.data.shipping_name,
+          shipping_phone: base.data.shipping_phone,
+          shipping_address: base.data.shipping_address,
+          shipping_district: base.data.shipping_district,
+          shipping_province: base.data.shipping_province,
+          shipping_postcode: base.data.shipping_postcode,
+          need_tax_invoice: !!taxInvoice,
+          company_name: taxInvoice?.company_name ?? null,
+          tax_id: taxInvoice?.tax_id ?? null,
+          company_address: taxInvoice?.company_address ?? null,
+          payment_method: payment,
+          payment_status: "pending",
+          subtotal,
+          cod_fee: codFee,
+          total: grandTotal,
+          status: "pending",
+        })
+        .select("id, order_number")
+        .single();
+
+      if (oErr || !order) throw oErr ?? new Error("ไม่สามารถบันทึกออเดอร์ได้");
+
+      const itemRows = items.map((it) => ({
+        order_id: order.id,
+        product_sku: it.sku,
+        product_name: it.name,
+        product_image_url: it.image_url,
+        brand: null,
+        category: null,
+        distributor: (it.distributor ?? "OTHER"),
+        cost_price: null,
+        unit_price: it.price,
+        quantity: it.qty,
+        subtotal: it.price * it.qty,
       }));
+      const { error: iErr } = await supabase.from("order_items").insert(itemRows);
+      if (iErr) throw iErr;
+
+      await supabase.from("order_status_history").insert({
+        order_id: order.id,
+        status: "pending",
+        note: "ลูกค้าสร้าง order",
+        changed_by: user?.email ?? "customer",
+      });
+
+      clear();
+      navigate({ to: "/order/$orderNumber", params: { orderNumber: order.order_number } });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "ผิดพลาด";
+      toast.error(msg, { description: "ตะกร้ายังอยู่ — ลองอีกครั้ง" });
+    } finally {
+      setSubmitting(false);
     }
-    clear();
-    navigate({ to: "/order/$id", params: { id: orderId } });
+  };
+
+  const fieldError = (k: string) => errors[k as keyof typeof errors];
+  const setField = (k: keyof Fields, v: string) => {
+    setF((prev) => ({ ...prev, [k]: v }));
+    if (errors[k]) setErrors((prev) => ({ ...prev, [k]: undefined }));
   };
 
   return (
@@ -134,7 +221,7 @@ function CheckoutPage() {
         {!user && (
           <div className="mb-5 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm">
             <div className="text-slate-700">
-              <b>สั่งซื้อในฐานะ Guest</b> — สมัครสมาชิกเพื่อติดตามคำสั่งซื้อและใช้ส่วนลดสมาชิก
+              <b>สั่งซื้อในฐานะ Guest</b> — สมัครสมาชิกเพื่อติดตามคำสั่งซื้อได้ง่ายขึ้น
             </div>
             <Link to="/auth" search={{ tab: "b2c", redirect: "/checkout" } as never} className="rounded-md bg-[color:var(--brand-navy)] px-3 py-1.5 text-sm font-semibold text-white hover:bg-[color:var(--brand-navy-2)]">
               สมัครสมาชิก
@@ -144,29 +231,69 @@ function CheckoutPage() {
 
         <form onSubmit={submit} className="grid gap-6 lg:grid-cols-[1fr_360px]">
           <div className="space-y-6">
-            <div className="space-y-4 rounded-lg border bg-white p-6">
-              <h2 className="font-bold text-[color:var(--brand-navy)]">ข้อมูลผู้รับ</h2>
+            {/* Contact */}
+            <section className="space-y-4 rounded-lg border bg-white p-6">
+              <h2 className="font-bold text-[color:var(--brand-navy)]">ข้อมูลผู้ติดต่อ</h2>
               <div>
-                <Label htmlFor="name">ชื่อ-นามสกุล *</Label>
-                <Input id="name" value={form.customer_name} onChange={(e) => setForm({ ...form, customer_name: e.target.value })} required maxLength={100} />
+                <Label htmlFor="cname">ชื่อ-นามสกุล *</Label>
+                <Input id="cname" value={f.customer_name} onChange={(e) => setField("customer_name", e.target.value)} maxLength={100} aria-invalid={!!fieldError("customer_name")} />
+                {fieldError("customer_name") && <p className="mt-1 text-xs text-red-600">{fieldError("customer_name")}</p>}
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <Label htmlFor="phone">เบอร์โทรศัพท์ *</Label>
-                  <Input id="phone" value={form.customer_phone} onChange={(e) => setForm({ ...form, customer_phone: e.target.value })} required placeholder="0812345678" maxLength={10} />
+                  <Label htmlFor="cphone">เบอร์โทรศัพท์ *</Label>
+                  <Input id="cphone" value={f.customer_phone} onChange={(e) => setField("customer_phone", e.target.value)} placeholder="0812345678" maxLength={10} aria-invalid={!!fieldError("customer_phone")} />
+                  {fieldError("customer_phone") && <p className="mt-1 text-xs text-red-600">{fieldError("customer_phone")}</p>}
                 </div>
                 <div>
-                  <Label htmlFor="email">อีเมล *</Label>
-                  <Input id="email" type="email" value={form.customer_email} onChange={(e) => setForm({ ...form, customer_email: e.target.value })} required maxLength={255} />
+                  <Label htmlFor="cemail">อีเมล *</Label>
+                  <Input id="cemail" type="email" value={f.customer_email} onChange={(e) => setField("customer_email", e.target.value)} maxLength={255} aria-invalid={!!fieldError("customer_email")} />
+                  {fieldError("customer_email") && <p className="mt-1 text-xs text-red-600">{fieldError("customer_email")}</p>}
+                </div>
+              </div>
+            </section>
+
+            {/* Shipping */}
+            <section className="space-y-4 rounded-lg border bg-white p-6">
+              <h2 className="font-bold text-[color:var(--brand-navy)]">ที่อยู่จัดส่ง</h2>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <Label htmlFor="sname">ชื่อผู้รับ *</Label>
+                  <Input id="sname" value={f.shipping_name} onChange={(e) => setField("shipping_name", e.target.value)} maxLength={100} aria-invalid={!!fieldError("shipping_name")} />
+                  {fieldError("shipping_name") && <p className="mt-1 text-xs text-red-600">{fieldError("shipping_name")}</p>}
+                </div>
+                <div>
+                  <Label htmlFor="sphone">เบอร์ผู้รับ *</Label>
+                  <Input id="sphone" value={f.shipping_phone} onChange={(e) => setField("shipping_phone", e.target.value)} placeholder="0812345678" maxLength={10} aria-invalid={!!fieldError("shipping_phone")} />
+                  {fieldError("shipping_phone") && <p className="mt-1 text-xs text-red-600">{fieldError("shipping_phone")}</p>}
                 </div>
               </div>
               <div>
-                <Label htmlFor="addr">ที่อยู่จัดส่ง *</Label>
-                <Textarea id="addr" rows={4} value={form.customer_address} onChange={(e) => setForm({ ...form, customer_address: e.target.value })} required maxLength={500} />
+                <Label htmlFor="saddr">ที่อยู่ *</Label>
+                <Textarea id="saddr" rows={3} value={f.shipping_address} onChange={(e) => setField("shipping_address", e.target.value)} maxLength={500} placeholder="เลขที่ / ซอย / ถนน / แขวง" aria-invalid={!!fieldError("shipping_address")} />
+                {fieldError("shipping_address") && <p className="mt-1 text-xs text-red-600">{fieldError("shipping_address")}</p>}
               </div>
-            </div>
+              <div className="grid gap-4 sm:grid-cols-3">
+                <div>
+                  <Label htmlFor="sdistrict">เขต/อำเภอ *</Label>
+                  <Input id="sdistrict" value={f.shipping_district} onChange={(e) => setField("shipping_district", e.target.value)} maxLength={100} aria-invalid={!!fieldError("shipping_district")} />
+                  {fieldError("shipping_district") && <p className="mt-1 text-xs text-red-600">{fieldError("shipping_district")}</p>}
+                </div>
+                <div>
+                  <Label htmlFor="sprov">จังหวัด *</Label>
+                  <Input id="sprov" value={f.shipping_province} onChange={(e) => setField("shipping_province", e.target.value)} maxLength={100} aria-invalid={!!fieldError("shipping_province")} />
+                  {fieldError("shipping_province") && <p className="mt-1 text-xs text-red-600">{fieldError("shipping_province")}</p>}
+                </div>
+                <div>
+                  <Label htmlFor="szip">รหัสไปรษณีย์ *</Label>
+                  <Input id="szip" value={f.shipping_postcode} onChange={(e) => setField("shipping_postcode", e.target.value)} maxLength={5} inputMode="numeric" aria-invalid={!!fieldError("shipping_postcode")} />
+                  {fieldError("shipping_postcode") && <p className="mt-1 text-xs text-red-600">{fieldError("shipping_postcode")}</p>}
+                </div>
+              </div>
+            </section>
 
-            <div className="space-y-4 rounded-lg border bg-white p-6">
+            {/* Tax invoice */}
+            <section className="space-y-4 rounded-lg border bg-white p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="flex items-center gap-2 font-bold text-[color:var(--brand-navy)]">
@@ -185,30 +312,29 @@ function CheckoutPage() {
                 <div className="space-y-3 border-t pt-4">
                   <div>
                     <Label>ชื่อบริษัท / ชื่อ-นามสกุล (สำหรับใบกำกับ) *</Label>
-                    <Input value={tax.company_name} onChange={(e) => setTax({ ...tax, company_name: e.target.value })} maxLength={200} />
+                    <Input value={tax.company_name} onChange={(e) => setTax({ ...tax, company_name: e.target.value })} maxLength={200} aria-invalid={!!fieldError("company_name")} />
+                    {fieldError("company_name") && <p className="mt-1 text-xs text-red-600">{fieldError("company_name")}</p>}
                   </div>
                   <div>
                     <Label>เลขประจำตัวผู้เสียภาษี (13 หลัก) *</Label>
-                    <Input
-                      value={tax.tax_id}
-                      onChange={(e) => setTax({ ...tax, tax_id: e.target.value.replace(/\D/g, "") })}
-                      inputMode="numeric"
-                      maxLength={13}
-                      placeholder="0105558XXXXXX"
-                    />
-                    {tax.tax_id.length > 0 && tax.tax_id.length !== 13 && (
-                      <p className="mt-1 text-xs text-red-600">ต้องเป็นตัวเลข 13 หลัก ({tax.tax_id.length}/13)</p>
+                    <Input value={tax.tax_id} onChange={(e) => setTax({ ...tax, tax_id: e.target.value.replace(/\D/g, "").slice(0, 13) })} maxLength={13} inputMode="numeric" aria-invalid={!!fieldError("tax_id")} />
+                    {(fieldError("tax_id") || (tax.tax_id.length > 0 && tax.tax_id.length !== 13)) && (
+                      <p className="mt-1 text-xs text-red-600">
+                        {fieldError("tax_id") ?? `ต้องเป็นตัวเลข 13 หลัก (${tax.tax_id.length}/13)`}
+                      </p>
                     )}
                   </div>
                   <div>
                     <Label>ที่อยู่ออกใบกำกับ *</Label>
-                    <Textarea rows={3} value={tax.company_address} onChange={(e) => setTax({ ...tax, company_address: e.target.value })} maxLength={500} />
+                    <Textarea rows={3} value={tax.company_address} onChange={(e) => setTax({ ...tax, company_address: e.target.value })} maxLength={500} aria-invalid={!!fieldError("company_address")} />
+                    {fieldError("company_address") && <p className="mt-1 text-xs text-red-600">{fieldError("company_address")}</p>}
                   </div>
                 </div>
               )}
-            </div>
+            </section>
 
-            <div className="space-y-3 rounded-lg border bg-white p-6">
+            {/* Payment */}
+            <section className="space-y-3 rounded-lg border bg-white p-6">
               <h2 className="font-bold text-[color:var(--brand-navy)]">วิธีการชำระเงิน</h2>
               <RadioGroup value={payment} onValueChange={(v) => setPayment(v as "transfer" | "cod")} className="grid gap-2 sm:grid-cols-2">
                 <label className={`flex cursor-pointer items-center gap-3 rounded-lg border-2 p-4 transition ${payment === "transfer" ? "border-[color:var(--brand-orange)] bg-orange-50" : "hover:bg-slate-50"}`}>
@@ -216,7 +342,7 @@ function CheckoutPage() {
                   <Banknote className="h-5 w-5 text-[color:var(--brand-navy)]" />
                   <div>
                     <div className="font-semibold">โอนเงิน</div>
-                    <div className="text-xs text-slate-500">รับรายละเอียดบัญชีหลังยืนยัน</div>
+                    <div className="text-xs text-slate-500">แนบสลิปหลังชำระ</div>
                   </div>
                 </label>
                 <label className={`flex cursor-pointer items-center gap-3 rounded-lg border-2 p-4 transition ${payment === "cod" ? "border-[color:var(--brand-orange)] bg-orange-50" : "hover:bg-slate-50"}`}>
@@ -228,7 +354,7 @@ function CheckoutPage() {
                   </div>
                 </label>
               </RadioGroup>
-            </div>
+            </section>
           </div>
 
           <aside className="h-fit space-y-3 rounded-lg border bg-white p-5 lg:sticky lg:top-32">
@@ -244,22 +370,22 @@ function CheckoutPage() {
             </div>
             <div className="my-2 h-px bg-slate-200" />
             <div className="flex justify-between text-sm">
-              <span>ยอดสินค้า</span><span>{priceFmt.format(total)}</span>
-            </div>
-            <div className="flex justify-between text-sm text-slate-500">
-              <span>ค่าจัดส่ง</span><span>ทีมงานแจ้ง</span>
+              <span>ยอดสินค้า</span><span>{priceFmt.format(subtotal)}</span>
             </div>
             {codFee > 0 && (
               <div className="flex justify-between text-sm text-slate-700">
-                <span>ค่าเก็บปลายทาง</span><span>{priceFmt.format(codFee)}</span>
+                <span>ค่าเก็บปลายทาง (COD)</span><span>{priceFmt.format(codFee)}</span>
               </div>
             )}
+            <div className="flex justify-between text-sm text-slate-500">
+              <span>ค่าจัดส่ง</span><span>ทีมงานแจ้ง</span>
+            </div>
             <div className="my-2 h-px bg-slate-200" />
             <div className="flex justify-between text-xl font-black text-[color:var(--brand-orange)]">
               <span>รวม</span><span>{priceFmt.format(grandTotal)}</span>
             </div>
             <Button type="submit" disabled={submitting || items.length === 0} className="w-full bg-[color:var(--brand-orange)] font-bold hover:bg-[color:var(--brand-orange-dark)]" size="lg">
-              {submitting ? "กำลังส่ง..." : "ยืนยันคำสั่งซื้อ"}
+              {submitting ? (<><Loader2 className="mr-2 h-4 w-4 animate-spin" /> กำลังส่ง...</>) : "ยืนยันคำสั่งซื้อ"}
             </Button>
           </aside>
         </form>
