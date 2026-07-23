@@ -157,6 +157,7 @@ function HomePage() {
       name: (p.name as string) ?? (p.sku as string),
       price: Number(p.price ?? 0),
       image_url: (p.image_url as string) ?? null,
+      distributor: (p.distributor as string | null) ?? null,
     });
     toast.success(`เพิ่ม ${p.sku} ลงตะกร้าแล้ว`);
   };

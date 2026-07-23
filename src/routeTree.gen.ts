@@ -18,6 +18,8 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProductSlugRouteImport } from './routes/product.$slug'
 import { Route as OrderIdRouteImport } from './routes/order.$id'
 import { Route as AuthenticatedAdminSyncRouteImport } from './routes/_authenticated/admin.sync'
+import { Route as AuthenticatedAdminOrdersRouteImport } from './routes/_authenticated/admin.orders'
+import { Route as AuthenticatedAdminOrdersIdRouteImport } from './routes/_authenticated/admin.orders.$id'
 
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
@@ -63,6 +65,18 @@ const AuthenticatedAdminSyncRoute = AuthenticatedAdminSyncRouteImport.update({
   path: '/admin/sync',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminOrdersRoute =
+  AuthenticatedAdminOrdersRouteImport.update({
+    id: '/admin/orders',
+    path: '/admin/orders',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminOrdersIdRoute =
+  AuthenticatedAdminOrdersIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthenticatedAdminOrdersRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -72,7 +86,9 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/order/$id': typeof OrderIdRoute
   '/product/$slug': typeof ProductSlugRoute
+  '/admin/orders': typeof AuthenticatedAdminOrdersRouteWithChildren
   '/admin/sync': typeof AuthenticatedAdminSyncRoute
+  '/admin/orders/$id': typeof AuthenticatedAdminOrdersIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -82,7 +98,9 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/order/$id': typeof OrderIdRoute
   '/product/$slug': typeof ProductSlugRoute
+  '/admin/orders': typeof AuthenticatedAdminOrdersRouteWithChildren
   '/admin/sync': typeof AuthenticatedAdminSyncRoute
+  '/admin/orders/$id': typeof AuthenticatedAdminOrdersIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -94,7 +112,9 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/order/$id': typeof OrderIdRoute
   '/product/$slug': typeof ProductSlugRoute
+  '/_authenticated/admin/orders': typeof AuthenticatedAdminOrdersRouteWithChildren
   '/_authenticated/admin/sync': typeof AuthenticatedAdminSyncRoute
+  '/_authenticated/admin/orders/$id': typeof AuthenticatedAdminOrdersIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -106,7 +126,9 @@ export interface FileRouteTypes {
     | '/contact'
     | '/order/$id'
     | '/product/$slug'
+    | '/admin/orders'
     | '/admin/sync'
+    | '/admin/orders/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -116,7 +138,9 @@ export interface FileRouteTypes {
     | '/contact'
     | '/order/$id'
     | '/product/$slug'
+    | '/admin/orders'
     | '/admin/sync'
+    | '/admin/orders/$id'
   id:
     | '__root__'
     | '/'
@@ -127,7 +151,9 @@ export interface FileRouteTypes {
     | '/contact'
     | '/order/$id'
     | '/product/$slug'
+    | '/_authenticated/admin/orders'
     | '/_authenticated/admin/sync'
+    | '/_authenticated/admin/orders/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -206,14 +232,44 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminSyncRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/orders': {
+      id: '/_authenticated/admin/orders'
+      path: '/admin/orders'
+      fullPath: '/admin/orders'
+      preLoaderRoute: typeof AuthenticatedAdminOrdersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/orders/$id': {
+      id: '/_authenticated/admin/orders/$id'
+      path: '/$id'
+      fullPath: '/admin/orders/$id'
+      preLoaderRoute: typeof AuthenticatedAdminOrdersIdRouteImport
+      parentRoute: typeof AuthenticatedAdminOrdersRoute
+    }
   }
 }
 
+interface AuthenticatedAdminOrdersRouteChildren {
+  AuthenticatedAdminOrdersIdRoute: typeof AuthenticatedAdminOrdersIdRoute
+}
+
+const AuthenticatedAdminOrdersRouteChildren: AuthenticatedAdminOrdersRouteChildren =
+  {
+    AuthenticatedAdminOrdersIdRoute: AuthenticatedAdminOrdersIdRoute,
+  }
+
+const AuthenticatedAdminOrdersRouteWithChildren =
+  AuthenticatedAdminOrdersRoute._addFileChildren(
+    AuthenticatedAdminOrdersRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminOrdersRoute: typeof AuthenticatedAdminOrdersRouteWithChildren
   AuthenticatedAdminSyncRoute: typeof AuthenticatedAdminSyncRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminOrdersRoute: AuthenticatedAdminOrdersRouteWithChildren,
   AuthenticatedAdminSyncRoute: AuthenticatedAdminSyncRoute,
 }
 

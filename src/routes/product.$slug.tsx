@@ -69,7 +69,7 @@ function ProductDetail() {
 
   const addToCart = (n = qty) => {
     if (!p) return;
-    add({ id: p.id, sku: p.sku, slug: p.slug, name: p.name ?? p.sku, price: Number(p.price ?? 0), image_url: p.image_url }, n);
+    add({ id: p.id, sku: p.sku, slug: p.slug, name: p.name ?? p.sku, price: Number(p.price ?? 0), image_url: p.image_url, distributor: (p as { distributor?: string | null }).distributor ?? null }, n);
     toast.success(`เพิ่ม ${p.sku} จำนวน ${n} ลงตะกร้าแล้ว`);
   };
 

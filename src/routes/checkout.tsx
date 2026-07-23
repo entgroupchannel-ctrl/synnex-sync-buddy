@@ -45,7 +45,7 @@ function CheckoutPage() {
     setSubmitting(true);
     const { data, error } = await supabase.from("orders").insert({
       ...parsed.data,
-      items: items.map((i) => ({ id: i.id, sku: i.sku, name: i.name, price: i.price, qty: i.qty })),
+      items: items.map((i) => ({ id: i.id, sku: i.sku, name: i.name, price: i.price, qty: i.qty, image_url: i.image_url, distributor: i.distributor ?? null })),
       total,
       status: "pending",
     }).select("id").single();
