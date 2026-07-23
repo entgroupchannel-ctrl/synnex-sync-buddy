@@ -149,6 +149,14 @@ function SyncPage() {
     queryFn: () => fetchStatus(),
   });
 
+  const rulesQ = useQuery({
+    queryKey: ["pricing-rules-idx"],
+    queryFn: async () => {
+      const { data } = await supabase.from("pricing_rules").select("id, rule_type, target, markup_percent, is_active").eq("is_active", true);
+      return indexPricingRules((data ?? []) as PricingRule[]);
+    },
+  });
+
   const listQ = useQuery({
     queryKey: ["synnex", "list", debounced, status, page],
     queryFn: () => fetchList({ data: { search: debounced, status, page } }),
