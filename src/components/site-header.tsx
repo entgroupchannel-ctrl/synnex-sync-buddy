@@ -84,18 +84,20 @@ export function SiteHeader() {
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="ค้นหาสินค้า, SKU, ยี่ห้อ..."
+              placeholder={t("nav.search")}
               className="min-w-0 flex-1 bg-transparent px-4 py-2.5 text-sm outline-none placeholder:text-slate-400"
               maxLength={100}
             />
             <button
               type="submit"
               className="grid w-12 place-items-center bg-[color:var(--brand-orange)] text-white transition hover:bg-[color:var(--brand-orange-dark)]"
-              aria-label="ค้นหา"
+              aria-label="Search"
             >
               <Search className="h-5 w-5" />
             </button>
           </form>
+
+          <LangToggle className="hidden lg:inline-flex" />
 
           {user ? (
             <DropdownMenu>
@@ -108,18 +110,18 @@ export function SiteHeader() {
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel className="truncate">{user.email}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild><Link to="/my-account/orders"><Package className="mr-2 h-4 w-4" /> ประวัติการสั่งซื้อ</Link></DropdownMenuItem>
-                <DropdownMenuItem asChild><Link to="/my-account/profile"><User className="mr-2 h-4 w-4" /> ข้อมูลส่วนตัว</Link></DropdownMenuItem>
-                <DropdownMenuItem asChild><Link to="/my-account/addresses"><MapPin className="mr-2 h-4 w-4" /> ที่อยู่จัดส่ง</Link></DropdownMenuItem>
+                <DropdownMenuItem asChild><Link to="/my-account/orders"><Package className="mr-2 h-4 w-4" /> {t("nav.orders")}</Link></DropdownMenuItem>
+                <DropdownMenuItem asChild><Link to="/my-account/profile"><User className="mr-2 h-4 w-4" /> {t("nav.profile")}</Link></DropdownMenuItem>
+                <DropdownMenuItem asChild><Link to="/my-account/addresses"><MapPin className="mr-2 h-4 w-4" /> {t("nav.addresses")}</Link></DropdownMenuItem>
                 <DropdownMenuItem asChild><Link to="/admin/orders"><Building2 className="mr-2 h-4 w-4" /> Admin</Link></DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onSelect={signOut}><LogOut className="mr-2 h-4 w-4" /> ออกจากระบบ</DropdownMenuItem>
+                <DropdownMenuItem onSelect={signOut}><LogOut className="mr-2 h-4 w-4" /> {t("nav.signout")}</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
             <div className="hidden shrink-0 items-center gap-1 lg:flex">
-              <Link to="/auth" search={{ tab: "signin" } as never} className="rounded-md px-3 py-1.5 text-sm hover:bg-white/10">เข้าสู่ระบบ</Link>
-              <Link to="/auth" search={{ tab: "b2c" } as never} className="rounded-md bg-[color:var(--brand-green)] px-3 py-1.5 text-sm font-semibold hover:opacity-90">สมัครสมาชิก</Link>
+              <Link to="/auth" search={{ tab: "signin" } as never} className="rounded-md px-3 py-1.5 text-sm hover:bg-white/10">{t("nav.login")}</Link>
+              <Link to="/auth" search={{ tab: "b2c" } as never} className="rounded-md bg-[color:var(--brand-green)] px-3 py-1.5 text-sm font-semibold hover:opacity-90">{t("nav.register")}</Link>
             </div>
           )}
 
