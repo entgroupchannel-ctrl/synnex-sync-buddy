@@ -1451,6 +1451,27 @@ function PricingProductsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Large-export confirmation */}
+      <Dialog open={exportConfirmCount != null} onOpenChange={(o) => !o && setExportConfirmCount(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>ยืนยันการ Export</DialogTitle>
+            <DialogDescription>
+              ข้อมูล <b>{exportConfirmCount?.toLocaleString()}</b> รายการ อาจใช้เวลาสักครู่ ต้องการดำเนินการต่อไหม?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button variant="outline" onClick={() => setExportConfirmCount(null)}>ยกเลิก</Button>
+            <Button
+              onClick={() => { setExportConfirmCount(null); runExport(); }}
+              className="bg-[color:var(--brand-navy)] font-bold text-white"
+            >
+              <Download className="mr-1 h-4 w-4" /> Export
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
