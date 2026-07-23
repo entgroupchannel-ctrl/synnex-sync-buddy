@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       orders: {
         Row: {
+          admin_status: string | null
           created_at: string | null
           customer_address: string | null
           customer_email: string | null
@@ -23,10 +24,12 @@ export type Database = {
           customer_phone: string | null
           id: string
           items: Json | null
+          notes: string | null
           status: string | null
           total: number | null
         }
         Insert: {
+          admin_status?: string | null
           created_at?: string | null
           customer_address?: string | null
           customer_email?: string | null
@@ -34,10 +37,12 @@ export type Database = {
           customer_phone?: string | null
           id?: string
           items?: Json | null
+          notes?: string | null
           status?: string | null
           total?: number | null
         }
         Update: {
+          admin_status?: string | null
           created_at?: string | null
           customer_address?: string | null
           customer_email?: string | null
@@ -45,8 +50,39 @@ export type Database = {
           customer_phone?: string | null
           id?: string
           items?: Json | null
+          notes?: string | null
           status?: string | null
           total?: number | null
+        }
+        Relationships: []
+      }
+      pricing_rules: {
+        Row: {
+          id: string
+          is_active: boolean | null
+          markup_percent: number | null
+          rule_name: string | null
+          rule_type: string | null
+          target: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          is_active?: boolean | null
+          markup_percent?: number | null
+          rule_name?: string | null
+          rule_type?: string | null
+          target?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          is_active?: boolean | null
+          markup_percent?: number | null
+          rule_name?: string | null
+          rule_type?: string | null
+          target?: string | null
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -85,14 +121,18 @@ export type Database = {
           brand: string | null
           brand_name: string | null
           category: string | null
+          cost_price: number | null
           created_at: string
           description: string | null
           distributor: string | null
           id: string
           image_url: string | null
+          markup_override: number | null
           name: string | null
           price: number | null
+          price_approved: boolean | null
           product_url: string | null
+          selling_price: number | null
           sku: string
           slug: string | null
           stock: string | null
@@ -105,14 +145,18 @@ export type Database = {
           brand?: string | null
           brand_name?: string | null
           category?: string | null
+          cost_price?: number | null
           created_at?: string
           description?: string | null
           distributor?: string | null
           id?: string
           image_url?: string | null
+          markup_override?: number | null
           name?: string | null
           price?: number | null
+          price_approved?: boolean | null
           product_url?: string | null
+          selling_price?: number | null
           sku: string
           slug?: string | null
           stock?: string | null
@@ -125,14 +169,18 @@ export type Database = {
           brand?: string | null
           brand_name?: string | null
           category?: string | null
+          cost_price?: number | null
           created_at?: string
           description?: string | null
           distributor?: string | null
           id?: string
           image_url?: string | null
+          markup_override?: number | null
           name?: string | null
           price?: number | null
+          price_approved?: boolean | null
           product_url?: string | null
+          selling_price?: number | null
           sku?: string
           slug?: string | null
           stock?: string | null
