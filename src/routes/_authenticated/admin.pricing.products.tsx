@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { z } from "zod";
 import { toast } from "sonner";
@@ -10,10 +10,41 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Search, CheckCircle2, AlertTriangle, XCircle, Check, X, LayoutGrid, List, RotateCcw, ImageOff } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Search,
+  CheckCircle2,
+  AlertTriangle,
+  XCircle,
+  Check,
+  X,
+  LayoutGrid,
+  List,
+  RotateCcw,
+  ImageOff,
+  Loader2,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { bahtFmt, computeSelling, effectiveMarkup, indexPricingRules, type PricingRule } from "@/lib/pricing-helpers";
+import {
+  bahtFmt,
+  computeSelling,
+  effectiveMarkup,
+  indexPricingRules,
+  type PricingRule,
+} from "@/lib/pricing-helpers";
 import { CATEGORIES } from "@/lib/cart";
+import { logAudit, logAuditBulk, newSessionId } from "@/lib/pricing-audit";
+
+const LS_KEY = "ent_pricing_filters";
 
 const searchSchema = z.object({
   q: fallback(z.string(), "").default(""),
@@ -39,7 +70,7 @@ export const Route = createFileRoute("/_authenticated/admin/pricing/products")({
   component: PricingProductsPage,
 });
 
-const PAGE_SIZE = 24;
+const PAGE_SIZE = 50;
 
 type Product = {
   id: string;
@@ -54,6 +85,7 @@ type Product = {
   selling_price: number | null;
   markup_override: number | null;
   price_approved: boolean | null;
+  updated_at: string | null;
 };
 
 const DIST_STYLE: Record<string, { label: string; dot: string; bg: string; text: string; ring: string }> = {
@@ -64,6 +96,38 @@ function distStyle(d: string | null | undefined) {
   return DIST_STYLE[(d ?? "").toUpperCase()] ?? { label: d ?? "—", dot: "bg-slate-400", bg: "bg-slate-50", text: "text-slate-700", ring: "border-slate-200" };
 }
 
+const SORT_OPTIONS: Array<[string, string]> = [
+  ["name_asc", "ชื่อสินค้า A → Z"],
+  ["name_desc", "ชื่อสินค้า Z → A"],
+  ["cost_asc", "ต้นทุน น้อย → มาก"],
+  ["cost_desc", "ต้นทุน มาก → น้อย"],
+  ["markup_asc", "Markup % น้อย → มาก"],
+  ["markup_desc", "Markup % มาก → น้อย"],
+  ["selling_asc", "ราคาขาย น้อย → มาก"],
+  ["selling_desc", "ราคาขาย มาก → น้อย"],
+  ["status_pending", "สถานะ (รอ Approve ก่อน)"],
+  ["status_approved", "สถานะ (Approved ก่อน)"],
+  ["updated_desc", "อัปเดตล่าสุด"],
+  ["sku_asc", "SKU A → Z"],
+  ["sku_desc", "SKU Z → A"],
+];
+
+const sortMap: Record<string, { col: string; asc: boolean }> = {
+  sku_asc: { col: "sku", asc: true },
+  sku_desc: { col: "sku", asc: false },
+  name_asc: { col: "name", asc: true },
+  name_desc: { col: "name", asc: false },
+  cost_asc: { col: "cost_price", asc: true },
+  cost_desc: { col: "cost_price", asc: false },
+  markup_asc: { col: "markup_override", asc: true },
+  markup_desc: { col: "markup_override", asc: false },
+  selling_asc: { col: "selling_price", asc: true },
+  selling_desc: { col: "selling_price", asc: false },
+  status_pending: { col: "price_approved", asc: true },
+  status_approved: { col: "price_approved", asc: false },
+  updated_desc: { col: "updated_at", asc: false },
+};
+
 function PricingProductsPage() {
   const search = Route.useSearch();
   const nav = Route.useNavigate();
@@ -73,34 +137,85 @@ function PricingProductsPage() {
   const [markupChoice, setMarkupChoice] = useState<string>("15");
   const [markupCustom, setMarkupCustom] = useState<string>("");
   const [markupEdits, setMarkupEdits] = useState<Record<string, string>>({});
+  const [pendingIds, setPendingIds] = useState<Set<string>>(new Set());
+  const [justApprovedIds, setJustApprovedIds] = useState<Set<string>>(new Set());
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmReady, setConfirmReady] = useState(false);
+  const [bulkProgress, setBulkProgress] = useState<{ done: number; total: number } | null>(null);
+  const gridTopRef = useRef<HTMLDivElement>(null);
+  const hydrated = useRef(false);
+
+  // Restore filters from localStorage on first mount (only if URL has no explicit params)
+  useEffect(() => {
+    if (hydrated.current) return;
+    hydrated.current = true;
+    if (typeof window === "undefined") return;
+    try {
+      const raw = window.localStorage.getItem(LS_KEY);
+      if (!raw) return;
+      const saved = JSON.parse(raw) as Record<string, unknown>;
+      const hasUrlFilters = window.location.search.length > 1;
+      if (hasUrlFilters) return;
+      const patch: Record<string, unknown> = {};
+      for (const k of ["q", "distributor", "category", "status", "brands", "sort", "view"]) {
+        if (typeof saved[k] === "string") patch[k] = saved[k];
+      }
+      if (Object.keys(patch).length > 0) {
+        setQ(String(patch.q ?? ""));
+        nav({ search: (s: Record<string, unknown>) => ({ ...s, ...patch, page: 1 }), replace: true });
+      }
+    } catch {
+      /* ignore */
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Persist filters to localStorage whenever they change
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      window.localStorage.setItem(
+        LS_KEY,
+        JSON.stringify({
+          q: search.q,
+          distributor: search.distributor,
+          category: search.category,
+          status: search.status,
+          brands: search.brands,
+          sort: search.sort,
+          view: search.view,
+        }),
+      );
+    } catch {
+      /* ignore */
+    }
+  }, [search.q, search.distributor, search.category, search.status, search.brands, search.sort, search.view]);
 
   const update = (patch: Record<string, unknown>) =>
     nav({ search: (s: Record<string, unknown>) => ({ ...s, ...patch, page: 1 }) });
+
+  const goToPage = (page: number) => {
+    nav({ search: (s: Record<string, unknown>) => ({ ...s, page }) });
+    setTimeout(() => gridTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 30);
+  };
 
   const selectedBrands = useMemo(
     () => (search.brands ? search.brands.split(",").filter(Boolean) : []),
     [search.brands],
   );
 
-  const sortMap: Record<string, { col: string; asc: boolean }> = {
-    sku_asc: { col: "sku", asc: true },
-    sku_desc: { col: "sku", asc: false },
-    name_asc: { col: "name", asc: true },
-    cost_asc: { col: "cost_price", asc: true },
-    cost_desc: { col: "cost_price", asc: false },
-    selling_asc: { col: "selling_price", asc: true },
-    selling_desc: { col: "selling_price", asc: false },
-  };
-
   const productsQ = useQuery({
-    queryKey: ["pricing-products-v2", search],
+    queryKey: ["pricing-products-v3", search],
     queryFn: async () => {
       const from = (search.page - 1) * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
       const so = sortMap[search.sort] ?? sortMap.sku_asc;
       let qq = supabase
         .from("synnex_products")
-        .select("id, sku, name, brand, category, distributor, image_url, cost_price, price, selling_price, markup_override, price_approved", { count: "exact" })
+        .select(
+          "id, sku, name, brand, category, distributor, image_url, cost_price, price, selling_price, markup_override, price_approved, updated_at",
+          { count: "exact" },
+        )
         .order(so.col, { ascending: so.asc, nullsFirst: false })
         .range(from, to);
       const s = search.q.trim().replace(/[%,]/g, "");
@@ -188,67 +303,247 @@ function PricingProductsPage() {
   });
 
   const invalidateAll = () => {
-    qc.invalidateQueries({ queryKey: ["pricing-products-v2"] });
+    qc.invalidateQueries({ queryKey: ["pricing-products-v3"] });
     qc.invalidateQueries({ queryKey: ["pricing-dist-counts"] });
     qc.invalidateQueries({ queryKey: ["pricing-status-counts"] });
     qc.invalidateQueries({ queryKey: ["pricing-unapproved-count"] });
   };
 
+  const markPending = (id: string, on: boolean) =>
+    setPendingIds((s) => {
+      const c = new Set(s);
+      if (on) c.add(id);
+      else c.delete(id);
+      return c;
+    });
+
+  const flashApproved = (id: string) => {
+    setJustApprovedIds((s) => new Set(s).add(id));
+    setTimeout(() => {
+      setJustApprovedIds((s) => {
+        const c = new Set(s);
+        c.delete(id);
+        return c;
+      });
+    }, 2000);
+  };
+
+  // Toast helpers with richer content
+  const priceChangeToast = (name: string, oldPrice: number, newPrice: number, mk: number) => {
+    toast.success("Approve สำเร็จ", {
+      description: (
+        <div className="text-xs">
+          <div className="font-semibold text-slate-900">{name}</div>
+          <div className="mt-0.5 font-mono">
+            ฿{bahtFmt.format(oldPrice)} → ฿{bahtFmt.format(newPrice)} (+{mk}%)
+          </div>
+        </div>
+      ),
+      duration: 4000,
+    });
+  };
+  const errorToast = (title: string, name: string, message: string, retry?: () => void) => {
+    toast.error(title, {
+      description: (
+        <div className="text-xs">
+          <div className="font-semibold text-slate-900">{name}</div>
+          <div className="mt-0.5 text-red-700">{message}</div>
+        </div>
+      ),
+      action: retry ? { label: "ลองอีกครั้ง", onClick: retry } : undefined,
+      duration: Infinity,
+      closeButton: true,
+    });
+  };
+
+  // Single-card Apply markup change (from inline edit)
   const applyMut = useMutation({
-    mutationFn: async ({ id, cost, markup }: { id: string; cost: number; markup: number }) => {
+    mutationFn: async (input: { p: Product; markup: number }) => {
+      const { p, markup } = input;
+      const cost = Number(p.cost_price ?? p.price ?? 0);
       const selling = computeSelling(cost, markup);
-      const { error } = await supabase.from("synnex_products").update({ markup_override: markup, selling_price: selling, price_approved: true }).eq("id", id);
+      markPending(p.id, true);
+      const { error } = await supabase
+        .from("synnex_products")
+        .update({ markup_override: markup, selling_price: selling, price_approved: true })
+        .eq("id", p.id);
       if (error) throw error;
-      return { id };
+      await logAudit({
+        product_sku: p.sku,
+        product_name: p.name,
+        action: "markup_change",
+        old_selling_price: p.selling_price,
+        new_selling_price: selling,
+        old_markup: p.markup_override,
+        new_markup: markup,
+      });
+      return { p, selling, markup };
     },
-    onSuccess: ({ id }) => {
-      setMarkupEdits((m) => { const c = { ...m }; delete c[id]; return c; });
-      toast.success("Apply สำเร็จ");
+    onSuccess: ({ p, selling, markup }) => {
+      markPending(p.id, false);
+      flashApproved(p.id);
+      setMarkupEdits((m) => {
+        const c = { ...m };
+        delete c[p.id];
+        return c;
+      });
+      priceChangeToast(p.name ?? p.sku, Number(p.selling_price ?? 0), selling, markup);
       invalidateAll();
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error, vars) => {
+      markPending(vars.p.id, false);
+      errorToast("บันทึก markup ไม่สำเร็จ", vars.p.name ?? vars.p.sku, e.message, () =>
+        applyMut.mutate(vars),
+      );
+    },
   });
 
+  // Single-card Approve using current effective markup
   const approveMut = useMutation({
-    mutationFn: async ({ id, cost, currentMarkup }: { id: string; cost: number; currentMarkup: number }) => {
-      const selling = computeSelling(cost, currentMarkup);
-      const { error } = await supabase.from("synnex_products").update({ selling_price: selling, price_approved: true }).eq("id", id);
+    mutationFn: async (input: { p: Product; markup: number }) => {
+      const { p, markup } = input;
+      const cost = Number(p.cost_price ?? p.price ?? 0);
+      const selling = computeSelling(cost, markup);
+      markPending(p.id, true);
+      const { error } = await supabase
+        .from("synnex_products")
+        .update({ selling_price: selling, price_approved: true })
+        .eq("id", p.id);
       if (error) throw error;
+      await logAudit({
+        product_sku: p.sku,
+        product_name: p.name,
+        action: "approve",
+        old_selling_price: p.selling_price,
+        new_selling_price: selling,
+        old_markup: p.markup_override,
+        new_markup: markup,
+      });
+      return { p, selling, markup };
     },
-    onSuccess: () => { toast.success("Approve แล้ว"); invalidateAll(); },
-    onError: (e: Error) => toast.error(e.message),
+    onSuccess: ({ p, selling, markup }) => {
+      markPending(p.id, false);
+      flashApproved(p.id);
+      priceChangeToast(p.name ?? p.sku, Number(p.cost_price ?? p.price ?? 0), selling, markup);
+      invalidateAll();
+    },
+    onError: (e: Error, vars) => {
+      markPending(vars.p.id, false);
+      errorToast("Approve ไม่สำเร็จ", vars.p.name ?? vars.p.sku, e.message, () =>
+        approveMut.mutate(vars),
+      );
+    },
   });
 
   const bulkApproveMut = useMutation({
     mutationFn: async ({ ids, markup }: { ids: string[]; markup: number }) => {
-      const { data, error } = await supabase.from("synnex_products").select("id, cost_price, price").in("id", ids);
-      if (error) throw error;
+      const sessionId = newSessionId();
+      const chunks: string[][] = [];
+      for (let i = 0; i < ids.length; i += 50) chunks.push(ids.slice(i, i + 50));
+      let done = 0;
       let ok = 0;
-      for (const row of data ?? []) {
-        const r = row as { id: string; cost_price: number | null; price: number | null };
-        const cost = Number(r.cost_price ?? r.price ?? 0);
-        if (!cost || cost <= 0) continue;
-        const selling = computeSelling(cost, markup);
-        const { error: uerr } = await supabase.from("synnex_products").update({ selling_price: selling, price_approved: true }).eq("id", r.id);
-        if (!uerr) ok++;
+      const auditRows: Parameters<typeof logAuditBulk>[0] = [];
+      setBulkProgress({ done: 0, total: ids.length });
+      for (const chunk of chunks) {
+        const { data, error } = await supabase
+          .from("synnex_products")
+          .select("id, sku, name, cost_price, price, selling_price, markup_override")
+          .in("id", chunk);
+        if (error) throw error;
+        for (const row of data ?? []) {
+          const r = row as {
+            id: string;
+            sku: string;
+            name: string | null;
+            cost_price: number | null;
+            price: number | null;
+            selling_price: number | null;
+            markup_override: number | null;
+          };
+          done++;
+          const cost = Number(r.cost_price ?? r.price ?? 0);
+          if (!cost || cost <= 0) continue;
+          const selling = computeSelling(cost, markup);
+          const { error: uerr } = await supabase
+            .from("synnex_products")
+            .update({ selling_price: selling, price_approved: true, markup_override: markup })
+            .eq("id", r.id);
+          if (!uerr) {
+            ok++;
+            auditRows.push({
+              product_sku: r.sku,
+              product_name: r.name,
+              action: "bulk_approve",
+              old_selling_price: r.selling_price,
+              new_selling_price: selling,
+              old_markup: r.markup_override,
+              new_markup: markup,
+              session_id: sessionId,
+            });
+          }
+          setBulkProgress({ done, total: ids.length });
+        }
       }
-      return { updated: ok, requested: ids.length };
+      await logAuditBulk(auditRows);
+      const avgSelling =
+        auditRows.length > 0
+          ? auditRows.reduce((s, r) => s + Number(r.new_selling_price ?? 0), 0) / auditRows.length
+          : 0;
+      return { updated: ok, requested: ids.length, markup, avgSelling };
     },
     onSuccess: (r) => {
-      toast.success(`Apply + Approve แล้ว ${r.updated}/${r.requested} รายการ`);
+      toast.success("Bulk Approve สำเร็จ", {
+        description: (
+          <div className="text-xs">
+            <div className="font-semibold">
+              {r.updated} รายการ | markup +{r.markup}%
+            </div>
+            {r.avgSelling > 0 && (
+              <div className="mt-0.5 font-mono">
+                ราคาขายเฉลี่ย ฿{bahtFmt.format(r.avgSelling)}
+              </div>
+            )}
+          </div>
+        ),
+        duration: 4000,
+      });
       setSelected(new Set());
+      setBulkProgress(null);
       invalidateAll();
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => {
+      toast.error("Bulk Approve ไม่สำเร็จ", { description: e.message, duration: Infinity, closeButton: true });
+      setBulkProgress(null);
+    },
   });
 
   const resetBulkMut = useMutation({
     mutationFn: async (ids: string[]) => {
+      const sessionId = newSessionId();
+      const { data: before } = await supabase
+        .from("synnex_products")
+        .select("id, sku, name, selling_price, markup_override")
+        .in("id", ids);
       const { error } = await supabase
         .from("synnex_products")
         .update({ selling_price: null, price_approved: false, markup_override: null })
         .in("id", ids);
       if (error) throw error;
+      await logAuditBulk(
+        (before ?? []).map((r) => {
+          const row = r as { sku: string; name: string | null; selling_price: number | null; markup_override: number | null };
+          return {
+            product_sku: row.sku,
+            product_name: row.name,
+            action: "reset",
+            old_selling_price: row.selling_price,
+            new_selling_price: null,
+            old_markup: row.markup_override,
+            new_markup: null,
+            session_id: sessionId,
+          };
+        }),
+      );
       return ids.length;
     },
     onSuccess: (n) => {
@@ -256,11 +551,13 @@ function PricingProductsPage() {
       setSelected(new Set());
       invalidateAll();
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) =>
+      toast.error("Reset ไม่สำเร็จ", { description: e.message, duration: Infinity, closeButton: true }),
   });
 
   const rows = productsQ.data?.rows ?? [];
-  const totalPages = Math.max(1, Math.ceil((productsQ.data?.count ?? 0) / PAGE_SIZE));
+  const totalCount = productsQ.data?.count ?? 0;
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
   const dCounts = distributorCountsQ.data;
   const sCounts = statusCountsQ.data;
   const pageIds = useMemo(() => rows.map((r) => r.id), [rows]);
@@ -288,20 +585,33 @@ function PricingProductsPage() {
     update({ brands: [...set].join(",") });
   };
 
+  const openConfirmBulk = () => {
+    const markup = getMarkup();
+    if (markup == null) {
+      toast.error("กรุณาระบุ markup ที่ถูกต้อง");
+      return;
+    }
+    if (selected.size === 0) return;
+    setConfirmOpen(true);
+    setConfirmReady(false);
+    setTimeout(() => setConfirmReady(true), 2000);
+  };
+
   const runBulk = () => {
     const markup = getMarkup();
-    if (markup == null) { toast.error("กรุณาระบุ markup ที่ถูกต้อง"); return; }
-    if (selected.size === 0) return;
+    if (markup == null || selected.size === 0) return;
+    setConfirmOpen(false);
     bulkApproveMut.mutate({ ids: [...selected], markup });
   };
 
   const toggleOne = (id: string) => {
     const s = new Set(selected);
-    if (s.has(id)) s.delete(id); else s.add(id);
+    if (s.has(id)) s.delete(id);
+    else s.add(id);
     setSelected(s);
   };
 
-  // Bulk preview: average cost & projected selling
+  // Bulk preview
   const bulkPreview = useMemo(() => {
     if (selected.size === 0) return null;
     const markup = getMarkup();
@@ -314,8 +624,35 @@ function PricingProductsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selected, rows, markupChoice, markupCustom]);
 
+  // Preview rows for the confirm dialog (up to 3 from current page)
+  const confirmPreviewRows = useMemo(() => {
+    const markup = getMarkup();
+    if (markup == null) return [];
+    return rows
+      .filter((r) => selected.has(r.id))
+      .filter((r) => Number(r.cost_price ?? r.price ?? 0) > 0)
+      .slice(0, 3)
+      .map((r) => {
+        const cost = Number(r.cost_price ?? r.price ?? 0);
+        return { name: r.name ?? r.sku, cost, selling: computeSelling(cost, markup) };
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selected, rows, markupChoice, markupCustom]);
+
   const isSupabaseImage = (u: string | null | undefined) =>
     !!u && (u.includes("supabase.co/storage") || u.includes("/storage/v1/object/"));
+
+  const activePageNumbers = useMemo((): (number | "…")[] => {
+    const p = search.page;
+    const T = totalPages;
+    if (T <= 7) return Array.from({ length: T }, (_, i) => i + 1);
+    const items: (number | "…")[] = [1];
+    if (p > 4) items.push("…");
+    for (let i = Math.max(2, p - 1); i <= Math.min(T - 1, p + 1); i++) items.push(i);
+    if (p < T - 3) items.push("…");
+    items.push(T);
+    return items;
+  }, [search.page, totalPages]);
 
   const Sidebar = (
     <div className="space-y-6 text-sm">
@@ -419,22 +756,35 @@ function PricingProductsPage() {
         </div>
       </div>
 
-      <Button variant="outline" className="w-full" onClick={() => nav({ search: {} as never })}>
+      <Button
+        variant="outline"
+        className="w-full"
+        onClick={() => {
+          setQ("");
+          nav({ search: {} as never });
+        }}
+      >
         ล้างตัวกรอง
       </Button>
     </div>
   );
 
+  const from = totalCount === 0 ? 0 : (search.page - 1) * PAGE_SIZE + 1;
+  const to = Math.min(search.page * PAGE_SIZE, totalCount);
+
   return (
     <div className="min-h-screen bg-slate-50">
-      <Toaster richColors position="top-right" />
+      <Toaster richColors position="top-right" visibleToasts={3} toastOptions={{ style: { zIndex: 9999 } }} />
       <header className="border-b bg-[color:var(--brand-navy)] text-white">
         <div className="mx-auto flex max-w-[100rem] items-center gap-3 px-4 py-4">
           <h1 className="text-lg font-bold md:text-xl">ราคาสินค้ารายชิ้น</h1>
           <div className="text-xs text-white/70">
-            พบ <b className="text-white">{(productsQ.data?.count ?? 0).toLocaleString()}</b> รายการ
+            พบ <b className="text-white">{totalCount.toLocaleString()}</b> รายการ
           </div>
           <div className="ml-auto flex gap-2">
+            <Button asChild variant="ghost" size="sm" className="text-white hover:bg-white/10">
+              <Link to="/admin/pricing/audit">Audit log</Link>
+            </Button>
             <Button asChild variant="ghost" size="sm" className="text-white hover:bg-white/10">
               <Link to="/admin/pricing">← กฎราคา</Link>
             </Button>
@@ -450,6 +800,7 @@ function PricingProductsPage() {
 
         {/* Main */}
         <main className="min-w-0 flex-1">
+          <div ref={gridTopRef} />
           {/* Distributor tabs + sort/view */}
           <div className="mb-4 flex flex-wrap items-center gap-3 rounded-lg border bg-white p-2">
             <div className="flex flex-wrap gap-1">
@@ -487,15 +838,11 @@ function PricingProductsPage() {
                 <span className="text-slate-600">เลือกทั้งหน้า</span>
               </label>
               <Select value={search.sort} onValueChange={(v) => update({ sort: v })}>
-                <SelectTrigger className="h-8 w-40 text-xs"><SelectValue /></SelectTrigger>
+                <SelectTrigger className="h-8 w-52 text-xs"><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="sku_asc">SKU (A → Z)</SelectItem>
-                  <SelectItem value="sku_desc">SKU (Z → A)</SelectItem>
-                  <SelectItem value="name_asc">ชื่อ (A → Z)</SelectItem>
-                  <SelectItem value="cost_asc">ต้นทุน (น้อย → มาก)</SelectItem>
-                  <SelectItem value="cost_desc">ต้นทุน (มาก → น้อย)</SelectItem>
-                  <SelectItem value="selling_asc">ราคาขาย (น้อย → มาก)</SelectItem>
-                  <SelectItem value="selling_desc">ราคาขาย (มาก → น้อย)</SelectItem>
+                  {SORT_OPTIONS.map(([val, label]) => (
+                    <SelectItem key={val} value={val}>{label}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <div className="flex overflow-hidden rounded-md border">
@@ -524,7 +871,6 @@ function PricingProductsPage() {
               <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="ค้นหา..." className="pl-9" />
             </form>
           </div>
-
 
           {/* Product grid */}
           {productsQ.isLoading ? (
@@ -561,6 +907,8 @@ function PricingProductsPage() {
                   const previewSelling = hasEdit && cost > 0 ? computeSelling(cost, editedNum!) : null;
 
                   const isSelected = selected.has(p.id);
+                  const isPending = pendingIds.has(p.id);
+                  const justOk = justApprovedIds.has(p.id);
                   const ds = distStyle(p.distributor);
                   const supaImg = isSupabaseImage(p.image_url);
 
@@ -581,18 +929,23 @@ function PricingProductsPage() {
                           : "border-slate-200 hover:border-slate-300 hover:shadow-sm"
                       } ${isListView ? "flex" : ""}`}
                     >
+                      {/* Per-card loading overlay */}
+                      {isPending && (
+                        <div className="absolute inset-0 z-20 grid place-items-center bg-white/60 backdrop-blur-[1px]">
+                          <Loader2 className="h-8 w-8 animate-spin text-[color:var(--brand-navy)]" />
+                        </div>
+                      )}
+
                       {/* Image area */}
                       <div
                         className={`relative bg-slate-50 ${
                           isListView ? "aspect-square w-40 shrink-0" : "aspect-square w-full"
                         }`}
                       >
-                        {/* Select checkbox */}
                         <div className="absolute left-2 top-2 z-10 rounded bg-white/95 p-1 shadow-sm">
                           <Checkbox checked={isSelected} onCheckedChange={() => toggleOne(p.id)} />
                         </div>
 
-                        {/* Badges row: distributor + status */}
                         <div className="pointer-events-none absolute right-2 top-2 z-10 flex flex-col items-end gap-1">
                           <span className={`rounded px-2 py-0.5 text-[10px] font-bold shadow-sm ${ds.bg} ${ds.text}`}>
                             {ds.label}
@@ -603,7 +956,6 @@ function PricingProductsPage() {
                           </span>
                         </div>
 
-                        {/* External-image warning */}
                         {p.image_url && !supaImg && (
                           <Tooltip>
                             <TooltipTrigger asChild>
@@ -662,7 +1014,7 @@ function PricingProductsPage() {
                                 onChange={(e) => setMarkupEdits((m) => ({ ...m, [p.id]: e.target.value }))}
                                 onKeyDown={(e) => {
                                   if (e.key === "Enter" && hasEdit && cost > 0) {
-                                    applyMut.mutate({ id: p.id, cost, markup: editedNum! });
+                                    applyMut.mutate({ p, markup: editedNum! });
                                   }
                                 }}
                                 className="h-5 w-10 bg-transparent text-center outline-none"
@@ -691,39 +1043,47 @@ function PricingProductsPage() {
                             <Button
                               size="sm"
                               className="h-8 flex-1 bg-[color:var(--brand-orange)] text-xs font-bold hover:bg-[color:var(--brand-orange-dark)]"
-                              onClick={() => applyMut.mutate({ id: p.id, cost, markup: editedNum! })}
-                              disabled={applyMut.isPending}
+                              onClick={() => applyMut.mutate({ p, markup: editedNum! })}
+                              disabled={isPending}
                             >
-                              <Check className="mr-1 h-3.5 w-3.5" /> Apply markup
+                              {isPending ? (
+                                <><Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> กำลังบันทึก...</>
+                              ) : (
+                                <><Check className="mr-1 h-3.5 w-3.5" /> Apply markup</>
+                              )}
                             </Button>
                           ) : (
                             <>
                               <Button
                                 size="sm"
-                                disabled={approveMut.isPending || cost <= 0 || currentMarkup == null || (approved && selling > 0)}
+                                disabled={isPending || cost <= 0 || currentMarkup == null || (approved && selling > 0 && !justOk)}
                                 onClick={() =>
-                                  currentMarkup != null && approveMut.mutate({ id: p.id, cost, currentMarkup })
+                                  currentMarkup != null && approveMut.mutate({ p, markup: currentMarkup })
                                 }
-                                className="h-8 flex-1 bg-green-600 text-xs font-bold text-white hover:bg-green-700 disabled:bg-slate-200 disabled:text-slate-500"
+                                className={`h-8 flex-1 text-xs font-bold text-white disabled:bg-slate-200 disabled:text-slate-500 ${
+                                  justOk ? "bg-green-500" : "bg-green-600 hover:bg-green-700"
+                                }`}
                               >
-                                <Check className="mr-1 h-3.5 w-3.5" />
-                                {approved && selling > 0 ? "Approved" : "Approve"}
+                                {isPending ? (
+                                  <><Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> กำลัง Approve...</>
+                                ) : justOk ? (
+                                  <><Check className="mr-1 h-3.5 w-3.5" /> Approved</>
+                                ) : approved && selling > 0 ? (
+                                  <>Approved</>
+                                ) : (
+                                  <><Check className="mr-1 h-3.5 w-3.5" /> Approve</>
+                                )}
                               </Button>
                               <Button
                                 size="sm"
                                 variant="outline"
                                 className="h-8 px-3 text-xs"
+                                disabled={isPending}
                                 onClick={() => {
                                   setMarkupEdits((m) => ({
                                     ...m,
                                     [p.id]: currentMarkup != null ? String(currentMarkup) : "15",
                                   }));
-                                  setTimeout(() => {
-                                    const el = document.querySelector<HTMLInputElement>(
-                                      `input[aria-label="Markup %"]`,
-                                    );
-                                    el?.focus();
-                                  }, 0);
                                 }}
                               >
                                 แก้ไข %
@@ -740,17 +1100,45 @@ function PricingProductsPage() {
           )}
 
           {/* Pagination */}
-          {(productsQ.data?.count ?? 0) > 0 && (
+          {totalCount > 0 && (
             <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
               <div className="text-sm text-slate-600">
-                {productsQ.data!.count.toLocaleString()} รายการ · หน้า {search.page}/{totalPages}
+                แสดง <b>{from.toLocaleString()}–{to.toLocaleString()}</b> จาก{" "}
+                <b>{totalCount.toLocaleString()}</b> รายการ
               </div>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm" disabled={search.page <= 1} onClick={() => nav({ search: (s: Record<string, unknown>) => ({ ...s, page: search.page - 1 }) })}>
-                  ก่อนหน้า
+              <div className="flex flex-wrap items-center gap-1">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={search.page <= 1}
+                  onClick={() => goToPage(search.page - 1)}
+                  className="gap-1"
+                >
+                  <ChevronLeft className="h-4 w-4" /> ก่อนหน้า
                 </Button>
-                <Button variant="outline" size="sm" disabled={search.page >= totalPages} onClick={() => nav({ search: (s: Record<string, unknown>) => ({ ...s, page: search.page + 1 }) })}>
-                  ถัดไป
+                {activePageNumbers.map((n, i) =>
+                  n === "…" ? (
+                    <span key={`e-${i}`} className="px-2 text-slate-400">…</span>
+                  ) : (
+                    <Button
+                      key={n}
+                      size="sm"
+                      variant={n === search.page ? "default" : "outline"}
+                      className={`h-9 w-9 p-0 ${n === search.page ? "bg-[color:var(--brand-navy)] text-white" : ""}`}
+                      onClick={() => goToPage(n)}
+                    >
+                      {n}
+                    </Button>
+                  ),
+                )}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={search.page >= totalPages}
+                  onClick={() => goToPage(search.page + 1)}
+                  className="gap-1"
+                >
+                  ถัดไป <ChevronRight className="h-4 w-4" />
                 </Button>
               </div>
             </div>
@@ -812,6 +1200,12 @@ function PricingProductsPage() {
               </div>
             )}
 
+            {bulkProgress && (
+              <div className="text-xs text-slate-600">
+                กำลัง Approve... ({bulkProgress.done}/{bulkProgress.total})
+              </div>
+            )}
+
             <div className="ml-auto flex gap-2">
               <Button variant="ghost" size="sm" onClick={() => setSelected(new Set())} className="gap-1">
                 <X className="h-4 w-4" /> ล้าง
@@ -831,7 +1225,7 @@ function PricingProductsPage() {
                 Reset ราคา
               </Button>
               <Button
-                onClick={runBulk}
+                onClick={openConfirmBulk}
                 disabled={bulkApproveMut.isPending}
                 className="gap-1 bg-green-600 font-bold text-white hover:bg-green-700"
               >
@@ -842,6 +1236,85 @@ function PricingProductsPage() {
           </div>
         </div>
       )}
+
+      {/* Confirm dialog */}
+      <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>ยืนยันการ Approve ราคา</DialogTitle>
+            <DialogDescription>
+              ตรวจสอบข้อมูลก่อนยืนยัน — การดำเนินการนี้จะ override markup ของสินค้าที่เลือกทั้งหมด
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-3 text-sm">
+            <div className="flex items-center justify-between rounded-md bg-slate-50 px-3 py-2">
+              <span className="text-slate-600">รายการที่เลือก</span>
+              <b>{selected.size} สินค้า</b>
+            </div>
+            <div className="flex items-center justify-between rounded-md bg-slate-50 px-3 py-2">
+              <span className="text-slate-600">Markup ที่ใช้</span>
+              <b>+{getMarkup() ?? 0}%</b>
+            </div>
+
+            {confirmPreviewRows.length > 0 && (
+              <div className="rounded-md border">
+                <div className="border-b bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-600">
+                  ตัวอย่างการคำนวณ
+                </div>
+                <div className="divide-y">
+                  {confirmPreviewRows.map((r, i) => (
+                    <div key={i} className="flex items-center justify-between gap-2 px-3 py-1.5 text-xs">
+                      <span className="line-clamp-1 flex-1 text-slate-700">{r.name}</span>
+                      <span className="font-mono text-slate-500">฿{bahtFmt.format(r.cost)}</span>
+                      <span className="text-slate-400">→</span>
+                      <span className="font-mono font-bold text-[color:var(--brand-orange)]">
+                        ฿{bahtFmt.format(r.selling)}
+                      </span>
+                    </div>
+                  ))}
+                  {selected.size > confirmPreviewRows.length && (
+                    <div className="px-3 py-1.5 text-xs text-slate-500">
+                      … และอีก {selected.size - confirmPreviewRows.length} รายการ
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {bulkPreview && bulkPreview.avgCost > 0 && (
+              <div className="rounded-md bg-slate-50 p-3 text-xs">
+                <div>
+                  ราคาขายเฉลี่ย{" "}
+                  <b className="font-mono text-[color:var(--brand-orange)]">
+                    ฿{bahtFmt.format(bulkPreview.avgSelling)}
+                  </b>
+                </div>
+                <div className="text-slate-500">
+                  (จากต้นทุนเฉลี่ย ฿{bahtFmt.format(bulkPreview.avgCost)})
+                </div>
+              </div>
+            )}
+
+            <div className="flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
+              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+              <span>การดำเนินการนี้จะ override markup ของสินค้าที่เลือกทั้งหมด</span>
+            </div>
+          </div>
+
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button variant="outline" onClick={() => setConfirmOpen(false)}>ยกเลิก</Button>
+            <Button
+              onClick={runBulk}
+              disabled={!confirmReady || bulkApproveMut.isPending}
+              className="bg-green-600 font-bold text-white hover:bg-green-700"
+            >
+              <Check className="mr-1 h-4 w-4" />
+              {confirmReady ? "ยืนยัน Approve" : "รอ 2 วินาที..."}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
