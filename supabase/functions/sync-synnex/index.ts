@@ -3,6 +3,14 @@
 // and upserts results into synnex_products. Callable only with service role.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { DOMParser, Element } from "https://deno.land/x/deno_dom@v0.1.45/deno-dom-wasm.ts";
+import { fetch as undiciFetch, Agent } from "npm:undici@6";
+
+// Synnex serves an incomplete TLS chain (missing intermediate CA),
+// so Deno's default fetch rejects it. Use an undici Agent that skips
+// peer verification for these requests only.
+const insecureAgent = new Agent({ connect: { rejectUnauthorized: false } });
+const sfetch = (url: string, init: RequestInit = {}) =>
+  undiciFetch(url, { ...init, dispatcher: insecureAgent } as never) as unknown as Promise<Response>;
 
 const BASE = "https://www.synnex.co.th/Dealer";
 const LOGIN_URL = `${BASE}/login.aspx`;
@@ -65,7 +73,7 @@ async function scrape(username: string, password: string): Promise<Product[]> {
   const jar: Jar = new Map();
 
   // 1) GET login page
-  const loginPage = await fetch(LOGIN_URL, {
+  const loginPage = await sfetch(LOGIN_URL, {
     headers: { "User-Agent": UA, Accept: "text/html" },
     redirect: "manual",
   });
@@ -85,7 +93,7 @@ async function scrape(username: string, password: string): Promise<Product[]> {
   form.set("ctl00$ContentPlaceHolder1$txtPassword", password);
   form.set("ctl00$ContentPlaceHolder1$btnLogin", "Login");
 
-  const loginRes = await fetch(LOGIN_URL, {
+  const loginRes = await sfetch(LOGIN_URL, {
     method: "POST",
     headers: {
       "User-Agent": UA,
@@ -101,7 +109,7 @@ async function scrape(username: string, password: string): Promise<Product[]> {
   if (loginRes.status >= 300 && loginRes.status < 400) {
     const loc = loginRes.headers.get("location");
     if (loc) {
-      const follow = await fetch(new URL(loc, LOGIN_URL).toString(), {
+      const follow = await sfetch(new URL(loc, LOGIN_URL).toString(), {
         headers: { "User-Agent": UA, Cookie: cookieHeader(jar) },
         redirect: "manual",
       });
@@ -114,7 +122,7 @@ async function scrape(username: string, password: string): Promise<Product[]> {
   }
 
   // 3) GET product list
-  const listRes = await fetch(PRODUCT_URL, {
+  const listRes = await sfetch(PRODUCT_URL, {
     headers: {
       "User-Agent": UA,
       Cookie: cookieHeader(jar),
