@@ -313,9 +313,8 @@ function AuditPage() {
                   const isOpen = expanded.has(g.key);
                   const label = head.action === "bulk_approve" ? "Bulk Approve" : "Bulk Reset";
                   return (
-                    <>
+                    <Fragment key={g.key}>
                       <tr
-                        key={g.key}
                         onClick={() => toggleGroup(g.key)}
                         className="cursor-pointer bg-emerald-50/40 font-semibold hover:bg-emerald-50"
                       >
@@ -359,13 +358,47 @@ function AuditPage() {
                             <td className="px-3 py-1.5 text-slate-600">{r.approved_by ?? "—"}</td>
                           </tr>
                         ))}
-                    </>
+                    </Fragment>
                   );
                 })
               )}
             </tbody>
           </table>
         </div>
+
+        {/* Pagination */}
+        {totalCount > 0 && (
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+            <div className="text-sm text-slate-600">
+              แสดง <b>{((search.page - 1) * AUDIT_PAGE_SIZE + 1).toLocaleString()}–
+              {Math.min(search.page * AUDIT_PAGE_SIZE, totalCount).toLocaleString()}</b> จาก{" "}
+              <b>{totalCount.toLocaleString()}</b> รายการ
+            </div>
+            <div className="flex items-center gap-1">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={search.page <= 1}
+                onClick={() => goToPage(search.page - 1)}
+                className="gap-1"
+              >
+                <ChevronLeft className="h-4 w-4" /> ก่อนหน้า
+              </Button>
+              <span className="px-3 text-sm text-slate-600">
+                หน้า {search.page} / {totalPages}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={search.page >= totalPages}
+                onClick={() => goToPage(search.page + 1)}
+                className="gap-1"
+              >
+                ถัดไป <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
