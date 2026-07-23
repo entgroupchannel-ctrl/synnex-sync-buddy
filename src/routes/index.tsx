@@ -17,6 +17,16 @@ import { useLanguage } from "@/lib/i18n";
 import { SiteHeader } from "@/components/site-header";
 import { CATEGORIES, detectCategory, displayPrice, getSellingPrice, useCart } from "@/lib/cart";
 import { triggerAuthPrompt, useSupabaseUser } from "@/lib/auth-sheet";
+import {
+  HeroCarousel,
+  QuickCategoryGrid,
+  TodaysBestDeals,
+  PopularNotebooks,
+  ShopByBrand,
+  TrustBadges,
+  RecentlyViewed,
+  NewsletterSignup,
+} from "@/components/home-sections";
 
 const searchSchema = z.object({
   q: fallback(z.string(), "").default(""),
@@ -244,72 +254,15 @@ function HomePage() {
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <SiteHeader />
 
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[color:var(--brand-navy)] via-[color:var(--brand-navy-2)] to-[color:var(--brand-navy)]">
-        <div className="absolute inset-0 opacity-20" style={{ backgroundImage: "radial-gradient(circle at 20% 30%, #f97316 0, transparent 45%), radial-gradient(circle at 80% 70%, #1565c0 0, transparent 45%)" }} />
-        <div className="relative mx-auto max-w-7xl px-4 py-12 md:py-20">
-          <div className="max-w-2xl">
-            <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs text-white/90 backdrop-blur">
-              <Flame className="h-3.5 w-3.5 text-[color:var(--brand-orange)]" />
-              {t("hero.badge")}
-            </div>
-            <h1 className="text-3xl font-black leading-tight text-white md:text-5xl">
-              {t("hero.title_line1")}<br />
-              <span className="text-[color:var(--brand-orange)]">{t("hero.title_line2")}</span>
-            </h1>
-            <p className="mt-3 text-base text-white/80 md:text-lg">
-              {t("hero.sub")}
-            </p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <Button
-                size="lg"
-                className="bg-[color:var(--brand-orange)] font-bold hover:bg-[color:var(--brand-orange-dark)]"
-                onClick={() => document.getElementById("catalog")?.scrollIntoView({ behavior: "smooth" })}
-              >
-                {t("hero.cta")}
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-white/30 bg-white/5 text-white hover:bg-white/10"
-                onClick={() => update({ ready: true })}
-              >
-                {t("hero.ready_only")}
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Hero Carousel */}
+      <HeroCarousel
+        onBrowse={() => document.getElementById("catalog")?.scrollIntoView({ behavior: "smooth" })}
+        onReady={() => update({ ready: true })}
+      />
 
-      {/* About / Trust */}
-      <section className="border-b bg-white">
-        <div className="mx-auto max-w-7xl px-4 py-8">
-          <div className="grid gap-6 md:grid-cols-[1.4fr_1fr] md:items-center">
-            <div>
-              <h2 className="text-xl font-black text-[color:var(--brand-navy)] md:text-2xl">เกี่ยวกับ ENT Group</h2>
-              <p className="mt-2 text-sm leading-relaxed text-slate-600 md:text-base">
-                บริษัท อี เอ็น ที กรุ๊ป จำกัด (ENT Group Co., Ltd.) ผู้จัดจำหน่ายสินค้าไอทีในประเทศไทย
-                เป็นตัวแทนจำหน่ายที่ได้รับการแต่งตั้งจาก Synnex Thailand และ VST ECS Thailand
-                ให้บริการ Mini PC, Panel PC และสินค้าไอทีอีกมากมายในราคา Dealer จริง ดำเนินงานมากว่า 10 ปีตั้งแต่ปี 2558
-              </p>
-            </div>
-            <div className="grid gap-2">
-              <div className="flex items-center gap-2 rounded-lg border bg-slate-50 px-3 py-2 text-sm">
-                <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[color:var(--brand-green)] text-xs font-bold text-white">✓</span>
-                Authorized Dealer — Synnex Thailand
-              </div>
-              <div className="flex items-center gap-2 rounded-lg border bg-slate-50 px-3 py-2 text-sm">
-                <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[color:var(--brand-green)] text-xs font-bold text-white">✓</span>
-                Authorized Dealer — VST ECS Thailand
-              </div>
-              <div className="flex items-center gap-2 rounded-lg border bg-slate-50 px-3 py-2 text-sm">
-                <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[color:var(--brand-green)] text-xs font-bold text-white">✓</span>
-                ดำเนินงานมากกว่า 10 ปี ตั้งแต่ปี 2558
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Quick category icons */}
+      <QuickCategoryGrid />
+
 
       {/* Flash Deals */}
       {(flashQ.data?.length ?? 0) > 0 && (
