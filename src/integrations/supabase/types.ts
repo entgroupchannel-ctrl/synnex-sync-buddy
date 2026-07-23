@@ -14,6 +14,50 @@ export type Database = {
   }
   public: {
     Tables: {
+      email_logs: {
+        Row: {
+          created_at: string
+          email_type: string | null
+          error_message: string | null
+          id: string
+          order_id: string | null
+          recipient: string | null
+          resend_message_id: string | null
+          status: string | null
+          subject: string | null
+        }
+        Insert: {
+          created_at?: string
+          email_type?: string | null
+          error_message?: string | null
+          id?: string
+          order_id?: string | null
+          recipient?: string | null
+          resend_message_id?: string | null
+          status?: string | null
+          subject?: string | null
+        }
+        Update: {
+          created_at?: string
+          email_type?: string | null
+          error_message?: string | null
+          id?: string
+          order_id?: string | null
+          recipient?: string | null
+          resend_message_id?: string | null
+          status?: string | null
+          subject?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_logs_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       order_items: {
         Row: {
           brand: string | null
@@ -131,6 +175,7 @@ export type Database = {
           payment_method: string | null
           payment_slip_url: string | null
           payment_status: string
+          quotation_url: string | null
           shipping_address: string | null
           shipping_district: string | null
           shipping_fee: number | null
@@ -142,7 +187,9 @@ export type Database = {
           subtotal: number | null
           tax_id: string | null
           tax_invoice: Json | null
+          tax_invoice_url: string | null
           total: number | null
+          tracking_number: string | null
           updated_at: string
           user_id: string | null
         }
@@ -171,6 +218,7 @@ export type Database = {
           payment_method?: string | null
           payment_slip_url?: string | null
           payment_status?: string
+          quotation_url?: string | null
           shipping_address?: string | null
           shipping_district?: string | null
           shipping_fee?: number | null
@@ -182,7 +230,9 @@ export type Database = {
           subtotal?: number | null
           tax_id?: string | null
           tax_invoice?: Json | null
+          tax_invoice_url?: string | null
           total?: number | null
+          tracking_number?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -211,6 +261,7 @@ export type Database = {
           payment_method?: string | null
           payment_slip_url?: string | null
           payment_status?: string
+          quotation_url?: string | null
           shipping_address?: string | null
           shipping_district?: string | null
           shipping_fee?: number | null
@@ -222,7 +273,9 @@ export type Database = {
           subtotal?: number | null
           tax_id?: string | null
           tax_invoice?: Json | null
+          tax_invoice_url?: string | null
           total?: number | null
+          tracking_number?: string | null
           updated_at?: string
           user_id?: string | null
         }
