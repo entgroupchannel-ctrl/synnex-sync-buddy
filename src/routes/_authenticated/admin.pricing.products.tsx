@@ -764,11 +764,12 @@ function PricingProductsPage() {
       {/* Sticky bulk bar */}
       {selected.size > 0 && (
         <div className="fixed inset-x-0 bottom-0 z-30 border-t-2 border-[color:var(--brand-orange)] bg-white shadow-2xl">
-          <div className="mx-auto flex max-w-[100rem] flex-wrap items-center gap-3 px-4 py-3">
+          <div className="mx-auto flex max-w-[100rem] flex-wrap items-center gap-4 px-4 py-3">
             <div className="flex items-center gap-2 text-sm">
               <CheckCircle2 className="h-5 w-5 text-[color:var(--brand-navy)]" />
               <span>เลือก <b className="text-[color:var(--brand-navy)]">{selected.size}</b> รายการ</span>
             </div>
+
             <div className="flex items-center gap-2 text-sm">
               <span className="text-slate-500">Markup</span>
               <Select value={markupChoice} onValueChange={setMarkupChoice}>
@@ -791,17 +792,52 @@ function PricingProductsPage() {
                 />
               )}
             </div>
+
+            {bulkPreview && bulkPreview.avgCost > 0 && (
+              <div className="hidden rounded-md bg-slate-50 px-3 py-1.5 text-xs text-slate-700 md:flex md:flex-col">
+                <span>
+                  ต้นทุนเฉลี่ย{" "}
+                  <b className="font-mono">฿{bahtFmt.format(bulkPreview.avgCost)}</b>
+                </span>
+                <span>
+                  ราคาขายเฉลี่ย{" "}
+                  <b className="font-mono text-[color:var(--brand-orange)]">
+                    ฿{bahtFmt.format(bulkPreview.avgSelling)}
+                  </b>
+                  {bulkPreview.missing > 0 && (
+                    <span className="ml-2 text-amber-700">
+                      ({bulkPreview.missing} ไม่มีต้นทุน)
+                    </span>
+                  )}
+                </span>
+              </div>
+            )}
+
             <div className="ml-auto flex gap-2">
               <Button variant="ghost" size="sm" onClick={() => setSelected(new Set())} className="gap-1">
                 <X className="h-4 w-4" /> ล้าง
               </Button>
               <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  if (confirm(`รีเซ็ตราคาขายและสถานะ approve ของ ${selected.size} รายการ?`)) {
+                    resetBulkMut.mutate([...selected]);
+                  }
+                }}
+                disabled={resetBulkMut.isPending}
+                className="gap-1"
+              >
+                <RotateCcw className="h-4 w-4" />
+                Reset ราคา
+              </Button>
+              <Button
                 onClick={runBulk}
                 disabled={bulkApproveMut.isPending}
-                className="gap-1 bg-[color:var(--brand-orange)] font-bold hover:bg-[color:var(--brand-orange-dark)]"
+                className="gap-1 bg-green-600 font-bold text-white hover:bg-green-700"
               >
                 <Check className="h-4 w-4" />
-                {bulkApproveMut.isPending ? "กำลังคำนวณ..." : `Apply + Approve (${selected.size})`}
+                {bulkApproveMut.isPending ? "กำลังคำนวณ..." : `คำนวณ + Approve ทั้งหมด (${selected.size})`}
               </Button>
             </div>
           </div>
