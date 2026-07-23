@@ -85,12 +85,16 @@ function AdminOrderDetail() {
   const [statusNote, setStatusNote] = useState<string>("");
   const [saving, setSaving] = useState(false);
   const [slipUrl, setSlipUrl] = useState<string | null>(null);
+  const [tracking, setTracking] = useState<string>("");
+  const [emailLogs, setEmailLogs] = useState<EmailLog[]>([]);
+  const [emailBusy, setEmailBusy] = useState<string | null>(null);
 
   const load = async () => {
     setLoading(true);
-    const [{ data: o }, { data: h }] = await Promise.all([
+    const [{ data: o }, { data: h }, { data: logs }] = await Promise.all([
       supabase.from("orders").select("*, order_items(*)").eq("id", id).maybeSingle(),
       supabase.from("order_status_history").select("*").eq("order_id", id).order("created_at", { ascending: true }),
+      supabase.from("email_logs").select("*").eq("order_id", id).order("created_at", { ascending: false }).limit(50),
     ]);
     if (o) {
       const merged = { ...(o as Record<string, unknown>), history: (h ?? []) as HistoryRow[] } as unknown as Order;
