@@ -209,8 +209,8 @@ function PricingProductsPage() {
   const productsQ = useQuery({
     queryKey: ["pricing-products-v3", search],
     queryFn: async () => {
-      const from = (search.page - 1) * PAGE_SIZE;
-      const to = from + PAGE_SIZE - 1;
+      const from = (search.page - 1) * search.pageSize;
+      const to = from + search.pageSize - 1;
       const so = sortMap[search.sort] ?? sortMap.sku_asc;
       let qq = supabase
         .from("synnex_products")
@@ -559,7 +559,7 @@ function PricingProductsPage() {
 
   const rows = productsQ.data?.rows ?? [];
   const totalCount = productsQ.data?.count ?? 0;
-  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+  const totalPages = Math.max(1, Math.ceil(totalCount / search.pageSize));
   const dCounts = distributorCountsQ.data;
   const sCounts = statusCountsQ.data;
   const pageIds = useMemo(() => rows.map((r) => r.id), [rows]);
@@ -771,8 +771,8 @@ function PricingProductsPage() {
     </div>
   );
 
-  const from = totalCount === 0 ? 0 : (search.page - 1) * PAGE_SIZE + 1;
-  const to = Math.min(search.page * PAGE_SIZE, totalCount);
+  const from = totalCount === 0 ? 0 : (search.page - 1) * search.pageSize + 1;
+  const to = Math.min(search.page * search.pageSize, totalCount);
 
   return (
     <div className="min-h-screen bg-slate-50">
