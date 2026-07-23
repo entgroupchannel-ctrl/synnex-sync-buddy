@@ -33,10 +33,10 @@ export const Route = createFileRoute("/")({
   validateSearch: zodValidator(searchSchema),
   head: () => ({
     meta: [
-      { title: "IT Dealer — ราคา Dealer จริง ส่งตรงจาก Distributor" },
-      { name: "description", content: "แหล่งรวมสินค้าไอทีจาก Synnex & VST ECS กว่า 1,000 รายการ ราคา Dealer จริง ไม่ผ่านคนกลาง" },
-      { property: "og:title", content: "IT Dealer — ราคา Dealer จริง" },
-      { property: "og:description", content: "แหล่งรวมสินค้าไอทีจาก Synnex & VST ECS ราคา Dealer จริง" },
+      { title: "ENT Group IT Shop — ราคา Dealer จริง" },
+      { name: "description", content: "ร้านค้าออนไลน์ ENT Group จำหน่ายสินค้าไอทีจาก Synnex และ VST ECS ราคา Dealer จริง" },
+      { property: "og:title", content: "ENT Group IT Shop — ราคา Dealer จริง" },
+      { property: "og:description", content: "ร้านค้าออนไลน์ ENT Group จำหน่ายสินค้าไอทีจาก Synnex และ VST ECS ราคา Dealer จริง" },
     ],
   }),
   component: HomePage,
