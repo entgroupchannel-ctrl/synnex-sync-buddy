@@ -1,20 +1,23 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ChevronDown, ChevronRight, Download, Search } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, ChevronRight as ChevronRightIcon, Download, Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { bahtFmt } from "@/lib/pricing-helpers";
+
+const AUDIT_PAGE_SIZE = 100;
 
 const searchSchema = z.object({
   from: fallback(z.string(), "").default(""),
   to: fallback(z.string(), "").default(""),
   action: fallback(z.string(), "all").default("all"),
   sku: fallback(z.string(), "").default(""),
+  page: fallback(z.number().int(), 1).default(1),
 });
 
 export const Route = createFileRoute("/_authenticated/admin/pricing/audit")({
