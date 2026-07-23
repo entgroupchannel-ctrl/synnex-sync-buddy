@@ -58,11 +58,6 @@ type Product = {
   price_approved: boolean | null;
 };
 
-function applyFilter(query: ReturnType<typeof supabase.from<"synnex_products">> extends never ? never : ReturnType<typeof supabase.from>, filter: string) {
-  // Not used — kept for structure. Filters are inline below.
-  return query;
-}
-
 function PricingProductsPage() {
   const search = Route.useSearch();
   const nav = Route.useNavigate();
@@ -72,31 +67,21 @@ function PricingProductsPage() {
   const [markupChoice, setMarkupChoice] = useState<string>("15");
   const [markupCustom, setMarkupCustom] = useState<string>("");
 
-  const buildFiltered = (base: ReturnType<typeof supabase.from<"synnex_products">>) => {
-    let query = base as unknown as ReturnType<typeof supabase.from<"synnex_products">>;
-    const s = search.q.trim().replace(/[%,]/g, "");
-    // @ts-expect-error dynamic query builder
-    if (s) query = query.or(`sku.ilike.%${s}%,name.ilike.%${s}%`);
-    // @ts-expect-error dynamic query builder
-    if (search.filter === "unapproved") query = query.or("price_approved.eq.false,selling_price.is.null");
-    // @ts-expect-error dynamic query builder
-    else if (search.filter === "zero") query = query.or("selling_price.is.null,selling_price.eq.0");
-    // @ts-expect-error dynamic query builder
-    else if (search.filter === "override") query = query.not("markup_override", "is", null);
-    return query;
-  };
-
   const productsQ = useQuery({
     queryKey: ["pricing-products", search],
     queryFn: async () => {
       const from = (search.page - 1) * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
-      const base = supabase
+      let query = supabase
         .from("synnex_products")
         .select("id, sku, name, brand, category, image_url, cost_price, price, selling_price, markup_override, price_approved", { count: "exact" })
         .order("sku", { ascending: true })
         .range(from, to);
-      const query = buildFiltered(base) as unknown as typeof base;
+      const s = search.q.trim().replace(/[%,]/g, "");
+      if (s) query = query.or(`sku.ilike.%${s}%,name.ilike.%${s}%`);
+      if (search.filter === "unapproved") query = query.or("price_approved.eq.false,selling_price.is.null");
+      else if (search.filter === "zero") query = query.or("selling_price.is.null,selling_price.eq.0");
+      else if (search.filter === "override") query = query.not("markup_override", "is", null);
       const { data, error, count } = await query;
       if (error) throw error;
       return { rows: (data ?? []) as Product[], count: count ?? 0 };
