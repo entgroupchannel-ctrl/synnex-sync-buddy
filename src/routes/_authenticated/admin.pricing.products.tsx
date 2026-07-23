@@ -562,6 +562,107 @@ function PricingProductsPage() {
       toast.error("Reset ไม่สำเร็จ", { description: e.message, duration: Infinity, closeButton: true }),
   });
 
+  // Build the same filtered query used for the grid, without .range() — for CSV export.
+  const buildFilteredQuery = () => {
+    const so = sortMap[search.sort] ?? sortMap.sku_asc;
+    let qq = supabase
+      .from("synnex_products")
+      .select(
+        "sku, name, brand, category, distributor, cost_price, price, selling_price, markup_override, price_approved, updated_at",
+        { count: "exact" },
+      )
+      .order(so.col, { ascending: so.asc, nullsFirst: false });
+    const s = search.q.trim().replace(/[%,]/g, "");
+    if (s) qq = qq.or(`sku.ilike.%${s}%,name.ilike.%${s}%`);
+    if (search.distributor !== "all") qq = qq.eq("distributor", search.distributor);
+    if (search.category !== "all") qq = qq.eq("category", search.category);
+    if (selectedBrands.length > 0) qq = qq.in("brand", selectedBrands);
+    if (search.status === "unapproved") qq = qq.or("price_approved.eq.false,selling_price.is.null");
+    else if (search.status === "zero") qq = qq.or("selling_price.is.null,selling_price.eq.0");
+    else if (search.status === "approved") qq = qq.eq("price_approved", true);
+    return qq;
+  };
+
+  const runExport = async () => {
+    setExporting(true);
+    try {
+      // Paginate through the filtered set with .range() to avoid the 1000-row default cap.
+      const CHUNK = 1000;
+      let start = 0;
+      const all: Array<Record<string, unknown>> = [];
+      // First call also returns count
+      const first = await buildFilteredQuery().range(start, start + CHUNK - 1);
+      if (first.error) throw first.error;
+      const total = first.count ?? (first.data?.length ?? 0);
+      for (const row of first.data ?? []) all.push(row as Record<string, unknown>);
+      start += CHUNK;
+      while (start < total) {
+        const r = await buildFilteredQuery().range(start, start + CHUNK - 1);
+        if (r.error) throw r.error;
+        for (const row of r.data ?? []) all.push(row as Record<string, unknown>);
+        start += CHUNK;
+      }
+      const headers = [
+        "SKU", "ชื่อสินค้า", "แบรนด์", "Distributor", "หมวดหมู่",
+        "ราคาต้นทุน", "Markup%", "ราคาขาย", "สถานะ", "อัปเดตล่าสุด",
+      ];
+      const esc = (v: unknown) => {
+        const s = v == null ? "" : String(v);
+        return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+      };
+      const isoLocal = (d: string | null | undefined) => {
+        if (!d) return "";
+        const dt = new Date(d);
+        const pad = (n: number) => String(n).padStart(2, "0");
+        return `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())} ${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
+      };
+      const lines = [headers.join(",")];
+      for (const r of all) {
+        const cost = r.cost_price ?? r.price ?? "";
+        const status = r.price_approved
+          ? "approved"
+          : (r.selling_price == null || Number(r.selling_price) === 0)
+            ? "no_price"
+            : "pending";
+        lines.push([
+          esc(r.sku),
+          esc(r.name),
+          esc(r.brand),
+          esc(r.distributor),
+          esc(r.category),
+          esc(cost),
+          esc(r.markup_override ?? ""),
+          esc(r.selling_price ?? ""),
+          esc(status),
+          esc(isoLocal(r.updated_at as string | null)),
+        ].join(","));
+      }
+      const csv = "\ufeff" + lines.join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      const now = new Date();
+      const pad = (n: number) => String(n).padStart(2, "0");
+      const stamp = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+      a.href = url;
+      a.download = `products_export_${stamp}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success(`Export สำเร็จ (${all.length.toLocaleString()} รายการ)`);
+    } catch (e) {
+      toast.error("Export ไม่สำเร็จ", { description: (e as Error).message });
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const onExportClick = () => {
+    const n = productsQ.data?.count ?? 0;
+    if (n > EXPORT_WARN_THRESHOLD) setExportConfirmCount(n);
+    else runExport();
+  };
+
+
   const rows = productsQ.data?.rows ?? [];
   const totalCount = productsQ.data?.count ?? 0;
   const totalPages = Math.max(1, Math.ceil(totalCount / search.pageSize));
