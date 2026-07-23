@@ -241,14 +241,14 @@ function HomePage() {
           <div className="max-w-2xl">
             <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs text-white/90 backdrop-blur">
               <Flame className="h-3.5 w-3.5 text-[color:var(--brand-orange)]" />
-              Synnex & VST ECS Authorized Dealer
+              ENT Group — Authorized Dealer ตั้งแต่ปี 2558
             </div>
             <h1 className="text-3xl font-black leading-tight text-white md:text-5xl">
               ราคา Dealer จริง<br />
               <span className="text-[color:var(--brand-orange)]">ไม่ผ่านคนกลาง</span>
             </h1>
             <p className="mt-3 text-base text-white/80 md:text-lg">
-              สินค้าไอทีจาก Synnex & VST ECS กว่า 1,000 รายการ · ส่งตรงจาก Distributor
+              Mini PC • Panel PC • IT Products จาก Synnex & VST ECS
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Button
@@ -266,6 +266,36 @@ function HomePage() {
               >
                 เฉพาะพร้อมจัดส่ง
               </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* About / Trust */}
+      <section className="border-b bg-white">
+        <div className="mx-auto max-w-7xl px-4 py-8">
+          <div className="grid gap-6 md:grid-cols-[1.4fr_1fr] md:items-center">
+            <div>
+              <h2 className="text-xl font-black text-[color:var(--brand-navy)] md:text-2xl">เกี่ยวกับ ENT Group</h2>
+              <p className="mt-2 text-sm leading-relaxed text-slate-600 md:text-base">
+                บริษัท อี เอ็น ที กรุ๊ป จำกัด (ENT Group Co., Ltd.) ผู้จัดจำหน่ายสินค้าไอทีในประเทศไทย
+                เป็นตัวแทนจำหน่ายที่ได้รับการแต่งตั้งจาก Synnex Thailand และ VST ECS Thailand
+                ให้บริการ Mini PC, Panel PC และสินค้าไอทีอีกมากมายในราคา Dealer จริง ดำเนินงานมากว่า 10 ปีตั้งแต่ปี 2558
+              </p>
+            </div>
+            <div className="grid gap-2">
+              <div className="flex items-center gap-2 rounded-lg border bg-slate-50 px-3 py-2 text-sm">
+                <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[color:var(--brand-green)] text-xs font-bold text-white">✓</span>
+                Authorized Dealer — Synnex Thailand
+              </div>
+              <div className="flex items-center gap-2 rounded-lg border bg-slate-50 px-3 py-2 text-sm">
+                <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[color:var(--brand-green)] text-xs font-bold text-white">✓</span>
+                Authorized Dealer — VST ECS Thailand
+              </div>
+              <div className="flex items-center gap-2 rounded-lg border bg-slate-50 px-3 py-2 text-sm">
+                <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[color:var(--brand-green)] text-xs font-bold text-white">✓</span>
+                ดำเนินงานมากกว่า 10 ปี ตั้งแต่ปี 2558
+              </div>
             </div>
           </div>
         </div>
