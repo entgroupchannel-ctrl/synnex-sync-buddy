@@ -59,8 +59,20 @@ type Order = {
   total: number | null;
   status: string | null;
   notes: string | null;
+  tracking_number: string | null;
+  quotation_url: string | null;
+  tax_invoice_url: string | null;
   order_items: OrderItem[];
   history: HistoryRow[];
+};
+
+type EmailLog = {
+  id: string;
+  created_at: string;
+  email_type: string | null;
+  recipient: string | null;
+  status: string | null;
+  error_message: string | null;
 };
 
 function AdminOrderDetail() {
@@ -73,12 +85,16 @@ function AdminOrderDetail() {
   const [statusNote, setStatusNote] = useState<string>("");
   const [saving, setSaving] = useState(false);
   const [slipUrl, setSlipUrl] = useState<string | null>(null);
+  const [tracking, setTracking] = useState<string>("");
+  const [emailLogs, setEmailLogs] = useState<EmailLog[]>([]);
+  const [emailBusy, setEmailBusy] = useState<string | null>(null);
 
   const load = async () => {
     setLoading(true);
-    const [{ data: o }, { data: h }] = await Promise.all([
+    const [{ data: o }, { data: h }, { data: logs }] = await Promise.all([
       supabase.from("orders").select("*, order_items(*)").eq("id", id).maybeSingle(),
       supabase.from("order_status_history").select("*").eq("order_id", id).order("created_at", { ascending: true }),
+      supabase.from("email_logs").select("*").eq("order_id", id).order("created_at", { ascending: false }).limit(50),
     ]);
     if (o) {
       const merged = { ...(o as Record<string, unknown>), history: (h ?? []) as HistoryRow[] } as unknown as Order;
@@ -86,6 +102,7 @@ function AdminOrderDetail() {
       setStatus(merged.status ?? "pending");
       setPaymentStatus(merged.payment_status ?? "pending");
       setNotes(merged.notes ?? "");
+      setTracking(merged.tracking_number ?? "");
       if (merged.payment_slip_url) {
         const { data } = await supabase.storage.from("payment-slips").createSignedUrl(merged.payment_slip_url, 60 * 60);
         setSlipUrl(data?.signedUrl ?? null);
@@ -93,6 +110,7 @@ function AdminOrderDetail() {
         setSlipUrl(null);
       }
     }
+    setEmailLogs((logs ?? []) as EmailLog[]);
     setLoading(false);
   };
 
@@ -114,7 +132,7 @@ function AdminOrderDetail() {
     const wasStatus = order.status ?? "pending";
     const wasPay = order.payment_status ?? "pending";
     const { error } = await supabase.from("orders").update({
-      status, payment_status: paymentStatus, notes,
+      status, payment_status: paymentStatus, notes, tracking_number: tracking || null,
     }).eq("id", id);
     if (error) { setSaving(false); toast.error(error.message); return; }
 
@@ -129,10 +147,36 @@ function AdminOrderDetail() {
         order_id: id, status: c.status, note: c.note, changed_by: by,
       })));
     }
+    // Auto-send shipping notification when status transitions to 'shipped'
+    if (status === "shipped" && wasStatus !== "shipped") {
+      supabase.functions.invoke("send-shipping-notification", {
+        body: { order_id: id, tracking_number: tracking || null },
+      }).catch((e) => console.warn("[send-shipping-notification]", e));
+      toast.info("กำลังส่งอีเมลแจ้งจัดส่ง...");
+    }
     setSaving(false);
     setStatusNote("");
     toast.success("บันทึกแล้ว");
     load();
+  };
+
+  const invokeFn = async (fn: string, label: string, extra?: Record<string, unknown>) => {
+    setEmailBusy(fn);
+    try {
+      const { data, error } = await supabase.functions.invoke(fn, {
+        body: { order_id: id, ...(extra ?? {}) },
+      });
+      if (error) throw error;
+      const payload = data as { success?: boolean; error?: string } | null;
+      if (payload && payload.success === false) throw new Error(payload.error ?? "ส่งไม่สำเร็จ");
+      toast.success(`${label} สำเร็จ`);
+      load();
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "ส่งไม่สำเร็จ";
+      toast.error(`${label} ล้มเหลว: ${msg}`);
+    } finally {
+      setEmailBusy(null);
+    }
   };
 
   if (loading) {
@@ -249,6 +293,16 @@ function AdminOrderDetail() {
                 </SelectContent>
               </Select>
               <Textarea value={statusNote} onChange={(e) => setStatusNote(e.target.value)} rows={2} className="mt-2" placeholder="โน๊ตการเปลี่ยนสถานะ (บันทึกใน timeline)" />
+              <div className="mt-3">
+                <label className="text-xs font-semibold text-slate-500">เลขพัสดุ (tracking)</label>
+                <input
+                  value={tracking}
+                  onChange={(e) => setTracking(e.target.value)}
+                  placeholder="เช่น TH1234567890"
+                  className="mt-1 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-mono focus:border-emerald-400 focus:outline-none"
+                />
+                <p className="mt-1 text-xs text-slate-500">จะแนบในอีเมลแจ้งจัดส่ง (ส่งอัตโนมัติเมื่อเปลี่ยนสถานะเป็น &quot;จัดส่งแล้ว&quot;)</p>
+              </div>
             </div>
 
             <div className="rounded-lg border bg-white p-5">
@@ -343,6 +397,106 @@ function AdminOrderDetail() {
                     );
                   })}
                 </ol>
+              )}
+            </div>
+
+            <div className="rounded-lg border bg-white p-5">
+              <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-500">📋 เอกสารและอีเมล</h2>
+              <div className="grid gap-2">
+                <Button
+                  variant="outline"
+                  disabled={emailBusy === "send-order-confirmation" || !order.customer_email}
+                  onClick={() => invokeFn("send-order-confirmation", "ส่งยืนยัน Order")}
+                >
+                  <FileText className="mr-2 h-4 w-4" />
+                  {emailBusy === "send-order-confirmation" ? "กำลังส่ง..." : "📧 ส่งยืนยัน Order อีกครั้ง"}
+                </Button>
+                <Button
+                  variant="outline"
+                  disabled={emailBusy === "generate-quotation" || !order.customer_email}
+                  onClick={() => invokeFn("generate-quotation", "ส่งใบเสนอราคา")}
+                >
+                  <FileText className="mr-2 h-4 w-4" />
+                  {emailBusy === "generate-quotation" ? "กำลังสร้าง..." : "📄 ส่งใบเสนอราคา (Quotation)"}
+                </Button>
+                <Button
+                  variant="outline"
+                  disabled={emailBusy === "generate-tax-invoice" || !order.tax_id || !order.customer_email}
+                  onClick={() => invokeFn("generate-tax-invoice", "ออกใบกำกับภาษี")}
+                  title={!order.tax_id ? "ต้องระบุเลขผู้เสียภาษีก่อน" : undefined}
+                >
+                  <FileText className="mr-2 h-4 w-4" />
+                  {emailBusy === "generate-tax-invoice"
+                    ? "กำลังสร้าง..."
+                    : `🧾 ออกใบกำกับภาษี${!order.tax_id ? " (ต้องระบุเลขผู้เสียภาษีก่อน)" : ""}`}
+                </Button>
+                {order.tracking_number && (
+                  <Button
+                    variant="outline"
+                    disabled={emailBusy === "send-shipping-notification"}
+                    onClick={() =>
+                      invokeFn("send-shipping-notification", "ส่งแจ้งจัดส่ง", {
+                        tracking_number: order.tracking_number,
+                      })
+                    }
+                  >
+                    <FileText className="mr-2 h-4 w-4" />
+                    {emailBusy === "send-shipping-notification" ? "กำลังส่ง..." : "📦 ส่งแจ้งจัดส่งอีกครั้ง"}
+                  </Button>
+                )}
+              </div>
+
+              {(order.quotation_url || order.tax_invoice_url) && (
+                <div className="mt-4 space-y-1 text-xs">
+                  {order.quotation_url && (
+                    <button
+                      onClick={async () => {
+                        const { data } = await supabase.storage.from("quotations").createSignedUrl(order.quotation_url!, 3600);
+                        if (data?.signedUrl) window.open(data.signedUrl, "_blank");
+                      }}
+                      className="text-emerald-700 underline"
+                    >
+                      📄 ดาวน์โหลดใบเสนอราคาล่าสุด
+                    </button>
+                  )}
+                  {order.tax_invoice_url && (
+                    <div>
+                      <button
+                        onClick={async () => {
+                          const { data } = await supabase.storage.from("tax-invoices").createSignedUrl(order.tax_invoice_url!, 3600);
+                          if (data?.signedUrl) window.open(data.signedUrl, "_blank");
+                        }}
+                        className="text-emerald-700 underline"
+                      >
+                        🧾 ดาวน์โหลดใบกำกับภาษีล่าสุด
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <h3 className="mt-5 mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">ประวัติการส่งอีเมล</h3>
+              {emailLogs.length === 0 ? (
+                <div className="text-xs text-slate-400">ยังไม่มีประวัติ</div>
+              ) : (
+                <ul className="space-y-1 text-xs">
+                  {emailLogs.map((log) => (
+                    <li key={log.id} className="flex items-start gap-2">
+                      <span>{log.status === "sent" ? "✅" : "❌"}</span>
+                      <div className="min-w-0 flex-1">
+                        <div>
+                          <span className="text-slate-500">{new Date(log.created_at).toLocaleString("th-TH")}</span>
+                          {" — "}
+                          <span className="font-semibold">{log.email_type}</span>
+                        </div>
+                        <div className="truncate text-slate-500">→ {log.recipient}</div>
+                        {log.status !== "sent" && log.error_message && (
+                          <div className="truncate text-red-600">{log.error_message}</div>
+                        )}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
               )}
             </div>
           </div>

@@ -194,6 +194,10 @@ function CheckoutPage() {
         changed_by: user?.email ?? "customer",
       });
 
+      // Fire-and-forget: send order confirmation email
+      supabase.functions.invoke("send-order-confirmation", { body: { order_id: order.id } })
+        .catch((e) => console.warn("[send-order-confirmation]", e));
+
       if (order?.order_number) {
         setOrderCreated(true);
         await navigate({ to: "/order/$orderNumber", params: { orderNumber: order.order_number } });
