@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -68,6 +68,18 @@ function ProductDetail() {
   const p = productQ.data;
   const ready = p?.stock_status === "พร้อมจัดส่ง";
   const specs = parseSpecs(p?.description);
+
+  useEffect(() => {
+    if (!p) return;
+    try {
+      const raw = localStorage.getItem("ent_recently_viewed");
+      const arr: Array<{ sku: string; name: string; image?: string | null; price?: number | null; slug?: string | null }> = raw ? JSON.parse(raw) : [];
+      const price = getSellingPrice(p as { selling_price?: number | null }) ?? null;
+      const entry = { sku: p.sku, name: p.name ?? p.sku, image: p.image_url ?? null, price, slug: p.slug ?? null };
+      const next = [entry, ...arr.filter((x) => x.sku !== entry.sku)].slice(0, 8);
+      localStorage.setItem("ent_recently_viewed", JSON.stringify(next));
+    } catch { /* ignore */ }
+  }, [p]);
 
   const addToCart = (n = qty) => {
     if (!p) return;

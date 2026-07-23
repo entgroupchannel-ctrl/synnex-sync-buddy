@@ -1,31 +1,49 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Minus, Plus, Trash2, Package, ArrowLeft } from "lucide-react";
+import { Minus, Plus, Trash2, Package, ArrowLeft, ShoppingCart, ShoppingBag } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
-import { priceFmt, useCart } from "@/lib/cart";
+import { CATEGORIES, priceFmt, useCart } from "@/lib/cart";
 
 export const Route = createFileRoute("/cart")({
   ssr: false,
   component: CartPage,
-  head: () => ({ meta: [{ title: "ตะกร้าสินค้า — Synnex Store" }] }),
+  head: () => ({
+    meta: [
+      { title: "ตะกร้าสินค้า — ENT Group IT Shop" },
+      { name: "description", content: "ตรวจสอบสินค้าในตะกร้าและดำเนินการชำระเงิน" },
+      { property: "og:title", content: "ตะกร้าสินค้า — ENT Group IT Shop" },
+      { property: "og:description", content: "ตรวจสอบสินค้าในตะกร้าและดำเนินการชำระเงิน" },
+    ],
+  }),
 });
+
+type RecentItem = { sku: string; name: string; image?: string | null; price?: number | null; slug?: string | null };
 
 function CartPage() {
   const { items, setQty, remove, total } = useCart();
+  const navigate = useNavigate();
+  const [recent, setRecent] = useState<RecentItem[]>([]);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("ent_recently_viewed");
+      const arr = raw ? (JSON.parse(raw) as RecentItem[]) : [];
+      setRecent(arr.slice(0, 4));
+    } catch { /* ignore */ }
+  }, []);
 
   return (
     <div className="min-h-screen bg-slate-50" style={{ fontFamily: "Sarabun, system-ui, sans-serif" }}>
       <SiteHeader />
       <div className="mx-auto max-w-5xl px-4 py-6">
-        <Link to="/" className="mb-4 inline-flex items-center gap-1 text-sm text-slate-600 hover:text-[#1a237e]">
+        <Link to="/" className="mb-4 inline-flex items-center gap-1 text-sm text-slate-600 hover:text-[color:var(--brand-navy)]">
           <ArrowLeft className="h-4 w-4" /> เลือกซื้อต่อ
         </Link>
         <h1 className="mb-6 text-2xl font-bold">ตะกร้าสินค้า</h1>
 
         {items.length === 0 ? (
-          <div className="rounded-lg border bg-white p-12 text-center text-slate-500">
-            ตะกร้าว่างเปล่า — <Link to="/" className="text-[#1565c0] underline">เลือกซื้อสินค้า</Link>
-          </div>
+          <EmptyCart recent={recent} onBrowse={() => navigate({ to: "/" })} />
         ) : (
           <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
             <div className="space-y-3">
@@ -43,7 +61,7 @@ function CartPage() {
                     <Link
                       to="/product/$slug"
                       params={{ slug: it.slug || it.id }}
-                      className="line-clamp-2 text-sm font-medium hover:text-[#1a237e]"
+                      className="line-clamp-2 text-sm font-medium hover:text-[color:var(--brand-navy)]"
                     >
                       {it.name}
                     </Link>
@@ -63,7 +81,7 @@ function CartPage() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-sm font-bold text-[#1a237e]">{priceFmt.format(it.price * it.qty)}</div>
+                    <div className="text-sm font-bold text-[color:var(--brand-navy)]">{priceFmt.format(it.price * it.qty)}</div>
                     <div className="text-xs text-slate-500">{priceFmt.format(it.price)} / ชิ้น</div>
                   </div>
                 </div>
@@ -81,14 +99,95 @@ function CartPage() {
                 <span>คำนวณตอนชำระเงิน</span>
               </div>
               <div className="my-4 h-px bg-slate-200" />
-              <div className="flex justify-between text-lg font-bold text-[#1a237e]">
+              <div className="flex justify-between text-lg font-bold text-[color:var(--brand-navy)]">
                 <span>ยอดรวม</span>
                 <span>{priceFmt.format(total)}</span>
               </div>
-              <Button asChild className="mt-4 w-full bg-[#ff6f00] hover:bg-[#e65100]" size="lg">
+              <Button asChild className="mt-4 w-full bg-[color:var(--brand-orange)] hover:bg-[color:var(--brand-orange-dark)]" size="lg">
                 <Link to="/checkout">ดำเนินการชำระเงิน</Link>
               </Button>
             </aside>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function EmptyCart({ recent, onBrowse }: { recent: RecentItem[]; onBrowse: () => void }) {
+  return (
+    <div className="rounded-2xl border bg-white p-8 sm:p-12">
+      <div className="mx-auto max-w-2xl text-center">
+        <div className="mx-auto mb-6 grid h-24 w-24 place-items-center rounded-full bg-slate-100">
+          <ShoppingCart className="h-16 w-16" strokeWidth={1.5} style={{ color: "var(--border-strong, #cbd5e1)" }} />
+        </div>
+
+        <h2 className="text-2xl font-black text-[color:var(--brand-navy)]">ตะกร้าสินค้าว่างเปล่า</h2>
+        <p className="mt-1 text-sm text-slate-400">Your cart is empty</p>
+
+        <p className="mt-4 text-slate-600">ยังไม่มีสินค้าในตะกร้า</p>
+        <p className="text-sm text-slate-400">No items have been added yet</p>
+
+        <Button
+          onClick={onBrowse}
+          size="lg"
+          className="mt-6 w-full bg-[#10b981] text-white hover:bg-[#0ea371] sm:w-auto sm:px-8"
+        >
+          <ShoppingBag className="mr-2 h-5 w-5" /> เลือกสินค้า / Browse Products
+        </Button>
+
+        <div className="mt-10 flex items-center gap-3">
+          <div className="h-px flex-1 bg-slate-200" />
+          <span className="text-xs uppercase tracking-wider text-slate-400">หรือดูหมวดหมู่ · Or browse categories</span>
+          <div className="h-px flex-1 bg-slate-200" />
+        </div>
+
+        <div className="mt-5 flex flex-wrap justify-center gap-2">
+          {CATEGORIES.map((c) => (
+            <Link
+              key={c}
+              to="/"
+              search={{ category: c } as never}
+              className="rounded-full border bg-white px-4 py-2 text-sm text-slate-700 transition hover:border-[color:var(--brand-green)] hover:bg-[color:var(--brand-green)]/5 hover:text-[color:var(--brand-navy)]"
+            >
+              {c}
+            </Link>
+          ))}
+        </div>
+
+        {recent.length > 0 && (
+          <div className="mt-10 text-left">
+            <div className="mb-3 flex items-center gap-2">
+              <span className="text-lg">💡</span>
+              <div>
+                <div className="font-bold text-[color:var(--brand-navy)]">สินค้าที่คุณดูล่าสุด</div>
+                <div className="text-xs text-slate-400">Recently viewed</div>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              {recent.map((r) => (
+                <Link
+                  key={r.sku}
+                  to="/product/$slug"
+                  params={{ slug: r.slug || r.sku }}
+                  className="group flex flex-col overflow-hidden rounded-lg border bg-white transition hover:shadow-md"
+                >
+                  <div className="grid aspect-square place-items-center bg-slate-50">
+                    {r.image ? (
+                      <img src={r.image} alt={r.name} className="h-full w-full object-contain p-2" loading="lazy" />
+                    ) : (
+                      <Package className="h-8 w-8 text-slate-300" />
+                    )}
+                  </div>
+                  <div className="flex flex-1 flex-col gap-1 p-2">
+                    <div className="line-clamp-2 text-xs font-medium text-slate-800 group-hover:text-[color:var(--brand-navy)]">{r.name}</div>
+                    {typeof r.price === "number" && r.price > 0 && (
+                      <div className="mt-auto text-sm font-bold text-[color:var(--brand-orange)]">{priceFmt.format(r.price)}</div>
+                    )}
+                  </div>
+                </Link>
+              ))}
+            </div>
           </div>
         )}
       </div>
