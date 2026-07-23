@@ -80,16 +80,21 @@ function AuditPage() {
   const [skuInput, setSkuInput] = useState(search.sku);
 
   const update = (patch: Record<string, unknown>) =>
-    nav({ search: (s: Record<string, unknown>) => ({ ...s, ...patch }) });
+    nav({ search: (s: Record<string, unknown>) => ({ ...s, ...patch, page: 1 }), replace: true });
+
+  const goToPage = (page: number) =>
+    nav({ search: (s: Record<string, unknown>) => ({ ...s, page }), replace: true });
 
   const auditQ = useQuery({
     queryKey: ["price-audit", search],
     queryFn: async () => {
+      const fromIdx = (search.page - 1) * AUDIT_PAGE_SIZE;
+      const toIdx = fromIdx + AUDIT_PAGE_SIZE - 1;
       let q = supabase
         .from("price_audit_log")
-        .select("*")
+        .select("*", { count: "exact" })
         .order("created_at", { ascending: false })
-        .limit(1000);
+        .range(fromIdx, toIdx);
       if (search.action !== "all") q = q.eq("action", search.action);
       if (search.sku.trim()) q = q.ilike("product_sku", `%${search.sku.trim()}%`);
       if (search.from) q = q.gte("created_at", new Date(search.from).toISOString());
@@ -98,13 +103,16 @@ function AuditPage() {
         end.setHours(23, 59, 59, 999);
         q = q.lte("created_at", end.toISOString());
       }
-      const { data, error } = await q;
+      const { data, error, count } = await q;
       if (error) throw error;
-      return (data ?? []) as Row[];
+      return { rows: (data ?? []) as Row[], count: count ?? 0 };
     },
   });
 
-  const rows = auditQ.data ?? [];
+  const rows = auditQ.data?.rows ?? [];
+  const totalCount = auditQ.data?.count ?? 0;
+  const totalPages = Math.max(1, Math.ceil(totalCount / AUDIT_PAGE_SIZE));
+
 
   // Group bulk_approve by session_id; single rows stay standalone
   const groups = useMemo(() => {
