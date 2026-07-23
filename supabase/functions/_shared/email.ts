@@ -219,8 +219,22 @@ export async function buildPdf(doc: PdfDoc): Promise<Uint8Array> {
   }
 
   y -= 30;
-  drawText(doc.footerNote ?? '', marginX, y, 9, rgb(0.4, 0.4, 0.5));
-  y -= 40;
+  if (doc.footerNote) { drawText(doc.footerNote, marginX, y, 9, rgb(0.4, 0.4, 0.5)); y -= 14; }
+
+  // VAT / withholding notes
+  const vatNotes = [
+    'อัตราค่าบริการยังไม่รวม VAT 7% (สำหรับนิติบุคคล)',
+    'นิติบุคคลยอดตั้งแต่ 1,000 บ. ขึ้นไป สามารถหักภาษี ณ ที่จ่าย 3%',
+    'ใบเสร็จ/ใบกำกับภาษีจะส่งหลังได้รับหนังสือหักฯ',
+  ];
+  for (const n of vatNotes) { drawText(`• ${n}`, marginX, y, 9, rgb(0.45, 0.35, 0.1)); y -= 12; }
+
+  // Bank accounts
+  y -= 8;
+  drawText('บัญชีสำหรับโอนชำระเงิน', marginX, y, 10, rgb(0.15, 0.2, 0.4)); y -= 14;
+  drawText('KBank  841-2-05851-9  · บริษัท อี เอ็น ที กรุ๊ป จำกัด · สาขาบางเดื่อ ปทุมธานี (ออมทรัพย์)', marginX, y, 9, rgb(0.2, 0.2, 0.3)); y -= 12;
+  drawText('SCB    406-817747-1   · บริษัท อี เอ็น ที กรุ๊ป จำกัด · สาขาบางเดื่อ (ปทุมธานี) (ออมทรัพย์)', marginX, y, 9, rgb(0.2, 0.2, 0.3)); y -= 20;
+
   drawText('_______________________________', width - 240, y, 10, rgb(0.5, 0.5, 0.6));
   drawText('ผู้มีอำนาจลงนาม / Authorized Signature', width - 240, y - 14, 9, rgb(0.5, 0.5, 0.6));
 
@@ -229,10 +243,10 @@ export async function buildPdf(doc: PdfDoc): Promise<Uint8Array> {
 
 export const SELLER = {
   name: 'บริษัท อี เอ็น ที กรุ๊ป จำกัด (ENT Group)',
-  address: 'สำนักงานใหญ่ กรุงเทพมหานคร',
+  address: 'สำนักงาน ปทุมธานี · โทร 02-045-6104 · ฝ่ายจัดซื้อ 082-249-7922',
   phone: '02-045-6104',
-  email: 'info@entgroup.co.th',
-  tax_id: '0-1055-00000-00-0',
+  email: 'accountant@entgroup.co.th',
+  tax_id: '0135558013167',
 };
 
 export function u8ToBase64(bytes: Uint8Array): string {
