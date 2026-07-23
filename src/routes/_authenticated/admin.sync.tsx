@@ -422,6 +422,58 @@ function SyncPage() {
           </div>
         ) : null}
       </main>
+
+      <Dialog open={importOpen} onOpenChange={(o) => { setImportOpen(o); if (!o) { setImportHtml(""); setPreviewCount(null); } }}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>นำเข้าสินค้าจาก HTML</DialogTitle>
+            <DialogDescription>
+              เปิดหน้า Synnex product list ใน browser → คลิกขวา → View Page Source (Ctrl+U) →
+              Ctrl+A, Ctrl+C แล้ววางที่นี่
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Textarea
+              value={importHtml}
+              onChange={(e) => handlePreview(e.target.value)}
+              placeholder="<html>… วาง HTML ที่นี่ …</html>"
+              className="h-64 font-mono text-xs"
+            />
+            <div className="flex items-center justify-between text-xs text-slate-500">
+              <span>
+                {previewCount === null
+                  ? "ยังไม่ได้วาง HTML"
+                  : `พบสินค้า ${previewCount} รายการที่จะนำเข้า`}
+              </span>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={async () => {
+                  try {
+                    const text = await navigator.clipboard.readText();
+                    handlePreview(text);
+                  } catch {
+                    toast.error("อ่านคลิปบอร์ดไม่สำเร็จ — วางด้วยมือแทน");
+                  }
+                }}
+              >
+                <ClipboardPaste className="mr-1 h-3.5 w-3.5" /> วางจากคลิปบอร์ด
+              </Button>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setImportOpen(false)}>ยกเลิก</Button>
+            <Button
+              disabled={importM.isPending || !previewCount}
+              onClick={() => importM.mutate(importHtml)}
+              className="bg-[#1565c0] text-white hover:bg-[#0d47a1]"
+            >
+              {importM.isPending ? "กำลังนำเข้า…" : `นำเข้า ${previewCount ?? 0} รายการ`}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
