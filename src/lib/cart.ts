@@ -68,6 +68,22 @@ export const priceFmt = new Intl.NumberFormat("th-TH", {
   maximumFractionDigits: 0,
 });
 
+/**
+ * Returns the customer-facing selling price, or null when not yet approved.
+ * Shop pages must show "ติดต่อสอบถาม" instead of ฿0.
+ */
+export function getSellingPrice(p: { selling_price?: number | null; price_approved?: boolean | null }): number | null {
+  const s = Number(p.selling_price ?? 0);
+  if (!s || s <= 0) return null;
+  return s;
+}
+
+export function displayPrice(p: { selling_price?: number | null; price_approved?: boolean | null }): string {
+  const s = getSellingPrice(p);
+  return s == null ? "ติดต่อสอบถาม" : priceFmt.format(s);
+}
+
+
 export const CATEGORIES = [
   "Notebook",
   "Monitor",

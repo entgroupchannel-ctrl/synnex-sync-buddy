@@ -14,7 +14,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { toast } from "sonner";
 import { ShoppingCart, Search, Package, Grid2x2, List, SlidersHorizontal, Flame, ChevronRight } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
-import { CATEGORIES, detectCategory, priceFmt, useCart } from "@/lib/cart";
+import { CATEGORIES, detectCategory, displayPrice, getSellingPrice, useCart } from "@/lib/cart";
 
 const searchSchema = z.object({
   q: fallback(z.string(), "").default(""),
@@ -155,7 +155,7 @@ function HomePage() {
       sku: p.sku as string,
       slug: p.slug as string | null,
       name: (p.name as string) ?? (p.sku as string),
-      price: Number(p.price ?? 0),
+      price: getSellingPrice(p as { selling_price?: number | null }) ?? 0,
       image_url: (p.image_url as string) ?? null,
       distributor: (p.distributor as string | null) ?? null,
     });
@@ -327,7 +327,7 @@ function HomePage() {
                   <div className="border-t p-2">
                     <div className="line-clamp-2 min-h-9 text-xs font-medium">{p.name ?? p.sku}</div>
                     <div className="mt-1 text-base font-black text-[color:var(--brand-orange)]">
-                      {p.price != null ? priceFmt.format(Number(p.price)) : "—"}
+                      {displayPrice(p as { selling_price?: number | null })}
                     </div>
                   </div>
                 </Link>
@@ -418,7 +418,7 @@ function HomePage() {
                     </div>
                     <div className="flex w-40 shrink-0 flex-col items-end justify-between">
                       <div className="text-xl font-black text-[color:var(--brand-orange)]">
-                        {p.price != null ? priceFmt.format(Number(p.price)) : "—"}
+                        {displayPrice(p as { selling_price?: number | null })}
                       </div>
                       <Button disabled={!ready} onClick={() => addToCart(p as Record<string, unknown>)} className="w-full bg-[color:var(--brand-navy)] hover:bg-[color:var(--brand-navy-2)]" size="sm">
                         <ShoppingCart className="mr-1.5 h-4 w-4" /> ใส่ตะกร้า
@@ -460,7 +460,7 @@ function HomePage() {
                       </Link>
                       <div className="mt-auto pt-1">
                         <div className="text-xl font-black text-[color:var(--brand-orange)]">
-                          {p.price != null ? priceFmt.format(Number(p.price)) : "—"}
+                          {displayPrice(p as { selling_price?: number | null })}
                         </div>
                         <div className="mt-1 flex items-center gap-1.5">
                           <span className={`inline-block h-2 w-2 rounded-full ${ready ? "bg-green-500" : "bg-red-500"}`} />
