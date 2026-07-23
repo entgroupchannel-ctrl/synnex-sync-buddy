@@ -489,3 +489,42 @@ function StatCard({ label, value }: { label: string; value: React.ReactNode }) {
     </div>
   );
 }
+
+function PricingSummaryCard() {
+  const q = useQuery({
+    queryKey: ["pricing-summary"],
+    queryFn: async () => {
+      const [unapproved, zero] = await Promise.all([
+        supabase.from("synnex_products").select("*", { count: "exact", head: true }).eq("price_approved", false),
+        supabase.from("synnex_products").select("*", { count: "exact", head: true }).or("selling_price.is.null,selling_price.eq.0"),
+      ]);
+      return { unapproved: unapproved.count ?? 0, zero: zero.count ?? 0 };
+    },
+  });
+  const d = q.data;
+  return (
+    <section className="mt-4 rounded-lg border bg-white p-4 shadow-sm">
+      <div className="flex flex-wrap items-center gap-4">
+        <div className="text-sm font-bold text-[#1a237e]">💰 สรุปราคา</div>
+        <div className="flex flex-wrap items-center gap-3 text-sm">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-red-100 px-2.5 py-1 text-red-800">
+            ยังไม่ approve: <b>{(d?.unapproved ?? 0).toLocaleString()}</b>
+          </span>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-2.5 py-1 text-amber-800">
+            ราคา ฿0: <b>{(d?.zero ?? 0).toLocaleString()}</b>
+          </span>
+        </div>
+        <div className="ml-auto flex gap-2">
+          <Button asChild size="sm" variant="outline">
+            <a href="/admin/pricing/products?filter=unapproved">ดูรายการ →</a>
+          </Button>
+          <Button asChild size="sm" className="bg-[#1565c0] hover:bg-[#0d47a1]">
+            <a href="/admin/pricing">จัดการกฎราคา</a>
+          </Button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+}
