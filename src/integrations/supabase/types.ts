@@ -86,6 +86,45 @@ export type Database = {
         }
         Relationships: []
       }
+      quotation_requests: {
+        Row: {
+          company_name: string | null
+          contact_name: string | null
+          created_at: string | null
+          email: string | null
+          id: string
+          items: Json | null
+          notes: string | null
+          phone: string | null
+          status: string | null
+          user_id: string | null
+        }
+        Insert: {
+          company_name?: string | null
+          contact_name?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          items?: Json | null
+          notes?: string | null
+          phone?: string | null
+          status?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          company_name?: string | null
+          contact_name?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          items?: Json | null
+          notes?: string | null
+          phone?: string | null
+          status?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       sync_logs: {
         Row: {
           created_at: string
@@ -118,6 +157,8 @@ export type Database = {
       }
       synnex_products: {
         Row: {
+          b2b_markup_applied: number | null
+          b2b_price: number | null
           brand: string | null
           brand_name: string | null
           category: string | null
@@ -143,6 +184,8 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          b2b_markup_applied?: number | null
+          b2b_price?: number | null
           brand?: string | null
           brand_name?: string | null
           category?: string | null
@@ -168,6 +211,8 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          b2b_markup_applied?: number | null
+          b2b_price?: number | null
           brand?: string | null
           brand_name?: string | null
           category?: string | null
