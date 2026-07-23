@@ -196,8 +196,17 @@ function CheckoutPage() {
       clear();
       navigate({ to: "/order/$orderNumber", params: { orderNumber: order.order_number } });
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "ผิดพลาด";
-      toast.error(msg, { description: "ตะกร้ายังอยู่ — ลองอีกครั้ง" });
+      console.error("[checkout] submit failed:", err);
+      const anyErr = err as { message?: string; details?: string; hint?: string; code?: string } | Error;
+      const msg =
+        (anyErr as { message?: string })?.message ||
+        (anyErr as { details?: string })?.details ||
+        (anyErr as { hint?: string })?.hint ||
+        "เกิดข้อผิดพลาดในการสร้างคำสั่งซื้อ";
+      const code = (anyErr as { code?: string })?.code;
+      toast.error(msg, {
+        description: code ? `รหัสข้อผิดพลาด: ${code} — ตะกร้ายังอยู่ ลองอีกครั้ง` : "ตะกร้ายังอยู่ — ลองอีกครั้ง",
+      });
     } finally {
       setSubmitting(false);
     }
