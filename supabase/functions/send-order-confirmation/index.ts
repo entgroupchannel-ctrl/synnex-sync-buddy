@@ -28,12 +28,27 @@ serve(async (req) => {
 
     const bankSection = order.payment_method === 'transfer' ? `
       <div style="margin-top:24px;padding:20px;background:#f0fdf9;border:1px solid #a7f3d0;border-radius:12px;">
-        <h3 style="margin:0 0 8px;color:#065f46;">🏦 ข้อมูลการโอนเงิน</h3>
-        <p style="margin:4px 0;">ธนาคารกสิกรไทย (KBank)</p>
-        <p style="margin:4px 0;font-family:monospace;font-weight:bold;">เลขที่บัญชี: 123-4-56789-0</p>
-        <p style="margin:4px 0;">ชื่อบัญชี: บริษัท อี เอ็น ที กรุ๊ป จำกัด</p>
-        <p style="margin:4px 0;">สาขา: สาขาสำนักงานใหญ่</p>
-        <p style="margin:10px 0 0;color:#b45309;font-weight:bold;">⏰ กรุณาโอนภายใน 24 ชั่วโมง</p>
+        <h3 style="margin:0 0 12px;color:#065f46;">🏦 ข้อมูลการโอนเงิน</h3>
+        <div style="display:block;">
+          <div style="padding:12px;background:#fff;border:1px solid #d1fae5;border-radius:8px;margin-bottom:8px;">
+            <p style="margin:2px 0;font-weight:bold;">ธนาคารกสิกรไทย (KBank)</p>
+            <p style="margin:2px 0;font-family:monospace;font-weight:bold;">เลขที่บัญชี: 841-2-05851-9</p>
+            <p style="margin:2px 0;">ชื่อบัญชี: บริษัท อี เอ็น ที กรุ๊ป จำกัด</p>
+            <p style="margin:2px 0;color:#475569;font-size:13px;">สาขาบางเดื่อ ปทุมธานี · ออมทรัพย์</p>
+          </div>
+          <div style="padding:12px;background:#fff;border:1px solid #d1fae5;border-radius:8px;">
+            <p style="margin:2px 0;font-weight:bold;">ธนาคารไทยพาณิชย์ (SCB)</p>
+            <p style="margin:2px 0;font-family:monospace;font-weight:bold;">เลขที่บัญชี: 406-817747-1</p>
+            <p style="margin:2px 0;">ชื่อบัญชี: บริษัท อี เอ็น ที กรุ๊ป จำกัด</p>
+            <p style="margin:2px 0;color:#475569;font-size:13px;">สาขาบางเดื่อ (ปทุมธานี) · ออมทรัพย์</p>
+          </div>
+        </div>
+        <p style="margin:12px 0 0;color:#b45309;font-weight:bold;">⏰ กรุณาโอนภายใน 24 ชั่วโมง</p>
+      </div>
+      <div style="margin-top:12px;padding:12px 16px;background:#fffbeb;border:1px solid #fde68a;border-radius:10px;font-size:12px;color:#92400e;line-height:1.7;">
+        <div>• อัตราค่าบริการยังไม่รวม VAT 7% (สำหรับนิติบุคคล)</div>
+        <div>• นิติบุคคลยอดตั้งแต่ 1,000 บ. ขึ้นไป สามารถหักภาษี ณ ที่จ่าย 3%</div>
+        <div>• ใบเสร็จ/ใบกำกับภาษีจะส่งหลังได้รับหนังสือหักฯ</div>
       </div>` : '';
 
     const orderUrl = `${Deno.env.get('APP_URL') ?? 'https://synnex-sync-buddy.lovable.app'}/order/${order.order_number}`;
