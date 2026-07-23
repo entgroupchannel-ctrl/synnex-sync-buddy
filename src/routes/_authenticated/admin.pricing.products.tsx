@@ -1262,6 +1262,21 @@ function PricingProductsPage() {
                   ถัดไป <ChevronRight className="h-4 w-4" />
                 </Button>
               </div>
+              <div className="flex items-center gap-2 text-sm text-slate-600">
+                <span>แสดง</span>
+                <Select
+                  value={String(search.pageSize)}
+                  onValueChange={(v) => update({ pageSize: Number(v) })}
+                >
+                  <SelectTrigger className="h-9 w-24"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {PAGE_SIZE_OPTIONS.map((n) => (
+                      <SelectItem key={n} value={String(n)}>{n}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <span>รายการต่อหน้า</span>
+              </div>
             </div>
           )}
 
