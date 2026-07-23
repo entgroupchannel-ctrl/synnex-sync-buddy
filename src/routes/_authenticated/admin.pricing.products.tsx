@@ -398,5 +398,3 @@ function PricingProductsPage() {
   );
 }
 
-// unused stub to keep TS module structure — no export
-void applyFilter;
