@@ -24,15 +24,15 @@ export const Route = createFileRoute("/_authenticated/account/profile")({
 function AccountProfile() {
   const [profile, setProfile] = useState<{
     id?: string;
-    user_type?: string;
-    full_name?: string;
-    phone?: string;
-    company_name?: string;
-    tax_id?: string;
-    company_address?: string;
-    position?: string;
-    account_status?: string;
-    wants_tax_invoice?: boolean;
+    user_type?: string | null;
+    full_name?: string | null;
+    phone?: string | null;
+    company_name?: string | null;
+    tax_id?: string | null;
+    company_address?: string | null;
+    position?: string | null;
+    account_status?: string | null;
+    wants_tax_invoice?: boolean | null;
   } | null>(null);
   const [busy, setBusy] = useState(false);
 
