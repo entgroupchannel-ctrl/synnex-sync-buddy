@@ -243,9 +243,9 @@ export async function buildPdf(doc: PdfDoc): Promise<Uint8Array> {
 
 export const SELLER = {
   name: 'บริษัท อี เอ็น ที กรุ๊ป จำกัด (ENT Group)',
-  address: 'สำนักงาน ปทุมธานี · โทร 02-045-6104 · ฝ่ายจัดซื้อ 082-249-7922',
+  address: '70/5 หมู่บ้านเมกาโฮม บิซทาวน์ แจ้งวัฒนะ 2 หมู่ 4 ต.คลองพระอุดม อ.ปากเกร็ด นนทบุรี 11120',
   phone: '02-045-6104',
-  email: 'accountant@entgroup.co.th',
+  email: 'info@entgroup.co.th',
   tax_id: '0135558013167',
 };
 
