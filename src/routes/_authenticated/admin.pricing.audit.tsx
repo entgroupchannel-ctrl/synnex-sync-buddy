@@ -182,7 +182,7 @@ function AuditPage() {
         <div className="mx-auto flex max-w-[100rem] items-center gap-3 px-4 py-4">
           <h1 className="text-lg font-bold md:text-xl">Audit Log ราคาสินค้า</h1>
           <div className="text-xs text-white/70">
-            {rows.length.toLocaleString()} รายการล่าสุด
+            {totalCount.toLocaleString()} รายการ
           </div>
           <div className="ml-auto flex gap-2">
             <Button onClick={exportCsv} size="sm" variant="secondary" className="gap-1">
