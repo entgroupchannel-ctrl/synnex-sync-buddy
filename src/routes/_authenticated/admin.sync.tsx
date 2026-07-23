@@ -168,6 +168,35 @@ function SyncPage() {
     },
   });
 
+  const importM = useMutation({
+    mutationFn: async (html: string) => {
+      const products = parseSynnexHtml(html);
+      if (products.length === 0) throw new Error("ไม่พบสินค้าใน HTML (ต้องมี .box-item-product)");
+      const { data, error } = await supabase.functions.invoke("save-products", {
+        body: { products },
+      });
+      if (error) throw new Error(error.message);
+      if (data?.status !== "success") throw new Error(data?.message || "Import failed");
+      return { count: data.productsFound as number };
+    },
+    onSuccess: ({ count }) => {
+      toast.success(`นำเข้าสำเร็จ ${count} รายการ`);
+      setImportOpen(false);
+      setImportHtml("");
+      setPreviewCount(null);
+      qc.invalidateQueries({ queryKey: ["synnex"] });
+    },
+    onError: (err) => {
+      toast.error(err instanceof Error ? err.message : String(err));
+    },
+  });
+
+  function handlePreview(v: string) {
+    setImportHtml(v);
+    if (!v.trim()) { setPreviewCount(null); return; }
+    try { setPreviewCount(parseSynnexHtml(v).length); } catch { setPreviewCount(null); }
+  }
+
   async function signOut() {
     await supabase.auth.signOut();
     navigate({ to: "/auth", replace: true });
