@@ -73,7 +73,7 @@ async function scrape(username: string, password: string): Promise<Product[]> {
   const jar: Jar = new Map();
 
   // 1) GET login page
-  const loginPage = await fetch(LOGIN_URL, {
+  const loginPage = await sfetch(LOGIN_URL, {
     headers: { "User-Agent": UA, Accept: "text/html" },
     redirect: "manual",
   });
@@ -93,7 +93,7 @@ async function scrape(username: string, password: string): Promise<Product[]> {
   form.set("ctl00$ContentPlaceHolder1$txtPassword", password);
   form.set("ctl00$ContentPlaceHolder1$btnLogin", "Login");
 
-  const loginRes = await fetch(LOGIN_URL, {
+  const loginRes = await sfetch(LOGIN_URL, {
     method: "POST",
     headers: {
       "User-Agent": UA,
@@ -109,7 +109,7 @@ async function scrape(username: string, password: string): Promise<Product[]> {
   if (loginRes.status >= 300 && loginRes.status < 400) {
     const loc = loginRes.headers.get("location");
     if (loc) {
-      const follow = await fetch(new URL(loc, LOGIN_URL).toString(), {
+      const follow = await sfetch(new URL(loc, LOGIN_URL).toString(), {
         headers: { "User-Agent": UA, Cookie: cookieHeader(jar) },
         redirect: "manual",
       });
@@ -122,7 +122,7 @@ async function scrape(username: string, password: string): Promise<Product[]> {
   }
 
   // 3) GET product list
-  const listRes = await fetch(PRODUCT_URL, {
+  const listRes = await sfetch(PRODUCT_URL, {
     headers: {
       "User-Agent": UA,
       Cookie: cookieHeader(jar),
