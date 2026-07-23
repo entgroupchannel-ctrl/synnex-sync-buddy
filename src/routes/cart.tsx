@@ -24,6 +24,7 @@ type RecentItem = { sku: string; name: string; image?: string | null; price?: nu
 function CartPage() {
   const { items, setQty, remove, total } = useCart();
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [recent, setRecent] = useState<RecentItem[]>([]);
 
   useEffect(() => {
@@ -39,9 +40,9 @@ function CartPage() {
       <SiteHeader />
       <div className="mx-auto max-w-5xl px-4 py-6">
         <Link to="/" className="mb-4 inline-flex items-center gap-1 text-sm text-slate-600 hover:text-[color:var(--brand-navy)]">
-          <ArrowLeft className="h-4 w-4" /> เลือกซื้อต่อ
+          <ArrowLeft className="h-4 w-4" /> {t("cart.continue")}
         </Link>
-        <h1 className="mb-6 text-2xl font-bold">ตะกร้าสินค้า</h1>
+        <h1 className="mb-6 text-2xl font-bold">{t("cart.title")}</h1>
 
         {items.length === 0 ? (
           <EmptyCart recent={recent} onBrowse={() => navigate({ to: "/" })} />
