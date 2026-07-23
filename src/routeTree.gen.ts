@@ -31,6 +31,7 @@ import { Route as AuthenticatedAdminCustomersRouteImport } from './routes/_authe
 import { Route as AuthenticatedAdminPricingProductsRouteImport } from './routes/_authenticated/admin.pricing.products'
 import { Route as AuthenticatedAdminPricingAuditRouteImport } from './routes/_authenticated/admin.pricing.audit'
 import { Route as AuthenticatedAdminOrdersIdRouteImport } from './routes/_authenticated/admin.orders.$id'
+import { Route as AuthenticatedAdminCustomersIdRouteImport } from './routes/_authenticated/admin.customers.$id'
 
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
@@ -152,6 +153,12 @@ const AuthenticatedAdminOrdersIdRoute =
     path: '/$id',
     getParentRoute: () => AuthenticatedAdminOrdersRoute,
   } as any)
+const AuthenticatedAdminCustomersIdRoute =
+  AuthenticatedAdminCustomersIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthenticatedAdminCustomersRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -163,7 +170,7 @@ export interface FileRoutesByFullPath {
   '/auth/callback': typeof AuthCallbackRoute
   '/order/$orderNumber': typeof OrderOrderNumberRoute
   '/product/$slug': typeof ProductSlugRoute
-  '/admin/customers': typeof AuthenticatedAdminCustomersRoute
+  '/admin/customers': typeof AuthenticatedAdminCustomersRouteWithChildren
   '/admin/orders': typeof AuthenticatedAdminOrdersRouteWithChildren
   '/admin/pricing': typeof AuthenticatedAdminPricingRouteWithChildren
   '/admin/sync': typeof AuthenticatedAdminSyncRoute
@@ -172,6 +179,7 @@ export interface FileRoutesByFullPath {
   '/my-account/orders': typeof AuthenticatedMyAccountOrdersRoute
   '/my-account/profile': typeof AuthenticatedMyAccountProfileRoute
   '/my-account/': typeof AuthenticatedMyAccountIndexRoute
+  '/admin/customers/$id': typeof AuthenticatedAdminCustomersIdRoute
   '/admin/orders/$id': typeof AuthenticatedAdminOrdersIdRoute
   '/admin/pricing/audit': typeof AuthenticatedAdminPricingAuditRoute
   '/admin/pricing/products': typeof AuthenticatedAdminPricingProductsRoute
@@ -185,7 +193,7 @@ export interface FileRoutesByTo {
   '/auth/callback': typeof AuthCallbackRoute
   '/order/$orderNumber': typeof OrderOrderNumberRoute
   '/product/$slug': typeof ProductSlugRoute
-  '/admin/customers': typeof AuthenticatedAdminCustomersRoute
+  '/admin/customers': typeof AuthenticatedAdminCustomersRouteWithChildren
   '/admin/orders': typeof AuthenticatedAdminOrdersRouteWithChildren
   '/admin/pricing': typeof AuthenticatedAdminPricingRouteWithChildren
   '/admin/sync': typeof AuthenticatedAdminSyncRoute
@@ -194,6 +202,7 @@ export interface FileRoutesByTo {
   '/my-account/orders': typeof AuthenticatedMyAccountOrdersRoute
   '/my-account/profile': typeof AuthenticatedMyAccountProfileRoute
   '/my-account': typeof AuthenticatedMyAccountIndexRoute
+  '/admin/customers/$id': typeof AuthenticatedAdminCustomersIdRoute
   '/admin/orders/$id': typeof AuthenticatedAdminOrdersIdRoute
   '/admin/pricing/audit': typeof AuthenticatedAdminPricingAuditRoute
   '/admin/pricing/products': typeof AuthenticatedAdminPricingProductsRoute
@@ -210,7 +219,7 @@ export interface FileRoutesById {
   '/auth/callback': typeof AuthCallbackRoute
   '/order/$orderNumber': typeof OrderOrderNumberRoute
   '/product/$slug': typeof ProductSlugRoute
-  '/_authenticated/admin/customers': typeof AuthenticatedAdminCustomersRoute
+  '/_authenticated/admin/customers': typeof AuthenticatedAdminCustomersRouteWithChildren
   '/_authenticated/admin/orders': typeof AuthenticatedAdminOrdersRouteWithChildren
   '/_authenticated/admin/pricing': typeof AuthenticatedAdminPricingRouteWithChildren
   '/_authenticated/admin/sync': typeof AuthenticatedAdminSyncRoute
@@ -219,6 +228,7 @@ export interface FileRoutesById {
   '/_authenticated/my-account/orders': typeof AuthenticatedMyAccountOrdersRoute
   '/_authenticated/my-account/profile': typeof AuthenticatedMyAccountProfileRoute
   '/_authenticated/my-account/': typeof AuthenticatedMyAccountIndexRoute
+  '/_authenticated/admin/customers/$id': typeof AuthenticatedAdminCustomersIdRoute
   '/_authenticated/admin/orders/$id': typeof AuthenticatedAdminOrdersIdRoute
   '/_authenticated/admin/pricing/audit': typeof AuthenticatedAdminPricingAuditRoute
   '/_authenticated/admin/pricing/products': typeof AuthenticatedAdminPricingProductsRoute
@@ -244,6 +254,7 @@ export interface FileRouteTypes {
     | '/my-account/orders'
     | '/my-account/profile'
     | '/my-account/'
+    | '/admin/customers/$id'
     | '/admin/orders/$id'
     | '/admin/pricing/audit'
     | '/admin/pricing/products'
@@ -266,6 +277,7 @@ export interface FileRouteTypes {
     | '/my-account/orders'
     | '/my-account/profile'
     | '/my-account'
+    | '/admin/customers/$id'
     | '/admin/orders/$id'
     | '/admin/pricing/audit'
     | '/admin/pricing/products'
@@ -290,6 +302,7 @@ export interface FileRouteTypes {
     | '/_authenticated/my-account/orders'
     | '/_authenticated/my-account/profile'
     | '/_authenticated/my-account/'
+    | '/_authenticated/admin/customers/$id'
     | '/_authenticated/admin/orders/$id'
     | '/_authenticated/admin/pricing/audit'
     | '/_authenticated/admin/pricing/products'
@@ -462,6 +475,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminOrdersIdRouteImport
       parentRoute: typeof AuthenticatedAdminOrdersRoute
     }
+    '/_authenticated/admin/customers/$id': {
+      id: '/_authenticated/admin/customers/$id'
+      path: '/$id'
+      fullPath: '/admin/customers/$id'
+      preLoaderRoute: typeof AuthenticatedAdminCustomersIdRouteImport
+      parentRoute: typeof AuthenticatedAdminCustomersRoute
+    }
   }
 }
 
@@ -485,6 +505,20 @@ const AuthenticatedMyAccountRouteChildren: AuthenticatedMyAccountRouteChildren =
 const AuthenticatedMyAccountRouteWithChildren =
   AuthenticatedMyAccountRoute._addFileChildren(
     AuthenticatedMyAccountRouteChildren,
+  )
+
+interface AuthenticatedAdminCustomersRouteChildren {
+  AuthenticatedAdminCustomersIdRoute: typeof AuthenticatedAdminCustomersIdRoute
+}
+
+const AuthenticatedAdminCustomersRouteChildren: AuthenticatedAdminCustomersRouteChildren =
+  {
+    AuthenticatedAdminCustomersIdRoute: AuthenticatedAdminCustomersIdRoute,
+  }
+
+const AuthenticatedAdminCustomersRouteWithChildren =
+  AuthenticatedAdminCustomersRoute._addFileChildren(
+    AuthenticatedAdminCustomersRouteChildren,
   )
 
 interface AuthenticatedAdminOrdersRouteChildren {
@@ -520,7 +554,7 @@ const AuthenticatedAdminPricingRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedMyAccountRoute: typeof AuthenticatedMyAccountRouteWithChildren
-  AuthenticatedAdminCustomersRoute: typeof AuthenticatedAdminCustomersRoute
+  AuthenticatedAdminCustomersRoute: typeof AuthenticatedAdminCustomersRouteWithChildren
   AuthenticatedAdminOrdersRoute: typeof AuthenticatedAdminOrdersRouteWithChildren
   AuthenticatedAdminPricingRoute: typeof AuthenticatedAdminPricingRouteWithChildren
   AuthenticatedAdminSyncRoute: typeof AuthenticatedAdminSyncRoute
@@ -528,7 +562,8 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedMyAccountRoute: AuthenticatedMyAccountRouteWithChildren,
-  AuthenticatedAdminCustomersRoute: AuthenticatedAdminCustomersRoute,
+  AuthenticatedAdminCustomersRoute:
+    AuthenticatedAdminCustomersRouteWithChildren,
   AuthenticatedAdminOrdersRoute: AuthenticatedAdminOrdersRouteWithChildren,
   AuthenticatedAdminPricingRoute: AuthenticatedAdminPricingRouteWithChildren,
   AuthenticatedAdminSyncRoute: AuthenticatedAdminSyncRoute,
