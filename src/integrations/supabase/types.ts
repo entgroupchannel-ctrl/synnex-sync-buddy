@@ -107,7 +107,13 @@ export type Database = {
       }
       orders: {
         Row: {
+          admin_notes: string | null
           admin_status: string | null
+          cancelled_at: string | null
+          cancelled_reason: string | null
+          cod_fee: number
+          company_address: string | null
+          company_name: string | null
           created_at: string | null
           customer_address: string | null
           customer_email: string | null
@@ -117,15 +123,35 @@ export type Database = {
           id: string
           is_guest: boolean | null
           items: Json | null
+          need_tax_invoice: boolean
           notes: string | null
+          order_number: string
+          paid_at: string | null
           payment_method: string | null
+          payment_slip_url: string | null
+          payment_status: string
+          shipping_address: string | null
+          shipping_district: string | null
+          shipping_name: string | null
+          shipping_phone: string | null
+          shipping_postcode: string | null
+          shipping_province: string | null
           status: string | null
+          subtotal: number | null
+          tax_id: string | null
           tax_invoice: Json | null
           total: number | null
+          updated_at: string
           user_id: string | null
         }
         Insert: {
+          admin_notes?: string | null
           admin_status?: string | null
+          cancelled_at?: string | null
+          cancelled_reason?: string | null
+          cod_fee?: number
+          company_address?: string | null
+          company_name?: string | null
           created_at?: string | null
           customer_address?: string | null
           customer_email?: string | null
@@ -135,15 +161,35 @@ export type Database = {
           id?: string
           is_guest?: boolean | null
           items?: Json | null
+          need_tax_invoice?: boolean
           notes?: string | null
+          order_number: string
+          paid_at?: string | null
           payment_method?: string | null
+          payment_slip_url?: string | null
+          payment_status?: string
+          shipping_address?: string | null
+          shipping_district?: string | null
+          shipping_name?: string | null
+          shipping_phone?: string | null
+          shipping_postcode?: string | null
+          shipping_province?: string | null
           status?: string | null
+          subtotal?: number | null
+          tax_id?: string | null
           tax_invoice?: Json | null
           total?: number | null
+          updated_at?: string
           user_id?: string | null
         }
         Update: {
+          admin_notes?: string | null
           admin_status?: string | null
+          cancelled_at?: string | null
+          cancelled_reason?: string | null
+          cod_fee?: number
+          company_address?: string | null
+          company_name?: string | null
           created_at?: string | null
           customer_address?: string | null
           customer_email?: string | null
@@ -153,11 +199,25 @@ export type Database = {
           id?: string
           is_guest?: boolean | null
           items?: Json | null
+          need_tax_invoice?: boolean
           notes?: string | null
+          order_number?: string
+          paid_at?: string | null
           payment_method?: string | null
+          payment_slip_url?: string | null
+          payment_status?: string
+          shipping_address?: string | null
+          shipping_district?: string | null
+          shipping_name?: string | null
+          shipping_phone?: string | null
+          shipping_postcode?: string | null
+          shipping_province?: string | null
           status?: string | null
+          subtotal?: number | null
+          tax_id?: string | null
           tax_invoice?: Json | null
           total?: number | null
+          updated_at?: string
           user_id?: string | null
         }
         Relationships: []
@@ -485,7 +545,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_order_number: { Args: never; Returns: string }
     }
     Enums: {
       [_ in never]: never
