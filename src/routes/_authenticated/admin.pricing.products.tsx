@@ -451,34 +451,71 @@ function PricingProductsPage() {
 
         {/* Main */}
         <main className="min-w-0 flex-1">
-          {/* Distributor tabs */}
-          <div className="mb-4 flex flex-wrap gap-2 rounded-lg border bg-white p-2">
-            {([
-              ["all", "ทั้งหมด", dCounts?.all],
-              ["SYNNEX", "🔵 SYNNEX", dCounts?.SYNNEX],
-              ["VSTECS", "🟠 VSTECS", dCounts?.VSTECS],
-            ] as const).map(([val, label, n]) => (
-              <button
-                key={val}
-                onClick={() => update({ distributor: val })}
-                className={`flex items-center gap-1.5 rounded-md px-4 py-1.5 text-sm font-semibold transition ${
-                  search.distributor === val
-                    ? val === "SYNNEX"
-                      ? "bg-blue-600 text-white"
-                      : val === "VSTECS"
-                      ? "bg-orange-500 text-white"
-                      : "bg-[color:var(--brand-navy)] text-white"
-                    : "text-slate-700 hover:bg-slate-100"
-                }`}
-              >
-                {label}
-                {n != null && (
-                  <span className={`rounded-full px-1.5 text-[10px] font-bold ${search.distributor === val ? "bg-white/25" : "bg-slate-200 text-slate-700"}`}>
-                    {n.toLocaleString()}
-                  </span>
-                )}
-              </button>
-            ))}
+          {/* Distributor tabs + sort/view */}
+          <div className="mb-4 flex flex-wrap items-center gap-3 rounded-lg border bg-white p-2">
+            <div className="flex flex-wrap gap-1">
+              {([
+                ["all", "ทั้งหมด", dCounts?.all],
+                ["SYNNEX", "🔵 SYNNEX", dCounts?.SYNNEX],
+                ["VSTECS", "🟠 VSTECS", dCounts?.VSTECS],
+              ] as const).map(([val, label, n]) => (
+                <button
+                  key={val}
+                  onClick={() => update({ distributor: val })}
+                  className={`flex items-center gap-1.5 rounded-md px-4 py-1.5 text-sm font-semibold transition ${
+                    search.distributor === val
+                      ? val === "SYNNEX"
+                        ? "bg-blue-600 text-white"
+                        : val === "VSTECS"
+                        ? "bg-orange-500 text-white"
+                        : "bg-[color:var(--brand-navy)] text-white"
+                      : "text-slate-700 hover:bg-slate-100"
+                  }`}
+                >
+                  {label}
+                  {n != null && (
+                    <span className={`rounded-full px-1.5 text-[10px] font-bold ${search.distributor === val ? "bg-white/25" : "bg-slate-200 text-slate-700"}`}>
+                      {n.toLocaleString()}
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+
+            <div className="ml-auto flex items-center gap-2">
+              <label className="flex items-center gap-2 rounded-md border px-2 py-1 text-xs">
+                <Checkbox checked={allSelected} onCheckedChange={toggleAllOnPage} aria-label="เลือกทั้งหน้า" />
+                <span className="text-slate-600">เลือกทั้งหน้า</span>
+              </label>
+              <Select value={search.sort} onValueChange={(v) => update({ sort: v })}>
+                <SelectTrigger className="h-8 w-40 text-xs"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="sku_asc">SKU (A → Z)</SelectItem>
+                  <SelectItem value="sku_desc">SKU (Z → A)</SelectItem>
+                  <SelectItem value="name_asc">ชื่อ (A → Z)</SelectItem>
+                  <SelectItem value="cost_asc">ต้นทุน (น้อย → มาก)</SelectItem>
+                  <SelectItem value="cost_desc">ต้นทุน (มาก → น้อย)</SelectItem>
+                  <SelectItem value="selling_asc">ราคาขาย (น้อย → มาก)</SelectItem>
+                  <SelectItem value="selling_desc">ราคาขาย (มาก → น้อย)</SelectItem>
+                </SelectContent>
+              </Select>
+              <div className="flex overflow-hidden rounded-md border">
+                <button
+                  onClick={() => update({ view: "grid" })}
+                  aria-label="Grid view"
+                  className={`grid h-8 w-8 place-items-center transition ${search.view === "grid" ? "bg-[color:var(--brand-navy)] text-white" : "text-slate-500 hover:bg-slate-100"}`}
+                >
+                  <LayoutGrid className="h-4 w-4" />
+                </button>
+                <button
+                  onClick={() => update({ view: "list" })}
+                  aria-label="List view"
+                  className={`grid h-8 w-8 place-items-center border-l transition ${search.view === "list" ? "bg-[color:var(--brand-navy)] text-white" : "text-slate-500 hover:bg-slate-100"}`}
+                >
+                  <List className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
           </div>
 
           {/* Mobile filter bar */}
@@ -488,6 +525,7 @@ function PricingProductsPage() {
               <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="ค้นหา..." className="pl-9" />
             </form>
           </div>
+
 
           {/* Product grid */}
           {productsQ.isLoading ? (
