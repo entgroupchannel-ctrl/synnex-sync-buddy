@@ -57,6 +57,8 @@ type OrderRow = {
   customer_name: string | null;
   customer_phone: string | null;
   customer_email: string | null;
+  customer_type: string | null;
+  user_id: string | null;
   shipping_name: string | null;
   shipping_phone: string | null;
   shipping_address: string | null;
