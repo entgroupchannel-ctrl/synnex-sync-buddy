@@ -147,6 +147,9 @@ function PricingProductsPage() {
   const gridTopRef = useRef<HTMLDivElement>(null);
   const hydrated = useRef(false);
 
+  const [exporting, setExporting] = useState(false);
+  const [exportConfirmCount, setExportConfirmCount] = useState<number | null>(null);
+
   // Restore filters from localStorage on first mount (only if URL has no explicit params)
   useEffect(() => {
     if (hydrated.current) return;
@@ -162,6 +165,7 @@ function PricingProductsPage() {
       for (const k of ["q", "distributor", "category", "status", "brands", "sort", "view"]) {
         if (typeof saved[k] === "string") patch[k] = saved[k];
       }
+      if (typeof saved.pageSize === "number") patch.pageSize = saved.pageSize;
       if (Object.keys(patch).length > 0) {
         setQ(String(patch.q ?? ""));
         nav({ search: (s: Record<string, unknown>) => ({ ...s, ...patch, page: 1 }), replace: true });
@@ -186,18 +190,19 @@ function PricingProductsPage() {
           brands: search.brands,
           sort: search.sort,
           view: search.view,
+          pageSize: search.pageSize,
         }),
       );
     } catch {
       /* ignore */
     }
-  }, [search.q, search.distributor, search.category, search.status, search.brands, search.sort, search.view]);
+  }, [search.q, search.distributor, search.category, search.status, search.brands, search.sort, search.view, search.pageSize]);
 
   const update = (patch: Record<string, unknown>) =>
-    nav({ search: (s: Record<string, unknown>) => ({ ...s, ...patch, page: 1 }) });
+    nav({ search: (s: Record<string, unknown>) => ({ ...s, ...patch, page: 1 }), replace: true });
 
   const goToPage = (page: number) => {
-    nav({ search: (s: Record<string, unknown>) => ({ ...s, page }) });
+    nav({ search: (s: Record<string, unknown>) => ({ ...s, page }), replace: true });
     setTimeout(() => gridTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 30);
   };
 
