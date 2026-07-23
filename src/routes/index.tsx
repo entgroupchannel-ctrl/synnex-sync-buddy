@@ -507,7 +507,17 @@ function HomePage() {
         </main>
       </div>
 
+      {/* Trust badges */}
+      <TrustBadges />
+
+      {/* Recently viewed */}
+      <RecentlyViewed />
+
+      {/* Newsletter */}
+      <NewsletterSignup />
+
       <footer className="mt-10 border-t bg-[color:var(--brand-navy)] py-10 text-white/70">
+
         <div className="mx-auto grid max-w-7xl gap-6 px-4 md:grid-cols-3">
           <div>
             <div className="flex items-center gap-2">
