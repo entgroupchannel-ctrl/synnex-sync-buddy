@@ -95,7 +95,9 @@ serve(async (req) => {
           </div>
         </div>
         <div style="background:#f8fafc;padding:16px;text-align:center;font-size:12px;color:#64748b;">
-          โทร: 02-045-6104 | info@entgroup.co.th<br/>© 2026 บริษัท อี เอ็น ที กรุ๊ป จำกัด
+          โทร: 02-045-6104 · ฝ่ายจัดซื้อ 082-249-7922<br/>
+          accountant@entgroup.co.th · เลขผู้เสียภาษี 0135558013167<br/>
+          © 2026 บริษัท อี เอ็น ที กรุ๊ป จำกัด
         </div>
       </div>`;
 
