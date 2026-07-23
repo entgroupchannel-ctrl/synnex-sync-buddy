@@ -127,6 +127,7 @@ export type Database = {
           distributor: string | null
           id: string
           image_url: string | null
+          markup_applied: number | null
           markup_override: number | null
           name: string | null
           price: number | null
@@ -151,6 +152,7 @@ export type Database = {
           distributor?: string | null
           id?: string
           image_url?: string | null
+          markup_applied?: number | null
           markup_override?: number | null
           name?: string | null
           price?: number | null
@@ -175,6 +177,7 @@ export type Database = {
           distributor?: string | null
           id?: string
           image_url?: string | null
+          markup_applied?: number | null
           markup_override?: number | null
           name?: string | null
           price?: number | null

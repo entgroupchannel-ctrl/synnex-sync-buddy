@@ -30,9 +30,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { RefreshCw, Search, Package, LogOut, CheckCircle2, XCircle, ClipboardPaste } from "lucide-react";
+import { RefreshCw, Search, Package, LogOut, CheckCircle2, XCircle, ClipboardPaste, AlertTriangle } from "lucide-react";
 import { getSyncStatus, listProducts, runSynnexSync } from "@/lib/synnex-sync.functions";
 import { supabase } from "@/integrations/supabase/client";
+import { Badge } from "@/components/ui/badge";
+import { effectiveMarkup, indexPricingRules, bahtFmt, type PricingRule } from "@/lib/pricing-helpers";
 
 interface ParsedProduct {
   sku: string;
@@ -145,6 +147,14 @@ function SyncPage() {
   const statusQ = useQuery({
     queryKey: ["synnex", "status"],
     queryFn: () => fetchStatus(),
+  });
+
+  const rulesQ = useQuery({
+    queryKey: ["pricing-rules-idx"],
+    queryFn: async () => {
+      const { data } = await supabase.from("pricing_rules").select("id, rule_type, target, markup_percent, is_active").eq("is_active", true);
+      return indexPricingRules((data ?? []) as PricingRule[]);
+    },
   });
 
   const listQ = useQuery({
@@ -321,20 +331,23 @@ function SyncPage() {
           <Table>
             <TableHeader className="bg-slate-50">
               <TableRow>
-                <TableHead className="w-20">รูป</TableHead>
+                <TableHead className="w-8"></TableHead>
+                <TableHead className="w-[60px]">รูป</TableHead>
                 <TableHead>ชื่อสินค้า</TableHead>
-                <TableHead className="w-40">SKU/Model</TableHead>
-                <TableHead className="w-28 text-right">ราคา</TableHead>
-                <TableHead className="w-20 text-right">สต็อก</TableHead>
-                <TableHead className="w-32">สถานะ</TableHead>
-                <TableHead className="w-40">อัปเดต</TableHead>
+                <TableHead className="w-[120px]">SKU/Model</TableHead>
+                <TableHead className="w-[100px] text-right">Dealer Price</TableHead>
+                <TableHead className="w-[80px] text-center">Markup %</TableHead>
+                <TableHead className="w-[110px] text-right">ราคาขาย</TableHead>
+                <TableHead className="w-[60px] text-right">สต็อก</TableHead>
+                <TableHead className="w-[100px]">สถานะ</TableHead>
+                <TableHead className="w-[120px]">อัปเดต</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {listQ.isLoading ? (
                 Array.from({ length: 8 }).map((_, i) => (
                   <TableRow key={i}>
-                    {Array.from({ length: 7 }).map((__, j) => (
+                    {Array.from({ length: 11 }).map((__, j) => (
                       <TableCell key={j}>
                         <div className="h-4 w-full animate-pulse rounded bg-slate-100" />
                       </TableCell>
@@ -343,60 +356,95 @@ function SyncPage() {
                 ))
               ) : rows.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="py-12 text-center text-sm text-slate-500">
+                  <TableCell colSpan={11} className="py-12 text-center text-sm text-slate-500">
                     ไม่พบสินค้า กด "Sync Now" เพื่อดึงข้อมูล
                   </TableCell>
                 </TableRow>
               ) : (
-                rows.map((p) => (
-                  <TableRow key={p.id} className="hover:bg-slate-50">
-                    <TableCell>
-                      {p.image_url ? (
-                        <img
-                          src={p.image_url}
-                          alt={p.name ?? p.sku}
-                          className="h-[60px] w-[60px] rounded border border-slate-200 object-contain"
-                          loading="lazy"
-                        />
-                      ) : (
-                        <div className="h-[60px] w-[60px] rounded border border-dashed border-slate-200 bg-slate-50" />
-                      )}
-                    </TableCell>
-                    <TableCell className="max-w-md">
-                      {p.product_url ? (
-                        <a
-                          href={p.product_url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="font-medium text-[#1565c0] hover:underline"
+                rows.map((p) => {
+                  const cost = Number((p as { cost_price?: number | null }).cost_price ?? p.price ?? 0);
+                  const selling = Number((p as { selling_price?: number | null }).selling_price ?? 0);
+                  const approved = !!(p as { price_approved?: boolean | null }).price_approved;
+                  const idx = rulesQ.data;
+                  const mk = idx ? effectiveMarkup(p as never, idx) : null;
+                  let statusIcon: React.ReactNode;
+                  if (approved && selling > 0) {
+                    statusIcon = <span title="Approved" className="inline-block h-2.5 w-2.5 rounded-full bg-green-500" />;
+                  } else if (selling > 0) {
+                    statusIcon = <AlertTriangle className="h-4 w-4 text-amber-500" aria-label="รอ approve" />;
+                  } else {
+                    statusIcon = <XCircle className="h-4 w-4 text-red-500" aria-label="ยังไม่มีราคาขาย" />;
+                  }
+                  return (
+                    <TableRow key={p.id} className="hover:bg-slate-50">
+                      <TableCell className="text-center">{statusIcon}</TableCell>
+                      <TableCell>
+                        {p.image_url ? (
+                          <img
+                            src={p.image_url}
+                            alt={p.name ?? p.sku}
+                            className="h-[60px] w-[60px] rounded border border-slate-200 object-contain"
+                            loading="lazy"
+                          />
+                        ) : (
+                          <div className="h-[60px] w-[60px] rounded border border-dashed border-slate-200 bg-slate-50" />
+                        )}
+                      </TableCell>
+                      <TableCell className="max-w-md">
+                        {p.product_url ? (
+                          <a
+                            href={p.product_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="font-medium text-[#1565c0] hover:underline"
+                          >
+                            {p.name ?? "—"}
+                          </a>
+                        ) : (
+                          <span className="font-medium">{p.name ?? "—"}</span>
+                        )}
+                        {p.description ? (
+                          <p className="mt-0.5 line-clamp-2 text-xs text-slate-500">{p.description}</p>
+                        ) : null}
+                      </TableCell>
+                      <TableCell className="font-mono text-xs">{p.sku}</TableCell>
+                      <TableCell className="text-right">
+                        <div className="text-[10px] uppercase tracking-wide text-slate-400">ต้นทุน</div>
+                        <div className="text-sm text-slate-500">{cost > 0 ? "฿" + bahtFmt.format(cost) : "—"}</div>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {mk && cost > 0 ? (
+                          <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">+{mk.pct}%</Badge>
+                        ) : (
+                          <Badge variant="outline" className="text-slate-400">--%</Badge>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {approved && selling > 0 ? (
+                          <div className="text-base font-bold text-[color:var(--brand-orange,#f97316)]">฿{bahtFmt.format(selling)}</div>
+                        ) : selling > 0 ? (
+                          <Badge className="bg-red-100 text-red-700 hover:bg-red-100">รอ approve</Badge>
+                        ) : (
+                          <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">฿0 ?</Badge>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-right">{p.stock_qty ?? "—"}</TableCell>
+                      <TableCell>
+                        <span
+                          className={
+                            "inline-flex rounded-full px-2 py-0.5 text-xs font-medium " +
+                            (p.stock_status === "พร้อมจัดส่ง"
+                              ? "bg-green-100 text-green-700"
+                              : "bg-red-100 text-red-700")
+                          }
                         >
-                          {p.name ?? "—"}
-                        </a>
-                      ) : (
-                        <span className="font-medium">{p.name ?? "—"}</span>
-                      )}
-                      {p.description ? (
-                        <p className="mt-0.5 line-clamp-2 text-xs text-slate-500">{p.description}</p>
-                      ) : null}
-                    </TableCell>
-                    <TableCell className="font-mono text-xs">{p.sku}</TableCell>
-                    <TableCell className="text-right font-medium">{formatBaht(p.price)}</TableCell>
-                    <TableCell className="text-right">{p.stock_qty ?? "—"}</TableCell>
-                    <TableCell>
-                      <span
-                        className={
-                          "inline-flex rounded-full px-2 py-0.5 text-xs font-medium " +
-                          (p.stock_status === "พร้อมจัดส่ง"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-red-100 text-red-700")
-                        }
-                      >
-                        {p.stock_status ?? "—"}
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-xs text-slate-500">{formatDate(p.synced_at)}</TableCell>
-                  </TableRow>
-                ))
+                          {p.stock_status ?? "—"}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-xs text-slate-500">{formatDate(p.synced_at)}</TableCell>
+                    </TableRow>
+                  );
+                })
               )}
             </TableBody>
           </Table>
