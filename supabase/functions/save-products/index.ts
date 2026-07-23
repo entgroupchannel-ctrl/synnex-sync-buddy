@@ -133,7 +133,7 @@ Deno.serve(async (req) => {
         finished_at: new Date().toISOString(),
         products_found: clean.length,
         status: "success",
-        message: `Imported ${clean.length} products from client`,
+        message: `Imported ${clean.length} products — ${clean.length} pending price approval`,
       })
       .eq("id", log.id);
 
