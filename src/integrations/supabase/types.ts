@@ -557,6 +557,7 @@ export type Database = {
       user_profiles: {
         Row: {
           account_status: string
+          admin_notes: string | null
           company_address: string | null
           company_name: string | null
           created_at: string
@@ -564,13 +565,17 @@ export type Database = {
           id: string
           phone: string | null
           position: string | null
+          tags: string[]
           tax_id: string | null
+          total_orders: number
+          total_spent: number
           updated_at: string
           user_type: string
           wants_tax_invoice: boolean | null
         }
         Insert: {
           account_status?: string
+          admin_notes?: string | null
           company_address?: string | null
           company_name?: string | null
           created_at?: string
@@ -578,13 +583,17 @@ export type Database = {
           id: string
           phone?: string | null
           position?: string | null
+          tags?: string[]
           tax_id?: string | null
+          total_orders?: number
+          total_spent?: number
           updated_at?: string
           user_type?: string
           wants_tax_invoice?: boolean | null
         }
         Update: {
           account_status?: string
+          admin_notes?: string | null
           company_address?: string | null
           company_name?: string | null
           created_at?: string
@@ -592,7 +601,10 @@ export type Database = {
           id?: string
           phone?: string | null
           position?: string | null
+          tags?: string[]
           tax_id?: string | null
+          total_orders?: number
+          total_spent?: number
           updated_at?: string
           user_type?: string
           wants_tax_invoice?: boolean | null
@@ -604,7 +616,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      recompute_user_order_stats: { Args: { _uid: string }; Returns: undefined }
     }
     Enums: {
       [_ in never]: never
