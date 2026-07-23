@@ -317,6 +317,15 @@ function HomePage() {
         </section>
       )}
 
+      {/* Today's Best Deals */}
+      <TodaysBestDeals />
+
+      {/* Popular Notebooks */}
+      <PopularNotebooks />
+
+      {/* Shop by Brand */}
+      <ShopByBrand />
+
       {/* Catalog */}
       <div id="catalog" className="mx-auto flex max-w-7xl gap-6 px-4 py-6">
         {/* Desktop sidebar */}
