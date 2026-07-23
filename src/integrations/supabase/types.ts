@@ -71,6 +71,51 @@ export type Database = {
         }
         Relationships: []
       }
+      price_audit_log: {
+        Row: {
+          action: string | null
+          approved_by: string | null
+          created_at: string | null
+          id: string
+          new_markup: number | null
+          new_selling_price: number | null
+          notes: string | null
+          old_markup: number | null
+          old_selling_price: number | null
+          product_name: string | null
+          product_sku: string
+          session_id: string | null
+        }
+        Insert: {
+          action?: string | null
+          approved_by?: string | null
+          created_at?: string | null
+          id?: string
+          new_markup?: number | null
+          new_selling_price?: number | null
+          notes?: string | null
+          old_markup?: number | null
+          old_selling_price?: number | null
+          product_name?: string | null
+          product_sku: string
+          session_id?: string | null
+        }
+        Update: {
+          action?: string | null
+          approved_by?: string | null
+          created_at?: string | null
+          id?: string
+          new_markup?: number | null
+          new_selling_price?: number | null
+          notes?: string | null
+          old_markup?: number | null
+          old_selling_price?: number | null
+          product_name?: string | null
+          product_sku?: string
+          session_id?: string | null
+        }
+        Relationships: []
+      }
       pricing_rules: {
         Row: {
           id: string
