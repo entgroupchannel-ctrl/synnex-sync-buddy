@@ -1,57 +1,78 @@
+# Browse-first Auth & Checkout Redesign
 
-# Synnex Product Sync — Build Plan
+## Scope
 
-## Stack note
-This project runs on **TanStack Start + Lovable Cloud (Supabase)**, not a raw Supabase Edge Function project. I'll implement the scraper as a **TanStack server function** (`createServerFn`) instead of a `supabase/functions/sync-synnex/` edge function — that's the supported pattern here and gives the same result (server-only code, secrets from env, writes via service role). Everything else (tables, secrets, UI) matches your spec 1:1.
+Turn the shop into "browse anonymously → auth prompt on Add-to-Cart → guest checkout allowed". Add B2C/B2B registration paths, a `user_profiles`/`user_addresses` schema, an auth modal, guest checkout with optional tax-invoice fields, and an admin Customers page.
 
-Also: I'll need to enable Lovable Cloud (Supabase) first — it's not on yet.
+## What ships
 
-## Phase 1 — Database (migration)
-Two tables via Supabase migration:
-- `synnex_products` (id uuid pk, sku text unique, name text, price numeric, stock text, image_url text, brand text, synced_at timestamptz default now())
-- `sync_logs` (id uuid pk, started_at timestamptz, finished_at timestamptz, products_found int, status text check in ('success','error'), message text)
-- RLS enabled; SELECT policy for authenticated users on both tables (admin UI reads); writes go through service-role server function only.
+### 1. Database
+- New `user_profiles` (id → auth.users, user_type b2c/b2b, full_name, phone, company_name, tax_id, company_address, account_status).
+- New `user_addresses` (recipient, phone, address_line, district, province, postcode, is_default).
+- Trigger on `auth.users` insert → row in `user_profiles` (metadata-driven type/status).
+- RLS: owner-only read/update; admins can read/update via existing role-check pattern.
+- `orders`: add `user_id` (nullable → guest orders), `customer_type` ('b2c'|'b2b'|'guest'), `tax_invoice` jsonb (company_name, tax_id, address), `payment_method` ('transfer'|'cod'), `is_guest`.
 
-## Phase 2 — Scraper (`src/lib/synnex-sync.functions.ts`)
-`runSynnexSync` server function (POST, admin-only):
-1. Read `SYNNEX_USERNAME` / `SYNNEX_PASSWORD` from `process.env` inside handler.
-2. GET `login.aspx` → parse `__VIEWSTATE`, `__VIEWSTATEGENERATOR`, `__EVENTVALIDATION` from HTML.
-3. POST form-encoded login with those fields + `ctl00$ContentPlaceHolder1$txtUsername/txtPassword/btnLogin`. Capture `Set-Cookie` (ASP.NET_SessionId, .ASPXAUTH) via a cookie jar.
-4. GET `online_product_list.aspx?Brand=QVNVUw==` with the session cookies.
-5. Parse HTML table (using `node-html-parser` — Worker-safe, no native deps) to extract SKU / name / price / stock / image_url. Brand hardcoded to "ASUS" for this Brand param (base64 of "ASUS").
-6. Upsert into `synnex_products` on `sku` using service-role client (`await import("@/integrations/supabase/client.server")` inside handler).
-7. Insert row into `sync_logs` with counts + status.
-8. Return `{ productsFound, status, message }`.
+### 2. Public browsing (no login)
+- Homepage / category / product-detail: keep public, remove any residual auth gates.
+- Header: show `เข้าสู่ระบบ` + `สมัครสมาชิก` when signed out; show name + dropdown (orders, profile, addresses, sign out) when signed in.
+- Cart badge reads from localStorage (already works).
 
-`getSyncStatus` server function (GET): returns latest sync_log + product count.
-`listProducts` server function (GET): paginated (50/page) with search on sku/name.
+### 3. Add-to-Cart auth modal
+- New `AddToCartAuthSheet` (shadcn Sheet, bottom on mobile / dialog on desktop).
+- Triggered on first Add-to-Cart per session for unauth users (dismiss remembered in `sessionStorage`).
+- Item is added optimistically first.
+- Options: `บุคคลทั่วไป` → B2C form, `องค์กร/B2B` → B2B form, `ดูตะกร้าต่อโดยไม่สมัคร` → close.
 
-Note on reliability: Synnex is a live ASP.NET site with anti-bot measures and likely rate limits. First run may need iteration if response shape differs — I'll add clear error logging to `sync_logs.message`.
+### 4. Auth route `/auth`
+- Tabs: เข้าสู่ระบบ / สมัคร B2C / สมัคร B2B.
+- B2C fields per spec, zod-validated (Thai phone regex, email, password ≥8, confirm match).
+- B2B fields per spec + 13-digit tax ID validation, `ต้องการใบกำกับภาษี` toggle, optional PDF upload (Supabase Storage bucket `b2b-docs`, private).
+- On B2B signup: profile row gets `account_status='pending_approval'`, toast "ทีมงานจะติดต่อยืนยันภายใน 1 วันทำการ", still allowed to browse/checkout as guest.
+- Sign-in with email + password. Google OAuth button via `lovable.auth.signInWithOAuth('google', ...)`. LINE Login deferred (needs external provider config — noted in UI as "coming soon" unless user has already configured it).
 
-## Phase 3 — Admin UI (`/admin/sync`)
-Public route (per your spec — no auth wall mentioned). Route: `src/routes/admin.sync.tsx`.
-- Sarabun font via `<link>` in `__root.tsx` head, exposed as `--font-sans` in `@theme`.
-- Header: title, last-synced timestamp, total product count, "Sync Now" button.
-- Sync flow: button calls `runSynnexSync` via `useServerFn` + mutation; spinner while pending; sonner toast for success (green) / error (red).
-- Table: SKU, Name, Price (฿ formatted), Stock, Last Synced.
-- Search input (debounced) + pagination controls (50/page), server-side via `listProducts`.
-- Clean minimal design: white bg, dark navy text (add `--color-navy` token), shadcn Table/Input/Button.
+### 5. Checkout
+- `/checkout` no longer requires login.
+- If logged-in: prefill name/phone/email + address from profile/default address.
+- If guest: collect ชื่อ, เบอร์, อีเมล, ที่อยู่.
+- `ต้องการใบกำกับภาษี` toggle → reveals company_name / tax_id / company_address fields (zod-required when toggled).
+- Payment method radio: `โอนเงิน` vs `เก็บเงินปลายทาง (+฿50)`; COD adds 50 to total.
+- After order: show bank details (if transfer), and — for guests — "สมัครสมาชิกเพื่อติดตาม order" CTA prefilled with email.
 
-## Secrets
-- `SYNNEX_USERNAME`, `SYNNEX_PASSWORD` — added via secure form (add_secret) after you confirm.
+### 6. Logged-in surfaces
+- Header dropdown with links: `/account/orders`, `/account/profile`, `/account/addresses`, (B2B only) `/account/company`.
+- `/account/orders` lists orders scoped by `user_id`.
+- `/account/profile` edits full_name, phone.
+- `/account/addresses` CRUD user_addresses with default toggle.
+- Product detail: if signed-out, small "เข้าสู่ระบบเพื่อดูราคาพิเศษ B2B" line (no b2b_price column yet — link only).
 
-## Files to create/edit
-- Enable Lovable Cloud
-- Migration for the two tables + RLS
-- `src/lib/synnex-sync.functions.ts` (server functions)
-- `src/lib/synnex-scraper.server.ts` (scraper helpers: cookie jar, viewstate parse, product parse)
-- `src/routes/admin.sync.tsx` (admin UI)
-- `src/routes/__root.tsx` (add Sarabun `<link>`)
-- `src/styles.css` (font token, navy color)
-- Add secrets `SYNNEX_USERNAME`, `SYNNEX_PASSWORD`
+### 7. Admin `/admin/customers`
+- Table: ชื่อ | ประเภท | บริษัท | เบอร์ | สถานะ | ยอดสั่งซื้อรวม | วันสมัคร.
+- Filter tabs: ทั้งหมด / B2C / B2B / รอ approve / Guest orders (guests = orders where user_id IS NULL, grouped by email).
+- Row actions on pending B2B: Approve / Reject → updates `account_status`.
 
-## Out of scope (say if you want them)
-- Auth gate on `/admin/sync` (currently public — anyone with URL can trigger sync)
-- Scheduled/cron auto-sync
-- Multi-brand support (currently ASUS only per your Brand param)
-- Product images beyond `image_url` field
+### 8. UX polish
+- Thai phone regex `^0\d{8,9}$` with input mask hint.
+- Tax ID: 13-digit numeric input with live check (length + optional checksum note).
+- Cart merge on login: on `SIGNED_IN`, if a `ent_cart` exists in localStorage, keep it (Supabase-side cart table is out of scope — cart stays in localStorage per current design; only orders persist).
+
+## What is NOT in this turn
+
+- LINE Login (needs provider setup in Supabase dashboard; button hidden or disabled).
+- B2B `b2b_price` column and pricing rules (spec mentions "if admin sets b2b_price" — no admin surface for it yet). We'll show the "ราคาพิเศษ" concept only when the column exists — deferred.
+- Server-side cart table / cart merge across devices (kept in localStorage as today).
+- Email delivery for the B2B approval notification (Supabase Auth will send confirm-email; the "approved" transactional email is deferred).
+- Quotation flow ("ขอใบเสนอราคา") — deferred; the button is a future stub.
+
+## Technical notes
+
+- Schema changes via `supabase--migration` in one call (tables, grants, RLS, trigger, orders columns).
+- New auth pages under `src/routes/auth.tsx` (rewrite existing) and new `src/routes/account.*.tsx` behind `_authenticated`.
+- Admin customers under `src/routes/_authenticated/admin.customers.tsx`.
+- Shared `AddToCartAuthSheet` in `src/components/`.
+- All forms: `react-hook-form` + `zod`.
+- File upload uses new private storage bucket `b2b-docs` (created via `supabase--storage_create_bucket`, admin-only read).
+
+## Open question (blocking Google button only)
+
+Google OAuth in Supabase — is the Google provider already enabled in your Supabase dashboard? If not, the button will render but 400. Reply "skip google" to hide it, "enabled" to keep it, or paste the redirect URL you configured.

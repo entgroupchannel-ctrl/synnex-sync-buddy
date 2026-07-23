@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { ShoppingCart, Search, Package, Grid2x2, List, SlidersHorizontal, Flame, ChevronRight } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { CATEGORIES, detectCategory, displayPrice, getSellingPrice, useCart } from "@/lib/cart";
+import { triggerAuthPrompt, useSupabaseUser } from "@/lib/auth-sheet";
 
 const searchSchema = z.object({
   q: fallback(z.string(), "").default(""),
@@ -63,6 +64,7 @@ function HomePage() {
   const search = Route.useSearch();
   const navigate = useNavigate();
   const { add } = useCart();
+  const { user } = useSupabaseUser();
   const [searchInput, setSearchInput] = useState(search.q);
   const countdown = useCountdown();
 
@@ -150,16 +152,21 @@ function HomePage() {
   };
 
   const addToCart = (p: Record<string, unknown>) => {
+    const name = (p.name as string) ?? (p.sku as string);
     add({
       id: p.id as string,
       sku: p.sku as string,
       slug: p.slug as string | null,
-      name: (p.name as string) ?? (p.sku as string),
+      name,
       price: getSellingPrice(p as { selling_price?: number | null }) ?? 0,
       image_url: (p.image_url as string) ?? null,
       distributor: (p.distributor as string | null) ?? null,
     });
-    toast.success(`เพิ่ม ${p.sku} ลงตะกร้าแล้ว`);
+    if (!user) {
+      triggerAuthPrompt({ name, sku: p.sku as string, image_url: (p.image_url as string) ?? null });
+    } else {
+      toast.success(`เพิ่ม ${p.sku} ลงตะกร้าแล้ว`);
+    }
   };
 
   const Filters = (

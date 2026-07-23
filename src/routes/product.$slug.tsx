@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { ShoppingCart, Package, Zap, Minus, Plus, ChevronRight } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { displayPrice, getSellingPrice, priceFmt, useCart } from "@/lib/cart";
+import { triggerAuthPrompt, useSupabaseUser } from "@/lib/auth-sheet";
 
 export const Route = createFileRoute("/product/$slug")({
   ssr: false,
@@ -37,6 +38,7 @@ function ProductDetail() {
   const { slug } = Route.useParams();
   const navigate = useNavigate();
   const { add } = useCart();
+  const { user } = useSupabaseUser();
   const [qty, setQty] = useState(1);
 
   const productQ = useQuery({
@@ -69,8 +71,13 @@ function ProductDetail() {
 
   const addToCart = (n = qty) => {
     if (!p) return;
-    add({ id: p.id, sku: p.sku, slug: p.slug, name: p.name ?? p.sku, price: getSellingPrice(p as { selling_price?: number | null }) ?? 0, image_url: p.image_url, distributor: (p as { distributor?: string | null }).distributor ?? null }, n);
-    toast.success(`เพิ่ม ${p.sku} จำนวน ${n} ลงตะกร้าแล้ว`);
+    const name = p.name ?? p.sku;
+    add({ id: p.id, sku: p.sku, slug: p.slug, name, price: getSellingPrice(p as { selling_price?: number | null }) ?? 0, image_url: p.image_url, distributor: (p as { distributor?: string | null }).distributor ?? null }, n);
+    if (!user) {
+      triggerAuthPrompt({ name, sku: p.sku, image_url: p.image_url });
+    } else {
+      toast.success(`เพิ่ม ${p.sku} จำนวน ${n} ลงตะกร้าแล้ว`);
+    }
   };
 
   return (

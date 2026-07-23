@@ -1,8 +1,20 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { ShoppingCart, Search, Menu, Home, Grid3x3, User, X } from "lucide-react";
+import { ShoppingCart, Search, Menu, Home, Grid3x3, User, X, LogOut, Package, MapPin, Building2 } from "lucide-react";
 import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/lib/cart";
 import { CATEGORIES } from "@/lib/cart";
+import { useSupabaseUser } from "@/lib/auth-sheet";
+import { AddToCartSheet } from "@/components/add-to-cart-sheet";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
+import { toast } from "sonner";
 
 const NAV_CATS = ["ทั้งหมด", ...CATEGORIES] as const;
 
@@ -12,14 +24,22 @@ export function SiteHeader() {
   const [q, setQ] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { user } = useSupabaseUser();
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     navigate({ to: "/", search: { q, category: "all" } as never });
   };
 
+  const signOut = async () => {
+    await supabase.auth.signOut();
+    toast.success("ออกจากระบบแล้ว");
+    navigate({ to: "/", replace: true });
+  };
+
   return (
     <>
+      <AddToCartSheet />
       <div className="bg-slate-900 text-white/80 text-xs">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-2 px-4 py-1.5">
           <div>ส่วนหนึ่งของ <span className="font-semibold text-white">ENT Group Co., Ltd.</span> · โทร <a href="tel:020456104" className="hover:text-[color:var(--brand-green)]">02-045-6104</a></div>
@@ -60,6 +80,32 @@ export function SiteHeader() {
             </button>
           </form>
 
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger className="hidden shrink-0 items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-white/10 lg:inline-flex">
+                <div className="grid h-7 w-7 place-items-center rounded-full bg-[color:var(--brand-green)] text-xs font-bold">
+                  {(user.email?.[0] ?? "U").toUpperCase()}
+                </div>
+                <span className="max-w-[10rem] truncate">{user.email}</span>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel className="truncate">{user.email}</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild><Link to="/account/orders"><Package className="mr-2 h-4 w-4" /> ประวัติการสั่งซื้อ</Link></DropdownMenuItem>
+                <DropdownMenuItem asChild><Link to="/account/profile"><User className="mr-2 h-4 w-4" /> ข้อมูลส่วนตัว</Link></DropdownMenuItem>
+                <DropdownMenuItem asChild><Link to="/account/addresses"><MapPin className="mr-2 h-4 w-4" /> ที่อยู่จัดส่ง</Link></DropdownMenuItem>
+                <DropdownMenuItem asChild><Link to="/admin/orders"><Building2 className="mr-2 h-4 w-4" /> Admin</Link></DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onSelect={signOut}><LogOut className="mr-2 h-4 w-4" /> ออกจากระบบ</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <div className="hidden shrink-0 items-center gap-1 lg:flex">
+              <Link to="/auth" search={{ tab: "signin" } as never} className="rounded-md px-3 py-1.5 text-sm hover:bg-white/10">เข้าสู่ระบบ</Link>
+              <Link to="/auth" search={{ tab: "b2c" } as never} className="rounded-md bg-[color:var(--brand-green)] px-3 py-1.5 text-sm font-semibold hover:opacity-90">สมัครสมาชิก</Link>
+            </div>
+          )}
+
           <Link
             to="/cart"
             className="relative grid h-10 w-10 shrink-0 place-items-center rounded-md hover:bg-white/10"
@@ -99,11 +145,28 @@ export function SiteHeader() {
       {menuOpen && (
         <div className="fixed inset-0 z-50 lg:hidden" onClick={() => setMenuOpen(false)}>
           <div className="absolute inset-0 bg-black/50" />
-          <div className="absolute inset-y-0 left-0 w-72 bg-white p-4 shadow-xl" onClick={(e) => e.stopPropagation()}>
+          <div className="absolute inset-y-0 left-0 w-72 bg-white p-4 shadow-xl overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="mb-4 flex items-center justify-between">
-              <div className="font-bold text-[color:var(--brand-navy)]">หมวดหมู่</div>
+              <div className="font-bold text-[color:var(--brand-navy)]">เมนู</div>
               <button onClick={() => setMenuOpen(false)}><X className="h-5 w-5" /></button>
             </div>
+            {user ? (
+              <div className="mb-4 rounded-lg border p-3">
+                <div className="truncate text-xs text-slate-500">{user.email}</div>
+                <div className="mt-2 grid gap-1 text-sm">
+                  <Link to="/account/orders" onClick={() => setMenuOpen(false)} className="rounded px-2 py-1 hover:bg-slate-100">ประวัติการสั่งซื้อ</Link>
+                  <Link to="/account/profile" onClick={() => setMenuOpen(false)} className="rounded px-2 py-1 hover:bg-slate-100">ข้อมูลส่วนตัว</Link>
+                  <Link to="/account/addresses" onClick={() => setMenuOpen(false)} className="rounded px-2 py-1 hover:bg-slate-100">ที่อยู่จัดส่ง</Link>
+                  <button onClick={signOut} className="text-left rounded px-2 py-1 text-red-600 hover:bg-red-50">ออกจากระบบ</button>
+                </div>
+              </div>
+            ) : (
+              <div className="mb-4 grid gap-2">
+                <Link to="/auth" search={{ tab: "signin" } as never} onClick={() => setMenuOpen(false)} className="rounded-md border px-3 py-2 text-center text-sm">เข้าสู่ระบบ</Link>
+                <Link to="/auth" search={{ tab: "b2c" } as never} onClick={() => setMenuOpen(false)} className="rounded-md bg-[color:var(--brand-green)] px-3 py-2 text-center text-sm font-semibold text-white">สมัครสมาชิก</Link>
+              </div>
+            )}
+            <div className="mb-2 text-xs font-bold uppercase text-slate-400">หมวดหมู่</div>
             <div className="space-y-1">
               {NAV_CATS.map((c) => (
                 <Link
@@ -137,8 +200,8 @@ export function SiteHeader() {
             </span>
           )}
         </Link>
-        <Link to="/auth" className="flex flex-col items-center gap-0.5 py-2 text-slate-700">
-          <User className="h-5 w-5" /> บัญชี
+        <Link to={user ? "/account/orders" : "/auth"} search={user ? undefined : ({ tab: "signin" } as never)} className="flex flex-col items-center gap-0.5 py-2 text-slate-700">
+          <User className="h-5 w-5" /> {user ? "บัญชี" : "เข้าสู่ระบบ"}
         </Link>
       </nav>
       <div className="h-14 lg:hidden" aria-hidden />

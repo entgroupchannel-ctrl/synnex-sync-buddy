@@ -22,11 +22,16 @@ export type Database = {
           customer_email: string | null
           customer_name: string | null
           customer_phone: string | null
+          customer_type: string | null
           id: string
+          is_guest: boolean | null
           items: Json | null
           notes: string | null
+          payment_method: string | null
           status: string | null
+          tax_invoice: Json | null
           total: number | null
+          user_id: string | null
         }
         Insert: {
           admin_status?: string | null
@@ -35,11 +40,16 @@ export type Database = {
           customer_email?: string | null
           customer_name?: string | null
           customer_phone?: string | null
+          customer_type?: string | null
           id?: string
+          is_guest?: boolean | null
           items?: Json | null
           notes?: string | null
+          payment_method?: string | null
           status?: string | null
+          tax_invoice?: Json | null
           total?: number | null
+          user_id?: string | null
         }
         Update: {
           admin_status?: string | null
@@ -48,11 +58,16 @@ export type Database = {
           customer_email?: string | null
           customer_name?: string | null
           customer_phone?: string | null
+          customer_type?: string | null
           id?: string
+          is_guest?: boolean | null
           items?: Json | null
           notes?: string | null
+          payment_method?: string | null
           status?: string | null
+          tax_invoice?: Json | null
           total?: number | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -236,6 +251,96 @@ export type Database = {
           stock_status?: string | null
           synced_at?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      user_addresses: {
+        Row: {
+          address_line: string | null
+          created_at: string
+          district: string | null
+          id: string
+          is_default: boolean | null
+          label: string | null
+          phone: string | null
+          postcode: string | null
+          province: string | null
+          recipient: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          address_line?: string | null
+          created_at?: string
+          district?: string | null
+          id?: string
+          is_default?: boolean | null
+          label?: string | null
+          phone?: string | null
+          postcode?: string | null
+          province?: string | null
+          recipient?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          address_line?: string | null
+          created_at?: string
+          district?: string | null
+          id?: string
+          is_default?: boolean | null
+          label?: string | null
+          phone?: string | null
+          postcode?: string | null
+          province?: string | null
+          recipient?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_profiles: {
+        Row: {
+          account_status: string
+          company_address: string | null
+          company_name: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          phone: string | null
+          position: string | null
+          tax_id: string | null
+          updated_at: string
+          user_type: string
+          wants_tax_invoice: boolean | null
+        }
+        Insert: {
+          account_status?: string
+          company_address?: string | null
+          company_name?: string | null
+          created_at?: string
+          full_name?: string | null
+          id: string
+          phone?: string | null
+          position?: string | null
+          tax_id?: string | null
+          updated_at?: string
+          user_type?: string
+          wants_tax_invoice?: boolean | null
+        }
+        Update: {
+          account_status?: string
+          company_address?: string | null
+          company_name?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          position?: string | null
+          tax_id?: string | null
+          updated_at?: string
+          user_type?: string
+          wants_tax_invoice?: boolean | null
         }
         Relationships: []
       }
