@@ -215,6 +215,18 @@ function OrderConfirm() {
           </div>
         </section>
 
+        {/* Guest signup prompt */}
+        {order.customer_type === "guest" && !order.user_id && order.customer_email && (
+          <GuestSignupPrompt
+            orderId={order.id}
+            orderNumber={order.order_number}
+            email={order.customer_email}
+            fullName={order.customer_name}
+            phone={order.customer_phone}
+            onLinked={() => q.refetch()}
+          />
+        )}
+
         {/* Payment */}
         <section className="mt-4 rounded-2xl border bg-white p-6">
           <h2 className="mb-3 font-bold text-[color:var(--brand-navy)]">
