@@ -21,9 +21,83 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { RefreshCw, Search, Package, LogOut, CheckCircle2, XCircle } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { RefreshCw, Search, Package, LogOut, CheckCircle2, XCircle, ClipboardPaste } from "lucide-react";
 import { getSyncStatus, listProducts, runSynnexSync } from "@/lib/synnex-sync.functions";
 import { supabase } from "@/integrations/supabase/client";
+
+interface ParsedProduct {
+  sku: string;
+  name: string | null;
+  description: string | null;
+  price: number | null;
+  stock_qty: number | null;
+  stock_status: string | null;
+  image_url: string | null;
+  product_url: string | null;
+  brand: string | null;
+}
+
+const BASE_URL = "https://www.synnex.co.th/Dealer/";
+
+function parseSynnexHtml(html: string): ParsedProduct[] {
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  const items = doc.querySelectorAll(".box-item-product");
+  const out: ParsedProduct[] = [];
+  const seen = new Set<string>();
+
+  items.forEach((el) => {
+    const skuInput = el.querySelector('input[id*="hdProductName"]') as HTMLInputElement | null;
+    const sku = skuInput?.value?.trim() || "";
+    if (!sku || seen.has(sku)) return;
+    seen.add(sku);
+
+    const name = el.querySelector(".product-name a.text-bold")?.textContent?.trim() || null;
+    const description = el.querySelector(".product-name .text-cut-line-2")?.textContent?.trim() || null;
+
+    const brandInput = el.querySelector('input[id*="hdItemBrand"]') as HTMLInputElement | null;
+    const brand = brandInput?.value?.trim() || null;
+
+    let price: number | null = null;
+    const priceText = el.querySelector(".discount-price")?.textContent ?? "";
+    const pm = priceText.replace(/[฿,\s]/g, "").match(/-?\d+(?:\.\d+)?/);
+    if (pm) {
+      const n = Number(pm[0]);
+      if (Number.isFinite(n)) price = n;
+    }
+
+    let stock_qty: number | null = null;
+    const stockText = el.querySelector(".product-onhand")?.textContent ?? "";
+    const sm = stockText.match(/(\d+)/);
+    if (sm) stock_qty = parseInt(sm[1], 10);
+
+    const stock_status = el.querySelector(".statusReady") ? "พร้อมจัดส่ง" : "สินค้าหมด";
+
+    const imgEl = el.querySelector(".product-img img.img-responsive") as HTMLImageElement | null;
+    let image_url = imgEl?.getAttribute("src") || null;
+    if (image_url && !/^https?:/i.test(image_url)) {
+      try { image_url = new URL(image_url, BASE_URL).toString(); } catch { /* ignore */ }
+    }
+
+    const linkEl = el.querySelector(".product-img a") as HTMLAnchorElement | null;
+    const href = linkEl?.getAttribute("href") || null;
+    const product_url = href
+      ? (/^https?:/i.test(href) ? href : BASE_URL + href.replace(/^\/+/, ""))
+      : null;
+
+    out.push({ sku, name, description, price, stock_qty, stock_status, image_url, product_url, brand });
+  });
+
+  return out;
+}
 
 export const Route = createFileRoute("/_authenticated/admin/sync")({
   head: () => ({
@@ -58,6 +132,9 @@ function SyncPage() {
   const [debounced, setDebounced] = useState("");
   const [status, setStatus] = useState<"all" | "ready" | "out">("all");
   const [page, setPage] = useState(1);
+  const [importOpen, setImportOpen] = useState(false);
+  const [importHtml, setImportHtml] = useState("");
+  const [previewCount, setPreviewCount] = useState<number | null>(null);
 
   useEffect(() => {
     const t = setTimeout(() => setDebounced(search), 300);
@@ -90,6 +167,35 @@ function SyncPage() {
       qc.invalidateQueries({ queryKey: ["synnex"] });
     },
   });
+
+  const importM = useMutation({
+    mutationFn: async (html: string) => {
+      const products = parseSynnexHtml(html);
+      if (products.length === 0) throw new Error("ไม่พบสินค้าใน HTML (ต้องมี .box-item-product)");
+      const { data, error } = await supabase.functions.invoke("save-products", {
+        body: { products },
+      });
+      if (error) throw new Error(error.message);
+      if (data?.status !== "success") throw new Error(data?.message || "Import failed");
+      return { count: data.productsFound as number };
+    },
+    onSuccess: ({ count }) => {
+      toast.success(`นำเข้าสำเร็จ ${count} รายการ`);
+      setImportOpen(false);
+      setImportHtml("");
+      setPreviewCount(null);
+      qc.invalidateQueries({ queryKey: ["synnex"] });
+    },
+    onError: (err) => {
+      toast.error(err instanceof Error ? err.message : String(err));
+    },
+  });
+
+  function handlePreview(v: string) {
+    setImportHtml(v);
+    if (!v.trim()) { setPreviewCount(null); return; }
+    try { setPreviewCount(parseSynnexHtml(v).length); } catch { setPreviewCount(null); }
+  }
 
   async function signOut() {
     await supabase.auth.signOut();
@@ -154,11 +260,19 @@ function SyncPage() {
               )
             }
           />
-          <div className="flex items-center justify-end">
+          <div className="flex flex-col items-stretch justify-end gap-2 md:flex-row md:items-center">
+            <Button
+              variant="outline"
+              onClick={() => setImportOpen(true)}
+              className="border-slate-300"
+            >
+              <ClipboardPaste className="mr-2 h-4 w-4" />
+              Import from clipboard
+            </Button>
             <Button
               disabled={syncM.isPending}
               onClick={() => syncM.mutate()}
-              className="w-full bg-[#1565c0] text-white hover:bg-[#0d47a1] md:w-auto"
+              className="bg-[#1565c0] text-white hover:bg-[#0d47a1]"
             >
               <RefreshCw className={"mr-2 h-4 w-4 " + (syncM.isPending ? "animate-spin" : "")} />
               {syncM.isPending ? "กำลังซิงค์…" : "🔄 Sync Now"}
@@ -308,6 +422,58 @@ function SyncPage() {
           </div>
         ) : null}
       </main>
+
+      <Dialog open={importOpen} onOpenChange={(o) => { setImportOpen(o); if (!o) { setImportHtml(""); setPreviewCount(null); } }}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>นำเข้าสินค้าจาก HTML</DialogTitle>
+            <DialogDescription>
+              เปิดหน้า Synnex product list ใน browser → คลิกขวา → View Page Source (Ctrl+U) →
+              Ctrl+A, Ctrl+C แล้ววางที่นี่
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Textarea
+              value={importHtml}
+              onChange={(e) => handlePreview(e.target.value)}
+              placeholder="<html>… วาง HTML ที่นี่ …</html>"
+              className="h-64 font-mono text-xs"
+            />
+            <div className="flex items-center justify-between text-xs text-slate-500">
+              <span>
+                {previewCount === null
+                  ? "ยังไม่ได้วาง HTML"
+                  : `พบสินค้า ${previewCount} รายการที่จะนำเข้า`}
+              </span>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={async () => {
+                  try {
+                    const text = await navigator.clipboard.readText();
+                    handlePreview(text);
+                  } catch {
+                    toast.error("อ่านคลิปบอร์ดไม่สำเร็จ — วางด้วยมือแทน");
+                  }
+                }}
+              >
+                <ClipboardPaste className="mr-1 h-3.5 w-3.5" /> วางจากคลิปบอร์ด
+              </Button>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setImportOpen(false)}>ยกเลิก</Button>
+            <Button
+              disabled={importM.isPending || !previewCount}
+              onClick={() => importM.mutate(importHtml)}
+              className="bg-[#1565c0] text-white hover:bg-[#0d47a1]"
+            >
+              {importM.isPending ? "กำลังนำเข้า…" : `นำเข้า ${previewCount ?? 0} รายการ`}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
