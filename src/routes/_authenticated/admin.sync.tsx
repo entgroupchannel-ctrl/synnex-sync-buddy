@@ -270,24 +270,8 @@ function SyncPage() {
               )
             }
           />
-          <div className="flex flex-col items-stretch justify-end gap-2 md:flex-row md:items-center">
-            <Button
-              variant="outline"
-              onClick={() => setImportOpen(true)}
-              className="border-slate-300"
-            >
-              <ClipboardPaste className="mr-2 h-4 w-4" />
-              Import from clipboard
-            </Button>
-            <Button
-              disabled={syncM.isPending}
-              onClick={() => syncM.mutate()}
-              className="bg-[#1565c0] text-white hover:bg-[#0d47a1]"
-            >
-              <RefreshCw className={"mr-2 h-4 w-4 " + (syncM.isPending ? "animate-spin" : "")} />
-              {syncM.isPending ? "กำลังซิงค์…" : "🔄 Sync Now"}
-            </Button>
-          </div>
+          <div />
+
         </section>
 
         {latest?.status === "error" && latest.message ? (
