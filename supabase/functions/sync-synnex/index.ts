@@ -3,6 +3,14 @@
 // and upserts results into synnex_products. Callable only with service role.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { DOMParser, Element } from "https://deno.land/x/deno_dom@v0.1.45/deno-dom-wasm.ts";
+import { fetch as undiciFetch, Agent } from "npm:undici@6";
+
+// Synnex serves an incomplete TLS chain (missing intermediate CA),
+// so Deno's default fetch rejects it. Use an undici Agent that skips
+// peer verification for these requests only.
+const insecureAgent = new Agent({ connect: { rejectUnauthorized: false } });
+const sfetch = (url: string, init: RequestInit = {}) =>
+  undiciFetch(url, { ...init, dispatcher: insecureAgent } as never) as unknown as Promise<Response>;
 
 const BASE = "https://www.synnex.co.th/Dealer";
 const LOGIN_URL = `${BASE}/login.aspx`;
