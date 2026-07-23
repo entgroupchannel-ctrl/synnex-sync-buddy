@@ -139,7 +139,7 @@ function PricingProductsPage() {
         if (selectedBrands.length > 0) qq = qq.in("brand", selectedBrands);
         if (search.status === "unapproved") qq = qq.or("price_approved.eq.false,selling_price.is.null");
         else if (search.status === "zero") qq = qq.or("selling_price.is.null,selling_price.eq.0");
-        else if (search.status === "approved") qq = qq.eq("price_approved", "true");
+        else if (search.status === "approved") qq = qq.eq("price_approved", true);
         return qq;
       };
       const [all, syn, vst] = await Promise.all([mk(null), mk("SYNNEX"), mk("VSTECS")]);
@@ -163,7 +163,7 @@ function PricingProductsPage() {
         mk(),
         mk().or("price_approved.eq.false,selling_price.is.null"),
         mk().or("selling_price.is.null,selling_price.eq.0"),
-        mk().eq("price_approved", "true"),
+        mk().eq("price_approved", true),
       ]);
       return {
         all: all.count ?? 0,
