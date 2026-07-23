@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { SiteHeader } from "@/components/site-header";
 import { Button } from "@/components/ui/button";
 import { BANK_ACCOUNT, SUPPORT_PHONE, STATUS_META, isValidStatus, bahtFmt } from "@/lib/order-helpers";
+import { GuestSignupPrompt } from "@/components/guest-signup-prompt";
 
 export const Route = createFileRoute("/order/$orderNumber")({
   ssr: false,
@@ -57,6 +58,8 @@ type OrderRow = {
   customer_name: string | null;
   customer_phone: string | null;
   customer_email: string | null;
+  customer_type: string | null;
+  user_id: string | null;
   shipping_name: string | null;
   shipping_phone: string | null;
   shipping_address: string | null;
@@ -211,6 +214,18 @@ function OrderConfirm() {
             </div>
           </div>
         </section>
+
+        {/* Guest signup prompt */}
+        {order.customer_type === "guest" && !order.user_id && order.customer_email && (
+          <GuestSignupPrompt
+            orderId={order.id}
+            orderNumber={order.order_number}
+            email={order.customer_email}
+            fullName={order.customer_name}
+            phone={order.customer_phone}
+            onLinked={() => q.refetch()}
+          />
+        )}
 
         {/* Payment */}
         <section className="mt-4 rounded-2xl border bg-white p-6">
