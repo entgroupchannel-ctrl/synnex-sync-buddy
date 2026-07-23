@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteHeader } from "@/components/site-header";
 import { Button } from "@/components/ui/button";
-import { BANK_ACCOUNT, SUPPORT_PHONE, STATUS_META, isValidStatus, bahtFmt } from "@/lib/order-helpers";
+import { BANK_ACCOUNTS, SUPPORT_PHONE, STATUS_META, VAT_NOTES, isValidStatus, bahtFmt } from "@/lib/order-helpers";
 import { GuestSignupPrompt } from "@/components/guest-signup-prompt";
 
 export const Route = createFileRoute("/order/$orderNumber")({
@@ -113,8 +113,8 @@ function OrderConfirm() {
     })();
   }, [order?.payment_slip_url]);
 
-  const copyAcct = async () => {
-    await navigator.clipboard.writeText(BANK_ACCOUNT.account);
+  const copyAcct = async (account: string) => {
+    await navigator.clipboard.writeText(account);
     toast.success("คัดลอกเลขบัญชีแล้ว");
   };
 
@@ -235,20 +235,26 @@ function OrderConfirm() {
 
           {order.payment_method === "transfer" && (
             <>
-              <div className="rounded-lg border bg-slate-50 p-4 text-sm">
-                <div className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">ข้อมูลบัญชีธนาคาร</div>
-                <div className="grid gap-1.5 sm:grid-cols-2">
-                  <div><span className="text-slate-500">ธนาคาร: </span>{BANK_ACCOUNT.bank}</div>
-                  <div><span className="text-slate-500">สาขา: </span>{BANK_ACCOUNT.branch}</div>
-                  <div className="sm:col-span-2">
-                    <span className="text-slate-500">เลขที่บัญชี: </span>
-                    <button onClick={copyAcct} className="inline-flex items-center gap-1.5 font-mono font-bold text-[color:var(--brand-navy)] hover:text-[color:var(--brand-orange)]">
-                      {BANK_ACCOUNT.account} <Copy className="h-3.5 w-3.5" />
-                    </button>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {BANK_ACCOUNTS.map((b) => (
+                  <div key={b.account} className="rounded-lg border bg-slate-50 p-4 text-sm">
+                    <div className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">{b.bank}</div>
+                    <div className="grid gap-1.5">
+                      <div><span className="text-slate-500">สาขา: </span>{b.branch} · {b.type}</div>
+                      <div>
+                        <span className="text-slate-500">เลขที่บัญชี: </span>
+                        <button onClick={() => copyAcct(b.account)} className="inline-flex items-center gap-1.5 font-mono font-bold text-[color:var(--brand-navy)] hover:text-[color:var(--brand-orange)]">
+                          {b.account} <Copy className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                      <div><span className="text-slate-500">ชื่อบัญชี: </span>{b.name}</div>
+                    </div>
                   </div>
-                  <div className="sm:col-span-2"><span className="text-slate-500">ชื่อบัญชี: </span>{BANK_ACCOUNT.name}</div>
-                </div>
+                ))}
               </div>
+              <ul className="mt-3 space-y-1 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
+                {VAT_NOTES.map((n) => <li key={n}>• {n}</li>)}
+              </ul>
 
               <div className="mt-4">
                 {slipUrl ? (
