@@ -45,7 +45,9 @@ import {
 import { CATEGORIES } from "@/lib/cart";
 import { logAudit, logAuditBulk, newSessionId } from "@/lib/pricing-audit";
 
-const LS_KEY = "ent_pricing_filters";
+const LS_KEY = "ent_pricing_v2";
+const PAGE_SIZE_OPTIONS = [25, 50, 100, 200] as const;
+const EXPORT_WARN_THRESHOLD = 5000;
 
 const searchSchema = z.object({
   q: fallback(z.string(), "").default(""),
@@ -56,6 +58,7 @@ const searchSchema = z.object({
   sort: fallback(z.string(), "sku_asc").default("sku_asc"),
   view: fallback(z.string(), "grid").default("grid"),
   page: fallback(z.number().int(), 1).default(1),
+  pageSize: fallback(z.number().int(), 50).default(50),
 });
 
 export const Route = createFileRoute("/_authenticated/admin/pricing/products")({
@@ -70,8 +73,6 @@ export const Route = createFileRoute("/_authenticated/admin/pricing/products")({
   }),
   component: PricingProductsPage,
 });
-
-const PAGE_SIZE = 50;
 
 type Product = {
   id: string;
