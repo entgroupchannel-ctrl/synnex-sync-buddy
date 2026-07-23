@@ -30,9 +30,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { RefreshCw, Search, Package, LogOut, CheckCircle2, XCircle, ClipboardPaste } from "lucide-react";
+import { RefreshCw, Search, Package, LogOut, CheckCircle2, XCircle, ClipboardPaste, AlertTriangle } from "lucide-react";
 import { getSyncStatus, listProducts, runSynnexSync } from "@/lib/synnex-sync.functions";
 import { supabase } from "@/integrations/supabase/client";
+import { Badge } from "@/components/ui/badge";
+import { effectiveMarkup, indexPricingRules, bahtFmt, type PricingRule } from "@/lib/pricing-helpers";
 
 interface ParsedProduct {
   sku: string;
