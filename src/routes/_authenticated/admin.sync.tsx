@@ -527,4 +527,3 @@ function PricingSummaryCard() {
   );
 }
 
-}
