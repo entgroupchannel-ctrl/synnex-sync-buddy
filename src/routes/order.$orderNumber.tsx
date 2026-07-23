@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { SiteHeader } from "@/components/site-header";
 import { Button } from "@/components/ui/button";
 import { BANK_ACCOUNT, SUPPORT_PHONE, STATUS_META, isValidStatus, bahtFmt } from "@/lib/order-helpers";
+import { GuestSignupPrompt } from "@/components/guest-signup-prompt";
 
 export const Route = createFileRoute("/order/$orderNumber")({
   ssr: false,
