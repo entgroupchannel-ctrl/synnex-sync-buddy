@@ -288,6 +288,10 @@ function SyncPage() {
 
         <PricingSummaryCard />
 
+        <SyncLogsSection />
+
+
+
 
         {/* Filters */}
         <section className="mt-6 flex flex-col gap-3 md:flex-row md:items-center">
