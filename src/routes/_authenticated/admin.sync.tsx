@@ -102,7 +102,7 @@ function SyncPage() {
   const totalPages = Math.max(1, Math.ceil((listQ.data?.count ?? 0) / (listQ.data?.pageSize ?? 20)));
 
   return (
-    <div className="min-h-screen bg-white font-sarabun text-slate-900">
+    <div className="min-h-screen bg-white font-sans text-slate-900">
       <Toaster richColors position="top-center" />
       <header className="bg-[#1a237e] text-white">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-5 md:px-8">

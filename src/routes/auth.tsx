@@ -58,7 +58,7 @@ function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white font-sarabun flex items-center justify-center px-4">
+    <div className="min-h-screen bg-white font-sans flex items-center justify-center px-4">
       <Toaster richColors position="top-center" />
       <div className="w-full max-w-md rounded-xl border border-slate-200 shadow-sm">
         <div className="rounded-t-xl bg-[#1a237e] px-6 py-5 text-white">
