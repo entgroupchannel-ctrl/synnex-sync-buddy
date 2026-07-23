@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { ShoppingCart, Package, Zap, Minus, Plus, ChevronRight } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
-import { priceFmt, useCart } from "@/lib/cart";
+import { displayPrice, getSellingPrice, priceFmt, useCart } from "@/lib/cart";
 
 export const Route = createFileRoute("/product/$slug")({
   ssr: false,
@@ -69,7 +69,7 @@ function ProductDetail() {
 
   const addToCart = (n = qty) => {
     if (!p) return;
-    add({ id: p.id, sku: p.sku, slug: p.slug, name: p.name ?? p.sku, price: Number(p.price ?? 0), image_url: p.image_url, distributor: (p as { distributor?: string | null }).distributor ?? null }, n);
+    add({ id: p.id, sku: p.sku, slug: p.slug, name: p.name ?? p.sku, price: getSellingPrice(p as { selling_price?: number | null }) ?? 0, image_url: p.image_url, distributor: (p as { distributor?: string | null }).distributor ?? null }, n);
     toast.success(`เพิ่ม ${p.sku} จำนวน ${n} ลงตะกร้าแล้ว`);
   };
 
@@ -106,7 +106,7 @@ function ProductDetail() {
 
               <div className="mt-5 flex items-center gap-3">
                 <div className="text-4xl font-black text-[color:var(--brand-orange)]">
-                  {p.price != null ? priceFmt.format(Number(p.price)) : "—"}
+                  {displayPrice(p as { selling_price?: number | null })}
                 </div>
                 <Badge className={ready ? "bg-green-100 text-green-800 hover:bg-green-100" : "bg-red-100 text-red-700 hover:bg-red-100"}>
                   {p.stock_status ?? "—"}
@@ -170,7 +170,7 @@ function ProductDetail() {
                   </div>
                   <div className="border-t p-3">
                     <div className="line-clamp-2 min-h-10 text-sm font-medium">{r.name ?? r.sku}</div>
-                    <div className="mt-1 text-base font-black text-[color:var(--brand-orange)]">{r.price != null ? priceFmt.format(Number(r.price)) : "—"}</div>
+                    <div className="mt-1 text-base font-black text-[color:var(--brand-orange)]">{displayPrice(r as { selling_price?: number | null })}</div>
                   </div>
                 </Link>
               ))}
