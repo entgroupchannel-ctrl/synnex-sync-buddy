@@ -80,32 +80,25 @@ function PricingProductsPage() {
     [search.brands],
   );
 
-  // Build a single filtered query (shared for count queries)
-  const applyFilters = <T,>(query: T & { or: (v: string) => T; eq: (c: string, v: string) => T; in: (c: string, v: string[]) => T; is: (c: string, v: null) => T; not: (c: string, op: string, v: unknown) => T; gt: (c: string, v: number) => T }) => {
-    let qq = query;
-    const s = search.q.trim().replace(/[%,]/g, "");
-    if (s) qq = qq.or(`sku.ilike.%${s}%,name.ilike.%${s}%`);
-    if (search.distributor !== "all") qq = qq.eq("distributor", search.distributor);
-    if (search.category !== "all") qq = qq.eq("category", search.category);
-    if (selectedBrands.length > 0) qq = qq.in("brand", selectedBrands);
-    if (search.status === "unapproved") qq = qq.or("price_approved.eq.false,selling_price.is.null");
-    else if (search.status === "zero") qq = qq.or("selling_price.is.null,selling_price.eq.0");
-    else if (search.status === "approved") qq = qq.eq("price_approved", "true");
-    return qq;
-  };
-
   const productsQ = useQuery({
     queryKey: ["pricing-products-v2", search],
     queryFn: async () => {
       const from = (search.page - 1) * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
-      const base = supabase
+      let qq = supabase
         .from("synnex_products")
         .select("id, sku, name, brand, category, distributor, image_url, cost_price, price, selling_price, markup_override, price_approved", { count: "exact" })
         .order("sku", { ascending: true })
         .range(from, to);
-      const q2 = applyFilters(base as unknown as Parameters<typeof applyFilters>[0]);
-      const { data, error, count } = await (q2 as unknown as { then: never } & typeof base);
+      const s = search.q.trim().replace(/[%,]/g, "");
+      if (s) qq = qq.or(`sku.ilike.%${s}%,name.ilike.%${s}%`);
+      if (search.distributor !== "all") qq = qq.eq("distributor", search.distributor);
+      if (search.category !== "all") qq = qq.eq("category", search.category);
+      if (selectedBrands.length > 0) qq = qq.in("brand", selectedBrands);
+      if (search.status === "unapproved") qq = qq.or("price_approved.eq.false,selling_price.is.null");
+      else if (search.status === "zero") qq = qq.or("selling_price.is.null,selling_price.eq.0");
+      else if (search.status === "approved") qq = qq.eq("price_approved", true);
+      const { data, error, count } = await qq;
       if (error) throw error;
       return { rows: (data ?? []) as Product[], count: count ?? 0 };
     },
