@@ -6,7 +6,7 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ChevronDown, ChevronLeft, ChevronRight, ChevronRight as ChevronRightIcon, Download, Search } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, Download, Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { bahtFmt } from "@/lib/pricing-helpers";
 
