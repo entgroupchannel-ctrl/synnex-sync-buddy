@@ -59,8 +59,20 @@ type Order = {
   total: number | null;
   status: string | null;
   notes: string | null;
+  tracking_number: string | null;
+  quotation_url: string | null;
+  tax_invoice_url: string | null;
   order_items: OrderItem[];
   history: HistoryRow[];
+};
+
+type EmailLog = {
+  id: string;
+  created_at: string;
+  email_type: string | null;
+  recipient: string | null;
+  status: string | null;
+  error_message: string | null;
 };
 
 function AdminOrderDetail() {
