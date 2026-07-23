@@ -105,36 +105,50 @@ function ProductDetail() {
               <div className="mt-1 text-sm text-slate-500">SKU / Model: {p.sku}</div>
 
               <div className="mt-5 flex items-center gap-3">
-                <div className="text-4xl font-black text-[color:var(--brand-orange)]">
-                  {displayPrice(p as { selling_price?: number | null })}
-                </div>
+                {getSellingPrice(p as { selling_price?: number | null }) != null && !!p.price_approved ? (
+                  <div className="text-4xl font-black text-[color:var(--brand-orange)]">
+                    {displayPrice(p as { selling_price?: number | null })}
+                  </div>
+                ) : (
+                  <div className="text-lg text-gray-400">ติดต่อสอบถาม</div>
+                )}
                 <Badge className={ready ? "bg-green-100 text-green-800 hover:bg-green-100" : "bg-red-100 text-red-700 hover:bg-red-100"}>
                   {p.stock_status ?? "—"}
                 </Badge>
               </div>
 
-              <div className="mt-6">
-                <div className="mb-2 text-sm text-slate-600">จำนวน</div>
-                <div className="inline-flex items-center overflow-hidden rounded-md border">
-                  <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="grid h-10 w-10 place-items-center hover:bg-slate-100" aria-label="ลด"><Minus className="h-4 w-4" /></button>
-                  <div className="w-14 text-center text-sm font-semibold">{qty}</div>
-                  <button onClick={() => setQty((q) => q + 1)} className="grid h-10 w-10 place-items-center hover:bg-slate-100" aria-label="เพิ่ม"><Plus className="h-4 w-4" /></button>
-                </div>
-              </div>
+              {getSellingPrice(p as { selling_price?: number | null }) != null && !!p.price_approved ? (
+                <>
+                  <div className="mt-6">
+                    <div className="mb-2 text-sm text-slate-600">จำนวน</div>
+                    <div className="inline-flex items-center overflow-hidden rounded-md border">
+                      <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="grid h-10 w-10 place-items-center hover:bg-slate-100" aria-label="ลด"><Minus className="h-4 w-4" /></button>
+                      <div className="w-14 text-center text-sm font-semibold">{qty}</div>
+                      <button onClick={() => setQty((q) => q + 1)} className="grid h-10 w-10 place-items-center hover:bg-slate-100" aria-label="เพิ่ม"><Plus className="h-4 w-4" /></button>
+                    </div>
+                  </div>
 
-              <div className="mt-5 grid gap-2 sm:grid-cols-2">
-                <Button disabled={!ready} onClick={() => addToCart()} className="bg-[color:var(--brand-navy)] hover:bg-[color:var(--brand-navy-2)]" size="lg">
-                  <ShoppingCart className="mr-2 h-5 w-5" /> ใส่ตะกร้า
-                </Button>
-                <Button
-                  disabled={!ready}
-                  onClick={() => { addToCart(); navigate({ to: "/checkout" }); }}
-                  className="bg-[color:var(--brand-orange)] hover:bg-[color:var(--brand-orange-dark)]"
-                  size="lg"
-                >
-                  <Zap className="mr-2 h-5 w-5" /> สั่งซื้อทันที
-                </Button>
-              </div>
+                  <div className="mt-5 grid gap-2 sm:grid-cols-2">
+                    <Button disabled={!ready} onClick={() => addToCart()} className="bg-[color:var(--brand-navy)] hover:bg-[color:var(--brand-navy-2)]" size="lg">
+                      <ShoppingCart className="mr-2 h-5 w-5" /> ใส่ตะกร้า
+                    </Button>
+                    <Button
+                      disabled={!ready}
+                      onClick={() => { addToCart(); navigate({ to: "/checkout" }); }}
+                      className="bg-[color:var(--brand-orange)] hover:bg-[color:var(--brand-orange-dark)]"
+                      size="lg"
+                    >
+                      <Zap className="mr-2 h-5 w-5" /> สั่งซื้อทันที
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <div className="mt-6">
+                  <Button asChild className="bg-[color:var(--brand-green)] hover:opacity-90" size="lg">
+                    <a href="tel:020456104">📞 สอบถามราคา — 02-045-6104</a>
+                  </Button>
+                </div>
+              )}
 
               {p.description && (
                 <div className="mt-8">
