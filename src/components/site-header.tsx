@@ -6,6 +6,7 @@ import { useCart } from "@/lib/cart";
 import { CATEGORIES } from "@/lib/cart";
 import { useSupabaseUser } from "@/lib/auth-sheet";
 import { AddToCartSheet } from "@/components/add-to-cart-sheet";
+import { useLanguage } from "@/lib/i18n";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -25,6 +26,7 @@ export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { user } = useSupabaseUser();
+  const { lang, t, setLang } = useLanguage();
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,9 +35,24 @@ export function SiteHeader() {
 
   const signOut = async () => {
     await supabase.auth.signOut();
-    toast.success("ออกจากระบบแล้ว");
+    toast.success(lang === "th" ? "ออกจากระบบแล้ว" : "Signed out");
     navigate({ to: "/", replace: true });
   };
+
+  const LangToggle = ({ className = "" }: { className?: string }) => (
+    <div className={`inline-flex overflow-hidden rounded-full border border-white/20 bg-white/5 text-xs ${className}`}>
+      <button
+        onClick={() => setLang("th")}
+        className={`px-2.5 py-1 transition ${lang === "th" ? "bg-white text-[color:var(--brand-navy)] font-semibold" : "text-white/80 hover:bg-white/10"}`}
+        aria-label="ภาษาไทย"
+      >🇹🇭 TH</button>
+      <button
+        onClick={() => setLang("en")}
+        className={`px-2.5 py-1 transition ${lang === "en" ? "bg-white text-[color:var(--brand-navy)] font-semibold" : "text-white/80 hover:bg-white/10"}`}
+        aria-label="English"
+      >EN</button>
+    </div>
+  );
 
   return (
     <>
