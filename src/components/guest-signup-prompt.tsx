@@ -116,7 +116,7 @@ export function GuestSignupPrompt({ orderId, orderNumber, email, fullName, phone
           </p>
           <p className="text-xs text-slate-500">ตรวจสอบอีเมลเพื่อยืนยันบัญชี</p>
           <Button asChild className="mt-4">
-            <Link to="/account/orders">ดูประวัติ Order ของฉัน →</Link>
+            <Link to="/my-account/orders">ดูประวัติ Order ของฉัน →</Link>
           </Button>
         </div>
       </section>

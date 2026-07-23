@@ -18,16 +18,20 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProductSlugRouteImport } from './routes/product.$slug'
 import { Route as OrderOrderNumberRouteImport } from './routes/order.$orderNumber'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
+import { Route as AuthenticatedMyAccountRouteImport } from './routes/_authenticated/my-account'
+import { Route as AuthenticatedMyAccountIndexRouteImport } from './routes/_authenticated/my-account.index'
+import { Route as AuthenticatedMyAccountProfileRouteImport } from './routes/_authenticated/my-account.profile'
+import { Route as AuthenticatedMyAccountOrdersRouteImport } from './routes/_authenticated/my-account.orders'
+import { Route as AuthenticatedMyAccountCompanyRouteImport } from './routes/_authenticated/my-account.company'
+import { Route as AuthenticatedMyAccountAddressesRouteImport } from './routes/_authenticated/my-account.addresses'
 import { Route as AuthenticatedAdminSyncRouteImport } from './routes/_authenticated/admin.sync'
 import { Route as AuthenticatedAdminPricingRouteImport } from './routes/_authenticated/admin.pricing'
 import { Route as AuthenticatedAdminOrdersRouteImport } from './routes/_authenticated/admin.orders'
 import { Route as AuthenticatedAdminCustomersRouteImport } from './routes/_authenticated/admin.customers'
-import { Route as AuthenticatedAccountProfileRouteImport } from './routes/_authenticated/account.profile'
-import { Route as AuthenticatedAccountOrdersRouteImport } from './routes/_authenticated/account.orders'
-import { Route as AuthenticatedAccountAddressesRouteImport } from './routes/_authenticated/account.addresses'
 import { Route as AuthenticatedAdminPricingProductsRouteImport } from './routes/_authenticated/admin.pricing.products'
 import { Route as AuthenticatedAdminPricingAuditRouteImport } from './routes/_authenticated/admin.pricing.audit'
 import { Route as AuthenticatedAdminOrdersIdRouteImport } from './routes/_authenticated/admin.orders.$id'
+import { Route as AuthenticatedAdminCustomersIdRouteImport } from './routes/_authenticated/admin.customers.$id'
 
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
@@ -73,6 +77,41 @@ const AuthCallbackRoute = AuthCallbackRouteImport.update({
   path: '/callback',
   getParentRoute: () => AuthRoute,
 } as any)
+const AuthenticatedMyAccountRoute = AuthenticatedMyAccountRouteImport.update({
+  id: '/my-account',
+  path: '/my-account',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedMyAccountIndexRoute =
+  AuthenticatedMyAccountIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedMyAccountRoute,
+  } as any)
+const AuthenticatedMyAccountProfileRoute =
+  AuthenticatedMyAccountProfileRouteImport.update({
+    id: '/profile',
+    path: '/profile',
+    getParentRoute: () => AuthenticatedMyAccountRoute,
+  } as any)
+const AuthenticatedMyAccountOrdersRoute =
+  AuthenticatedMyAccountOrdersRouteImport.update({
+    id: '/orders',
+    path: '/orders',
+    getParentRoute: () => AuthenticatedMyAccountRoute,
+  } as any)
+const AuthenticatedMyAccountCompanyRoute =
+  AuthenticatedMyAccountCompanyRouteImport.update({
+    id: '/company',
+    path: '/company',
+    getParentRoute: () => AuthenticatedMyAccountRoute,
+  } as any)
+const AuthenticatedMyAccountAddressesRoute =
+  AuthenticatedMyAccountAddressesRouteImport.update({
+    id: '/addresses',
+    path: '/addresses',
+    getParentRoute: () => AuthenticatedMyAccountRoute,
+  } as any)
 const AuthenticatedAdminSyncRoute = AuthenticatedAdminSyncRouteImport.update({
   id: '/admin/sync',
   path: '/admin/sync',
@@ -96,24 +135,6 @@ const AuthenticatedAdminCustomersRoute =
     path: '/admin/customers',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedAccountProfileRoute =
-  AuthenticatedAccountProfileRouteImport.update({
-    id: '/account/profile',
-    path: '/account/profile',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedAccountOrdersRoute =
-  AuthenticatedAccountOrdersRouteImport.update({
-    id: '/account/orders',
-    path: '/account/orders',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedAccountAddressesRoute =
-  AuthenticatedAccountAddressesRouteImport.update({
-    id: '/account/addresses',
-    path: '/account/addresses',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const AuthenticatedAdminPricingProductsRoute =
   AuthenticatedAdminPricingProductsRouteImport.update({
     id: '/products',
@@ -132,6 +153,12 @@ const AuthenticatedAdminOrdersIdRoute =
     path: '/$id',
     getParentRoute: () => AuthenticatedAdminOrdersRoute,
   } as any)
+const AuthenticatedAdminCustomersIdRoute =
+  AuthenticatedAdminCustomersIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthenticatedAdminCustomersRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -139,16 +166,20 @@ export interface FileRoutesByFullPath {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
+  '/my-account': typeof AuthenticatedMyAccountRouteWithChildren
   '/auth/callback': typeof AuthCallbackRoute
   '/order/$orderNumber': typeof OrderOrderNumberRoute
   '/product/$slug': typeof ProductSlugRoute
-  '/account/addresses': typeof AuthenticatedAccountAddressesRoute
-  '/account/orders': typeof AuthenticatedAccountOrdersRoute
-  '/account/profile': typeof AuthenticatedAccountProfileRoute
-  '/admin/customers': typeof AuthenticatedAdminCustomersRoute
+  '/admin/customers': typeof AuthenticatedAdminCustomersRouteWithChildren
   '/admin/orders': typeof AuthenticatedAdminOrdersRouteWithChildren
   '/admin/pricing': typeof AuthenticatedAdminPricingRouteWithChildren
   '/admin/sync': typeof AuthenticatedAdminSyncRoute
+  '/my-account/addresses': typeof AuthenticatedMyAccountAddressesRoute
+  '/my-account/company': typeof AuthenticatedMyAccountCompanyRoute
+  '/my-account/orders': typeof AuthenticatedMyAccountOrdersRoute
+  '/my-account/profile': typeof AuthenticatedMyAccountProfileRoute
+  '/my-account/': typeof AuthenticatedMyAccountIndexRoute
+  '/admin/customers/$id': typeof AuthenticatedAdminCustomersIdRoute
   '/admin/orders/$id': typeof AuthenticatedAdminOrdersIdRoute
   '/admin/pricing/audit': typeof AuthenticatedAdminPricingAuditRoute
   '/admin/pricing/products': typeof AuthenticatedAdminPricingProductsRoute
@@ -162,13 +193,16 @@ export interface FileRoutesByTo {
   '/auth/callback': typeof AuthCallbackRoute
   '/order/$orderNumber': typeof OrderOrderNumberRoute
   '/product/$slug': typeof ProductSlugRoute
-  '/account/addresses': typeof AuthenticatedAccountAddressesRoute
-  '/account/orders': typeof AuthenticatedAccountOrdersRoute
-  '/account/profile': typeof AuthenticatedAccountProfileRoute
-  '/admin/customers': typeof AuthenticatedAdminCustomersRoute
+  '/admin/customers': typeof AuthenticatedAdminCustomersRouteWithChildren
   '/admin/orders': typeof AuthenticatedAdminOrdersRouteWithChildren
   '/admin/pricing': typeof AuthenticatedAdminPricingRouteWithChildren
   '/admin/sync': typeof AuthenticatedAdminSyncRoute
+  '/my-account/addresses': typeof AuthenticatedMyAccountAddressesRoute
+  '/my-account/company': typeof AuthenticatedMyAccountCompanyRoute
+  '/my-account/orders': typeof AuthenticatedMyAccountOrdersRoute
+  '/my-account/profile': typeof AuthenticatedMyAccountProfileRoute
+  '/my-account': typeof AuthenticatedMyAccountIndexRoute
+  '/admin/customers/$id': typeof AuthenticatedAdminCustomersIdRoute
   '/admin/orders/$id': typeof AuthenticatedAdminOrdersIdRoute
   '/admin/pricing/audit': typeof AuthenticatedAdminPricingAuditRoute
   '/admin/pricing/products': typeof AuthenticatedAdminPricingProductsRoute
@@ -181,16 +215,20 @@ export interface FileRoutesById {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
+  '/_authenticated/my-account': typeof AuthenticatedMyAccountRouteWithChildren
   '/auth/callback': typeof AuthCallbackRoute
   '/order/$orderNumber': typeof OrderOrderNumberRoute
   '/product/$slug': typeof ProductSlugRoute
-  '/_authenticated/account/addresses': typeof AuthenticatedAccountAddressesRoute
-  '/_authenticated/account/orders': typeof AuthenticatedAccountOrdersRoute
-  '/_authenticated/account/profile': typeof AuthenticatedAccountProfileRoute
-  '/_authenticated/admin/customers': typeof AuthenticatedAdminCustomersRoute
+  '/_authenticated/admin/customers': typeof AuthenticatedAdminCustomersRouteWithChildren
   '/_authenticated/admin/orders': typeof AuthenticatedAdminOrdersRouteWithChildren
   '/_authenticated/admin/pricing': typeof AuthenticatedAdminPricingRouteWithChildren
   '/_authenticated/admin/sync': typeof AuthenticatedAdminSyncRoute
+  '/_authenticated/my-account/addresses': typeof AuthenticatedMyAccountAddressesRoute
+  '/_authenticated/my-account/company': typeof AuthenticatedMyAccountCompanyRoute
+  '/_authenticated/my-account/orders': typeof AuthenticatedMyAccountOrdersRoute
+  '/_authenticated/my-account/profile': typeof AuthenticatedMyAccountProfileRoute
+  '/_authenticated/my-account/': typeof AuthenticatedMyAccountIndexRoute
+  '/_authenticated/admin/customers/$id': typeof AuthenticatedAdminCustomersIdRoute
   '/_authenticated/admin/orders/$id': typeof AuthenticatedAdminOrdersIdRoute
   '/_authenticated/admin/pricing/audit': typeof AuthenticatedAdminPricingAuditRoute
   '/_authenticated/admin/pricing/products': typeof AuthenticatedAdminPricingProductsRoute
@@ -203,16 +241,20 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/contact'
+    | '/my-account'
     | '/auth/callback'
     | '/order/$orderNumber'
     | '/product/$slug'
-    | '/account/addresses'
-    | '/account/orders'
-    | '/account/profile'
     | '/admin/customers'
     | '/admin/orders'
     | '/admin/pricing'
     | '/admin/sync'
+    | '/my-account/addresses'
+    | '/my-account/company'
+    | '/my-account/orders'
+    | '/my-account/profile'
+    | '/my-account/'
+    | '/admin/customers/$id'
     | '/admin/orders/$id'
     | '/admin/pricing/audit'
     | '/admin/pricing/products'
@@ -226,13 +268,16 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/order/$orderNumber'
     | '/product/$slug'
-    | '/account/addresses'
-    | '/account/orders'
-    | '/account/profile'
     | '/admin/customers'
     | '/admin/orders'
     | '/admin/pricing'
     | '/admin/sync'
+    | '/my-account/addresses'
+    | '/my-account/company'
+    | '/my-account/orders'
+    | '/my-account/profile'
+    | '/my-account'
+    | '/admin/customers/$id'
     | '/admin/orders/$id'
     | '/admin/pricing/audit'
     | '/admin/pricing/products'
@@ -244,16 +289,20 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/contact'
+    | '/_authenticated/my-account'
     | '/auth/callback'
     | '/order/$orderNumber'
     | '/product/$slug'
-    | '/_authenticated/account/addresses'
-    | '/_authenticated/account/orders'
-    | '/_authenticated/account/profile'
     | '/_authenticated/admin/customers'
     | '/_authenticated/admin/orders'
     | '/_authenticated/admin/pricing'
     | '/_authenticated/admin/sync'
+    | '/_authenticated/my-account/addresses'
+    | '/_authenticated/my-account/company'
+    | '/_authenticated/my-account/orders'
+    | '/_authenticated/my-account/profile'
+    | '/_authenticated/my-account/'
+    | '/_authenticated/admin/customers/$id'
     | '/_authenticated/admin/orders/$id'
     | '/_authenticated/admin/pricing/audit'
     | '/_authenticated/admin/pricing/products'
@@ -335,6 +384,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthCallbackRouteImport
       parentRoute: typeof AuthRoute
     }
+    '/_authenticated/my-account': {
+      id: '/_authenticated/my-account'
+      path: '/my-account'
+      fullPath: '/my-account'
+      preLoaderRoute: typeof AuthenticatedMyAccountRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/my-account/': {
+      id: '/_authenticated/my-account/'
+      path: '/'
+      fullPath: '/my-account/'
+      preLoaderRoute: typeof AuthenticatedMyAccountIndexRouteImport
+      parentRoute: typeof AuthenticatedMyAccountRoute
+    }
+    '/_authenticated/my-account/profile': {
+      id: '/_authenticated/my-account/profile'
+      path: '/profile'
+      fullPath: '/my-account/profile'
+      preLoaderRoute: typeof AuthenticatedMyAccountProfileRouteImport
+      parentRoute: typeof AuthenticatedMyAccountRoute
+    }
+    '/_authenticated/my-account/orders': {
+      id: '/_authenticated/my-account/orders'
+      path: '/orders'
+      fullPath: '/my-account/orders'
+      preLoaderRoute: typeof AuthenticatedMyAccountOrdersRouteImport
+      parentRoute: typeof AuthenticatedMyAccountRoute
+    }
+    '/_authenticated/my-account/company': {
+      id: '/_authenticated/my-account/company'
+      path: '/company'
+      fullPath: '/my-account/company'
+      preLoaderRoute: typeof AuthenticatedMyAccountCompanyRouteImport
+      parentRoute: typeof AuthenticatedMyAccountRoute
+    }
+    '/_authenticated/my-account/addresses': {
+      id: '/_authenticated/my-account/addresses'
+      path: '/addresses'
+      fullPath: '/my-account/addresses'
+      preLoaderRoute: typeof AuthenticatedMyAccountAddressesRouteImport
+      parentRoute: typeof AuthenticatedMyAccountRoute
+    }
     '/_authenticated/admin/sync': {
       id: '/_authenticated/admin/sync'
       path: '/admin/sync'
@@ -363,27 +454,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminCustomersRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/account/profile': {
-      id: '/_authenticated/account/profile'
-      path: '/account/profile'
-      fullPath: '/account/profile'
-      preLoaderRoute: typeof AuthenticatedAccountProfileRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/account/orders': {
-      id: '/_authenticated/account/orders'
-      path: '/account/orders'
-      fullPath: '/account/orders'
-      preLoaderRoute: typeof AuthenticatedAccountOrdersRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/account/addresses': {
-      id: '/_authenticated/account/addresses'
-      path: '/account/addresses'
-      fullPath: '/account/addresses'
-      preLoaderRoute: typeof AuthenticatedAccountAddressesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/admin/pricing/products': {
       id: '/_authenticated/admin/pricing/products'
       path: '/products'
@@ -405,8 +475,51 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminOrdersIdRouteImport
       parentRoute: typeof AuthenticatedAdminOrdersRoute
     }
+    '/_authenticated/admin/customers/$id': {
+      id: '/_authenticated/admin/customers/$id'
+      path: '/$id'
+      fullPath: '/admin/customers/$id'
+      preLoaderRoute: typeof AuthenticatedAdminCustomersIdRouteImport
+      parentRoute: typeof AuthenticatedAdminCustomersRoute
+    }
   }
 }
+
+interface AuthenticatedMyAccountRouteChildren {
+  AuthenticatedMyAccountAddressesRoute: typeof AuthenticatedMyAccountAddressesRoute
+  AuthenticatedMyAccountCompanyRoute: typeof AuthenticatedMyAccountCompanyRoute
+  AuthenticatedMyAccountOrdersRoute: typeof AuthenticatedMyAccountOrdersRoute
+  AuthenticatedMyAccountProfileRoute: typeof AuthenticatedMyAccountProfileRoute
+  AuthenticatedMyAccountIndexRoute: typeof AuthenticatedMyAccountIndexRoute
+}
+
+const AuthenticatedMyAccountRouteChildren: AuthenticatedMyAccountRouteChildren =
+  {
+    AuthenticatedMyAccountAddressesRoute: AuthenticatedMyAccountAddressesRoute,
+    AuthenticatedMyAccountCompanyRoute: AuthenticatedMyAccountCompanyRoute,
+    AuthenticatedMyAccountOrdersRoute: AuthenticatedMyAccountOrdersRoute,
+    AuthenticatedMyAccountProfileRoute: AuthenticatedMyAccountProfileRoute,
+    AuthenticatedMyAccountIndexRoute: AuthenticatedMyAccountIndexRoute,
+  }
+
+const AuthenticatedMyAccountRouteWithChildren =
+  AuthenticatedMyAccountRoute._addFileChildren(
+    AuthenticatedMyAccountRouteChildren,
+  )
+
+interface AuthenticatedAdminCustomersRouteChildren {
+  AuthenticatedAdminCustomersIdRoute: typeof AuthenticatedAdminCustomersIdRoute
+}
+
+const AuthenticatedAdminCustomersRouteChildren: AuthenticatedAdminCustomersRouteChildren =
+  {
+    AuthenticatedAdminCustomersIdRoute: AuthenticatedAdminCustomersIdRoute,
+  }
+
+const AuthenticatedAdminCustomersRouteWithChildren =
+  AuthenticatedAdminCustomersRoute._addFileChildren(
+    AuthenticatedAdminCustomersRouteChildren,
+  )
 
 interface AuthenticatedAdminOrdersRouteChildren {
   AuthenticatedAdminOrdersIdRoute: typeof AuthenticatedAdminOrdersIdRoute
@@ -440,20 +553,17 @@ const AuthenticatedAdminPricingRouteWithChildren =
   )
 
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedAccountAddressesRoute: typeof AuthenticatedAccountAddressesRoute
-  AuthenticatedAccountOrdersRoute: typeof AuthenticatedAccountOrdersRoute
-  AuthenticatedAccountProfileRoute: typeof AuthenticatedAccountProfileRoute
-  AuthenticatedAdminCustomersRoute: typeof AuthenticatedAdminCustomersRoute
+  AuthenticatedMyAccountRoute: typeof AuthenticatedMyAccountRouteWithChildren
+  AuthenticatedAdminCustomersRoute: typeof AuthenticatedAdminCustomersRouteWithChildren
   AuthenticatedAdminOrdersRoute: typeof AuthenticatedAdminOrdersRouteWithChildren
   AuthenticatedAdminPricingRoute: typeof AuthenticatedAdminPricingRouteWithChildren
   AuthenticatedAdminSyncRoute: typeof AuthenticatedAdminSyncRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedAccountAddressesRoute: AuthenticatedAccountAddressesRoute,
-  AuthenticatedAccountOrdersRoute: AuthenticatedAccountOrdersRoute,
-  AuthenticatedAccountProfileRoute: AuthenticatedAccountProfileRoute,
-  AuthenticatedAdminCustomersRoute: AuthenticatedAdminCustomersRoute,
+  AuthenticatedMyAccountRoute: AuthenticatedMyAccountRouteWithChildren,
+  AuthenticatedAdminCustomersRoute:
+    AuthenticatedAdminCustomersRouteWithChildren,
   AuthenticatedAdminOrdersRoute: AuthenticatedAdminOrdersRouteWithChildren,
   AuthenticatedAdminPricingRoute: AuthenticatedAdminPricingRouteWithChildren,
   AuthenticatedAdminSyncRoute: AuthenticatedAdminSyncRoute,

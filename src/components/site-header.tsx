@@ -91,9 +91,9 @@ export function SiteHeader() {
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel className="truncate">{user.email}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild><Link to="/account/orders"><Package className="mr-2 h-4 w-4" /> ประวัติการสั่งซื้อ</Link></DropdownMenuItem>
-                <DropdownMenuItem asChild><Link to="/account/profile"><User className="mr-2 h-4 w-4" /> ข้อมูลส่วนตัว</Link></DropdownMenuItem>
-                <DropdownMenuItem asChild><Link to="/account/addresses"><MapPin className="mr-2 h-4 w-4" /> ที่อยู่จัดส่ง</Link></DropdownMenuItem>
+                <DropdownMenuItem asChild><Link to="/my-account/orders"><Package className="mr-2 h-4 w-4" /> ประวัติการสั่งซื้อ</Link></DropdownMenuItem>
+                <DropdownMenuItem asChild><Link to="/my-account/profile"><User className="mr-2 h-4 w-4" /> ข้อมูลส่วนตัว</Link></DropdownMenuItem>
+                <DropdownMenuItem asChild><Link to="/my-account/addresses"><MapPin className="mr-2 h-4 w-4" /> ที่อยู่จัดส่ง</Link></DropdownMenuItem>
                 <DropdownMenuItem asChild><Link to="/admin/orders"><Building2 className="mr-2 h-4 w-4" /> Admin</Link></DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onSelect={signOut}><LogOut className="mr-2 h-4 w-4" /> ออกจากระบบ</DropdownMenuItem>
@@ -154,9 +154,9 @@ export function SiteHeader() {
               <div className="mb-4 rounded-lg border p-3">
                 <div className="truncate text-xs text-slate-500">{user.email}</div>
                 <div className="mt-2 grid gap-1 text-sm">
-                  <Link to="/account/orders" onClick={() => setMenuOpen(false)} className="rounded px-2 py-1 hover:bg-slate-100">ประวัติการสั่งซื้อ</Link>
-                  <Link to="/account/profile" onClick={() => setMenuOpen(false)} className="rounded px-2 py-1 hover:bg-slate-100">ข้อมูลส่วนตัว</Link>
-                  <Link to="/account/addresses" onClick={() => setMenuOpen(false)} className="rounded px-2 py-1 hover:bg-slate-100">ที่อยู่จัดส่ง</Link>
+                  <Link to="/my-account/orders" onClick={() => setMenuOpen(false)} className="rounded px-2 py-1 hover:bg-slate-100">ประวัติการสั่งซื้อ</Link>
+                  <Link to="/my-account/profile" onClick={() => setMenuOpen(false)} className="rounded px-2 py-1 hover:bg-slate-100">ข้อมูลส่วนตัว</Link>
+                  <Link to="/my-account/addresses" onClick={() => setMenuOpen(false)} className="rounded px-2 py-1 hover:bg-slate-100">ที่อยู่จัดส่ง</Link>
                   <button onClick={signOut} className="text-left rounded px-2 py-1 text-red-600 hover:bg-red-50">ออกจากระบบ</button>
                 </div>
               </div>
@@ -200,7 +200,7 @@ export function SiteHeader() {
             </span>
           )}
         </Link>
-        <Link to={user ? "/account/orders" : "/auth"} search={user ? undefined : ({ tab: "signin" } as never)} className="flex flex-col items-center gap-0.5 py-2 text-slate-700">
+        <Link to={user ? "/my-account/orders" : "/auth"} search={user ? undefined : ({ tab: "signin" } as never)} className="flex flex-col items-center gap-0.5 py-2 text-slate-700">
           <User className="h-5 w-5" /> {user ? "บัญชี" : "เข้าสู่ระบบ"}
         </Link>
       </nav>
