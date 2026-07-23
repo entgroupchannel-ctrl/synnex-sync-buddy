@@ -102,6 +102,7 @@ function AdminOrderDetail() {
       setStatus(merged.status ?? "pending");
       setPaymentStatus(merged.payment_status ?? "pending");
       setNotes(merged.notes ?? "");
+      setTracking(merged.tracking_number ?? "");
       if (merged.payment_slip_url) {
         const { data } = await supabase.storage.from("payment-slips").createSignedUrl(merged.payment_slip_url, 60 * 60);
         setSlipUrl(data?.signedUrl ?? null);
@@ -109,6 +110,7 @@ function AdminOrderDetail() {
         setSlipUrl(null);
       }
     }
+    setEmailLogs((logs ?? []) as EmailLog[]);
     setLoading(false);
   };
 
