@@ -84,7 +84,7 @@ function HomePage() {
   );
 
   const update = (patch: Record<string, unknown>) =>
-    navigate({ to: "/", search: (p) => ({ ...p, ...patch, page: 1 }) });
+    navigate({ to: "/", search: (p: Record<string, unknown>) => ({ ...p, ...patch, page: 1 }) });
 
   // Fetch brand list (top 20)
   const brandsQ = useQuery({
