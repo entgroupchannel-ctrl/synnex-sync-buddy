@@ -120,6 +120,7 @@ export type Database = {
           customer_name: string | null
           customer_phone: string | null
           customer_type: string | null
+          discount: number | null
           id: string
           is_guest: boolean | null
           items: Json | null
@@ -132,6 +133,7 @@ export type Database = {
           payment_status: string
           shipping_address: string | null
           shipping_district: string | null
+          shipping_fee: number | null
           shipping_name: string | null
           shipping_phone: string | null
           shipping_postcode: string | null
@@ -158,6 +160,7 @@ export type Database = {
           customer_name?: string | null
           customer_phone?: string | null
           customer_type?: string | null
+          discount?: number | null
           id?: string
           is_guest?: boolean | null
           items?: Json | null
@@ -170,6 +173,7 @@ export type Database = {
           payment_status?: string
           shipping_address?: string | null
           shipping_district?: string | null
+          shipping_fee?: number | null
           shipping_name?: string | null
           shipping_phone?: string | null
           shipping_postcode?: string | null
@@ -196,6 +200,7 @@ export type Database = {
           customer_name?: string | null
           customer_phone?: string | null
           customer_type?: string | null
+          discount?: number | null
           id?: string
           is_guest?: boolean | null
           items?: Json | null
@@ -208,6 +213,7 @@ export type Database = {
           payment_status?: string
           shipping_address?: string | null
           shipping_district?: string | null
+          shipping_fee?: number | null
           shipping_name?: string | null
           shipping_phone?: string | null
           shipping_postcode?: string | null
@@ -545,7 +551,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      generate_order_number: { Args: never; Returns: string }
+      [_ in never]: never
     }
     Enums: {
       [_ in never]: never
