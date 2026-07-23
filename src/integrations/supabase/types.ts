@@ -14,6 +14,97 @@ export type Database = {
   }
   public: {
     Tables: {
+      order_items: {
+        Row: {
+          brand: string | null
+          category: string | null
+          cost_price: number | null
+          created_at: string | null
+          distributor: string
+          id: string
+          order_id: string
+          product_image_url: string | null
+          product_name: string
+          product_sku: string
+          quantity: number
+          subtotal: number
+          unit_price: number
+        }
+        Insert: {
+          brand?: string | null
+          category?: string | null
+          cost_price?: number | null
+          created_at?: string | null
+          distributor: string
+          id?: string
+          order_id: string
+          product_image_url?: string | null
+          product_name: string
+          product_sku: string
+          quantity?: number
+          subtotal: number
+          unit_price: number
+        }
+        Update: {
+          brand?: string | null
+          category?: string | null
+          cost_price?: number | null
+          created_at?: string | null
+          distributor?: string
+          id?: string
+          order_id?: string
+          product_image_url?: string | null
+          product_name?: string
+          product_sku?: string
+          quantity?: number
+          subtotal?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_status_history: {
+        Row: {
+          changed_by: string | null
+          created_at: string | null
+          id: string
+          note: string | null
+          order_id: string
+          status: string
+        }
+        Insert: {
+          changed_by?: string | null
+          created_at?: string | null
+          id?: string
+          note?: string | null
+          order_id: string
+          status: string
+        }
+        Update: {
+          changed_by?: string | null
+          created_at?: string | null
+          id?: string
+          note?: string | null
+          order_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_status_history_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orders: {
         Row: {
           admin_status: string | null
