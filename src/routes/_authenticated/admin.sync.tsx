@@ -490,6 +490,8 @@ function SyncPage() {
             </div>
           </div>
         ) : null}
+        </>
+        ) : null}
       </main>
 
       <Dialog open={importOpen} onOpenChange={(o) => { setImportOpen(o); if (!o) { setImportHtml(""); setPreviewCount(null); } }}>
