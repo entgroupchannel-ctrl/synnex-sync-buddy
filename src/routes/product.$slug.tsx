@@ -367,6 +367,92 @@ function ProductDetail() {
                 </div>
               )}
 
+              {/* AEO — Answer-Ready Summary (for AI answer engines & voice search) */}
+              {(() => {
+                const priceNum = Number(p.selling_price ?? 0);
+                const stockLabel = ready ? "พร้อมจัดส่ง" : byOrder ? "By Order 30 วัน" : (p.stock_status ?? "สินค้าหมด");
+                const distributor = (p as { distributor?: string | null }).distributor;
+                const summary = [
+                  `${p.name ?? p.sku} ราคา ฿${priceNum.toLocaleString("th-TH")}`,
+                  stockLabel,
+                  p.brand ? `แบรนด์ ${p.brand}` : "",
+                  `รหัสสินค้า ${p.sku}`,
+                  `จำหน่ายโดย ENT Group Authorized Dealer${distributor ? ` ของ ${distributor} Thailand` : ""}`,
+                  "รับประกันศูนย์ไทย",
+                ].filter(Boolean).join(" · ");
+                return (
+                  <section className="mt-6 rounded-lg border border-slate-200 bg-slate-50 p-4" aria-label="สรุปสินค้าโดยย่อ">
+                    <div className="mb-1 text-[11px] font-bold uppercase tracking-wide text-slate-500">สรุปโดยย่อ / Quick Summary</div>
+                    <p className="text-sm leading-relaxed text-slate-800">{summary}</p>
+                  </section>
+                );
+              })()}
+
+              {/* AEO — Spec table (structured facts) */}
+              <section className="mt-6 overflow-hidden rounded-lg border" aria-label="ข้อมูลจำเพาะสินค้า">
+                <table className="w-full text-sm">
+                  <tbody>
+                    {[
+                      ["รุ่น / Model", p.sku],
+                      ["แบรนด์", p.brand ?? "—"],
+                      ["ราคาปกติ", `฿${Number(p.selling_price ?? 0).toLocaleString("th-TH")}`],
+                      p.member_price ? ["ราคาสมาชิก", `฿${Number(p.member_price).toLocaleString("th-TH")} (ประหยัด ~5%)`] : null,
+                      (p as { b2b_price?: number | null }).b2b_price
+                        ? ["ราคาองค์กร B2B", `฿${Number((p as { b2b_price?: number }).b2b_price).toLocaleString("th-TH")} (ประหยัด ~10%)`]
+                        : null,
+                      ["สถานะ", `${p.stock_status ?? "—"}${byOrder ? " (By Order ~30 วัน)" : ""}`],
+                      ["หมวดหมู่", p.category ?? "—"],
+                      ["แหล่งที่มา", `${(p as { distributor?: string | null }).distributor ?? "Synnex"} Thailand (Authorized Dealer)`],
+                      ["รับประกัน", "รับประกันศูนย์ไทย"],
+                    ].filter(Boolean).map((row, i) => {
+                      const [k, v] = row as [string, string];
+                      return (
+                        <tr key={k}>
+                          <th scope="row" className={`w-[140px] border-b bg-slate-50 px-3 py-2 text-left text-[13px] font-medium text-slate-500 ${i === 0 ? "" : ""}`}>{k}</th>
+                          <td className="border-b px-3 py-2 text-[13px] text-slate-800">{v}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </section>
+
+              {/* AEO — Visible FAQ for voice search / AI answers */}
+              {(() => {
+                const priceNum = Number(p.selling_price ?? 0);
+                const memberNum = Number(p.member_price ?? 0);
+                const b2bNum = Number((p as { b2b_price?: number | null }).b2b_price ?? 0);
+                const name = p.name ?? p.sku;
+                const q1 = `${name} ราคาเท่าไหร่?`;
+                const a1 = `${name} ราคา ฿${priceNum.toLocaleString("th-TH")} สำหรับลูกค้าทั่วไป${memberNum ? `, ฿${memberNum.toLocaleString("th-TH")} สำหรับสมาชิก` : ""}${b2bNum ? `, และ ฿${b2bNum.toLocaleString("th-TH")} สำหรับลูกค้าองค์กร B2B` : ""} จาก ENT Group IT Shop`;
+                const q2 = `${name} มีสินค้าพร้อมส่งไหม?`;
+                const a2 = ready
+                  ? `${name} มีสินค้าพร้อมจัดส่งทันที จัดส่งทั่วไทยผ่าน Kerry, Flash, ไปรษณีย์ไทย`
+                  : byOrder
+                    ? `${name} เป็นสินค้า By Order ใช้เวลาประมาณ 30 วันทำการ เหมาะสำหรับลูกค้าองค์กรที่ต้องการจำนวนมาก`
+                    : `${name} สินค้าหมดชั่วคราว สามารถกด Notify Me เพื่อรอรับแจ้งเตือน หรือติดต่อสอบถามได้`;
+                return (
+                  <section
+                    className="mt-6 rounded-lg border bg-white p-4"
+                    itemScope
+                    itemType="https://schema.org/FAQPage"
+                    aria-label="คำถามที่พบบ่อย"
+                  >
+                    <h2 className="mb-2 text-sm font-bold text-[color:var(--brand-navy)]">คำถามที่พบบ่อย / FAQ</h2>
+                    {[[q1, a1], [q2, a2]].map(([q, a]) => (
+                      <div key={q} itemProp="mainEntity" itemScope itemType="https://schema.org/Question" className="border-t py-3 first:border-t-0">
+                        <h3 itemProp="name" className="text-sm font-semibold text-slate-900">{q}</h3>
+                        <div itemProp="acceptedAnswer" itemScope itemType="https://schema.org/Answer">
+                          <p itemProp="text" className="mt-1 text-sm text-slate-700">{a}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </section>
+                );
+              })()}
+
+
+
               {p.description && (
                 <div className="mt-8">
                   <h2 className="mb-2 text-sm font-bold text-[color:var(--brand-navy)]">รายละเอียดสินค้า</h2>
