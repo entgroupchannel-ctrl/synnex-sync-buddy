@@ -98,10 +98,13 @@ function MyOrders() {
                   <Receipt className="h-3.5 w-3.5" /> ใบกำกับภาษี
                 </a>
               )}
+              <ReorderButton orderId={o.id} className="ml-auto" />
             </div>
           </div>
         );
       })}
+      </div>
     </div>
   );
 }
+
