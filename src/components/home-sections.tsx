@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import {
   Laptop, Monitor, Printer, Cpu, Smartphone, Wifi, HardDrive, Package,
   Cable, LayoutGrid, ShoppingCart, Truck, Award, FileText, Phone, ArrowRight,
-  ChevronLeft, ChevronRight, Mail, Flame, ShieldCheck, Building2, Warehouse,
+  ChevronLeft, ChevronRight, Mail, Flame, ShieldCheck, Building2, Warehouse, MonitorCog,
 } from "lucide-react";
 import heroWarehouse from "@/assets/hero-warehouse.jpg";
 import heroEnterprise from "@/assets/hero-enterprise.jpg";
