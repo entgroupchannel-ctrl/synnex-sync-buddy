@@ -399,7 +399,7 @@ function HomePage() {
                 return (
                   <div key={p.id} className="flex gap-4 rounded-lg border bg-white p-3 transition hover:shadow-md">
                     <Link to="/product/$slug" params={{ slug }} className="grid h-28 w-28 shrink-0 place-items-center rounded-md bg-white">
-                      {p.image_url ? <img src={p.image_url} alt={p.name ?? p.sku} className="h-full w-full object-contain" loading="lazy" /> : <Package className="h-10 w-10 text-slate-300" />}
+                      <ProductImage src={p.image_url} alt={p.name ?? p.sku} />
                     </Link>
                     <div className="flex min-w-0 flex-1 flex-col">
                       <div className="text-[11px] uppercase tracking-wide text-slate-500">{p.brand ?? (p.category || detectCategory(p.name))} · {p.sku}</div>
