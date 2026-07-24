@@ -642,6 +642,10 @@ function HomePage() {
           {/* Popular Notebooks */}
           <PopularNotebooks />
 
+          {/* Computer Sets */}
+          <ComputerSets />
+
+
           {/* Today's Best Deals */}
           <FrequentlyBought />
           <TodaysBestDeals />
