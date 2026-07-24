@@ -608,6 +608,11 @@ function HomePage() {
             onReady={() => update({ ready: true })}
           />
 
+          {/* Apple Featured — placed first */}
+          <AppleFeatured />
+
+
+
           {/* Flash Deals */}
           {(flashQ.data?.length ?? 0) > 0 && (
             <section className="border-b bg-gradient-to-r from-orange-50 to-red-50">
