@@ -46,21 +46,14 @@ export function PromptPayPaymentModal({ orderId, orderNumber, amount, onPaid }: 
     requested.current = true;
     (async () => {
       try {
-        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
-        const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
-        const res = await fetch(`${supabaseUrl}/functions/v1/create-omise-charge`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${supabaseKey}`,
-          },
-          body: JSON.stringify({ order_id: orderId, amount }),
+        const { data, error } = await supabase.functions.invoke("create-omise-charge", {
+          body: { order_id: orderId, amount },
         });
-        if (!res.ok) throw new Error(await res.text());
-        const data = (await res.json()) as ChargeResp;
-        if (!data?.qr_code_url) throw new Error("ไม่ได้รับข้อมูล QR");
-        setCharge(data);
-        const exp = new Date(data.expires_at).getTime();
+        if (error) throw error;
+        const { qr_code_url, charge_id, expires_at } = data as ChargeResp;
+        if (!qr_code_url) throw new Error("ไม่ได้รับข้อมูล QR");
+        setCharge({ qr_code_url, charge_id, expires_at });
+        const exp = new Date(expires_at).getTime();
         setRemaining(Math.max(0, Math.floor((exp - Date.now()) / 1000)));
       } catch (e) {
         toast.error(e instanceof Error ? e.message : "สร้าง QR ไม่สำเร็จ");
