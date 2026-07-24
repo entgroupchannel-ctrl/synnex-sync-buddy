@@ -115,11 +115,11 @@ export function AppleFeatured() {
                   <div className="absolute right-2 top-2 rounded-full bg-[#1d1d1f] px-2 py-0.5 text-[10px] font-semibold text-white">
                     🍎 ของแท้ 100%
                   </div>
-                  <div className="mb-3 grid aspect-square place-items-center">
+                  <div className="mb-3 grid aspect-square place-items-center overflow-hidden rounded-xl">
                     <ProductImage
                       src={p.image_url}
                       alt={p.name ?? p.sku}
-                      className="max-h-full max-w-full object-contain transition group-hover:scale-105"
+                      className="max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-[1.03]"
                     />
                   </div>
                   <div className="line-clamp-2 min-h-10 text-sm font-semibold text-[#1d1d1f]">
