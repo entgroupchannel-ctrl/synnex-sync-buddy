@@ -357,6 +357,8 @@ function ProductDetail() {
                     )}
                   </div>
 
+                  <DeliveryInfoBox category={p.category} />
+
                   {(() => {
                     const isB2B = tier.startsWith("b2b");
                     const shouldShow = isB2B || (historyQ.data?.count ?? 0) >= 3;
