@@ -174,13 +174,18 @@ export function PcBuilderLanding() {
   const samplesQuery = useQuery({
     queryKey: ["pc-builder-samples", activeId],
     queryFn: async () => {
-      const rows = await Promise.all(preset.parts.map(fetchSampleForPart));
+      const rows = await Promise.all(
+        preset.parts.map(async (part) => {
+          const samples = await fetchSamplesForPart(part);
+          return pickBestSample(samples, part.type);
+        }),
+      );
       return rows;
     },
     staleTime: 5 * 60_000,
   });
 
-  const samples = samplesQuery.data ?? [];
+  const samples = (samplesQuery.data ?? []) as (SampleRow | null)[];
 
   const { subtotal, hasByOrder } = useMemo(() => {
     let sum = 0;
