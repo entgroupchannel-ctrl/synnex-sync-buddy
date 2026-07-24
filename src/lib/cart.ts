@@ -193,6 +193,7 @@ export const CATEGORIES = [
   "Computer Set",
   "Software",
   "Accessories",
+  "Components",
   "Network",
   "Storage",
   "Smart Phone & Tablet",
@@ -205,6 +206,7 @@ export function detectCategory(name: string | null | undefined): string {
   if (/(printer|print)/i.test(n)) return "Printer";
   if (/(desktop|tower|\bpc\b)/i.test(n)) return "PC";
   if (/(software|license|office)/i.test(n)) return "Software";
+  if (/(\bcpu\b|ryzen|core ultra|\bddr\d\b|\bram\b|memory)/i.test(n)) return "Components";
   if (/(switch|router|network|wifi|access point)/i.test(n)) return "Network";
   if (/(\bhdd\b|\bssd\b|storage|\bnas\b)/i.test(n)) return "Storage";
   if (/(phone|ipad|tablet)/i.test(n)) return "Smart Phone & Tablet";
