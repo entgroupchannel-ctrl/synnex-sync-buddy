@@ -88,7 +88,8 @@ function ProductDetail() {
   const addToCart = (n = qty) => {
     if (!p) return;
     const name = p.name ?? p.sku;
-    add({ id: p.id, sku: p.sku, slug: p.slug, name, price: getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier) ?? 0, image_url: p.image_url, distributor: (p as { distributor?: string | null }).distributor ?? null }, n);
+    const unit = computeProductPrice(p as PricingProduct, tier, n).displayPrice || getSellingPrice(p as PricingProduct, tier) || 0;
+    add({ id: p.id, sku: p.sku, slug: p.slug, name, price: unit, image_url: p.image_url, distributor: (p as { distributor?: string | null }).distributor ?? null }, n);
     if (!user) {
       triggerAuthPrompt({ name, sku: p.sku, image_url: p.image_url });
     } else {
