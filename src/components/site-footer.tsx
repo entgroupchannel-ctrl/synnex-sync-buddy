@@ -259,7 +259,6 @@ export function SiteFooter() {
             <ul className="space-y-2">
               <li><FooterLink href="https://entgroup.co.th/about">เกี่ยวกับเรา</FooterLink></li>
               <li><FooterLink href="https://entgroup.co.th">ผลิตภัณฑ์ ENT Group</FooterLink></li>
-              <li><FooterLink href="/about">เกี่ยวกับเรา</FooterLink></li>
               <li><FooterLink to="/contact">ติดต่อเรา</FooterLink></li>
               <li><FooterLink to="/careers">ร่วมงานกับเรา</FooterLink></li>
               <li><FooterLink href="https://entgroup.co.th/blog">ENT Group Blog</FooterLink></li>
@@ -384,13 +383,8 @@ export function SiteFooter() {
               alt="ENT Group"
               className="h-10 w-10 rounded-md bg-white object-contain p-1"
             />
-            <div>
-              <div className="text-sm font-bold text-white">
-                ENT Group IT Shop
-              </div>
-              <div className="text-[11px] text-[color:var(--brand-green)]">
-                Computer for all
-              </div>
+            <div className="text-[11px] text-[color:var(--brand-green)]">
+              Computer for all
             </div>
           </div>
         </div>
