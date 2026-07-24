@@ -17,7 +17,7 @@ type ChargeResp = {
   qr_code_url?: string;
   expires_at?: string;
   charge_id?: string;
-  requires_manual_transfer_protocol?: boolean;
+  requires_manual_transfer?: boolean;
 };
 
 const BANKS = ["KBank", "SCB", "กรุงไทย", "กรุงเทพ", "ทหารไทย"];
