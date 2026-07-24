@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { ShoppingCart, Package, Zap, Minus, Plus, ChevronRight, FileText } from "lucide-react";
+import { ShoppingCart, Package, Zap, Minus, Plus, ChevronRight, FileText, Phone, MessageCircle } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { ProductImage } from "@/components/product-image";
 import { DeliveryInfoBox } from "@/components/delivery-info";
@@ -17,6 +17,7 @@ import { displayPrice, getSellingPrice, priceFmt, useCart, useCustomerTier, type
 import { computeProductPrice, useProductPrice } from "@/hooks/useProductPrice";
 import { triggerAuthPrompt, useSupabaseUser } from "@/lib/auth-sheet";
 import { usePurchaseHistoryForSku } from "@/lib/reorder";
+import { LineQrDialog } from "@/components/line-qr-dialog";
 
 export const Route = createFileRoute("/product/$slug")({
   ssr: false,
@@ -373,6 +374,34 @@ function ProductDetail() {
                         <Zap className="mr-2 h-5 w-5" /> สั่งซื้อทันที
                       </Button>
                     )}
+                  </div>
+
+                  {/* Contact section */}
+                  <div className="mt-4 rounded-2xl border border-green-100 bg-green-50 p-4">
+                    <div className="text-sm font-medium text-gray-600">💬 สอบถามก่อนสั่งซื้อ</div>
+                    <div className="text-xs text-gray-400">ทีมงานพร้อมช่วยเหลือ จ-ศ 9:00-18:00</div>
+                    <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                      <LineQrDialog>
+                        <Button
+                          type="button"
+                          className="w-full gap-1.5 rounded-xl bg-[#06C755] px-4 py-3 font-semibold text-white hover:bg-[#05a548]"
+                        >
+                          <MessageCircle className="h-4 w-4" /> Line: @entgroup
+                        </Button>
+                      </LineQrDialog>
+                      <Button
+                        asChild
+                        variant="outline"
+                        className="w-full gap-1.5 rounded-xl border-gray-200 bg-white px-4 py-3 font-semibold text-gray-700 hover:bg-gray-50"
+                      >
+                        <a href="tel:02-045-6104">
+                          <Phone className="h-4 w-4" /> 02-045-6104
+                        </a>
+                      </Button>
+                    </div>
+                    <div className="mt-2 text-center text-xs text-gray-400">
+                      02-045-6104 · 095-739-1053 · 084-046-1315
+                    </div>
                   </div>
 
                   <ProductTrustBar />
