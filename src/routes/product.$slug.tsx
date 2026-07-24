@@ -9,6 +9,7 @@ import { ShoppingCart, Package, Zap, Minus, Plus, ChevronRight } from "lucide-re
 import { SiteHeader } from "@/components/site-header";
 import { ProductImage } from "@/components/product-image";
 import { DeliveryInfoBox } from "@/components/delivery-info";
+import { StockBadge } from "@/components/stock-badge";
 
 import { displayPrice, getSellingPrice, priceFmt, useCart, useCustomerTier, type PricingProduct } from "@/lib/cart";
 import { computeProductPrice, useProductPrice } from "@/hooks/useProductPrice";
