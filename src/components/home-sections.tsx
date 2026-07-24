@@ -440,8 +440,7 @@ export function ComputerSets() {
         .select("*")
         .eq("category", "Computer Set")
         .eq("price_approved", true).gt("selling_price", 0)
-        .order("selling_price", { ascending: false })
-        .limit(8);
+        .order("selling_price", { ascending: false });
       return (data ?? []) as (ProductRow & { description: string | null })[];
     },
     staleTime: 5 * 60_000,
@@ -453,9 +452,9 @@ export function ComputerSets() {
     <section className="border-b bg-gradient-to-br from-slate-50 to-white">
       <div className="mx-auto max-w-7xl px-4 py-8">
         <SectionHeader
-          title="🖥 Computer Set / คอมพิวเตอร์ชุดประกอบ"
+          title="🖥 Computer Set / ชุดคอมพิวเตอร์"
           en="Computer Sets"
-          sub="Gaming PC และ Workstation พร้อมใช้งาน · ส่งฟรีใน กทม เมื่อซื้อครบ ฿5,000"
+          sub="Gaming PC และ Workstation พร้อมใช้งาน · RTX 5090 / RTX 5070 / RTX 5060 · ส่งฟรีใน กทม เมื่อซื้อครบ ฿5,000"
           link={{ to: "/", search: { category: "Computer Set" }, label: "ดูทั้งหมด" }}
         />
         <div className="-mx-4 overflow-x-auto px-4 pb-2 [scrollbar-width:thin]">
