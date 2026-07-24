@@ -175,7 +175,7 @@ function ProductDetail() {
         .select("*")
         .eq("category", productQ.data!.category!)
         .neq("id", productQ.data!.id)
-        .limit(4);
+        .limit(5);
       if (error) throw error;
       return data ?? [];
     },
@@ -642,15 +642,15 @@ function ProductDetail() {
         {(relatedQ.data?.length ?? 0) > 0 && (
           <div className="mt-10">
             <h2 className="mb-3 text-lg font-bold text-[color:var(--brand-navy)]">สินค้าที่คล้ายกัน</h2>
-            <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
+            <div className="grid grid-cols-3 gap-2 md:grid-cols-5 md:gap-3">
               {relatedQ.data!.map((r) => (
-                <Link key={r.id} to="/product/$slug" params={{ slug: r.slug || r.id }} className="group flex flex-col overflow-hidden rounded-lg border bg-white transition hover:shadow-md">
-                  <div className="grid aspect-square place-items-center bg-white p-2">
-                    <ProductImage src={r.image_url} alt={r.name ?? r.sku} iconClassName="h-16 w-16 text-slate-300"  />
+                <Link key={r.id} to="/product/$slug" params={{ slug: r.slug || r.id }} className="group flex flex-col overflow-hidden rounded-lg border bg-white p-2 transition hover:shadow-sm">
+                  <div className="grid aspect-square max-h-[120px] place-items-center bg-white">
+                    <ProductImage src={r.image_url} alt={r.name ?? r.sku} className="h-[110px] w-full object-contain" iconClassName="h-10 w-10 text-slate-300" />
                   </div>
-                  <div className="border-t p-3">
-                    <div className="line-clamp-2 min-h-10 text-sm font-medium">{r.name ?? r.sku}</div>
-                    <div className="mt-1 text-base font-black text-[color:var(--brand-orange)]">{displayPrice(r as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier)}</div>
+                  <div className="mt-2 flex flex-col">
+                    <div className="text-xs line-clamp-2 min-h-8 font-medium">{r.name ?? r.sku}</div>
+                    <div className="mt-1 text-sm font-bold text-[color:var(--brand-orange)]">{displayPrice(r as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier)}</div>
                   </div>
                 </Link>
               ))}
