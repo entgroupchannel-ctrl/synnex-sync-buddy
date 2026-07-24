@@ -847,6 +847,27 @@ export type Database = {
         }
         Relationships: []
       }
+      rate_limits: {
+        Row: {
+          blocked_until: number | null
+          ip: string
+          requests: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          blocked_until?: number | null
+          ip: string
+          requests?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          blocked_until?: number | null
+          ip?: string
+          requests?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       shipping_events: {
         Row: {
           description: string | null
@@ -1190,6 +1211,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cleanup_rate_limits: { Args: never; Returns: undefined }
       get_product_price: {
         Args: {
           p_b2b_price: number
