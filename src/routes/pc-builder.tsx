@@ -518,7 +518,7 @@ function ProductPicker({
     return () => {
       cancelled = true;
     };
-  }, [step.key]);
+  }, [step.key, cpuBrand, mbBrand, mbSocket, gpuBrand]);
 
   const filtered = useMemo(() => {
     const s = q.trim().toLowerCase();
