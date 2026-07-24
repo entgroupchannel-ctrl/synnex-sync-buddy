@@ -265,16 +265,13 @@ export function SiteFooter() {
 
           {/* Column 3 — Payment */}
           <Column title="วิธีการชำระเงิน / Payment">
-            <div className="grid grid-cols-3 gap-1.5">
+            <div className="grid grid-cols-2 gap-1.5">
               <Badge label="PromptPay" color="#003178" />
               <Badge label="โอนเงิน" color="#0a1628" />
-              <Badge label="COD" color="#f97316" />
               <Badge label="VISA" color="#1A1F71" />
               <Badge label="Mastercard" color="#EB001B" />
-              <Badge label="—" color="#94a3b8" />
               <Badge label="KBank" color="#138f2d" />
               <Badge label="SCB" color="#4E2683" />
-              <Badge label="Bangkok Bank" color="#003B8E" className="col-span-1 whitespace-nowrap text-[10px]" />
             </div>
             <p className="mt-3 text-[11px] text-white/50">
               * บัตรเครดิต/เดบิต เร็วๆ นี้
