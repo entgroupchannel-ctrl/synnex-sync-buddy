@@ -457,8 +457,24 @@ export function SiteFooter() {
       {/* Bottom bar */}
       <div className="bg-[#0a1628] text-white/70">
         <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-4 text-[11px] md:flex-row md:items-center md:justify-between">
-          <div>
-            © {beYear}–{beYear} บริษัท อี เอ็น ที กรุ๊ป จำกัด · เลขประจำตัวผู้เสียภาษี: 0135558013167
+          <div className="space-y-1">
+            <div>
+              © {beYear}–{beYear} บริษัท อี เอ็น ที กรุ๊ป จำกัด · เลขประจำตัวผู้เสียภาษี: 0135558013167
+            </div>
+            <div className="text-emerald-300/90">
+              ✓ จดทะเบียนถูกต้อง เลขทะเบียน 0135558013167
+            </div>
+            <div>
+              ✓ ตรวจสอบได้ที่{" "}
+              <a
+                href="https://www.dbd.go.th"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-[color:var(--brand-green)]"
+              >
+                กรมพัฒนาธุรกิจการค้า
+              </a>
+            </div>
           </div>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
             <Link to="/privacy" className="hover:text-[color:var(--brand-green)]">นโยบายความเป็นส่วนตัว</Link>
