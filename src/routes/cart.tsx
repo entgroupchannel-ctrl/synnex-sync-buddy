@@ -205,6 +205,7 @@ function CartPage() {
               <Button asChild className="mt-4 w-full bg-[color:var(--brand-orange)] hover:bg-[color:var(--brand-orange-dark)]" size="lg">
                 <Link to="/checkout">{t("cart.checkout")}</Link>
               </Button>
+              <CartReassurance />
             </aside>
 
           </div>
