@@ -11,6 +11,7 @@ import {
   Cable, LayoutGrid, ShoppingCart, Truck, Award, FileText, Phone, ArrowRight,
   ChevronLeft, ChevronRight, Mail, Flame, ShieldCheck, Building2, Warehouse, MonitorCog, Sun,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import heroWarehouse from "@/assets/hero-warehouse.jpg";
 import heroEnterprise from "@/assets/hero-enterprise.jpg";
 import heroDelivery from "@/assets/hero-delivery.jpg";
@@ -205,8 +206,13 @@ export function HeroCarousel({ onBrowse, onReady }: { onBrowse: () => void; onRe
 
 /* ---------- Quick category icon grid ---------- */
 
-const QUICK_CATS = [
+type QuickCat =
+  | { icon: LucideIcon; label: string; sub: string; cat: string; brand?: undefined; bg?: undefined; emoji?: undefined }
+  | { emoji: string; label: string; sub: string; brand: string; bg: string; cat?: undefined; icon?: undefined };
+
+const QUICK_CATS: QuickCat[] = [
   { icon: Laptop,     label: "Notebook",     sub: "Notebook",       cat: "Notebook" },
+  { emoji: "",       label: "Apple",         sub: "Apple Products", brand: "APPLE", bg: "#f5f5f7" },
   { icon: Monitor,    label: "Monitor",      sub: "Monitor",        cat: "Monitor" },
   { icon: Printer,    label: "Printer",      sub: "Printer",        cat: "Printer" },
   { icon: Cpu,        label: "PC / Desktop", sub: "PC & Desktop",   cat: "PC" },
@@ -227,16 +233,20 @@ export function QuickCategoryGrid() {
       <div className="mx-auto max-w-7xl px-4 py-6">
         <div className="grid grid-cols-3 gap-3 sm:grid-cols-5 md:gap-4 lg:grid-cols-10">
           {QUICK_CATS.map((c) => {
-            const Icon = c.icon;
+            const isBrand = "brand" in c && c.brand;
+            const search = isBrand ? { brands: c.brand } : { category: c.cat };
             return (
               <Link
                 key={c.label}
                 to="/"
-                search={{ category: c.cat } as never}
+                search={search as never}
                 className="group flex flex-col items-center gap-2 rounded-lg border bg-white p-3 text-center transition hover:-translate-y-0.5 hover:border-[color:var(--brand-green)] hover:shadow-md"
               >
-                <div className="grid h-11 w-11 place-items-center rounded-full bg-slate-50 text-[color:var(--brand-navy)] transition group-hover:bg-[color:var(--brand-green)]/10 group-hover:text-[color:var(--brand-green)]">
-                  <Icon className="h-5 w-5" />
+                <div
+                  className="grid h-11 w-11 place-items-center rounded-full text-[color:var(--brand-navy)] transition group-hover:bg-[color:var(--brand-green)]/10 group-hover:text-[color:var(--brand-green)]"
+                  style={{ background: isBrand ? c.bg : "#f8fafc" }}
+                >
+                  {c.icon ? <c.icon className="h-5 w-5" /> : <span className="text-xl leading-none">{c.emoji}</span>}
                 </div>
                 <div className="text-[12px] font-semibold leading-tight text-slate-800">{c.label}</div>
                 <div className="text-[10px] text-slate-400">{c.sub}</div>
@@ -248,6 +258,7 @@ export function QuickCategoryGrid() {
     </section>
   );
 }
+
 
 /* ---------- Today's Best Deals ---------- */
 

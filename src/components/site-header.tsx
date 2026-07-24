@@ -9,6 +9,7 @@ import { CATEGORIES } from "@/lib/cart";
 import { useSupabaseUser } from "@/lib/auth-sheet";
 import { AddToCartSheet } from "@/components/add-to-cart-sheet";
 import { CartReminderBell } from "@/components/cart-reminder-bell";
+import { AppleMegaMenu } from "@/components/apple-mega-menu";
 import { useLanguage } from "@/lib/i18n";
 import entLogo from "@/assets/entgroup-logo.jpg.asset.json";
 import {
@@ -290,7 +291,7 @@ export function SiteHeader() {
             {NAV_CATS.map((c) => {
               const cat = c === "ทั้งหมด" ? "all" : c;
               const active = pathname === "/" && (typeof window !== "undefined") && new URLSearchParams(window.location.search).get("category") === cat;
-              return (
+              const items: React.ReactNode[] = [
                 <Link
                   key={c}
                   to="/"
@@ -300,11 +301,17 @@ export function SiteHeader() {
                   }`}
                 >
                   {c === "ทั้งหมด" ? t("nav.all") : c}
-                </Link>
-              );
+                </Link>,
+              ];
+              // Insert Apple mega-menu right after "Notebook"
+              if (c === "Notebook") {
+                items.push(<AppleMegaMenu key="apple-nav" />);
+              }
+              return items;
             })}
           </div>
         </nav>
+
       </header>
 
       {menuOpen && (
