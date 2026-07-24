@@ -290,10 +290,20 @@ function ProductDetail() {
                     )}
                     {pr.userType === "guest" && (
                       <div className="mt-2 rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-900">
-                        <div>สมาชิกประหยัด 5% · องค์กร B2B ประหยัด 10%</div>
+                        <div className="font-semibold">🎁 สมาชิก ENT Group รับราคาพิเศษ</div>
                         <Link to="/auth" className="mt-1 inline-block font-bold text-[color:var(--brand-navy)] underline">
-                          สมัครสมาชิกฟรี เพื่อรับราคาพิเศษ →
+                          สมัครฟรี ได้ราคาดีกว่าทันที →
                         </Link>
+                      </div>
+                    )}
+                    {pr.userType === "b2c" && (
+                      <div className="mt-2 text-xs font-semibold text-emerald-700">
+                        ✅ ราคาสมาชิกของคุณ
+                      </div>
+                    )}
+                    {pr.userType === "b2b" && (
+                      <div className="mt-2 text-xs font-semibold text-emerald-700">
+                        ✅ ราคาองค์กรของคุณ
                       </div>
                     )}
                   </div>
