@@ -18,6 +18,7 @@ import { SiteHeader } from "@/components/site-header";
 import { ProductImage } from "@/components/product-image";
 import { SiteFooter } from "@/components/site-footer";
 import { useDynamicSeo, getRobotsForCategory } from "@/lib/dynamic-seo";
+import { DeliveryHint } from "@/components/delivery-info";
 
 
 import { CATEGORIES, detectCategory, displayPrice, getSellingPrice, useCart, useCustomerTier } from "@/lib/cart";
@@ -647,6 +648,7 @@ function HomePage() {
                             </div>
                             {pct > 0 && <div className="text-[10px] text-slate-400 line-through">฿{orig.toLocaleString()}</div>}
                           </div>
+                          <DeliveryHint category={p.category} />
                           <div className="mt-1 font-mono text-[10px] font-bold text-red-600">⏱ {countdown}</div>
                         </div>
                       </Link>
@@ -933,6 +935,7 @@ function HomePage() {
                         <span className="text-sm text-gray-400">ติดต่อสอบถาม</span>
                       )}
                       {byOrder && <div className="text-[11px] text-blue-700">⏱ รับสินค้าภายใน 30 วัน</div>}
+                      {priced && !byOrder && <DeliveryHint category={p.category} />}
                       {priced ? (
                         available ? (
                           <Button onClick={() => addToCart(p as Record<string, unknown>)} className="w-full bg-[color:var(--brand-navy)] hover:bg-[color:var(--brand-navy-2)]" size="sm">
@@ -1013,6 +1016,7 @@ function HomePage() {
                             <span className="text-[11px] text-slate-600">{p.stock_status ?? "—"}</span>
                           </div>
                         )}
+                        {priced && !byOrder && <DeliveryHint category={p.category} />}
                       </div>
                       {priced ? (
                         available ? (

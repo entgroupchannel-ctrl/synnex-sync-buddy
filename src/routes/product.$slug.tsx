@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { ShoppingCart, Package, Zap, Minus, Plus, ChevronRight } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { ProductImage } from "@/components/product-image";
+import { DeliveryInfoBox } from "@/components/delivery-info";
 
 import { displayPrice, getSellingPrice, priceFmt, useCart, useCustomerTier, type PricingProduct } from "@/lib/cart";
 import { computeProductPrice, useProductPrice } from "@/hooks/useProductPrice";
@@ -355,6 +356,8 @@ function ProductDetail() {
                       </Button>
                     )}
                   </div>
+
+                  <DeliveryInfoBox category={p.category} />
 
                   {(() => {
                     const isB2B = tier.startsWith("b2b");
