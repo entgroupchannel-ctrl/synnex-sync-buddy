@@ -37,7 +37,7 @@ export function AppleFeatured() {
         .eq("price_approved", true)
         .gt("selling_price", 0)
         .order("selling_price", { ascending: false })
-        .limit(8);
+        .limit(10);
       return (data ?? []) as Row[];
     },
     staleTime: 5 * 60_000,
@@ -90,8 +90,8 @@ export function AppleFeatured() {
         </div>
 
         {q.isLoading ? (
-          <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
-            {Array.from({ length: 4 }).map((_, i) => (
+          <div className="grid grid-cols-2 gap-2 md:grid-cols-3 md:gap-3 lg:grid-cols-5 lg:gap-3">
+            {Array.from({ length: 5 }).map((_, i) => (
               <div key={i} className="h-72 animate-pulse rounded-xl bg-white/70" />
             ))}
           </div>
@@ -100,7 +100,7 @@ export function AppleFeatured() {
             ยังไม่มีสินค้า {active.label} ในสต๊อก
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-2 md:grid-cols-3 md:gap-3 lg:grid-cols-5 lg:gap-3">
             {products.map((p) => {
               const slug = p.slug || p.id;
               const price = getSellingPrice(p, tier);
@@ -110,22 +110,22 @@ export function AppleFeatured() {
                   key={p.id}
                   to="/product/$slug"
                   params={{ slug }}
-                  className="group relative overflow-hidden rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100 transition hover:shadow-md"
+                  className="group relative overflow-hidden rounded-2xl bg-white p-3 shadow-sm ring-1 ring-slate-100 transition hover:shadow-md"
                 >
                   <div className="absolute right-2 top-2 rounded-full bg-[#1d1d1f] px-2 py-0.5 text-[10px] font-semibold text-white">
                     🍎 ของแท้ 100%
                   </div>
-                  <div className="mb-3 grid aspect-square place-items-center overflow-hidden rounded-xl">
+                  <div className="mb-2 grid aspect-square place-items-center overflow-hidden rounded-xl">
                     <ProductImage
                       src={p.image_url}
                       alt={p.name ?? p.sku}
                       className="max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-[1.03]"
                     />
                   </div>
-                  <div className="line-clamp-2 min-h-10 text-sm font-semibold text-[#1d1d1f]">
+                  <div className="line-clamp-2 min-h-10 text-xs font-semibold text-[#1d1d1f]">
                     {p.name ?? p.sku}
                   </div>
-                  <div className="mt-2 text-lg font-bold text-[#1d4ed8]" style={{ letterSpacing: "-0.01em" }}>
+                  <div className="mt-2 text-base font-bold text-[#1d4ed8]" style={{ letterSpacing: "-0.01em" }}>
                     {price != null ? priceFmt.format(price) : "—"}
                   </div>
                   {orig != null && price != null && orig > price && (
