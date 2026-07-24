@@ -119,7 +119,7 @@ export function SiteHeader() {
                 <DropdownMenuItem asChild><Link to="/my-account/orders"><Package className="mr-2 h-4 w-4" /> {t("nav.orders")}</Link></DropdownMenuItem>
                 <DropdownMenuItem asChild><Link to="/my-account/profile"><User className="mr-2 h-4 w-4" /> {t("nav.profile")}</Link></DropdownMenuItem>
                 <DropdownMenuItem asChild><Link to="/my-account/addresses"><MapPin className="mr-2 h-4 w-4" /> {t("nav.addresses")}</Link></DropdownMenuItem>
-                <DropdownMenuItem onSelect={() => navigate({ to: "/admin" })}><Building2 className="mr-2 h-4 w-4" /> Admin</DropdownMenuItem>
+                <DropdownMenuItem asChild><Link to="/admin"><Building2 className="mr-2 h-4 w-4" /> Admin</Link></DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onSelect={signOut}><LogOut className="mr-2 h-4 w-4" /> {t("nav.signout")}</DropdownMenuItem>
               </DropdownMenuContent>
