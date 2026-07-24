@@ -336,6 +336,25 @@ function HomePage() {
         </div>
       </div>
 
+      <div>
+        <div className="mb-2 text-sm font-bold text-[color:var(--brand-navy)]">รูปแบบสินค้า</div>
+        <div className="flex flex-wrap gap-1.5">
+          {([
+            { v: "all", label: "ทั้งหมด" },
+            { v: "stock", label: "พร้อมส่ง" },
+            { v: "by_order", label: "📋 By Order" },
+          ] as const).map((o) => (
+            <button
+              key={o.v}
+              onClick={() => update({ fulfill: o.v })}
+              className={`rounded-full border px-3 py-1 text-xs ${search.fulfill === o.v ? "border-[color:var(--brand-navy)] bg-[color:var(--brand-navy)] text-white" : "bg-white hover:bg-slate-50"}`}
+            >
+              {o.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <label className="flex items-center gap-2 text-sm">
         <Switch checked={search.ready} onCheckedChange={(v) => update({ ready: v })} />
         พร้อมจัดส่งเท่านั้น
