@@ -530,6 +530,167 @@ export type Database = {
           },
         ]
       }
+      pc_builder_quotes: {
+        Row: {
+          admin_note: string | null
+          cpu_id: string | null
+          cpu_name: string | null
+          cpu_price: number | null
+          created_at: string | null
+          customer_email: string
+          customer_name: string
+          customer_phone: string
+          gpu_id: string | null
+          gpu_name: string | null
+          gpu_price: number | null
+          id: string
+          mb_id: string | null
+          mb_name: string | null
+          mb_price: number | null
+          note: string | null
+          os_id: string | null
+          os_name: string | null
+          os_price: number | null
+          psu_case_id: string | null
+          psu_case_name: string | null
+          psu_case_price: number | null
+          quote_number: string | null
+          ram_id: string | null
+          ram_name: string | null
+          ram_price: number | null
+          software_ids: Json | null
+          software_names: string | null
+          software_price: number | null
+          ssd_id: string | null
+          ssd_name: string | null
+          ssd_price: number | null
+          status: string | null
+          total_price: number | null
+        }
+        Insert: {
+          admin_note?: string | null
+          cpu_id?: string | null
+          cpu_name?: string | null
+          cpu_price?: number | null
+          created_at?: string | null
+          customer_email: string
+          customer_name: string
+          customer_phone: string
+          gpu_id?: string | null
+          gpu_name?: string | null
+          gpu_price?: number | null
+          id?: string
+          mb_id?: string | null
+          mb_name?: string | null
+          mb_price?: number | null
+          note?: string | null
+          os_id?: string | null
+          os_name?: string | null
+          os_price?: number | null
+          psu_case_id?: string | null
+          psu_case_name?: string | null
+          psu_case_price?: number | null
+          quote_number?: string | null
+          ram_id?: string | null
+          ram_name?: string | null
+          ram_price?: number | null
+          software_ids?: Json | null
+          software_names?: string | null
+          software_price?: number | null
+          ssd_id?: string | null
+          ssd_name?: string | null
+          ssd_price?: number | null
+          status?: string | null
+          total_price?: number | null
+        }
+        Update: {
+          admin_note?: string | null
+          cpu_id?: string | null
+          cpu_name?: string | null
+          cpu_price?: number | null
+          created_at?: string | null
+          customer_email?: string
+          customer_name?: string
+          customer_phone?: string
+          gpu_id?: string | null
+          gpu_name?: string | null
+          gpu_price?: number | null
+          id?: string
+          mb_id?: string | null
+          mb_name?: string | null
+          mb_price?: number | null
+          note?: string | null
+          os_id?: string | null
+          os_name?: string | null
+          os_price?: number | null
+          psu_case_id?: string | null
+          psu_case_name?: string | null
+          psu_case_price?: number | null
+          quote_number?: string | null
+          ram_id?: string | null
+          ram_name?: string | null
+          ram_price?: number | null
+          software_ids?: Json | null
+          software_names?: string | null
+          software_price?: number | null
+          ssd_id?: string | null
+          ssd_name?: string | null
+          ssd_price?: number | null
+          status?: string | null
+          total_price?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pc_builder_quotes_cpu_id_fkey"
+            columns: ["cpu_id"]
+            isOneToOne: false
+            referencedRelation: "synnex_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pc_builder_quotes_gpu_id_fkey"
+            columns: ["gpu_id"]
+            isOneToOne: false
+            referencedRelation: "synnex_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pc_builder_quotes_mb_id_fkey"
+            columns: ["mb_id"]
+            isOneToOne: false
+            referencedRelation: "synnex_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pc_builder_quotes_os_id_fkey"
+            columns: ["os_id"]
+            isOneToOne: false
+            referencedRelation: "synnex_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pc_builder_quotes_psu_case_id_fkey"
+            columns: ["psu_case_id"]
+            isOneToOne: false
+            referencedRelation: "synnex_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pc_builder_quotes_ram_id_fkey"
+            columns: ["ram_id"]
+            isOneToOne: false
+            referencedRelation: "synnex_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pc_builder_quotes_ssd_id_fkey"
+            columns: ["ssd_id"]
+            isOneToOne: false
+            referencedRelation: "synnex_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       price_audit_log: {
         Row: {
           action: string | null

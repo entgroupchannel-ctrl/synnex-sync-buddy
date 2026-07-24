@@ -862,44 +862,74 @@ function QuotationDialog({
       toast.error("กรุณากรอกชื่อ อีเมล และเบอร์โทร");
       return;
     }
-    const picked = STEPS.map((s) => ({ step: s, p: selected[s.key] })).filter(
-      (x) => x.p,
-    ) as { step: StepDef; p: Product }[];
-    if (picked.length === 0) {
+    const anyPicked = STEPS.some((s) => selected[s.key]);
+    if (!anyPicked) {
       toast.error("กรุณาเลือกชิ้นส่วนอย่างน้อย 1 ชิ้น");
       return;
     }
     setSubmitting(true);
-    const { data: userRes } = await supabase.auth.getUser();
-    const items = picked.map(({ step, p }) => ({
-      step: step.key,
-      step_label: step.short,
-      product_id: p.id,
-      sku: p.sku,
-      name: p.name,
-      brand: p.brand,
-      price: priceOf(p),
-    }));
-    const { error } = await supabase.from("quotation_requests").insert({
-      user_id: userRes.user?.id ?? null,
-      contact_name: name.trim(),
-      email: email.trim(),
-      phone: phone.trim(),
-      notes: notes.trim() || null,
-      items,
+    const pick = (k: StepKey) => selected[k];
+    const payload = {
+      customer_name: name.trim(),
+      customer_email: email.trim(),
+      customer_phone: phone.trim(),
+      note: notes.trim() || null,
+      cpu_id: pick("cpu")?.id ?? null,
+      cpu_name: pick("cpu")?.name ?? null,
+      cpu_price: priceOf(pick("cpu")) || 0,
+      mb_id: pick("mb")?.id ?? null,
+      mb_name: pick("mb")?.name ?? null,
+      mb_price: priceOf(pick("mb")) || 0,
+      ram_id: pick("ram")?.id ?? null,
+      ram_name: pick("ram")?.name ?? null,
+      ram_price: priceOf(pick("ram")) || 0,
+      ssd_id: pick("ssd")?.id ?? null,
+      ssd_name: pick("ssd")?.name ?? null,
+      ssd_price: priceOf(pick("ssd")) || 0,
+      os_id: pick("os")?.id ?? null,
+      os_name: pick("os")?.name ?? null,
+      os_price: priceOf(pick("os")) || 0,
+      gpu_id: pick("gpu")?.id ?? null,
+      gpu_name: pick("gpu")?.name ?? null,
+      gpu_price: priceOf(pick("gpu")) || 0,
+      psu_case_id: pick("psu")?.id ?? null,
+      psu_case_name: pick("psu")?.name ?? null,
+      psu_case_price: priceOf(pick("psu")) || 0,
+      total_price: total,
       status: "pending",
-    });
-    setSubmitting(false);
+    };
+    const { data: quote, error } = await supabase
+      .from("pc_builder_quotes")
+      .insert(payload)
+      .select("quote_number")
+      .single();
     if (error) {
-      toast.error("ส่งคำขอไม่สำเร็จ: " + error.message);
+      setSubmitting(false);
+      toast.error("เกิดข้อผิดพลาด กรุณาลองใหม่");
       return;
     }
-    toast.success("ส่งคำขอใบเสนอราคาเรียบร้อย ทีมงานจะติดต่อกลับโดยเร็ว");
+    toast.success(
+      `✅ ส่งคำขอสำเร็จ! เลขที่ใบเสนอราคา: ${quote?.quote_number}\nทีมงานจะติดต่อกลับภายใน 1 วันทำการ`,
+    );
     onOpenChange(false);
     setName("");
     setEmail("");
     setPhone("");
     setNotes("");
+    setSubmitting(false);
+    supabase.functions
+      .invoke("send-quote-notification", {
+        body: {
+          quote_number: quote?.quote_number,
+          customer_name: payload.customer_name,
+          customer_email: payload.customer_email,
+          customer_phone: payload.customer_phone,
+          components: selected,
+          total_price: total,
+          note: payload.note,
+        },
+      })
+      .catch(() => {});
   };
 
   return (
