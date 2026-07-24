@@ -208,6 +208,45 @@ function ProductDetail() {
                       <Zap className="mr-2 h-5 w-5" /> สั่งซื้อทันที
                     </Button>
                   </div>
+
+                  {(() => {
+                    const isB2B = tier.startsWith("b2b");
+                    const shouldShow = isB2B || (historyQ.data?.count ?? 0) >= 3;
+                    if (!shouldShow) return null;
+                    const tiers = [
+                      { label: "1–2 ชิ้น", qty: 1, pct: 0 },
+                      { label: "3–4 ชิ้น", qty: 3, pct: 2 },
+                      { label: "5–9 ชิ้น", qty: 5, pct: 4 },
+                      { label: "10+ ชิ้น", qty: 10, pct: 7 },
+                    ];
+                    return (
+                      <div className="mt-5 rounded-lg border border-emerald-200 bg-emerald-50/40 p-3">
+                        <h4 className="mb-2 text-sm font-bold text-emerald-900">ส่วนลดตามจำนวน / Volume Discount</h4>
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="text-left text-xs text-emerald-800">
+                              <th className="py-1 font-medium">จำนวน</th>
+                              <th className="py-1 font-medium">ราคา/ชิ้น</th>
+                              <th className="py-1 text-right font-medium">ประหยัด</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {tiers.map((t) => {
+                              const row = computeProductPrice(p as PricingProduct, tier, t.qty);
+                              const active = qty >= t.qty && (t === tiers[tiers.length - 1] || qty < tiers[tiers.indexOf(t) + 1].qty);
+                              return (
+                                <tr key={t.qty} className={active ? "bg-emerald-100 font-semibold" : ""}>
+                                  <td className="py-1">{t.label}</td>
+                                  <td className="py-1">฿{row.displayPrice.toLocaleString("th-TH")}</td>
+                                  <td className="py-1 text-right text-emerald-700">{t.pct > 0 ? `−${t.pct}%` : "—"}</td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    );
+                  })()}
                   {user && (historyQ.data?.count ?? 0) > 0 && (
                     <div className="mt-3 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-900">
                       คุณเคยซื้อสินค้านี้ <b>{historyQ.data!.count}</b> ครั้ง
