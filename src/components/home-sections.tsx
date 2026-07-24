@@ -11,7 +11,7 @@ import {
   Cable, LayoutGrid, ShoppingCart, Truck, Award, FileText, Phone, ArrowRight,
   ChevronLeft, ChevronRight, Mail, Flame,
 } from "lucide-react";
-import { displayPrice, getSellingPrice } from "@/lib/cart";
+import { displayPrice, getSellingPrice, useCustomerTier } from "@/lib/cart";
 import { triggerAuthPrompt, useSupabaseUser } from "@/lib/auth-sheet";
 import { useCart } from "@/lib/cart";
 import { useLanguage } from "@/lib/i18n";
@@ -173,13 +173,14 @@ type ProductRow = Record<string, unknown> & {
 };
 
 function useAddToCart() {
+  const tier = useCustomerTier();
   const { add } = useCart();
   const { user } = useSupabaseUser();
   return (p: ProductRow) => {
     const name = p.name ?? p.sku;
     add({
       id: p.id, sku: p.sku, slug: p.slug, name,
-      price: getSellingPrice(p) ?? 0,
+      price: getSellingPrice(p, tier) ?? 0,
       image_url: p.image_url, distributor: p.distributor,
     });
     if (!user) triggerAuthPrompt({ name, sku: p.sku, image_url: p.image_url });
