@@ -1,0 +1,27 @@
+import ACER from "@/assets/brands/ACER.png.asset.json";
+import ASUS from "@/assets/brands/ASUS.png.asset.json";
+import CANON from "@/assets/brands/CANON.png.asset.json";
+import DAHUA from "@/assets/brands/DAHUA.png.asset.json";
+import HIKVISION from "@/assets/brands/HIKVISION.png.asset.json";
+import HP from "@/assets/brands/HPI.png.asset.json";
+import KINGSTON from "@/assets/brands/KINGSTON.png.asset.json";
+import LENOVO from "@/assets/brands/LENOVO.png.asset.json";
+import LOGITECH from "@/assets/brands/LOGITECH.png.asset.json";
+
+export const BRAND_LOGO_URLS: Record<string, string> = {
+  ACER: ACER.url,
+  ASUS: ASUS.url,
+  CANON: CANON.url,
+  DAHUA: DAHUA.url,
+  HIKVISION: HIKVISION.url,
+  HP: HP.url,
+  HPI: HP.url,
+  KINGSTON: KINGSTON.url,
+  LENOVO: LENOVO.url,
+  LOGITECH: LOGITECH.url,
+};
+
+export function getBrandLogoUrl(brand: string | null | undefined): string | null {
+  if (!brand) return null;
+  return BRAND_LOGO_URLS[brand.trim().toUpperCase()] ?? null;
+}
