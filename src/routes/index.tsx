@@ -63,6 +63,25 @@ export const Route = createFileRoute("/")({
 const PAGE_SIZE = 24;
 const PRICE_MAX = 100000;
 
+type ProductRow = {
+  id: string;
+  sku: string;
+  slug: string | null;
+  name: string | null;
+  brand: string | null;
+  category: string | null;
+  description: string | null;
+  image_url: string | null;
+  price: number | null;
+  selling_price: number | null;
+  member_price: number | null;
+  b2b_price: number | null;
+  price_approved: boolean | null;
+  stock_status: string | null;
+  stock_qty: number | null;
+  distributor: string | null;
+};
+
 function useCountdown() {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
@@ -130,6 +149,8 @@ function HomePage() {
         .from("synnex_products")
         .select("*")
         .eq("stock_status", "พร้อมจัดส่ง")
+        .eq("price_approved", true)
+        .gt("selling_price", 0)
         .not("image_url", "is", null)
         .not("price", "is", null)
         .order("price", { ascending: false })
@@ -144,21 +165,51 @@ function HomePage() {
     queryFn: async () => {
       const from = (search.page - 1) * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
-      let q = supabase.from("synnex_products").select("*", { count: "exact" }).range(from, to);
       const s = search.q.trim().replace(/[%,]/g, "");
-      if (s) q = q.or(`name.ilike.%${s}%,sku.ilike.%${s}%`);
-      if (search.category !== "all") q = q.eq("category", search.category);
-      if (selectedBrands.length > 0) q = q.in("brand", selectedBrands);
-      if (search.ready) q = q.eq("stock_status", "พร้อมจัดส่ง");
-      if (search.min > 0) q = q.gte("price", search.min);
-      if (search.max < PRICE_MAX) q = q.lte("price", search.max);
-      if (search.sort === "price-asc") q = q.order("price", { ascending: true, nullsFirst: false });
-      else if (search.sort === "price-desc") q = q.order("price", { ascending: false, nullsFirst: false });
-      else if (search.sort === "popular") q = q.order("name", { ascending: true });
-      else q = q.order("synced_at", { ascending: false });
-      const { data, error, count } = await q;
-      if (error) throw error;
-      return { rows: data ?? [], count: count ?? 0 };
+      type AnyQ = { eq: (...a: unknown[]) => AnyQ; neq: (...a: unknown[]) => AnyQ; gt: (...a: unknown[]) => AnyQ; gte: (...a: unknown[]) => AnyQ; lte: (...a: unknown[]) => AnyQ; in: (...a: unknown[]) => AnyQ; or: (...a: unknown[]) => AnyQ; order: (...a: unknown[]) => AnyQ; range: (...a: unknown[]) => AnyQ };
+      const applyCommon = (qi: unknown): AnyQ => {
+        let q = qi as AnyQ;
+        q = q.eq("price_approved", true).gt("selling_price", 0);
+        if (s) q = q.or(`name.ilike.%${s}%,sku.ilike.%${s}%`);
+        if (search.category !== "all") q = q.eq("category", search.category);
+        if (selectedBrands.length > 0) q = q.in("brand", selectedBrands);
+        if (search.min > 0) q = q.gte("price", search.min);
+        if (search.max < PRICE_MAX) q = q.lte("price", search.max);
+        if (search.sort === "price-asc") q = q.order("price", { ascending: true, nullsFirst: false });
+        else if (search.sort === "price-desc") q = q.order("price", { ascending: false, nullsFirst: false });
+        else if (search.sort === "popular") q = q.order("name", { ascending: true });
+        else q = q.order("synced_at", { ascending: false });
+        return q;
+      };
+      type Result = { data: Record<string, unknown>[] | null; error: unknown; count: number | null };
+
+      if (search.ready) {
+        const base = supabase.from("synnex_products").select("*", { count: "exact" });
+        const q = applyCommon(base).eq("stock_status", "พร้อมจัดส่ง").range(from, to);
+        const { data, error, count } = await (q as unknown as Promise<Result>);
+        if (error) throw error;
+        return { rows: (data ?? []) as ProductRow[], count: count ?? 0 };
+      }
+
+      const inCountRes = await (applyCommon(supabase.from("synnex_products").select("*", { count: "exact", head: true })).neq("stock_status", "สินค้าหมด") as unknown as Promise<Result>);
+      const outCountRes = await (applyCommon(supabase.from("synnex_products").select("*", { count: "exact", head: true })).eq("stock_status", "สินค้าหมด") as unknown as Promise<Result>);
+      const inCount = inCountRes.count ?? 0;
+      const outCount = outCountRes.count ?? 0;
+      const rows: Record<string, unknown>[] = [];
+      if (from < inCount) {
+        const inTo = Math.min(to, inCount - 1);
+        const r = await (applyCommon(supabase.from("synnex_products").select("*")).neq("stock_status", "สินค้าหมด").range(from, inTo) as unknown as Promise<Result>);
+        if (r.error) throw r.error;
+        rows.push(...(r.data ?? []));
+      }
+      if (to >= inCount && outCount > 0) {
+        const outFrom = Math.max(0, from - inCount);
+        const outTo = to - inCount;
+        const r = await (applyCommon(supabase.from("synnex_products").select("*")).eq("stock_status", "สินค้าหมด").range(outFrom, outTo) as unknown as Promise<Result>);
+        if (r.error) throw r.error;
+        rows.push(...(r.data ?? []));
+      }
+      return { rows: rows as unknown as ProductRow[], count: inCount + outCount };
     },
   });
 
@@ -186,6 +237,16 @@ function HomePage() {
     } else {
       toast.success(`เพิ่ม ${p.sku} ลงตะกร้าแล้ว`);
     }
+  };
+
+  const notifyMe = (sku: string) => {
+    try {
+      const key = "ent_notify_list";
+      const arr = JSON.parse(localStorage.getItem(key) || "[]") as string[];
+      if (!arr.includes(sku)) arr.push(sku);
+      localStorage.setItem(key, JSON.stringify(arr));
+    } catch { /* noop */ }
+    toast.success(`จะแจ้งเตือนคุณเมื่อ ${sku} กลับมาพร้อมจำหน่าย`);
   };
 
   const Filters = (
@@ -424,9 +485,20 @@ function HomePage() {
                         <span className="text-sm text-gray-400">ติดต่อสอบถาม</span>
                       )}
                       {priced ? (
-                        <Button disabled={!ready} onClick={() => addToCart(p as Record<string, unknown>)} className="w-full bg-[color:var(--brand-navy)] hover:bg-[color:var(--brand-navy-2)]" size="sm">
-                          <ShoppingCart className="mr-1.5 h-4 w-4" /> ใส่ตะกร้า
-                        </Button>
+                        ready ? (
+                          <Button onClick={() => addToCart(p as Record<string, unknown>)} className="w-full bg-[color:var(--brand-navy)] hover:bg-[color:var(--brand-navy-2)]" size="sm">
+                            <ShoppingCart className="mr-1.5 h-4 w-4" /> ใส่ตะกร้า
+                          </Button>
+                        ) : (
+                          <div className="flex w-full flex-col items-end gap-1">
+                            <Button disabled className="w-full cursor-not-allowed bg-slate-300 text-slate-600 hover:bg-slate-300" size="sm">
+                              <ShoppingCart className="mr-1.5 h-4 w-4" /> สินค้าหมด
+                            </Button>
+                            <button onClick={() => notifyMe(p.sku)} className="text-[11px] text-[color:var(--brand-navy)] underline underline-offset-2 hover:text-[color:var(--brand-orange)]">
+                              🔔 แจ้งเตือนเมื่อมีสินค้า
+                            </button>
+                          </div>
+                        )
                       ) : (
                         <Button asChild className="w-full bg-[color:var(--brand-green)] hover:opacity-90" size="sm">
                           <a href="tel:020456104">📞 สอบถามราคา</a>
@@ -447,7 +519,11 @@ function HomePage() {
                 return (
                   <div key={p.id} className="group relative flex flex-col overflow-hidden rounded-lg border bg-white transition hover:shadow-lg">
                     <BrandLogo brand={p.brand} />
-                    {lowStock && (
+                    {!ready ? (
+                      <div className="absolute right-2 top-2 z-10 rounded bg-red-600 px-2 py-0.5 text-[10px] font-bold text-white shadow-sm">
+                        สินค้าหมด
+                      </div>
+                    ) : lowStock && (
                       <div className="absolute right-2 top-2 z-10 rounded bg-red-500 px-1.5 py-0.5 text-[10px] font-bold text-white shadow-sm">
                         เหลือน้อย
                       </div>
@@ -480,14 +556,24 @@ function HomePage() {
                         </div>
                       </div>
                       {priced ? (
-                        <Button
-                          disabled={!ready}
-                          onClick={() => addToCart(p as Record<string, unknown>)}
-                          className="mt-2 w-full bg-[color:var(--brand-navy)] font-semibold hover:bg-[color:var(--brand-navy-2)]"
-                          size="sm"
-                        >
-                          <ShoppingCart className="mr-1.5 h-4 w-4" /> ใส่ตะกร้า
-                        </Button>
+                        ready ? (
+                          <Button
+                            onClick={() => addToCart(p as Record<string, unknown>)}
+                            className="mt-2 w-full bg-[color:var(--brand-navy)] font-semibold hover:bg-[color:var(--brand-navy-2)]"
+                            size="sm"
+                          >
+                            <ShoppingCart className="mr-1.5 h-4 w-4" /> ใส่ตะกร้า
+                          </Button>
+                        ) : (
+                          <>
+                            <Button disabled className="mt-2 w-full cursor-not-allowed bg-slate-300 font-semibold text-slate-600 hover:bg-slate-300" size="sm">
+                              <ShoppingCart className="mr-1.5 h-4 w-4" /> สินค้าหมด
+                            </Button>
+                            <button onClick={() => notifyMe(p.sku)} className="mt-1 text-center text-[11px] text-[color:var(--brand-navy)] underline underline-offset-2 hover:text-[color:var(--brand-orange)]">
+                              🔔 แจ้งเตือนเมื่อมีสินค้า
+                            </button>
+                          </>
+                        )
                       ) : (
                         <Button asChild className="mt-2 w-full bg-[color:var(--brand-green)] font-semibold hover:opacity-90" size="sm">
                           <a href="tel:020456104">📞 สอบถามราคา</a>

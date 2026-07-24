@@ -277,7 +277,7 @@ export function TodaysBestDeals() {
     queryFn: async () => {
       const { data } = await supabase.from("synnex_products")
         .select("*")
-        .eq("price_approved", true)
+        .eq("price_approved", true).gt("selling_price", 0)
         .gt("selling_price", 0)
         .not("image_url", "is", null)
         .order("created_at", { ascending: false })
@@ -349,7 +349,7 @@ export function PopularNotebooks() {
       const { data } = await supabase.from("synnex_products")
         .select("*")
         .eq("category", "Notebook")
-        .eq("price_approved", true)
+        .eq("price_approved", true).gt("selling_price", 0)
         .gt("selling_price", 0)
         .not("image_url", "is", null)
         .order("selling_price", { ascending: false })
