@@ -243,6 +243,7 @@ function HomePage() {
     () => search.brands ? search.brands.split(",").filter(Boolean) : [],
     [search.brands]
   );
+  const isAppleOnly = selectedBrands.length === 1 && selectedBrands[0] === "APPLE";
 
   const update = (patch: Record<string, unknown>) => {
     navigate({ to: "/", search: (p: Record<string, unknown>) => ({ ...p, ...patch, page: 1 }) });
