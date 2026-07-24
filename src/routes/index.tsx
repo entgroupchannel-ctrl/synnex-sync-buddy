@@ -237,6 +237,16 @@ function HomePage() {
     }
   };
 
+  const notifyMe = (sku: string) => {
+    try {
+      const key = "ent_notify_list";
+      const arr = JSON.parse(localStorage.getItem(key) || "[]") as string[];
+      if (!arr.includes(sku)) arr.push(sku);
+      localStorage.setItem(key, JSON.stringify(arr));
+    } catch { /* noop */ }
+    toast.success(`จะแจ้งเตือนคุณเมื่อ ${sku} กลับมาพร้อมจำหน่าย`);
+  };
+
   const Filters = (
     <div className="space-y-6">
       <div>
