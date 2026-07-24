@@ -543,6 +543,60 @@ function ProductPicker({
         />
       </div>
 
+      {step.key === "cpu" && (
+        <FilterTabs
+          className="mb-2"
+          value={cpuBrand}
+          onChange={(v) => setCpuBrand(v as typeof cpuBrand)}
+          options={[
+            { value: "all", label: "ทั้งหมด" },
+            { value: "intel", label: "🔵 Intel" },
+            { value: "amd", label: "🔴 AMD" },
+          ]}
+        />
+      )}
+
+      {step.key === "mb" && (
+        <>
+          <FilterTabs
+            className="mb-2"
+            value={mbBrand}
+            onChange={(v) => setMbBrand(v as typeof mbBrand)}
+            options={[
+              { value: "all", label: "ทั้งหมด" },
+              { value: "asus", label: "ASUS" },
+              { value: "gigabyte", label: "GIGABYTE" },
+              { value: "msi", label: "MSI" },
+              { value: "asrock", label: "ASRock" },
+            ]}
+          />
+          <FilterTabs
+            className="mb-2"
+            value={mbSocket}
+            onChange={(v) => setMbSocket(v as typeof mbSocket)}
+            options={[
+              { value: "all", label: "ทั้งหมด" },
+              { value: "am5", label: "AM5 (AMD)" },
+              { value: "lga1851", label: "LGA1851 (Intel)" },
+              { value: "lga1700", label: "LGA1700 (Intel)" },
+            ]}
+          />
+        </>
+      )}
+
+      {step.key === "gpu" && (
+        <FilterTabs
+          className="mb-2"
+          value={gpuBrand}
+          onChange={(v) => setGpuBrand(v as typeof gpuBrand)}
+          options={[
+            { value: "all", label: "ทั้งหมด" },
+            { value: "nvidia", label: "🟢 NVIDIA RTX" },
+            { value: "amd", label: "🔴 AMD RX" },
+          ]}
+        />
+      )}
+
       {loading ? (
         <div className="py-10 text-center text-sm text-slate-500">กำลังโหลด...</div>
       ) : filtered.length === 0 ? (
