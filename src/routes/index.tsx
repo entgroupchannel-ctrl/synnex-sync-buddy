@@ -201,19 +201,39 @@ function HomePage() {
 
   useEffect(() => { setSearchInput(search.q); }, [search.q]);
 
-  // Auto-scroll to product grid when filters/search change (skip initial mount)
+  // On filter/search change: brand-only changes smooth-scroll to grid;
+  // category or query changes jump to top instantly (feels like a new page).
   const filterKey = `${search.q}|${search.category}|${search.brands}`;
-  const filterMounted = useMemo(() => ({ v: false }), []);
+  const filterMounted = useMemo(() => ({ v: false, prevCat: search.category, prevQ: search.q, prevBrands: search.brands }), []);
   useEffect(() => {
-    if (!filterMounted.v) { filterMounted.v = true; return; }
-    const t = setTimeout(() => {
-      const el = document.getElementById("product-grid");
-      if (!el) return;
-      const headerHeight = window.innerWidth < 768 ? 60 : 120;
-      const top = el.getBoundingClientRect().top + window.scrollY - headerHeight;
-      window.scrollTo({ top, behavior: "smooth" });
-    }, 300);
-    return () => clearTimeout(t);
+    if (!filterMounted.v) {
+      filterMounted.v = true;
+      filterMounted.prevCat = search.category;
+      filterMounted.prevQ = search.q;
+      filterMounted.prevBrands = search.brands;
+      return;
+    }
+    const catChanged = filterMounted.prevCat !== search.category;
+    const qChanged = filterMounted.prevQ !== search.q;
+    const brandsChanged = filterMounted.prevBrands !== search.brands;
+    filterMounted.prevCat = search.category;
+    filterMounted.prevQ = search.q;
+    filterMounted.prevBrands = search.brands;
+
+    if (catChanged || qChanged) {
+      window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+      return;
+    }
+    if (brandsChanged) {
+      const t = setTimeout(() => {
+        const el = document.getElementById("product-grid");
+        if (!el) return;
+        const headerHeight = window.innerWidth < 768 ? 60 : 120;
+        const top = el.getBoundingClientRect().top + window.scrollY - headerHeight;
+        window.scrollTo({ top, behavior: "smooth" });
+      }, 300);
+      return () => clearTimeout(t);
+    }
   }, [filterKey]); // eslint-disable-line
 
   const selectedBrands = useMemo(
@@ -221,22 +241,10 @@ function HomePage() {
     [search.brands]
   );
 
-  const scrollToGrid = () => {
-    setTimeout(() => {
-      const el = document.getElementById("product-grid");
-      if (!el) return;
-      const headerHeight = window.innerWidth < 768 ? 60 : 120;
-      const top = el.getBoundingClientRect().top + window.scrollY - headerHeight;
-      window.scrollTo({ top, behavior: "smooth" });
-    }, 300);
+  const update = (patch: Record<string, unknown>) => {
+    navigate({ to: "/", search: (p: Record<string, unknown>) => ({ ...p, ...patch, page: 1 }) });
   };
 
-  const update = (patch: Record<string, unknown>) => {
-    const scrollKeys = ["q", "category", "brands"];
-    const shouldScroll = Object.keys(patch).some((k) => scrollKeys.includes(k));
-    navigate({ to: "/", search: (p: Record<string, unknown>) => ({ ...p, ...patch, page: 1 }) });
-    if (shouldScroll) scrollToGrid();
-  };
 
 
   // Fetch brand list (top 20)
