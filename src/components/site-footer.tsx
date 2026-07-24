@@ -356,7 +356,7 @@ export function SiteFooter() {
 
               <div className="flex items-start gap-2">
                 <Mail className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[color:var(--brand-green)]" />
-                <a href="mailto:Sales@entgroup.co.th" className="hover:text-[color:var(--brand-green)]">Sales@entgroup.co.th</a>
+                <a href="mailto:sales@entgroup.co.th" className="hover:text-[color:var(--brand-green)]">sales@entgroup.co.th</a>
               </div>
 
               <div className="flex items-start gap-2">
