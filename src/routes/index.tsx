@@ -321,6 +321,7 @@ function HomePage() {
       )}
 
       {/* Today's Best Deals */}
+      <FrequentlyBought />
       <TodaysBestDeals />
 
       {/* Popular Notebooks */}
