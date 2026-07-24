@@ -645,17 +645,17 @@ function HomePage() {
             </section>
           )}
 
-          {/* Microsoft Software (featured) */}
+          {/* Software & Licenses */}
           <MicrosoftFeatured />
 
           {/* Computer Sets */}
           <ComputerSets />
 
-          {/* Components (CPU & RAM) */}
-          <ComponentsShowcase />
-
-          {/* Apple MacBook */}
+          {/* Apple Products */}
           <MacBookShowcase />
+
+          {/* Components (CPU & Memory) */}
+          <ComponentsShowcase />
 
           {/* Popular Notebooks */}
           <PopularNotebooks />
