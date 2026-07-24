@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      cart_reminders: {
+        Row: {
+          cart_snapshot: Json
+          cart_total: number | null
+          created_at: string | null
+          customer_email: string
+          id: string
+          recovered: boolean | null
+          recovered_at: string | null
+          reminder_count: number | null
+          reminder_sent_at: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          cart_snapshot: Json
+          cart_total?: number | null
+          created_at?: string | null
+          customer_email: string
+          id?: string
+          recovered?: boolean | null
+          recovered_at?: string | null
+          reminder_count?: number | null
+          reminder_sent_at?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          cart_snapshot?: Json
+          cart_total?: number | null
+          created_at?: string | null
+          customer_email?: string
+          id?: string
+          recovered?: boolean | null
+          recovered_at?: string | null
+          reminder_count?: number | null
+          reminder_sent_at?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       email_logs: {
         Row: {
           created_at: string
@@ -185,7 +227,9 @@ export type Database = {
           customer_name: string | null
           customer_phone: string | null
           customer_type: string | null
+          delivered_at: string | null
           discount: number | null
+          estimated_delivery: string | null
           id: string
           is_guest: boolean | null
           items: Json | null
@@ -197,12 +241,14 @@ export type Database = {
           payment_slip_url: string | null
           payment_status: string
           quotation_url: string | null
+          shipped_at: string | null
           shipping_address: string | null
           shipping_district: string | null
           shipping_fee: number | null
           shipping_name: string | null
           shipping_phone: string | null
           shipping_postcode: string | null
+          shipping_provider: string | null
           shipping_province: string | null
           status: string | null
           subtotal: number | null
@@ -211,6 +257,7 @@ export type Database = {
           tax_invoice_url: string | null
           total: number | null
           tracking_number: string | null
+          tracking_url: string | null
           updated_at: string
           user_id: string | null
         }
@@ -228,7 +275,9 @@ export type Database = {
           customer_name?: string | null
           customer_phone?: string | null
           customer_type?: string | null
+          delivered_at?: string | null
           discount?: number | null
+          estimated_delivery?: string | null
           id?: string
           is_guest?: boolean | null
           items?: Json | null
@@ -240,12 +289,14 @@ export type Database = {
           payment_slip_url?: string | null
           payment_status?: string
           quotation_url?: string | null
+          shipped_at?: string | null
           shipping_address?: string | null
           shipping_district?: string | null
           shipping_fee?: number | null
           shipping_name?: string | null
           shipping_phone?: string | null
           shipping_postcode?: string | null
+          shipping_provider?: string | null
           shipping_province?: string | null
           status?: string | null
           subtotal?: number | null
@@ -254,6 +305,7 @@ export type Database = {
           tax_invoice_url?: string | null
           total?: number | null
           tracking_number?: string | null
+          tracking_url?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -271,7 +323,9 @@ export type Database = {
           customer_name?: string | null
           customer_phone?: string | null
           customer_type?: string | null
+          delivered_at?: string | null
           discount?: number | null
+          estimated_delivery?: string | null
           id?: string
           is_guest?: boolean | null
           items?: Json | null
@@ -283,12 +337,14 @@ export type Database = {
           payment_slip_url?: string | null
           payment_status?: string
           quotation_url?: string | null
+          shipped_at?: string | null
           shipping_address?: string | null
           shipping_district?: string | null
           shipping_fee?: number | null
           shipping_name?: string | null
           shipping_phone?: string | null
           shipping_postcode?: string | null
+          shipping_provider?: string | null
           shipping_province?: string | null
           status?: string | null
           subtotal?: number | null
@@ -297,6 +353,7 @@ export type Database = {
           tax_invoice_url?: string | null
           total?: number | null
           tracking_number?: string | null
+          tracking_url?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -415,6 +472,44 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      shipping_events: {
+        Row: {
+          description: string | null
+          description_en: string | null
+          event_time: string | null
+          id: string
+          location: string | null
+          order_id: string | null
+          status: string | null
+        }
+        Insert: {
+          description?: string | null
+          description_en?: string | null
+          event_time?: string | null
+          id?: string
+          location?: string | null
+          order_id?: string | null
+          status?: string | null
+        }
+        Update: {
+          description?: string | null
+          description_en?: string | null
+          event_time?: string | null
+          id?: string
+          location?: string | null
+          order_id?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shipping_events_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       sync_logs: {
         Row: {
