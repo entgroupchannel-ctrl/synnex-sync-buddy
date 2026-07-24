@@ -854,8 +854,22 @@ function QuotationDialog({
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [lineId, setLineId] = useState("");
+  const [availableTime, setAvailableTime] = useState<string[]>([]);
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
+
+  const TIME_SLOTS = [
+    { v: "09:00-12:00", label: "🕘 09:00-12:00" },
+    { v: "12:00-14:00", label: "🕐 12:00-14:00" },
+    { v: "14:00-17:00", label: "🕑 14:00-17:00" },
+    { v: "17:00-19:00", label: "🕔 17:00-19:00" },
+    { v: "นัดหมายล่วงหน้า", label: "📅 นัดหมายล่วงหน้า" },
+  ];
+  const toggleTime = (v: string) =>
+    setAvailableTime((prev) =>
+      prev.includes(v) ? prev.filter((x) => x !== v) : [...prev, v],
+    );
 
   const submit = async () => {
     if (!name.trim() || !email.trim() || !phone.trim()) {
