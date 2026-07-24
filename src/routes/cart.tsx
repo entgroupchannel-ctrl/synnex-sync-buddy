@@ -123,7 +123,7 @@ function CartPage() {
                     </Link>
                     {itemByOrder && (
                       <div className="mt-1 inline-flex items-center gap-1 rounded bg-blue-100 px-2 py-0.5 text-[11px] font-medium text-blue-800">
-                        📋 สินค้านี้ใช้เวลา 30 วัน
+                        <ClipboardList className="h-3 w-3" /> สินค้านี้ใช้เวลา 30 วัน
                       </div>
                     )}
                     <div className="mt-2 flex items-center gap-3">
