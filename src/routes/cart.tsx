@@ -30,6 +30,20 @@ export const Route = createFileRoute("/cart")({
 
 type RecentItem = { sku: string; name: string; image?: string | null; price?: number | null; slug?: string | null };
 
+const safeDisplaySku = (sku: string | null | undefined): string | null => {
+  if (!sku) return null;
+  try {
+    const decoded = decodeURIComponent(sku);
+    if (decoded.includes("%")) return null;
+    if (decoded.length > 80) return null;
+    if (/^(Computer Set|CPU |MAINBOARD |Advice |ADVICE )/i.test(decoded)) return null;
+    return decoded;
+  } catch {
+    return null;
+  }
+};
+
+
 function CartPage() {
   const { items, setQty, remove, total } = useCart();
   const navigate = useNavigate();
@@ -106,13 +120,7 @@ function CartPage() {
               )}
               {items.map((it) => {
                 const itemByOrder = fulfillMap[it.sku] === "by_order";
-                const decodedSku = (() => {
-                  try {
-                    const decoded = decodeURIComponent(it.sku || '');
-                    if (decoded.includes('%') || decoded.length > 60) return null;
-                    return decoded;
-                  } catch { return null; }
-                })();
+                const displaySku = safeDisplaySku(it.sku);
                 return (
                 <div key={it.id} className="flex max-w-full gap-4 rounded-lg border bg-white p-4">
                   <div className="grid h-24 w-24 shrink-0 place-items-center rounded-md bg-slate-50">
@@ -120,18 +128,17 @@ function CartPage() {
 
                   </div>
                   <div className="min-w-0 flex-1 max-w-full">
-                    {decodedSku && (
-                      <div className="text-xs text-slate-400 truncate max-w-full">
-                        {decodedSku}
-                      </div>
+                    {displaySku && (
+                      <p className="text-xs text-slate-400 truncate">{displaySku}</p>
                     )}
                     <Link
                       to="/product/$slug"
                       params={{ slug: it.slug || it.id }}
-                      className="text-sm font-semibold break-words line-clamp-2 max-w-full hover:text-[color:var(--brand-navy)]"
+                      className="text-sm font-semibold break-words max-w-full hover:text-[color:var(--brand-navy)]"
                     >
                       {it.name}
                     </Link>
+
                     {itemByOrder && (
                       <div className="mt-1 inline-flex items-center gap-1 rounded bg-blue-100 px-2 py-0.5 text-[11px] font-medium text-blue-800">
                         <ClipboardList className="h-3 w-3" /> สินค้านี้ใช้เวลา 30 วัน
