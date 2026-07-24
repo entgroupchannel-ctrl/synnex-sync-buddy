@@ -11,6 +11,7 @@ import {
   Cable, LayoutGrid, ShoppingCart, Truck, Award, FileText, Phone, ArrowRight,
   ChevronLeft, ChevronRight, Mail, Flame, ShieldCheck, Building2, Warehouse, MonitorCog, Sun,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import heroWarehouse from "@/assets/hero-warehouse.jpg";
 import heroEnterprise from "@/assets/hero-enterprise.jpg";
 import heroDelivery from "@/assets/hero-delivery.jpg";
