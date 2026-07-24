@@ -12,6 +12,7 @@ import { useLanguage } from "@/lib/i18n";
 import { useSupabaseUser } from "@/lib/auth-sheet";
 import { saveCartReminder, deleteCartReminder } from "@/lib/cart-reminder";
 import { getWeightBasedShippingFee } from "@/lib/shipping";
+import { CartReassurance } from "@/components/trust-signals";
 
 
 export const Route = createFileRoute("/cart")({
