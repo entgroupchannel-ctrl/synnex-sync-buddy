@@ -280,7 +280,7 @@ function HomePage() {
         .not("image_url", "is", null)
         .not("price", "is", null)
         .order("price", { ascending: false })
-        .limit(8);
+        .limit(10);
       return data ?? [];
     },
     staleTime: 5 * 60_000,
@@ -843,7 +843,7 @@ function HomePage() {
           )}
 
           {productsQuery.isLoading ? (
-            <div className={search.view === "list" ? "space-y-3" : "grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-3 xl:grid-cols-4"}>
+            <div className={search.view === "list" ? "space-y-3" : "grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-5 lg:gap-3"}>
               {Array.from({ length: 8 }).map((_, i) => (
                 <div key={i} className={search.view === "list" ? "h-32 animate-pulse rounded-lg bg-slate-200" : "h-80 animate-pulse rounded-lg bg-slate-200"} />
               ))}
@@ -967,7 +967,7 @@ function HomePage() {
               })}
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-5 lg:gap-3">
               {productsQuery.data!.rows.map((p) => {
                 const byOrder = p.fulfillment_type === "by_order";
                 const ready = p.stock_status === "พร้อมจัดส่ง";
