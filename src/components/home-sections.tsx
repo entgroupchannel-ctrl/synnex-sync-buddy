@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import {
   Laptop, Monitor, Printer, Cpu, Smartphone, Wifi, HardDrive, Package,
   Cable, LayoutGrid, ShoppingCart, Truck, Award, FileText, Phone, ArrowRight,
-  ChevronLeft, ChevronRight, Mail, Flame, ShieldCheck, Building2, Warehouse,
+  ChevronLeft, ChevronRight, Mail, Flame, ShieldCheck, Building2, Warehouse, MonitorCog,
 } from "lucide-react";
 import heroWarehouse from "@/assets/hero-warehouse.jpg";
 import heroEnterprise from "@/assets/hero-enterprise.jpg";
@@ -208,6 +208,7 @@ const QUICK_CATS = [
   { icon: Monitor,    label: "Monitor",      sub: "Monitor",        cat: "Monitor" },
   { icon: Printer,    label: "Printer",      sub: "Printer",        cat: "Printer" },
   { icon: Cpu,        label: "PC / Desktop", sub: "PC & Desktop",   cat: "PC" },
+  { icon: MonitorCog, label: "คอมพิวเตอร์ชุด", sub: "Computer Set",   cat: "Computer Set" },
   { icon: Smartphone, label: "สมาร์ตโฟน",     sub: "Smart Phone",    cat: "Smartphone" },
   { icon: Wifi,       label: "Network",      sub: "Network",        cat: "Network" },
   { icon: HardDrive,  label: "Storage",      sub: "Storage",        cat: "Storage" },
@@ -401,6 +402,93 @@ export function PopularNotebooks() {
     </section>
   );
 }
+
+/* ---------- Computer Sets ---------- */
+
+export function ComputerSets() {
+  const tier = useCustomerTier();
+  const addToCart = useAddToCart();
+  const q = useQuery({
+    queryKey: ["computer-sets"],
+    queryFn: async () => {
+      const { data } = await supabase.from("synnex_products")
+        .select("*")
+        .eq("category", "Computer Set")
+        .eq("price_approved", true).gt("selling_price", 0)
+        .order("selling_price", { ascending: false })
+        .limit(8);
+      return (data ?? []) as (ProductRow & { description: string | null })[];
+    },
+    staleTime: 5 * 60_000,
+  });
+
+  if ((q.data?.length ?? 0) === 0) return null;
+
+  const extractSpec = (p: ProductRow & { description: string | null }): string | null => {
+    const src = `${p.name ?? ""} ${p.description ?? ""}`;
+    const parts: string[] = [];
+    const cpu = src.match(/(Intel[^,/|\n]*?(?:Core\s*(?:Ultra\s*)?[i]?\d[\w-]*|Xeon[\w-]*)|Ryzen\s*\d[\w\s-]*|Apple\s*M\d[\w\s-]*)/i);
+    if (cpu) parts.push(cpu[0].trim().replace(/\s+/g, " "));
+    const ram = src.match(/(\d{1,3})\s*GB\s*(?:DDR\d|RAM)?/i);
+    if (ram) parts.push(`${ram[1]}GB RAM`);
+    const ssd = src.match(/(\d+(?:\.\d+)?)\s*(TB|GB)\s*(?:M\.2\s*)?(?:NVMe\s*)?SSD/i);
+    if (ssd) parts.push(`${ssd[1]}${ssd[2]} SSD`);
+    const gpu = src.match(/(RTX\s*\d{3,4}[\w\s]{0,10}|GTX\s*\d{3,4}|Radeon\s*RX\s*\d{3,4}[\w\s]{0,10}|Arc\s*[AB]\d{3,4})/i);
+    if (gpu) parts.push(gpu[0].trim().replace(/\s+/g, " "));
+    return parts.length ? parts.join(" / ") : null;
+  };
+
+  return (
+    <section className="border-b bg-white">
+      <div className="mx-auto max-w-7xl px-4 py-8">
+        <SectionHeader
+          title="🖥 Computer Sets / คอมพิวเตอร์ชุดประกอบ"
+          en="Computer Sets"
+          sub="ชุดคอมพิวเตอร์ประกอบพร้อมใช้จาก Advice"
+          link={{ to: "/", search: { category: "Computer Set" }, label: "ดูทั้งหมด" }}
+        />
+        <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
+          {q.data!.map((p) => {
+            const ready = p.stock_status === "พร้อมจัดส่ง";
+            const slug = p.slug || p.id;
+            const spec = extractSpec(p);
+            return (
+              <div key={p.id} className="group relative flex flex-col overflow-hidden rounded-lg border bg-white transition hover:shadow-lg">
+                <BrandLogo brand={p.brand} />
+                <Link to="/product/$slug" params={{ slug }} className="grid aspect-square place-items-center bg-white p-3">
+                  <ProductImage src={p.image_url} alt={p.name ?? p.sku} className="h-full w-full object-contain transition group-hover:scale-105" iconClassName="h-16 w-16 text-slate-300" />
+                </Link>
+                <div className="flex flex-1 flex-col gap-1 border-t p-3">
+                  <div className="text-[10px] uppercase tracking-wide text-slate-500">{p.sku}</div>
+                  <Link to="/product/$slug" params={{ slug }} className="line-clamp-2 min-h-10 text-sm font-medium hover:text-[color:var(--brand-navy)]">{p.name ?? p.sku}</Link>
+                  {spec ? (
+                    <div className="line-clamp-2 min-h-8 rounded bg-slate-50 px-2 py-1 text-[11px] leading-snug text-slate-600">
+                      {spec}
+                    </div>
+                  ) : (
+                    <div className="line-clamp-2 min-h-8 text-[11px] leading-snug text-slate-500">
+                      {p.description ?? ""}
+                    </div>
+                  )}
+                  <div className="mt-auto text-lg font-black text-[color:var(--brand-orange)]">{displayPrice(p, tier)}</div>
+                  <Button
+                    disabled={!ready}
+                    onClick={() => addToCart(p)}
+                    size="sm"
+                    className="mt-2 w-full bg-[color:var(--brand-navy)] font-semibold hover:bg-[color:var(--brand-navy-2)]"
+                  >
+                    <ShoppingCart className="mr-1.5 h-4 w-4" /> ใส่ตะกร้า
+                  </Button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 
 /* ---------- Shop by Brand ---------- */
 

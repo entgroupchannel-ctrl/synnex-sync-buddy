@@ -27,6 +27,7 @@ import {
   QuickCategoryGrid,
   TodaysBestDeals,
   PopularNotebooks,
+  ComputerSets,
   ShopByBrand,
   TrustBadges,
   RecentlyViewed,
@@ -640,6 +641,10 @@ function HomePage() {
 
           {/* Popular Notebooks */}
           <PopularNotebooks />
+
+          {/* Computer Sets */}
+          <ComputerSets />
+
 
           {/* Today's Best Deals */}
           <FrequentlyBought />
