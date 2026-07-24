@@ -624,6 +624,25 @@ function HomePage() {
         </aside>
 
         <main className="min-w-0 flex-1">
+          {searchMode && (
+            <div className="mb-4 rounded-lg border bg-white p-4">
+              <div className="flex flex-wrap items-baseline justify-between gap-3">
+                <h1 className="text-lg font-bold text-[color:var(--brand-navy)]">
+                  ผลการค้นหา: <span className="text-[color:var(--brand-orange)]">"{search.q}"</span>
+                  <span className="ml-2 text-sm font-normal text-slate-500">
+                    ({(productsQuery.data?.count ?? 0).toLocaleString()} รายการ)
+                  </span>
+                </h1>
+                <button
+                  onClick={() => update({ q: "" })}
+                  className="text-sm text-slate-500 underline underline-offset-2 hover:text-[color:var(--brand-navy)]"
+                >
+                  × ล้างการค้นหา
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Sort bar */}
           <div className="mb-4 flex flex-wrap items-center gap-2 rounded-lg border bg-white p-3">
             <Sheet>
