@@ -56,6 +56,102 @@ export type Database = {
         }
         Relationships: []
       }
+      discount_code_usage: {
+        Row: {
+          code_id: string | null
+          customer_email: string | null
+          discount_amount: number | null
+          id: string
+          order_id: string | null
+          used_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          code_id?: string | null
+          customer_email?: string | null
+          discount_amount?: number | null
+          id?: string
+          order_id?: string | null
+          used_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          code_id?: string | null
+          customer_email?: string | null
+          discount_amount?: number | null
+          id?: string
+          order_id?: string | null
+          used_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "discount_code_usage_code_id_fkey"
+            columns: ["code_id"]
+            isOneToOne: false
+            referencedRelation: "discount_codes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "discount_code_usage_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      discount_codes: {
+        Row: {
+          applies_to: string | null
+          code: string
+          created_at: string | null
+          description: string | null
+          discount_type: string
+          discount_value: number | null
+          id: string
+          is_active: boolean | null
+          max_discount_amount: number | null
+          min_order_amount: number | null
+          usage_limit: number | null
+          used_count: number | null
+          valid_from: string | null
+          valid_until: string | null
+        }
+        Insert: {
+          applies_to?: string | null
+          code: string
+          created_at?: string | null
+          description?: string | null
+          discount_type: string
+          discount_value?: number | null
+          id?: string
+          is_active?: boolean | null
+          max_discount_amount?: number | null
+          min_order_amount?: number | null
+          usage_limit?: number | null
+          used_count?: number | null
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Update: {
+          applies_to?: string | null
+          code?: string
+          created_at?: string | null
+          description?: string | null
+          discount_type?: string
+          discount_value?: number | null
+          id?: string
+          is_active?: boolean | null
+          max_discount_amount?: number | null
+          min_order_amount?: number | null
+          usage_limit?: number | null
+          used_count?: number | null
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Relationships: []
+      }
       email_logs: {
         Row: {
           created_at: string
@@ -235,6 +331,9 @@ export type Database = {
           customer_type: string | null
           delivered_at: string | null
           discount: number | null
+          discount_amount: number | null
+          discount_code: string | null
+          discount_code_id: string | null
           estimated_delivery: string | null
           id: string
           is_guest: boolean | null
@@ -251,11 +350,14 @@ export type Database = {
           shipping_address: string | null
           shipping_district: string | null
           shipping_fee: number | null
+          shipping_method_id: string | null
+          shipping_method_name: string | null
           shipping_name: string | null
           shipping_phone: string | null
           shipping_postcode: string | null
           shipping_provider: string | null
           shipping_province: string | null
+          shipping_weight_kg: number | null
           status: string | null
           subtotal: number | null
           tax_id: string | null
@@ -283,6 +385,9 @@ export type Database = {
           customer_type?: string | null
           delivered_at?: string | null
           discount?: number | null
+          discount_amount?: number | null
+          discount_code?: string | null
+          discount_code_id?: string | null
           estimated_delivery?: string | null
           id?: string
           is_guest?: boolean | null
@@ -299,11 +404,14 @@ export type Database = {
           shipping_address?: string | null
           shipping_district?: string | null
           shipping_fee?: number | null
+          shipping_method_id?: string | null
+          shipping_method_name?: string | null
           shipping_name?: string | null
           shipping_phone?: string | null
           shipping_postcode?: string | null
           shipping_provider?: string | null
           shipping_province?: string | null
+          shipping_weight_kg?: number | null
           status?: string | null
           subtotal?: number | null
           tax_id?: string | null
@@ -331,6 +439,9 @@ export type Database = {
           customer_type?: string | null
           delivered_at?: string | null
           discount?: number | null
+          discount_amount?: number | null
+          discount_code?: string | null
+          discount_code_id?: string | null
           estimated_delivery?: string | null
           id?: string
           is_guest?: boolean | null
@@ -347,11 +458,14 @@ export type Database = {
           shipping_address?: string | null
           shipping_district?: string | null
           shipping_fee?: number | null
+          shipping_method_id?: string | null
+          shipping_method_name?: string | null
           shipping_name?: string | null
           shipping_phone?: string | null
           shipping_postcode?: string | null
           shipping_provider?: string | null
           shipping_province?: string | null
+          shipping_weight_kg?: number | null
           status?: string | null
           subtotal?: number | null
           tax_id?: string | null
@@ -363,7 +477,22 @@ export type Database = {
           updated_at?: string
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "orders_discount_code_id_fkey"
+            columns: ["discount_code_id"]
+            isOneToOne: false
+            referencedRelation: "discount_codes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_shipping_method_id_fkey"
+            columns: ["shipping_method_id"]
+            isOneToOne: false
+            referencedRelation: "shipping_methods"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       price_audit_log: {
         Row: {
@@ -550,6 +679,48 @@ export type Database = {
           },
         ]
       }
+      shipping_methods: {
+        Row: {
+          base_fee: number | null
+          estimated_days: string | null
+          free_threshold: number | null
+          id: string
+          is_active: boolean | null
+          max_weight_kg: number | null
+          name: string
+          name_en: string | null
+          per_kg_fee: number | null
+          provider: string | null
+          sort_order: number | null
+        }
+        Insert: {
+          base_fee?: number | null
+          estimated_days?: string | null
+          free_threshold?: number | null
+          id?: string
+          is_active?: boolean | null
+          max_weight_kg?: number | null
+          name: string
+          name_en?: string | null
+          per_kg_fee?: number | null
+          provider?: string | null
+          sort_order?: number | null
+        }
+        Update: {
+          base_fee?: number | null
+          estimated_days?: string | null
+          free_threshold?: number | null
+          id?: string
+          is_active?: boolean | null
+          max_weight_kg?: number | null
+          name?: string
+          name_en?: string | null
+          per_kg_fee?: number | null
+          provider?: string | null
+          sort_order?: number | null
+        }
+        Relationships: []
+      }
       sync_logs: {
         Row: {
           created_at: string
@@ -608,6 +779,7 @@ export type Database = {
           stock_status: string | null
           synced_at: string
           updated_at: string
+          weight_kg: number | null
         }
         Insert: {
           b2b_markup_applied?: number | null
@@ -636,6 +808,7 @@ export type Database = {
           stock_status?: string | null
           synced_at?: string
           updated_at?: string
+          weight_kg?: number | null
         }
         Update: {
           b2b_markup_applied?: number | null
@@ -664,6 +837,7 @@ export type Database = {
           stock_status?: string | null
           synced_at?: string
           updated_at?: string
+          weight_kg?: number | null
         }
         Relationships: []
       }
@@ -816,6 +990,7 @@ export type Database = {
         }
         Returns: number
       }
+      increment: { Args: { x: number }; Returns: number }
       psych_price: { Args: { p: number }; Returns: number }
       recompute_user_order_stats: { Args: { _uid: string }; Returns: undefined }
     }
