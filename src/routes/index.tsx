@@ -331,7 +331,7 @@ function HomePage() {
       <ShopByBrand />
 
       {/* Catalog */}
-      <div id="catalog" className="mx-auto flex max-w-7xl gap-6 px-4 py-6">
+      <div id="product-grid" className="mx-auto flex max-w-7xl gap-6 px-4 py-6 scroll-mt-20">
         {/* Desktop sidebar */}
         <aside className="hidden w-60 shrink-0 lg:block">
           <div className="sticky top-32 rounded-lg border bg-white p-4">{Filters}</div>

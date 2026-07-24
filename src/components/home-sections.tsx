@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -422,24 +422,62 @@ export function ShopByBrand() {
     staleTime: 10 * 60_000,
   });
 
+  const navigate = useNavigate();
+  const currentSearch = useSearch({ strict: false }) as { brands?: string };
+  const selected = (currentSearch.brands ?? "").split(",").filter(Boolean);
+
   if ((q.data?.length ?? 0) === 0) return null;
+
+
+  const scrollToGrid = () => {
+    if (typeof window === "undefined") return;
+    const el = document.getElementById("product-grid");
+    if (!el) return;
+    const headerHeight = 60;
+    const top = el.getBoundingClientRect().top + window.scrollY - headerHeight - 16;
+    window.scrollTo({ top, behavior: "smooth" });
+  };
+
+  const onPick = (brand: string) => {
+    const set = new Set(selected);
+    if (set.has(brand)) set.delete(brand);
+    else set.add(brand);
+    navigate({
+      to: "/",
+      search: (prev: Record<string, unknown>) => ({ ...prev, brands: [...set].join(","), page: 1 }),
+      replace: true,
+    });
+    // wait for DOM update after navigation
+    requestAnimationFrame(() => setTimeout(scrollToGrid, 50));
+  };
 
   return (
     <section className="border-b bg-slate-50">
       <div className="mx-auto max-w-7xl px-4 py-8">
         <SectionHeader title="แบรนด์ที่มีจำหน่าย" en="Shop by Brand" />
         <div className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-2 no-scrollbar">
-          {q.data!.map(({ brand, count }) => (
-            <Link
-              key={brand}
-              to="/"
-              search={{ brands: brand } as never}
-              className="group flex min-w-[140px] shrink-0 flex-col items-center justify-center rounded-lg border-2 border-slate-200 bg-white px-5 py-4 transition hover:border-[color:var(--brand-green)] hover:shadow-md"
-            >
-              <div className="text-base font-black text-[color:var(--brand-navy)] group-hover:text-[color:var(--brand-green)]">{brand}</div>
-              <div className="text-[10px] text-slate-400">{count} รายการ</div>
-            </Link>
-          ))}
+          {q.data!.map(({ brand, count }) => {
+            const active = selected.includes(brand);
+            return (
+              <button
+                key={brand}
+                type="button"
+                onClick={() => onPick(brand)}
+                aria-pressed={active}
+                className={`group flex min-w-[140px] shrink-0 flex-col items-center justify-center rounded-lg border-2 px-5 py-4 transition hover:shadow-md ${
+                  active
+                    ? "border-[color:var(--brand-green)] bg-[color:var(--brand-green)]/5 ring-2 ring-[color:var(--brand-green)]/20"
+                    : "border-slate-200 bg-white hover:border-[color:var(--brand-green)]"
+                }`}
+              >
+                <div className={`flex items-center gap-1.5 text-base font-black ${active ? "text-[color:var(--brand-green)]" : "text-[color:var(--brand-navy)] group-hover:text-[color:var(--brand-green)]"}`}>
+                  {active && <span aria-hidden>✓</span>}
+                  {brand}
+                </div>
+                <div className="text-[10px] text-slate-400">{count} รายการ</div>
+              </button>
+            );
+          })}
         </div>
       </div>
     </section>
