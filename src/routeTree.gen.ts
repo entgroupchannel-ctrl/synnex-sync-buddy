@@ -29,9 +29,11 @@ import { Route as AuthenticatedMyAccountOrdersRouteImport } from './routes/_auth
 import { Route as AuthenticatedMyAccountCompanyRouteImport } from './routes/_authenticated/my-account.company'
 import { Route as AuthenticatedMyAccountAddressesRouteImport } from './routes/_authenticated/my-account.addresses'
 import { Route as AuthenticatedAdminSyncRouteImport } from './routes/_authenticated/admin.sync'
+import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin.settings'
 import { Route as AuthenticatedAdminPricingRouteImport } from './routes/_authenticated/admin.pricing'
 import { Route as AuthenticatedAdminOrdersRouteImport } from './routes/_authenticated/admin.orders'
 import { Route as AuthenticatedAdminNewsletterRouteImport } from './routes/_authenticated/admin.newsletter'
+import { Route as AuthenticatedAdminFlashDealsRouteImport } from './routes/_authenticated/admin.flash-deals'
 import { Route as AuthenticatedAdminDiscountCodesRouteImport } from './routes/_authenticated/admin.discount-codes'
 import { Route as AuthenticatedAdminCustomersRouteImport } from './routes/_authenticated/admin.customers'
 import { Route as AuthenticatedAdminAnalyticsRouteImport } from './routes/_authenticated/admin.analytics'
@@ -144,6 +146,12 @@ const AuthenticatedAdminSyncRoute = AuthenticatedAdminSyncRouteImport.update({
   path: '/sync',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedAdminSettingsRoute =
+  AuthenticatedAdminSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminPricingRoute =
   AuthenticatedAdminPricingRouteImport.update({
     id: '/pricing',
@@ -160,6 +168,12 @@ const AuthenticatedAdminNewsletterRoute =
   AuthenticatedAdminNewsletterRouteImport.update({
     id: '/newsletter',
     path: '/newsletter',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminFlashDealsRoute =
+  AuthenticatedAdminFlashDealsRouteImport.update({
+    id: '/flash-deals',
+    path: '/flash-deals',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
 const AuthenticatedAdminDiscountCodesRoute =
@@ -221,9 +235,11 @@ export interface FileRoutesByFullPath {
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/customers': typeof AuthenticatedAdminCustomersRouteWithChildren
   '/admin/discount-codes': typeof AuthenticatedAdminDiscountCodesRoute
+  '/admin/flash-deals': typeof AuthenticatedAdminFlashDealsRoute
   '/admin/newsletter': typeof AuthenticatedAdminNewsletterRoute
   '/admin/orders': typeof AuthenticatedAdminOrdersRouteWithChildren
   '/admin/pricing': typeof AuthenticatedAdminPricingRouteWithChildren
+  '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/sync': typeof AuthenticatedAdminSyncRoute
   '/my-account/addresses': typeof AuthenticatedMyAccountAddressesRoute
   '/my-account/company': typeof AuthenticatedMyAccountCompanyRoute
@@ -250,9 +266,11 @@ export interface FileRoutesByTo {
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/customers': typeof AuthenticatedAdminCustomersRouteWithChildren
   '/admin/discount-codes': typeof AuthenticatedAdminDiscountCodesRoute
+  '/admin/flash-deals': typeof AuthenticatedAdminFlashDealsRoute
   '/admin/newsletter': typeof AuthenticatedAdminNewsletterRoute
   '/admin/orders': typeof AuthenticatedAdminOrdersRouteWithChildren
   '/admin/pricing': typeof AuthenticatedAdminPricingRouteWithChildren
+  '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/sync': typeof AuthenticatedAdminSyncRoute
   '/my-account/addresses': typeof AuthenticatedMyAccountAddressesRoute
   '/my-account/company': typeof AuthenticatedMyAccountCompanyRoute
@@ -283,9 +301,11 @@ export interface FileRoutesById {
   '/_authenticated/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/_authenticated/admin/customers': typeof AuthenticatedAdminCustomersRouteWithChildren
   '/_authenticated/admin/discount-codes': typeof AuthenticatedAdminDiscountCodesRoute
+  '/_authenticated/admin/flash-deals': typeof AuthenticatedAdminFlashDealsRoute
   '/_authenticated/admin/newsletter': typeof AuthenticatedAdminNewsletterRoute
   '/_authenticated/admin/orders': typeof AuthenticatedAdminOrdersRouteWithChildren
   '/_authenticated/admin/pricing': typeof AuthenticatedAdminPricingRouteWithChildren
+  '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/_authenticated/admin/sync': typeof AuthenticatedAdminSyncRoute
   '/_authenticated/my-account/addresses': typeof AuthenticatedMyAccountAddressesRoute
   '/_authenticated/my-account/company': typeof AuthenticatedMyAccountCompanyRoute
@@ -316,9 +336,11 @@ export interface FileRouteTypes {
     | '/admin/analytics'
     | '/admin/customers'
     | '/admin/discount-codes'
+    | '/admin/flash-deals'
     | '/admin/newsletter'
     | '/admin/orders'
     | '/admin/pricing'
+    | '/admin/settings'
     | '/admin/sync'
     | '/my-account/addresses'
     | '/my-account/company'
@@ -345,9 +367,11 @@ export interface FileRouteTypes {
     | '/admin/analytics'
     | '/admin/customers'
     | '/admin/discount-codes'
+    | '/admin/flash-deals'
     | '/admin/newsletter'
     | '/admin/orders'
     | '/admin/pricing'
+    | '/admin/settings'
     | '/admin/sync'
     | '/my-account/addresses'
     | '/my-account/company'
@@ -377,9 +401,11 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/analytics'
     | '/_authenticated/admin/customers'
     | '/_authenticated/admin/discount-codes'
+    | '/_authenticated/admin/flash-deals'
     | '/_authenticated/admin/newsletter'
     | '/_authenticated/admin/orders'
     | '/_authenticated/admin/pricing'
+    | '/_authenticated/admin/settings'
     | '/_authenticated/admin/sync'
     | '/_authenticated/my-account/addresses'
     | '/_authenticated/my-account/company'
@@ -547,6 +573,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminSyncRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/settings': {
+      id: '/_authenticated/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AuthenticatedAdminSettingsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/pricing': {
       id: '/_authenticated/admin/pricing'
       path: '/pricing'
@@ -566,6 +599,13 @@ declare module '@tanstack/react-router' {
       path: '/newsletter'
       fullPath: '/admin/newsletter'
       preLoaderRoute: typeof AuthenticatedAdminNewsletterRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/flash-deals': {
+      id: '/_authenticated/admin/flash-deals'
+      path: '/flash-deals'
+      fullPath: '/admin/flash-deals'
+      preLoaderRoute: typeof AuthenticatedAdminFlashDealsRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/admin/discount-codes': {
@@ -669,9 +709,11 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminAnalyticsRoute: typeof AuthenticatedAdminAnalyticsRoute
   AuthenticatedAdminCustomersRoute: typeof AuthenticatedAdminCustomersRouteWithChildren
   AuthenticatedAdminDiscountCodesRoute: typeof AuthenticatedAdminDiscountCodesRoute
+  AuthenticatedAdminFlashDealsRoute: typeof AuthenticatedAdminFlashDealsRoute
   AuthenticatedAdminNewsletterRoute: typeof AuthenticatedAdminNewsletterRoute
   AuthenticatedAdminOrdersRoute: typeof AuthenticatedAdminOrdersRouteWithChildren
   AuthenticatedAdminPricingRoute: typeof AuthenticatedAdminPricingRouteWithChildren
+  AuthenticatedAdminSettingsRoute: typeof AuthenticatedAdminSettingsRoute
   AuthenticatedAdminSyncRoute: typeof AuthenticatedAdminSyncRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
@@ -681,9 +723,11 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminCustomersRoute:
     AuthenticatedAdminCustomersRouteWithChildren,
   AuthenticatedAdminDiscountCodesRoute: AuthenticatedAdminDiscountCodesRoute,
+  AuthenticatedAdminFlashDealsRoute: AuthenticatedAdminFlashDealsRoute,
   AuthenticatedAdminNewsletterRoute: AuthenticatedAdminNewsletterRoute,
   AuthenticatedAdminOrdersRoute: AuthenticatedAdminOrdersRouteWithChildren,
   AuthenticatedAdminPricingRoute: AuthenticatedAdminPricingRouteWithChildren,
+  AuthenticatedAdminSettingsRoute: AuthenticatedAdminSettingsRoute,
   AuthenticatedAdminSyncRoute: AuthenticatedAdminSyncRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
 }
