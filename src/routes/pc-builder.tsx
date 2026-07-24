@@ -394,7 +394,7 @@ function StepCard({
 
       {open && (
         <div className="border-t p-3">
-          <ProductPicker step={step} tier={tier} onPick={onPick} />
+          <ProductPicker step={step} tier={tier} selected={selected} onPick={onPick} />
         </div>
       )}
     </div>
