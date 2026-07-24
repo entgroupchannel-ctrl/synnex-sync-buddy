@@ -185,6 +185,17 @@ function ProductDetail() {
   const ready = p?.stock_status === "พร้อมจัดส่ง";
   const available = ready || byOrder;
   const specs = parseSpecs(p?.description);
+  const decodedSku = p?.sku
+    ? (() => {
+        try {
+          return decodeURIComponent(p.sku);
+        } catch {
+          return p.sku;
+        }
+      })()
+    : "";
+  const showSku = decodedSku && !decodedSku.includes("%");
+
 
   useEffect(() => {
     if (!p) return;
