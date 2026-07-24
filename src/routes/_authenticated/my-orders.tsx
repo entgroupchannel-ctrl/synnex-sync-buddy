@@ -183,7 +183,7 @@ function MyOrdersPage() {
     const skus = items.map((i) => i.product_sku).filter(Boolean) as string[];
     const { data: products, error } = await supabase
       .from("synnex_products")
-      .select("sku, name, image_url, selling_price, member_price, b2b_price, price_approved, stock_status")
+      .select("sku, slug, name, image_url, distributor, selling_price, member_price, b2b_price, price_approved, stock_status")
       .in("sku", skus);
     if (error) return toast.error(error.message);
 
@@ -195,17 +195,20 @@ function MyOrdersPage() {
       const p = (products ?? []).find((x: { sku: string }) => x.sku === it.product_sku);
       if (!p || !p.price_approved) { skipped++; continue; }
       const price = Number(p.selling_price ?? it.unit_price ?? 0);
+      const qty = it.quantity ?? 1;
       cart.add({
         id: p.sku,
         sku: p.sku,
-        name: p.name,
-        image: p.image_url,
+        slug: p.slug ?? null,
+        name: p.name ?? it.product_name ?? "",
+        image_url: p.image_url ?? null,
+        distributor: p.distributor ?? null,
         price,
-        qty: it.quantity ?? 1,
-      } as never);
-      added += it.quantity ?? 1;
-      currentTotal += price * (it.quantity ?? 1);
+      }, qty);
+      added += qty;
+      currentTotal += price * qty;
     }
+
 
     const lastTotal = items.reduce((s, i) => s + (Number(i.subtotal) || Number(i.unit_price ?? 0) * (i.quantity ?? 1)), 0);
     setReorderResult({ added, skipped, currentTotal, lastTotal });
