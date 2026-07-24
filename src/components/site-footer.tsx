@@ -8,6 +8,7 @@ import {
   Phone,
   Mail,
   MapPin,
+  Printer,
   Facebook,
   Instagram,
   Youtube,
