@@ -554,14 +554,24 @@ function HomePage() {
                         </div>
                       </div>
                       {priced ? (
-                        <Button
-                          disabled={!ready}
-                          onClick={() => addToCart(p as Record<string, unknown>)}
-                          className="mt-2 w-full bg-[color:var(--brand-navy)] font-semibold hover:bg-[color:var(--brand-navy-2)]"
-                          size="sm"
-                        >
-                          <ShoppingCart className="mr-1.5 h-4 w-4" /> ใส่ตะกร้า
-                        </Button>
+                        ready ? (
+                          <Button
+                            onClick={() => addToCart(p as Record<string, unknown>)}
+                            className="mt-2 w-full bg-[color:var(--brand-navy)] font-semibold hover:bg-[color:var(--brand-navy-2)]"
+                            size="sm"
+                          >
+                            <ShoppingCart className="mr-1.5 h-4 w-4" /> ใส่ตะกร้า
+                          </Button>
+                        ) : (
+                          <>
+                            <Button disabled className="mt-2 w-full cursor-not-allowed bg-slate-300 font-semibold text-slate-600 hover:bg-slate-300" size="sm">
+                              <ShoppingCart className="mr-1.5 h-4 w-4" /> สินค้าหมด
+                            </Button>
+                            <button onClick={() => notifyMe(p.sku)} className="mt-1 text-center text-[11px] text-[color:var(--brand-navy)] underline underline-offset-2 hover:text-[color:var(--brand-orange)]">
+                              🔔 แจ้งเตือนเมื่อมีสินค้า
+                            </button>
+                          </>
+                        )
                       ) : (
                         <Button asChild className="mt-2 w-full bg-[color:var(--brand-green)] font-semibold hover:opacity-90" size="sm">
                           <a href="tel:020456104">📞 สอบถามราคา</a>
