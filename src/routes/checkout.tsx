@@ -14,13 +14,25 @@ import { SiteHeader } from "@/components/site-header";
 import { priceFmt, useCart } from "@/lib/cart";
 import { useSupabaseUser } from "@/lib/auth-sheet";
 import {
-  getShippingOptions,
+  getWeightBasedShippingFee,
   applyDiscountCode,
   recordDiscountUsage,
-  type ShippingOption,
   type DiscountApplied,
   type UserType,
 } from "@/lib/shipping";
+
+// Thai provinces excluding BKK metro (which are listed under "free shipping" optgroup)
+const THAI_PROVINCES: string[] = [
+  "กระบี่","กาญจนบุรี","กาฬสินธุ์","กำแพงเพชร","ขอนแก่น","จันทบุรี","ฉะเชิงเทรา","ชลบุรี",
+  "ชัยนาท","ชัยภูมิ","ชุมพร","เชียงราย","เชียงใหม่","ตรัง","ตราด","ตาก","นครนายก","นครปฐม",
+  "นครพนม","นครราชสีมา","นครศรีธรรมราช","นครสวรรค์","นราธิวาส","น่าน","บึงกาฬ","บุรีรัมย์",
+  "ประจวบคีรีขันธ์","ปราจีนบุรี","ปัตตานี","พระนครศรีอยุธยา","พะเยา","พังงา","พัทลุง","พิจิตร",
+  "พิษณุโลก","เพชรบุรี","เพชรบูรณ์","แพร่","ภูเก็ต","มหาสารคาม","มุกดาหาร","แม่ฮ่องสอน","ยโสธร",
+  "ยะลา","ร้อยเอ็ด","ระนอง","ระยอง","ราชบุรี","ลพบุรี","ลำปาง","ลำพูน","เลย","ศรีสะเกษ",
+  "สกลนคร","สงขลา","สตูล","สมุทรสงคราม","สมุทรสาคร","สระแก้ว","สระบุรี","สิงห์บุรี","สุโขทัย",
+  "สุพรรณบุรี","สุราษฎร์ธานี","สุรินทร์","หนองคาย","หนองบัวลำภู","อ่างทอง","อำนาจเจริญ",
+  "อุดรธานี","อุตรดิตถ์","อุทัยธานี","อุบลราชธานี",
+];
 
 
 export const Route = createFileRoute("/checkout")({
@@ -75,10 +87,16 @@ function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false);
   const [orderCreated, setOrderCreated] = useState(false);
 
-  // Shipping
-  const totalWeight = useMemo(() => items.reduce((s, i) => s + i.qty, 0) || 1, [items]);
-  const [shipOptions, setShipOptions] = useState<ShippingOption[]>([]);
-  const [shipId, setShipId] = useState<string>("");
+  // Shipping — weight-based Kerry rule (see @/lib/shipping)
+  const shipCalc = useMemo(
+    () =>
+      getWeightBasedShippingFee(
+        items.map((i) => ({ price: i.price, qty: i.qty, weight_kg: 1 })),
+        f.shipping_province,
+      ),
+    [items, f.shipping_province],
+  );
+  const totalWeight = shipCalc.totalWeight;
 
   // Discount
   const [codeInput, setCodeInput] = useState("");
@@ -95,17 +113,6 @@ function CheckoutPage() {
       return () => clearTimeout(t);
     }
   }, [items.length, navigate, orderCreated]);
-
-  // Load shipping options (recompute when subtotal or weight changes)
-  useEffect(() => {
-    let cancelled = false;
-    getShippingOptions(subtotal, totalWeight).then((opts) => {
-      if (cancelled) return;
-      setShipOptions(opts);
-      setShipId((prev) => prev && opts.find((o) => o.id === prev) ? prev : (opts[0]?.id ?? ""));
-    });
-    return () => { cancelled = true; };
-  }, [subtotal, totalWeight]);
 
   // Prefill from user profile
   useEffect(() => {
@@ -136,11 +143,8 @@ function CheckoutPage() {
     })();
   }, [user]);
 
-  const selectedShip = shipOptions.find((o) => o.id === shipId) ?? null;
   const codFee = payment === "cod" ? COD_FEE : 0;
-  const shippingFee = selectedShip
-    ? (discount?.isFreeShipping ? 0 : selectedShip.fee)
-    : 0;
+  const shippingFee = discount?.isFreeShipping ? 0 : shipCalc.fee;
   const discountAmount = discount?.discountAmount ?? 0;
   const grandTotal = Math.max(0, subtotal + shippingFee + codFee - discountAmount);
 
@@ -156,7 +160,7 @@ function CheckoutPage() {
       const res = await applyDiscountCode({
         code: codeInput,
         subtotal,
-        shippingFee: selectedShip?.fee ?? 0,
+        shippingFee: shipCalc.fee,
         userType,
         userId: user?.id ?? null,
       });
@@ -226,9 +230,9 @@ function CheckoutPage() {
           shipping_district: base.data.shipping_district,
           shipping_province: base.data.shipping_province,
           shipping_postcode: base.data.shipping_postcode,
-          shipping_method_id: selectedShip?.id ?? null,
-          shipping_method_name: selectedShip?.name ?? null,
-          shipping_provider: selectedShip?.provider ?? null,
+          shipping_method_id: null,
+          shipping_method_name: "Kerry Express",
+          shipping_provider: "kerry",
           shipping_weight_kg: totalWeight,
           shipping_fee: shippingFee,
           discount_code: discount?.code ?? null,
@@ -398,7 +402,26 @@ function CheckoutPage() {
                 </div>
                 <div>
                   <Label htmlFor="sprov">จังหวัด *</Label>
-                  <Input id="sprov" value={f.shipping_province} onChange={(e) => setField("shipping_province", e.target.value)} maxLength={100} aria-invalid={!!fieldError("shipping_province")} />
+                  <select
+                    id="sprov"
+                    value={f.shipping_province}
+                    onChange={(e) => setField("shipping_province", e.target.value)}
+                    aria-invalid={!!fieldError("shipping_province")}
+                    className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                  >
+                    <option value="">— เลือกจังหวัด —</option>
+                    <optgroup label="กรุงเทพฯ และปริมณฑล (ส่งฟรี ≥ ฿5,000)">
+                      <option value="กรุงเทพมหานคร">กรุงเทพมหานคร</option>
+                      <option value="นนทบุรี">นนทบุรี</option>
+                      <option value="ปทุมธานี">ปทุมธานี</option>
+                      <option value="สมุทรปราการ">สมุทรปราการ</option>
+                    </optgroup>
+                    <optgroup label="ต่างจังหวัด (คิดตามน้ำหนัก)">
+                      {THAI_PROVINCES.map((p) => (
+                        <option key={p} value={p}>{p}</option>
+                      ))}
+                    </optgroup>
+                  </select>
                   {fieldError("shipping_province") && <p className="mt-1 text-xs text-red-600">{fieldError("shipping_province")}</p>}
                 </div>
                 <div>
@@ -409,51 +432,47 @@ function CheckoutPage() {
               </div>
             </section>
 
-            {/* Shipping method */}
+            {/* Shipping method — Kerry weight-based */}
             <section className="space-y-3 rounded-lg border bg-white p-6">
               <h2 className="font-bold text-[color:var(--brand-navy)]">วิธีจัดส่ง</h2>
-              {shipOptions.length === 0 ? (
-                <div className="text-sm text-slate-500">กำลังโหลดตัวเลือกจัดส่ง...</div>
-              ) : (
-                <RadioGroup value={shipId} onValueChange={setShipId} className="grid gap-2">
-                  {shipOptions.map((o, idx) => {
-                    const active = shipId === o.id;
-                    return (
-                      <label
-                        key={o.id}
-                        className={`flex cursor-pointer items-center gap-3 rounded-lg border-2 p-3 transition ${active ? "border-[color:var(--brand-orange)] bg-orange-50" : "hover:bg-slate-50"}`}
-                      >
-                        <RadioGroupItem value={o.id} />
-                        <Truck className="h-5 w-5 shrink-0 text-[color:var(--brand-navy)]" />
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center gap-2">
-                            <span className="font-semibold">{o.name}</span>
-                            {idx === 0 && <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700">แนะนำ</span>}
-                          </div>
-                          <div className="text-xs text-slate-500">{o.estimatedDays}</div>
-                        </div>
-                        <div className="shrink-0 text-right">
-                          {o.isFree ? (
-                            <>
-                              <div className="text-sm font-bold text-emerald-600">ฟรี!</div>
-                              {o.freeThreshold && <div className="text-[10px] text-slate-500">ซื้อครบ ฿{o.freeThreshold.toLocaleString()}</div>}
-                            </>
-                          ) : (
-                            <>
-                              <div className="font-semibold">฿{o.fee.toLocaleString()}</div>
-                              {o.freeThreshold && subtotal < o.freeThreshold && (
-                                <div className="text-[10px] text-slate-500">
-                                  เพิ่ม ฿{(o.freeThreshold - subtotal).toLocaleString()} ฟรี
-                                </div>
-                              )}
-                            </>
-                          )}
-                        </div>
-                      </label>
-                    );
-                  })}
-                </RadioGroup>
+              <div className="flex items-start gap-3 rounded-lg border-2 border-[color:var(--brand-orange)] bg-orange-50 p-3">
+                <Truck className="h-5 w-5 shrink-0 text-[color:var(--brand-navy)]" />
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold">Kerry Express</span>
+                    <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700">แนะนำ</span>
+                  </div>
+                  <div className="text-xs text-slate-500">{shipCalc.reason}</div>
+                  <div className="mt-0.5 text-xs text-slate-500">น้ำหนักรวม {shipCalc.totalWeight.toFixed(1)} กก.</div>
+                </div>
+                <div className="shrink-0 text-right">
+                  {shipCalc.freeShipping ? (
+                    <div className="text-sm font-bold text-emerald-600">ฟรี!</div>
+                  ) : (
+                    <div className="font-semibold">฿{shipCalc.fee.toLocaleString()}</div>
+                  )}
+                </div>
+              </div>
+              {!f.shipping_province && (
+                <p className="text-xs text-slate-500">เลือกจังหวัดด้านบนเพื่อคำนวณค่าจัดส่ง</p>
               )}
+              {!shipCalc.freeShipping && shipCalc.inBkkMetro && subtotal < 5000 && (
+                <p className="text-xs text-emerald-700">
+                  ซื้อเพิ่มอีก ฿{(5000 - subtotal).toLocaleString()} รับสิทธิ์ส่งฟรี กทม./ปริมณฑล
+                </p>
+              )}
+              <div className="rounded-md bg-slate-50 p-3 text-xs text-slate-600">
+                <div className="mb-1 font-semibold text-slate-700">อัตราค่าจัดส่งต่างจังหวัด (Kerry)</div>
+                <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
+                  <span>≤ 1 กก.</span><span>฿50</span>
+                  <span>≤ 3 กก.</span><span>฿80</span>
+                  <span>≤ 5 กก.</span><span>฿120</span>
+                  <span>≤ 10 กก.</span><span>฿180</span>
+                  <span>≤ 15 กก.</span><span>฿250</span>
+                  <span>≤ 20 กก.</span><span>฿320</span>
+                  <span>&gt; 20 กก.</span><span>฿400</span>
+                </div>
+              </div>
             </section>
 
             {/* Discount code */}
@@ -484,7 +503,7 @@ function CheckoutPage() {
                     {discount.description && <div className="text-xs text-emerald-700">{discount.description}</div>}
                     <div className="mt-0.5 text-sm text-emerald-700">
                       {discount.isFreeShipping
-                        ? `ส่งฟรี — ประหยัด ฿${(selectedShip?.fee ?? 0).toLocaleString()}`
+                        ? `ส่งฟรี — ประหยัด ฿${shipCalc.fee.toLocaleString()}`
                         : `ประหยัด ฿${discount.discountAmount.toLocaleString()}`}
                     </div>
                   </div>
@@ -579,9 +598,9 @@ function CheckoutPage() {
                 <span>ค่าเก็บปลายทาง (COD)</span><span>{priceFmt.format(codFee)}</span>
               </div>
             )}
-            <div className={`flex justify-between text-sm ${shippingFee === 0 && selectedShip ? "text-emerald-600" : "text-slate-700"}`}>
-              <span>ค่าจัดส่ง{selectedShip ? ` (${selectedShip.name})` : ""}</span>
-              <span>{selectedShip ? (shippingFee === 0 ? "ฟรี" : priceFmt.format(shippingFee)) : "-"}</span>
+            <div className={`flex justify-between text-sm ${shippingFee === 0 ? "text-emerald-600" : "text-slate-700"}`}>
+              <span>ค่าจัดส่ง (Kerry)</span>
+              <span>{shippingFee === 0 ? "ฟรี" : priceFmt.format(shippingFee)}</span>
             </div>
             {discount && discountAmount > 0 && (
               <div className="flex justify-between text-sm text-emerald-600">

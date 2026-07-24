@@ -11,7 +11,7 @@ import { CATEGORIES, priceFmt, useCart } from "@/lib/cart";
 import { useLanguage } from "@/lib/i18n";
 import { useSupabaseUser } from "@/lib/auth-sheet";
 import { saveCartReminder, deleteCartReminder } from "@/lib/cart-reminder";
-import { getShippingOptions, type ShippingOption } from "@/lib/shipping";
+import { getWeightBasedShippingFee } from "@/lib/shipping";
 
 
 export const Route = createFileRoute("/cart")({
@@ -35,8 +35,11 @@ function CartPage() {
   const { t } = useLanguage();
   const [recent, setRecent] = useState<RecentItem[]>([]);
   const { user } = useSupabaseUser();
-  const [shipOpts, setShipOpts] = useState<ShippingOption[]>([]);
-  const totalWeight = items.reduce((s, i) => s + i.qty, 0) || 1;
+  // Preview shipping under both zones (BKK metro vs. upcountry)
+  const weightedItems = items.map((i) => ({ price: i.price, qty: i.qty, weight_kg: 1 }));
+  const shipBkk = getWeightBasedShippingFee(weightedItems, "กรุงเทพมหานคร");
+  const shipOther = getWeightBasedShippingFee(weightedItems, "เชียงใหม่");
+  const totalWeight = shipBkk.totalWeight;
 
   useEffect(() => {
     try {
@@ -61,15 +64,10 @@ function CartPage() {
   const fulfillMap = fulfillQ.data ?? {};
   const hasByOrder = items.some((i) => fulfillMap[i.sku] === "by_order");
 
-  useEffect(() => {
-    if (items.length === 0) { setShipOpts([]); return; }
-    let cancelled = false;
-    getShippingOptions(total, totalWeight).then((opts) => { if (!cancelled) setShipOpts(opts); });
-    return () => { cancelled = true; };
-  }, [total, totalWeight, items.length]);
-
-  const cheapest = shipOpts[0] ?? null;
-  const nextFree = shipOpts.find((o) => o.freeThreshold && total < o.freeThreshold) ?? null;
+  // Cheapest fee across both zones (used for a rough "cart total incl. shipping" preview)
+  const cheapestFee = Math.min(shipBkk.fee, shipOther.fee);
+  const isBkkFree = shipBkk.freeShipping;
+  const remainingForFree = Math.max(0, 5000 - total);
 
 
   // Persist cart snapshot for logged-in users so the reminder job can email them.
@@ -156,43 +154,53 @@ function CartPage() {
               </div>
               <div className="mt-1 flex justify-between text-sm text-slate-600">
                 <span>{t("cart.shipping")}</span>
-                <span>
-                  {cheapest
-                    ? (cheapest.isFree
-                        ? <span className="text-emerald-600">ฟรี · {cheapest.name}</span>
-                        : <>{priceFmt.format(cheapest.fee)} <span className="text-xs text-slate-400">({cheapest.name})</span></>)
-                    : t("cart.shipping_calc")}
-                </span>
+                <span className="text-slate-500">คำนวณตอนชำระเงิน</span>
               </div>
 
-              {nextFree && (
+              <div className="mt-3 space-y-2 rounded-lg border border-slate-200 bg-slate-50 p-3 text-xs text-slate-700">
+                <div className="flex items-start gap-2">
+                  <span>🚚</span>
+                  <div>
+                    <div className="font-semibold text-[color:var(--brand-navy)]">กรุงเทพฯ &amp; ปริมณฑล</div>
+                    <div className="text-slate-600">ส่งฟรีเมื่อซื้อครบ ฿5,000 (กทม./นนทบุรี/ปทุมธานี/สมุทรปราการ)</div>
+                  </div>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span>📦</span>
+                  <div>
+                    <div className="font-semibold text-[color:var(--brand-navy)]">ต่างจังหวัด · Kerry Express</div>
+                    <div className="text-slate-600">฿50–฿400 ตามน้ำหนัก (น้ำหนักตะกร้าตอนนี้ {totalWeight.toFixed(1)} กก. ≈ ฿{shipOther.fee})</div>
+                  </div>
+                </div>
+              </div>
+
+              {isBkkFree ? (
+                <div className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 p-2.5 text-xs font-semibold text-emerald-800">
+                  🎉 ยินดีด้วย! คุณได้รับสิทธิ์ส่งฟรีในเขต กทม./ปริมณฑล
+                </div>
+              ) : remainingForFree > 0 ? (
                 <div className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 p-2.5 text-xs">
                   <div className="flex items-start gap-2">
                     <Truck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
                     <div className="flex-1">
                       <div className="font-semibold text-emerald-800">
-                        ซื้อเพิ่ม {priceFmt.format(nextFree.freeThreshold! - total)} รับสิทธิ์ส่งฟรี {nextFree.name}
+                        ซื้อเพิ่ม {priceFmt.format(remainingForFree)} รับส่งฟรีในเขต กทม./ปริมณฑล
                       </div>
                       <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-emerald-100">
                         <div
                           className="h-full bg-emerald-500 transition-all"
-                          style={{ width: `${Math.min(100, Math.round((total / nextFree.freeThreshold!) * 100))}%` }}
+                          style={{ width: `${Math.min(100, Math.round((total / 5000) * 100))}%` }}
                         />
                       </div>
                     </div>
                   </div>
                 </div>
-              )}
-              {cheapest?.isFree && (
-                <div className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 p-2.5 text-xs font-semibold text-emerald-800">
-                  🎉 ยินดีด้วย! คุณได้รับสิทธิ์ส่งฟรี {cheapest.name}
-                </div>
-              )}
+              ) : null}
 
               <div className="my-4 h-px bg-slate-200" />
               <div className="flex justify-between text-lg font-bold text-[color:var(--brand-navy)]">
                 <span>{t("cart.total")}</span>
-                <span>{priceFmt.format(total + (cheapest?.fee ?? 0))}</span>
+                <span>{priceFmt.format(total + cheapestFee)}</span>
               </div>
               <Button asChild className="mt-4 w-full bg-[color:var(--brand-orange)] hover:bg-[color:var(--brand-orange-dark)]" size="lg">
                 <Link to="/checkout">{t("cart.checkout")}</Link>
