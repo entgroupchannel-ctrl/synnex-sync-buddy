@@ -379,7 +379,7 @@ export function PopularNotebooks() {
         .gt("selling_price", 0)
         .not("image_url", "is", null)
         .order("selling_price", { ascending: false })
-        .limit(8);
+        .limit(10);
       return (data ?? []) as ProductRow[];
     },
     staleTime: 5 * 60_000,
@@ -396,7 +396,7 @@ export function PopularNotebooks() {
           sub="เลือกจาก Notebook หลากหลายแบรนด์"
           link={{ to: "/", search: { category: "Notebook" }, label: "ดูทั้งหมด" }}
         />
-        <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-5 lg:gap-3">
           {q.data!.map((p) => {
             const ready = p.stock_status === "พร้อมจัดส่ง";
             const slug = p.slug || p.id;
@@ -741,7 +741,7 @@ export function TrustBadges() {
   return (
     <section className="border-y bg-white">
       <div className="mx-auto max-w-7xl px-4 py-8">
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-5 lg:gap-3">
           {items.map((it) => {
             const Icon = it.icon;
             return (
@@ -1113,7 +1113,7 @@ export function NetworkSecurity() {
         .eq("stock_status", "พร้อมจัดส่ง")
         .gt("selling_price", 0)
         .order("selling_price", { ascending: false })
-        .limit(8);
+        .limit(10);
       return (data ?? []) as ProductRow[];
     },
     staleTime: 5 * 60_000,
@@ -1130,7 +1130,7 @@ export function NetworkSecurity() {
           sub="Cisco, Hikvision, Dahua, D-Link — สินค้าแท้ 100%"
           link={{ to: "/", search: { category: "Network" }, label: "ดู Network ทั้งหมด" }}
         />
-        <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-5 lg:gap-3">
           {q.data!.map((p) => <CategoryGridCard key={p.id} p={p} />)}
         </div>
       </div>
@@ -1151,7 +1151,7 @@ export function StorageDeals() {
         .eq("stock_status", "พร้อมจัดส่ง")
         .gt("selling_price", 0)
         .order("selling_price", { ascending: true })
-        .limit(8);
+        .limit(10);
       return (data ?? []) as ProductRow[];
     },
     staleTime: 5 * 60_000,
@@ -1168,7 +1168,7 @@ export function StorageDeals() {
           sub="SanDisk, Kingston, Seagate, WD"
           link={{ to: "/", search: { category: "Storage" }, label: "ดู Storage ทั้งหมด" }}
         />
-        <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-5 lg:gap-3">
           {q.data!.map((p) => <CategoryGridCard key={p.id} p={p} />)}
         </div>
       </div>
@@ -1188,7 +1188,7 @@ export function ComponentsShowcase() {
         .eq("price_approved", true)
         .gt("selling_price", 0)
         .order("selling_price", { ascending: false })
-        .limit(8);
+        .limit(10);
       return (data ?? []) as ProductRow[];
     },
     staleTime: 5 * 60_000,
@@ -1205,7 +1205,7 @@ export function ComponentsShowcase() {
           sub="AMD Ryzen, Intel Core Ultra, Mainboard, RAM DDR4/DDR5"
           link={{ to: "/", search: { category: "Components" }, label: "ดู Components ทั้งหมด" }}
         />
-        <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-5 lg:gap-3">
           {q.data!.map((p) => <CategoryGridCard key={p.id} p={p} />)}
         </div>
       </div>
@@ -1227,7 +1227,7 @@ export function MacBookShowcase() {
         .gt("selling_price", 0)
         .or("name.ilike.%Apple%,name.ilike.%iPhone%,name.ilike.%iPad%,name.ilike.%MacBook%,name.ilike.%AirPods%,name.ilike.%Apple Watch%")
         .order("selling_price", { ascending: false })
-        .limit(8);
+        .limit(10);
       return (data ?? []) as ProductRow[];
     },
     staleTime: 5 * 60_000,
@@ -1244,7 +1244,7 @@ export function MacBookShowcase() {
           sub="iPhone 17, MacBook Air M5, iPad · สินค้าของแท้ รับประกันศูนย์ไทย 1 ปี"
           link={{ to: "/", search: { q: "Apple" }, label: "ดู Apple ทั้งหมด" }}
         />
-        <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-5 lg:gap-3">
           {q.data!.map((p) => <CategoryGridCard key={p.id} p={p} />)}
         </div>
       </div>
@@ -1282,7 +1282,7 @@ export function SolarEnergy() {
           sub="แผงโซลาร์เซลล์ Inverter และอุปกรณ์พลังงาน เหมาะสำหรับบ้านและองค์กร"
           link={{ to: "/", search: { category: "Solar & Energy" }, label: "ดูทั้งหมด" }}
         />
-        <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-5 lg:gap-3">
           {q.data!.map((p) => <CategoryGridCard key={p.id} p={p} />)}
         </div>
       </div>
