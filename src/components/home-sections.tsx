@@ -501,7 +501,7 @@ export function ComputerSets() {
                       alt={p.name ?? p.sku}
                       className="h-full w-full object-contain transition group-hover:scale-105"
                       iconClassName="h-20 w-20 text-slate-300"
-                     category={p.category} />
+                    />
                   </Link>
                   <div className="flex flex-1 flex-col gap-1.5 border-t p-3">
                     {p.brand && <div className="text-[10px] uppercase tracking-wide text-slate-500">{p.brand}</div>}
@@ -985,7 +985,7 @@ export function MicrosoftFeatured() {
                     alt={p.name ?? p.sku}
                     className="h-[120px] w-[120px] object-contain transition group-hover:scale-105"
                     iconClassName="h-16 w-16 text-blue-200"
-                   category={p.category} />
+                  />
                 </Link>
 
                 <div className="flex flex-1 flex-col gap-1 border-t border-blue-100 bg-white/70 p-3">
@@ -1063,7 +1063,7 @@ function CategoryGridCard({ p }: { p: ProductRow }) {
           alt={p.name ?? p.sku}
           className="h-full w-full object-contain transition group-hover:scale-105"
           iconClassName="h-14 w-14 text-slate-300"
-         category={p.category} />
+        />
       </Link>
       <div className="flex flex-1 flex-col gap-1 border-t p-3">
         {p.brand && <div className="text-[10px] uppercase tracking-wide text-slate-500">{p.brand}</div>}

@@ -982,7 +982,7 @@ function HomePage() {
                         alt={p.name ?? p.sku}
                         className="h-full w-full object-contain transition group-hover:scale-105"
                         iconClassName="h-16 w-16 text-slate-300"
-                       category={p.category} />
+                      />
 
                     </Link>
                     <div className="flex flex-1 flex-col gap-1 border-t p-3">
