@@ -1028,19 +1028,15 @@ function CategoryGridCard({ p }: { p: ProductRow }) {
   const byOrder = (p as { fulfillment_type?: string | null }).fulfillment_type === "by_order";
   const available = ready || byOrder;
   const slug = p.slug || p.id;
-  const lowStock = ready && (p.stock_qty ?? 999) < 5;
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-lg border bg-white transition hover:shadow-lg">
       <BrandLogo brand={p.brand} />
-      {byOrder ? (
-        <div className="absolute right-2 top-2 z-10 rounded bg-blue-600 px-2 py-0.5 text-[10px] font-bold text-white shadow-sm">
-          📋 By Order
-        </div>
-      ) : lowStock ? (
-        <div className="absolute right-2 top-2 z-10 rounded bg-red-500 px-1.5 py-0.5 text-[10px] font-bold text-white shadow-sm">
-          เหลือน้อย
-        </div>
-      ) : null}
+      <div className="absolute right-2 top-2 z-10">
+        <StockBadge
+          stockQty={(p as { stock_qty?: number | null }).stock_qty}
+          fulfillmentType={(p as { fulfillment_type?: string | null }).fulfillment_type}
+        />
+      </div>
       <Link to="/product/$slug" params={{ slug }} className="grid aspect-square place-items-center bg-white p-3">
         <ProductImage
           src={p.image_url}
