@@ -935,6 +935,8 @@ function QuotationDialog({
     setName("");
     setEmail("");
     setPhone("");
+    setLineId("");
+    setAvailableTime([]);
     setNotes("");
     setSubmitting(false);
     supabase.functions
