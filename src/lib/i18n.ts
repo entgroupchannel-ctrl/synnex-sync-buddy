@@ -20,10 +20,10 @@ const translations: Record<Lang, Record<string, string>> = {
     "nav.search": "ค้นหาสินค้า, SKU, ยี่ห้อ...",
 
     // Homepage
-    "hero.badge": "ENT Group — Authorized Dealer ตั้งแต่ปี 2558",
+    "hero.badge": "ENT Group — สินค้าแท้ 100% ตั้งแต่ปี 2558",
     "hero.title_line1": "ราคา Dealer จริง",
     "hero.title_line2": "ไม่ผ่านคนกลาง",
-    "hero.sub": "Mini PC • Panel PC • IT Products จาก Synnex & VST ECS",
+    "hero.sub": "Mini PC • Panel PC • IT Products จาก ENT Group IT Shop",
     "hero.cta": "ดูสินค้าทั้งหมด",
     "hero.ready_only": "เฉพาะพร้อมจัดส่ง",
 
@@ -96,10 +96,10 @@ const translations: Record<Lang, Record<string, string>> = {
     "nav.signout": "Sign Out",
     "nav.search": "Search products, SKU, brand...",
 
-    "hero.badge": "ENT Group — Authorized Dealer since 2015",
+    "hero.badge": "ENT Group — 100% Genuine since 2015",
     "hero.title_line1": "Real Dealer Prices",
     "hero.title_line2": "No Middleman",
-    "hero.sub": "Mini PC • Panel PC • IT Products from Synnex & VST ECS",
+    "hero.sub": "Mini PC • Panel PC • IT Products from ENT Group IT Shop",
     "hero.cta": "Browse Products",
     "hero.ready_only": "In stock only",
 
