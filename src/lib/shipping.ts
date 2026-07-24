@@ -113,6 +113,69 @@ export async function getShippingOptions(orderTotal: number, weightKg: number = 
     .sort((a, b) => a.fee - b.fee || a.originalFee - b.originalFee);
 }
 
+// ---------- Weight-based Kerry pricing (ENT Group rules) ----------
+
+export const BKK_METRO_PROVINCES = [
+  "กรุงเทพมหานคร",
+  "กรุงเทพฯ",
+  "กรุงเทพ",
+  "นนทบุรี",
+  "ปทุมธานี",
+  "สมุทรปราการ",
+  "Bangkok",
+] as const;
+
+export function isBkkMetro(province: string | null | undefined): boolean {
+  if (!province) return false;
+  const p = province.trim().toLowerCase();
+  return BKK_METRO_PROVINCES.some((x) => x.toLowerCase() === p);
+}
+
+export type WeightedItem = { weight_kg?: number | null; qty: number; price: number };
+
+export function computeTotalWeight(items: WeightedItem[]): number {
+  return items.reduce((s, i) => s + (Number(i.weight_kg) || 1) * i.qty, 0);
+}
+
+/**
+ * ENT Group / Kerry weight-based shipping.
+ *   - กทม + ปริมณฑล: ส่งฟรีเมื่อยอด ≥ ฿5,000
+ *   - ต่างจังหวัด: คิดตามน้ำหนักรวม (Kerry step tariff)
+ */
+export function getWeightBasedShippingFee(
+  items: WeightedItem[],
+  province: string | null | undefined,
+): { fee: number; totalWeight: number; freeShipping: boolean; reason: string; inBkkMetro: boolean } {
+  const totalWeight = computeTotalWeight(items);
+  const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
+  const inBkkMetro = isBkkMetro(province);
+
+  if (subtotal >= 5000 && inBkkMetro) {
+    return {
+      fee: 0,
+      totalWeight,
+      freeShipping: true,
+      inBkkMetro,
+      reason: "ส่งฟรี กทม./ปริมณฑล (ยอดซื้อ ≥ ฿5,000)",
+    };
+  }
+
+  let fee: number;
+  if (totalWeight <= 1) fee = 50;
+  else if (totalWeight <= 3) fee = 80;
+  else if (totalWeight <= 5) fee = 120;
+  else if (totalWeight <= 10) fee = 180;
+  else if (totalWeight <= 15) fee = 250;
+  else if (totalWeight <= 20) fee = 320;
+  else fee = 400;
+
+  const reason = inBkkMetro
+    ? `Kerry Express · น้ำหนัก ${totalWeight.toFixed(1)} กก. (ซื้อเพิ่มให้ครบ ฿5,000 รับส่งฟรี)`
+    : `Kerry Express · ต่างจังหวัด · น้ำหนัก ${totalWeight.toFixed(1)} กก.`;
+
+  return { fee, totalWeight, freeShipping: false, inBkkMetro, reason };
+}
+
 // ---------- Discount codes ----------
 
 export type DiscountApplied = {
