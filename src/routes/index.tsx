@@ -741,6 +741,29 @@ function HomePage() {
             </div>
           </div>
 
+          {/* Components sub-type pills */}
+          {search.category === "Components" && (
+            <div className="mb-3 flex flex-wrap gap-2">
+              {([
+                { v: "all", label: "ทั้งหมด" },
+                { v: "cpu", label: "CPU" },
+                { v: "ram", label: "RAM / Memory" },
+              ] as const).map((o) => (
+                <button
+                  key={o.v}
+                  onClick={() => update({ compType: o.v, page: 1 })}
+                  className={`rounded-full border px-3.5 py-1.5 text-xs font-medium transition ${
+                    search.compType === o.v
+                      ? "border-[color:var(--brand-navy)] bg-[color:var(--brand-navy)] text-white"
+                      : "bg-white hover:bg-slate-50"
+                  }`}
+                >
+                  {o.label}
+                </button>
+              ))}
+            </div>
+          )}
+
           {/* Active filter summary */}
           {hasActiveFilters && (
             <div
