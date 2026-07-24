@@ -49,6 +49,7 @@ const searchSchema = z.object({
   max: fallback(z.number(), 100000).default(100000),
   ready: fallback(z.boolean(), false).default(false),
   fulfill: fallback(z.enum(["all", "stock", "by_order"]), "all").default("all"),
+  compType: fallback(z.enum(["all", "cpu", "ram"]), "all").default("all"),
   sort: fallback(z.string(), "new").default("new"),
   view: fallback(z.string(), "grid").default("grid"),
   page: fallback(z.number().int(), 1).default(1),
