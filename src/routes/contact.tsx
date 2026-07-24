@@ -13,9 +13,16 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { LineQrDialog } from "@/components/line-qr-dialog";
 
-const PHONES = ["02-045-6104", "095-739-1053", "084-046-1315"];
+const PHONES: { num: string; label: string }[] = [
+  { num: "02-045-6104", label: "สำนักงานหลัก" },
+  { num: "095-739-1053", label: "แอดมิน" },
+  { num: "084-046-1315", label: "แอดมิน" },
+  { num: "062-647-1447", label: "Admin" },
+  { num: "088-962-4471", label: "Admin" },
+  { num: "082-249-7922", label: "บัญชี" },
+];
 const FAX = "02-045-6105";
-const SALES_EMAIL = "Sales@entgroup.co.th";
+const SALES_EMAIL = "sales@entgroup.co.th";
 
 export const Route = createFileRoute("/contact")({
   ssr: false,
