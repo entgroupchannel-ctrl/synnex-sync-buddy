@@ -3,8 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ProductImage } from "@/components/product-image";
-import { displayPrice, getSellingPrice, useCustomerTier } from "@/lib/cart";
-import { priceFmt } from "@/lib/cart";
+import { getSellingPrice, useCustomerTier, priceFmt } from "@/lib/cart";
 
 type Row = {
   id: string; sku: string; slug: string | null; name: string | null;
