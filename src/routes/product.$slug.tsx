@@ -34,7 +34,7 @@ export const Route = createFileRoute("/product/$slug")({
       ? `${name} ราคา ฿${Number(price).toLocaleString("th-TH")} | ENT Group IT Shop`.slice(0, 70)
       : `${name} | ENT Group IT Shop`;
     const desc = p
-      ? `${name} ราคา ฿${Number(price).toLocaleString("th-TH")} ${p.stock_status === "พร้อมจัดส่ง" ? "พร้อมจัดส่ง" : "สั่งจอง"} รับประกันศูนย์ไทย จาก ENT Group Authorized Dealer ของ Synnex และ VST ECS`.slice(0, 160)
+      ? `${name} ราคา ฿${Number(price).toLocaleString("th-TH")} ${p.stock_status === "พร้อมจัดส่ง" ? "พร้อมจัดส่ง" : "สั่งจอง"} รับประกันศูนย์ไทย จาก ENT Group IT Shop`.slice(0, 160)
       : `รายละเอียดสินค้า ${params.slug} จาก ENT Group IT Shop`;
 
     const meta = [
