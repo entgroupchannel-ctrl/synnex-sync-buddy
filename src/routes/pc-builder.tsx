@@ -472,76 +472,84 @@ function ProductPicker({
         .eq("price_approved", true)
         .gt("selling_price", 0);
 
+      let limit = 30;
+
       switch (step.key) {
         case "cpu": {
-          const orExpr =
-            cpuBrand === "intel"
-              ? "name.ilike.%Core i3%,name.ilike.%Core i5%,name.ilike.%Core i7%,name.ilike.%Core i9%,name.ilike.%Core Ultra%,name.ilike.%Intel%"
-              : cpuBrand === "amd"
-                ? "name.ilike.%Ryzen 3%,name.ilike.%Ryzen 5%,name.ilike.%Ryzen 7%,name.ilike.%Ryzen 9%,name.ilike.%Athlon%,name.ilike.%AMD%"
-                : "name.ilike.%CPU%,name.ilike.%Ryzen%,name.ilike.%Core i%,name.ilike.%Core Ultra%,name.ilike.%Athlon%,name.ilike.%Processor%";
-          q = q
-            .or(orExpr)
-            .not("name", "ilike", "%Motherboard%")
-            .not("name", "ilike", "%Mainboard%")
-            .not("name", "ilike", "%MB%");
+          q = q.eq("category", "Components").ilike("name", "CPU%");
+          if (cpuBrand === "intel") q = q.eq("brand", "INTEL");
+          else if (cpuBrand === "amd") q = q.eq("brand", "AMD");
+          else q = q.or("brand.eq.INTEL,brand.eq.AMD");
+          limit = cpuBrand === "all" ? 60 : 30;
           break;
         }
-        case "mb":
-          q = q
-            .or("name.ilike.%Mainboard%,name.ilike.%Motherboard%,name.ilike.%MB%,name.ilike.%B650%,name.ilike.%B850%,name.ilike.%Z790%,name.ilike.%Z890%,name.ilike.%X670%,name.ilike.%A620%")
-            .not("name", "ilike", "%RAM%")
-            .not("name", "ilike", "%DDR%")
-            .not("name", "ilike", "%CPU%");
-          if (mbBrand === "asus") q = q.ilike("brand", "%ASUS%");
-          else if (mbBrand === "gigabyte") q = q.ilike("brand", "%GIGABYTE%");
-          else if (mbBrand === "msi") q = q.ilike("brand", "%MSI%");
-          else if (mbBrand === "asrock") q = q.ilike("brand", "%ASRock%");
-          if (mbSocket === "am5") q = q.ilike("name", "%AM5%");
-          else if (mbSocket === "lga1851") q = q.ilike("name", "%LGA1851%");
-          else if (mbSocket === "lga1700") q = q.ilike("name", "%LGA1700%");
+        case "mb": {
+          q = q.eq("category", "Components").ilike("name", "MAINBOARD%");
+          if (mbBrand === "asus") q = q.eq("brand", "ASUS");
+          else if (mbBrand === "gigabyte") q = q.eq("brand", "GIGABYTE");
+          else if (mbBrand === "msi") q = q.eq("brand", "MSI");
+          else if (mbBrand === "asrock") q = q.eq("brand", "ASROCK");
+          if (mbSocket === "am5") q = q.ilike("name", "%(AM5)%");
+          else if (mbSocket === "am4") q = q.ilike("name", "%(AM4)%");
+          else if (mbSocket === "lga1851") q = q.or("name.ilike.%LGA 1851%,name.ilike.%LGA1851%");
+          else if (mbSocket === "lga1700") q = q.or("name.ilike.%LGA 1700%,name.ilike.%LGA1700%");
+          limit = 40;
           break;
+        }
         case "ram":
           q = q
-            .or("name.ilike.%RAM%,name.ilike.%DDR4%,name.ilike.%DDR5%,name.ilike.%Memory%,name.ilike.%SODIMM%")
-            .not("name", "ilike", "%Mainboard%")
-            .not("name", "ilike", "%Motherboard%")
-            .not("name", "ilike", "%SSD%");
+            .eq("category", "Storage")
+            .or("name.ilike.% DDR4 %,name.ilike.% DDR5 %,name.ilike.%DDR4%,name.ilike.%DDR5%,name.ilike.%SODIMM%,brand.eq.CORSAIR")
+            .not("name", "ilike", "%SSD%")
+            .not("name", "ilike", "%Case%")
+            .not("name", "ilike", "%Mainboard%");
+          limit = 30;
           break;
         case "ssd":
           q = q
-            .or("name.ilike.%SSD%,name.ilike.%NVMe%,name.ilike.%M.2%,name.ilike.%HDD%,name.ilike.%Harddisk%,name.ilike.%Hard Disk%")
+            .eq("category", "Storage")
+            .or("name.ilike.%SSD%,name.ilike.%NVMe%,name.ilike.%M.2%")
             .not("name", "ilike", "%RAM%")
-            .not("name", "ilike", "%Mainboard%");
+            .not("name", "ilike", "%DDR%")
+            .not("name", "ilike", "%Case%")
+            .not("name", "ilike", "%Mainboard%")
+            .not("name", "ilike", "%PC%")
+            .not("name", "ilike", "%Intel® Core%");
+          if (ssdType === "sata") q = q.ilike("name", "%SATA%");
+          else if (ssdType === "nvme") q = q.or("name.ilike.%NVMe%,name.ilike.%M.2%,name.ilike.%PCIe%");
+          limit = 40;
           break;
         case "os":
           q = q
-            .or("name.ilike.%Windows%,name.ilike.%Office%,name.ilike.%Ubuntu%")
-            .eq("category", "Software");
+            .eq("category", "Software")
+            .eq("brand", "MICROSOFT")
+            .ilike("name", "%WINDOWS%");
+          limit = 10;
           break;
         case "gpu": {
-          const orExpr =
-            gpuBrand === "nvidia"
-              ? "name.ilike.%RTX%,name.ilike.%GTX%"
-              : gpuBrand === "amd"
-                ? "name.ilike.%RX 6%,name.ilike.%RX 7%,name.ilike.%RX 9%"
-                : "name.ilike.%RTX%,name.ilike.%GTX%,name.ilike.%RX 6%,name.ilike.%RX 7%,name.ilike.%RX 9%,name.ilike.%Arc%,name.ilike.%VGA%,name.ilike.%Graphic%";
           q = q
-            .or(orExpr)
-            .not("name", "ilike", "%Mainboard%")
-            .not("name", "ilike", "%RAM%");
+            .eq("category", "Components")
+            .or("name.ilike.%RTX%,name.ilike.%GTX%,name.ilike.%RX 6%,name.ilike.%RX 7%,name.ilike.%RX 9%,name.ilike.%VGA%,name.ilike.%GPU%,name.ilike.%Graphic%")
+            .not("name", "ilike", "%CPU%")
+            .not("name", "ilike", "%Mainboard%");
+          if (gpuBrand === "nvidia") q = q.or("name.ilike.%RTX%,name.ilike.%GTX%");
+          else if (gpuBrand === "amd") q = q.or("name.ilike.%RX 6%,name.ilike.%RX 7%,name.ilike.%RX 9%");
+          limit = 30;
           break;
         }
         case "psu":
           q = q
-            .or("name.ilike.%PSU%,name.ilike.%Power Supply%,name.ilike.%Case%,name.ilike.%Chassis%,name.ilike.%ATX%,name.ilike.%Watt%")
-            .not("name", "ilike", "%Mainboard%");
+            .eq("category", "Storage")
+            .or("name.ilike.%Case%,name.ilike.%Chassis%,name.ilike.%4000D%,name.ilike.%PSU%,name.ilike.%Power Supply%,name.ilike.%Watt%")
+            .not("name", "ilike", "%SSD%")
+            .not("name", "ilike", "%DDR%");
+          limit = 20;
           break;
       }
 
       const { data, error } = await q
         .order("selling_price", { ascending: true })
-        .limit(20);
+        .limit(limit);
 
       if (cancelled) return;
       if (error) {
@@ -555,7 +563,7 @@ function ProductPicker({
     return () => {
       cancelled = true;
     };
-  }, [step.key, cpuBrand, mbBrand, mbSocket, gpuBrand]);
+  }, [step.key, cpuBrand, mbBrand, mbSocket, gpuBrand, ssdType]);
 
   const filtered = useMemo(() => {
     const s = q.trim().toLowerCase();
