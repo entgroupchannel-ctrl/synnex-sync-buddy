@@ -43,6 +43,7 @@ import {
 } from "@/components/home-sections";
 import { AppleFeatured } from "@/components/apple-featured";
 import { PcBuilderLanding } from "@/components/pc-builder-landing";
+import { IndustrialComputer } from "@/components/industrial-computer";
 
 import { FrequentlyBought } from "@/components/frequently-bought";
 import { BrandLogo } from "@/components/brand-logo";
@@ -681,6 +682,10 @@ function HomePage() {
 
           {/* Solar & Energy */}
           <SolarEnergy />
+
+          {/* Industrial Grade Computer — links to entgroup.co.th */}
+          <IndustrialComputer />
+
 
 
           {/* Popular Notebooks */}
