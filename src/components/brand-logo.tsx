@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { getBrandLogoUrl } from "@/lib/brand-assets";
 
 const BRAND_DOMAINS: Record<string, string | null> = {
   ASUS: "asus.com",
@@ -21,13 +22,14 @@ export function BrandLogo({ brand, className = "" }: { brand: string | null | un
   const [idx, setIdx] = useState(0);
   if (!brand) return null;
   const key = brand.trim().toUpperCase();
+  const local = getBrandLogoUrl(key);
   const domain = key in BRAND_DOMAINS ? BRAND_DOMAINS[key] : null;
-  const sources = domain
-    ? [
-        `https://unavatar.io/${domain}?fallback=false`,
-      ]
-    : [];
-  const showImg = domain && idx < sources.length;
+  const sources = local
+    ? [local]
+    : domain
+      ? [`https://unavatar.io/${domain}?fallback=false`]
+      : [];
+  const showImg = sources.length > 0 && idx < sources.length;
   return (
     <div
       className={`absolute left-2 top-2 z-10 inline-flex items-center rounded-md bg-white px-2 py-1 shadow-[0_1px_3px_rgba(0,0,0,0.1)] ${className}`}
@@ -37,7 +39,7 @@ export function BrandLogo({ brand, className = "" }: { brand: string | null | un
           src={sources[idx]}
           alt={brand}
           onError={() => setIdx((i) => i + 1)}
-          style={{ height: 16, maxWidth: 48, objectFit: "contain" }}
+          style={{ height: 16, maxWidth: 56, objectFit: "contain" }}
         />
       ) : (
         <span className="text-[10px] font-semibold text-slate-500">{brand}</span>
