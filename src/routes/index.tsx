@@ -378,15 +378,14 @@ function HomePage() {
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <SiteHeader />
 
+      {/* Quick category icons */}
+      <QuickCategoryGrid />
+
       {/* Hero Carousel */}
       <HeroCarousel
         onBrowse={() => document.getElementById("catalog")?.scrollIntoView({ behavior: "smooth" })}
         onReady={() => update({ ready: true })}
       />
-
-      {/* Quick category icons */}
-      <QuickCategoryGrid />
-
 
       {/* Flash Deals */}
       {(flashQ.data?.length ?? 0) > 0 && (
@@ -442,18 +441,28 @@ function HomePage() {
         </section>
       )}
 
+      {/* Microsoft Software (featured) */}
+      <MicrosoftFeatured />
+
+      {/* Popular Notebooks */}
+      <PopularNotebooks />
+
       {/* Today's Best Deals */}
       <FrequentlyBought />
       <TodaysBestDeals />
 
-      {/* Popular Notebooks */}
-      <PopularNotebooks />
+      {/* Network & Security */}
+      <NetworkSecurity />
+
+      {/* Storage Deals */}
+      <StorageDeals />
 
       {/* Shop by Brand */}
       <ShopByBrand />
 
       {/* Catalog */}
       <div id="product-grid" className="mx-auto flex max-w-7xl gap-6 px-4 py-6 scroll-mt-20">
+
         {/* Desktop sidebar */}
         <aside className="hidden w-60 shrink-0 lg:block">
           <div className="sticky top-32 rounded-lg border bg-white p-4">{Filters}</div>
