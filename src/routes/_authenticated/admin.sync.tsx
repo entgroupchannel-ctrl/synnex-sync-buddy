@@ -596,22 +596,28 @@ function PricingSummaryCard() {
 }
 
 function SyncLogsSection() {
+  const [page, setPage] = useState(1);
+  const pageSize = 20;
   const q = useQuery({
-    queryKey: ["sync-logs-recent"],
+    queryKey: ["sync-logs", page],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const from = (page - 1) * pageSize;
+      const to = from + pageSize - 1;
+      const { data, count, error } = await supabase
         .from("sync_logs")
-        .select("id, started_at, finished_at, products_found, status, message")
+        .select("id, started_at, finished_at, products_found, status, message", { count: "exact" })
         .order("started_at", { ascending: false })
-        .limit(10);
+        .range(from, to);
       if (error) throw error;
-      return data ?? [];
+      return { rows: data ?? [], count: count ?? 0 };
     },
   });
-  const rows = q.data ?? [];
+  const rows = q.data?.rows ?? [];
+  const total = q.data?.count ?? 0;
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
   return (
     <section className="mt-6 rounded-lg border bg-white shadow-sm">
-      <div className="border-b p-3 text-sm font-bold text-[#1a237e]">📋 Sync Logs ล่าสุด</div>
+      <div className="border-b p-3 text-sm font-bold text-[#1a237e]">📋 Sync Logs</div>
       <div className="overflow-x-auto">
         <Table>
           <TableHeader className="bg-slate-50">
@@ -646,6 +652,15 @@ function SyncLogsSection() {
           </TableBody>
         </Table>
       </div>
+      {total > 0 ? (
+        <div className="flex items-center justify-between border-t p-3 text-sm text-slate-600">
+          <span>หน้า {page} / {totalPages} • ทั้งหมด {total} รายการ</span>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>ก่อนหน้า</Button>
+            <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)}>ถัดไป</Button>
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }
