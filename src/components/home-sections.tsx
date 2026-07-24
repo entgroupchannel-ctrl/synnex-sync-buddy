@@ -902,16 +902,14 @@ export function MicrosoftFeatured() {
   const tier = useCustomerTier();
   const addToCart = useAddToCart();
   const q = useQuery({
-    queryKey: ["microsoft-featured"],
+    queryKey: ["software-licenses"],
     queryFn: async () => {
       const { data } = await supabase.from("synnex_products")
         .select("*")
-        .eq("brand", "MICROSOFT")
+        .eq("category", "Software")
         .eq("price_approved", true)
-        .eq("stock_status", "พร้อมจัดส่ง")
         .gt("selling_price", 0)
-        .order("selling_price", { ascending: true })
-        .limit(8);
+        .order("selling_price", { ascending: true });
       return (data ?? []) as ProductRow[];
     },
     staleTime: 5 * 60_000,
@@ -929,10 +927,10 @@ export function MicrosoftFeatured() {
     >
       <div className="mx-auto max-w-7xl px-4 py-8">
         <SectionHeader
-          title="🪟 Microsoft Software — ลิขสิทธิ์แท้"
-          en="Microsoft Software — Genuine License"
-          sub="Authorized Dealer จาก Synnex & VST ECS Thailand"
-          link={{ to: "/", search: { category: "Software", brands: "MICROSOFT" }, label: "ดู Microsoft Software ทั้งหมด" }}
+          title="💿 Software & Licenses / ซอฟต์แวร์ลิขสิทธิ์"
+          en="Software & Licenses — Genuine"
+          sub="Microsoft 365, Office 2024, Windows 11, Kaspersky, ESET, McAfee — Authorized Dealer"
+          link={{ to: "/", search: { category: "Software" }, label: "ดู Software ทั้งหมด" }}
         />
 
         <div className="flex gap-4 overflow-x-auto pb-3 no-scrollbar snap-x">
