@@ -72,7 +72,9 @@ function ProductDetail() {
 
   const p = productQ.data;
   const historyQ = usePurchaseHistoryForSku(p?.sku);
+  const byOrder = (p as { fulfillment_type?: string | null } | undefined)?.fulfillment_type === "by_order";
   const ready = p?.stock_status === "พร้อมจัดส่ง";
+  const available = ready || byOrder;
   const specs = parseSpecs(p?.description);
 
   useEffect(() => {
