@@ -404,6 +404,59 @@ export function PopularNotebooks() {
 
 /* ---------- Shop by Brand ---------- */
 
+const BRAND_DOMAINS: Record<string, string> = {
+  CISCO: "cisco.com",
+  HIKVISION: "hikvision.com",
+  SANDISK: "sandisk.com",
+  ASUS: "asus.com",
+  DAHUA: "dahuasecurity.com",
+  CORSAIR: "corsair.com",
+  HUAWEI: "huawei.com",
+  VIEWSONIC: "viewsonic.com",
+  SAMSUNG: "samsung.com",
+  SEAGATE: "seagate.com",
+  KINGSTON: "kingston.com",
+  ACER: "acer.com",
+  TPLINK: "tp-link.com",
+  AOC: "aoc.com",
+  DLINK: "dlink.com",
+  LG: "lg.com",
+  MICROSOFT: "microsoft.com",
+  DELL: "dell.com",
+  HP: "hp.com",
+  LENOVO: "lenovo.com",
+  MSI: "msi.com",
+  CANON: "canon.com",
+  APC: "apc.com",
+  NETGEAR: "netgear.com",
+  ZYXEL: "zyxel.com",
+};
+
+function BrandCardLogo({ brand }: { brand: string }) {
+  const [failed, setFailed] = useState(false);
+  const domain = BRAND_DOMAINS[brand];
+  if (!domain) {
+    return (
+      <div className="mb-2 flex h-10 items-center justify-center">
+        <span className="text-base font-black text-[color:var(--brand-navy)]">{brand}</span>
+      </div>
+    );
+  }
+  return (
+    <div className="mb-2 flex h-10 items-center justify-center">
+      <img
+        src={`https://logo.clearbit.com/${domain}`}
+        alt={brand}
+        className={`max-h-8 max-w-20 object-contain transition group-hover:grayscale-0 ${failed ? "hidden" : "grayscale-[20%]"}`}
+        onError={() => setFailed(true)}
+      />
+      {failed && (
+        <span className="text-base font-black text-[color:var(--brand-navy)]">{brand}</span>
+      )}
+    </div>
+  );
+}
+
 export function ShopByBrand() {
   const q = useQuery({
     queryKey: ["all-brands"],
@@ -465,16 +518,13 @@ export function ShopByBrand() {
                 type="button"
                 onClick={() => onPick(brand)}
                 aria-pressed={active}
-                className={`group flex min-w-[140px] shrink-0 flex-col items-center justify-center rounded-lg border-2 px-5 py-4 transition hover:shadow-md ${
+                className={`group flex h-[100px] min-w-[140px] shrink-0 flex-col items-center justify-center rounded-lg border-2 px-5 py-3 transition hover:shadow-md ${
                   active
                     ? "border-[color:var(--brand-green)] bg-[color:var(--brand-green)]/5 ring-2 ring-[color:var(--brand-green)]/20"
                     : "border-slate-200 bg-white hover:border-[color:var(--brand-green)]"
                 }`}
               >
-                <div className={`flex items-center gap-1.5 text-base font-black ${active ? "text-[color:var(--brand-green)]" : "text-[color:var(--brand-navy)] group-hover:text-[color:var(--brand-green)]"}`}>
-                  {active && <span aria-hidden>✓</span>}
-                  {brand}
-                </div>
+                <BrandCardLogo brand={brand} />
                 <div className="text-[10px] text-slate-400">{count} รายการ</div>
               </button>
             );
@@ -484,6 +534,7 @@ export function ShopByBrand() {
     </section>
   );
 }
+
 
 /* ---------- Trust badges ---------- */
 
