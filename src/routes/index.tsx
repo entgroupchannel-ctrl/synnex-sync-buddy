@@ -703,11 +703,13 @@ function HomePage() {
 
 
       {/* Catalog */}
-      <div id="product-grid" className="mx-auto flex max-w-7xl gap-6 px-4 py-6 scroll-mt-20">
+      <div id="product-grid" className="mx-auto flex max-w-7xl items-start gap-6 px-4 py-6 scroll-mt-20">
 
         {/* Desktop sidebar */}
-        <aside className="hidden w-60 shrink-0 lg:block">
-          <div className="sticky top-32 rounded-lg border bg-white p-4">{Filters}</div>
+        <aside className="hidden w-64 shrink-0 lg:block">
+          <div className="sticky top-4 max-h-[calc(100vh-2rem)] overflow-y-auto rounded-lg border bg-white p-4 scrollbar-thin scrollbar-thumb-slate-200">
+            {Filters}
+          </div>
         </aside>
 
         <main className="min-w-0 flex-1">
