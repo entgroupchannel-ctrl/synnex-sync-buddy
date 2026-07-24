@@ -64,15 +64,10 @@ function CartPage() {
   const fulfillMap = fulfillQ.data ?? {};
   const hasByOrder = items.some((i) => fulfillMap[i.sku] === "by_order");
 
-  useEffect(() => {
-    if (items.length === 0) { setShipOpts([]); return; }
-    let cancelled = false;
-    getShippingOptions(total, totalWeight).then((opts) => { if (!cancelled) setShipOpts(opts); });
-    return () => { cancelled = true; };
-  }, [total, totalWeight, items.length]);
-
-  const cheapest = shipOpts[0] ?? null;
-  const nextFree = shipOpts.find((o) => o.freeThreshold && total < o.freeThreshold) ?? null;
+  // Cheapest fee across both zones (used for a rough "cart total incl. shipping" preview)
+  const cheapestFee = Math.min(shipBkk.fee, shipOther.fee);
+  const isBkkFree = shipBkk.freeShipping;
+  const remainingForFree = Math.max(0, 5000 - total);
 
 
   // Persist cart snapshot for logged-in users so the reminder job can email them.
