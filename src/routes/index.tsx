@@ -458,6 +458,7 @@ function HomePage() {
       price: getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier) ?? 0,
       image_url: (p.image_url as string) ?? null,
       distributor: (p.distributor as string | null) ?? null,
+      category: (p.category as string | null) ?? null,
     });
     if (!user) {
       triggerAuthPrompt({ name, sku: p.sku as string, image_url: (p.image_url as string) ?? null });
