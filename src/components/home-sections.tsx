@@ -479,6 +479,7 @@ export function ShopByBrand() {
   const navigate = useNavigate();
   const currentSearch = useSearch({ strict: false }) as { brands?: string };
   const selected = (currentSearch.brands ?? "").split(",").filter(Boolean);
+  const hasSelection = selected.length > 0;
 
   if ((q.data?.length ?? 0) === 0) return null;
 
@@ -498,17 +499,39 @@ export function ShopByBrand() {
     else set.add(brand);
     navigate({
       to: "/",
-      search: (prev: Record<string, unknown>) => ({ ...prev, brands: [...set].join(","), page: 1 }),
+      // Selecting/deselecting a brand auto-clears the category to prevent
+      // 0-result conflicts between category × brand filters.
+      search: (prev: Record<string, unknown>) => ({ ...prev, brands: [...set].join(","), category: "all", page: 1 }),
       replace: true,
     });
     // wait for DOM update after navigation
     requestAnimationFrame(() => setTimeout(scrollToGrid, 50));
   };
 
+  const clearBrands = () => {
+    navigate({
+      to: "/",
+      search: (prev: Record<string, unknown>) => ({ ...prev, brands: "", page: 1 }),
+      replace: true,
+    });
+    requestAnimationFrame(() => setTimeout(scrollToGrid, 50));
+  };
+
   return (
     <section className="border-b bg-slate-50">
       <div className="mx-auto max-w-7xl px-4 py-8">
-        <SectionHeader title="แบรนด์ที่มีจำหน่าย" en="Shop by Brand" />
+        <div className="flex items-center justify-between gap-3">
+          <SectionHeader title="แบรนด์ที่มีจำหน่าย" en="Shop by Brand" />
+          {hasSelection && (
+            <button
+              type="button"
+              onClick={clearBrands}
+              className="inline-flex shrink-0 items-center gap-1 rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-medium text-slate-700 hover:border-[color:var(--brand-green)] hover:text-[color:var(--brand-green)]"
+            >
+              × ล้างตัวกรอง
+            </button>
+          )}
+        </div>
         <div className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-2 no-scrollbar">
           {q.data!.map(({ brand, count }) => {
             const active = selected.includes(brand);
@@ -534,6 +557,7 @@ export function ShopByBrand() {
     </section>
   );
 }
+
 
 
 /* ---------- Trust badges ---------- */
