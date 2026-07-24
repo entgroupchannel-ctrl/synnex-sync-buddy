@@ -1,4 +1,5 @@
 import ACER from "@/assets/brands/ACER.png.asset.json";
+import APPLE from "@/assets/brands/APPLE.webp.asset.json";
 import ASUS from "@/assets/brands/ASUS.png.asset.json";
 import CANON from "@/assets/brands/CANON.png.asset.json";
 import DAHUA from "@/assets/brands/DAHUA.png.asset.json";
@@ -15,6 +16,7 @@ import WD from "@/assets/brands/WD.png.asset.json";
 
 export const BRAND_LOGO_URLS: Record<string, string> = {
   ACER: ACER.url,
+  APPLE: APPLE.url,
   ASUS: ASUS.url,
   CANON: CANON.url,
   DAHUA: DAHUA.url,
