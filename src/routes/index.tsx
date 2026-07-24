@@ -31,6 +31,7 @@ import {
   NewsletterSignup,
 } from "@/components/home-sections";
 import { FrequentlyBought } from "@/components/frequently-bought";
+import { BrandLogo } from "@/components/brand-logo";
 import entLogo from "@/assets/entgroup-logo.jpg.asset.json";
 
 const searchSchema = z.object({
