@@ -15,6 +15,7 @@ import { useSupabaseUser } from "@/lib/auth-sheet";
 import { saveCartReminder, deleteCartReminder } from "@/lib/cart-reminder";
 import { getWeightBasedShippingFee } from "@/lib/shipping";
 import { CartReassurance } from "@/components/trust-signals";
+import { DeliveryZoneInfoBox } from "@/components/delivery-zone-dialog";
 
 
 export const Route = createFileRoute("/cart")({
@@ -237,6 +238,7 @@ function CartPage() {
               <Button asChild className="mt-4 w-full bg-[color:var(--brand-orange)] hover:bg-[color:var(--brand-orange-dark)]" size="lg">
                 <Link to="/checkout">{t("cart.checkout")}</Link>
               </Button>
+              <DeliveryZoneInfoBox className="mb-3" />
               <CartReassurance />
             </aside>
 
