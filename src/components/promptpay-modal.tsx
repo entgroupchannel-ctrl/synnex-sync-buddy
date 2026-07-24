@@ -51,9 +51,9 @@ export function PromptPayPaymentModal({ orderId, orderNumber, amount, onPaid }: 
           body: { order_id: orderId, amount },
         });
         if (error) throw error;
-        const { qr_code_url, charge_id, expires_at, requires_manual_transfer_protocol } = data as ChargeResp;
-        if (requires_manual_transfer_protocol) {
-          setCharge({ requires_manual_transfer_protocol: true });
+        const { qr_code_url, charge_id, expires_at, requires_manual_transfer } = data as ChargeResp;
+        if (requires_manual_transfer) {
+          setCharge({ requires_manual_transfer: true });
         } else {
           if (!qr_code_url) throw new Error("ไม่ได้รับข้อมูล QR");
           setCharge({ qr_code_url, charge_id, expires_at });
