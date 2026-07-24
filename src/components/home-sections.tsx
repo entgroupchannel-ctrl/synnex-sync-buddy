@@ -385,7 +385,7 @@ export function PopularNotebooks() {
                   <ProductImage src={p.image_url} alt={p.name ?? p.sku} className="h-full w-full object-contain transition group-hover:scale-105" iconClassName="h-16 w-16 text-slate-300" />
                 </Link>
                 <div className="flex flex-1 flex-col gap-1 border-t p-3">
-                  <div className="text-[10px] uppercase tracking-wide text-slate-500">{p.sku}</div>
+                  {p.brand && <div className="text-[10px] uppercase tracking-wide text-slate-500">{p.brand}</div>}
                   <Link to="/product/$slug" params={{ slug }} className="line-clamp-2 min-h-10 text-sm font-medium hover:text-[color:var(--brand-navy)]">{p.name ?? p.sku}</Link>
                   <div className="mt-auto text-lg font-black text-[color:var(--brand-orange)]">{displayPrice(p, tier)}</div>
                   <Button
