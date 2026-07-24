@@ -60,7 +60,7 @@ export function SiteHeader() {
         .select("id, sku, slug, name, brand, selling_price, image_url")
         .eq("price_approved", true)
         .gt("selling_price", 0)
-        .or(`name.ilike.%${s}%,sku.ilike.%${s}%,brand.ilike.%${s}%`)
+        .or(`name.ilike.%${s}%,sku.ilike.%${s}%,brand.ilike.%${s}%,description.ilike.%${s}%`)
         .order("selling_price", { ascending: true })
         .limit(5);
       const { data: brandRows } = await supabase
