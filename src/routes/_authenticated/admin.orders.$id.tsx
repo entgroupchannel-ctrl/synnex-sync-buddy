@@ -146,6 +146,24 @@ function AdminOrderDetail() {
 
   useEffect(() => { load(); /* eslint-disable-next-line */ }, [id]);
 
+  const [byOrderSkus, setByOrderSkus] = useState<Set<string>>(new Set());
+  useEffect(() => {
+    const skus = (order?.order_items ?? []).map((i) => i.product_sku).filter(Boolean);
+    if (skus.length === 0) { setByOrderSkus(new Set()); return; }
+    let cancelled = false;
+    (async () => {
+      const { data } = await supabase.from("synnex_products").select("sku,fulfillment_type").in("sku", skus);
+      if (cancelled) return;
+      const s = new Set<string>();
+      for (const r of data ?? []) {
+        if ((r as { fulfillment_type: string | null }).fulfillment_type === "by_order") s.add((r as { sku: string }).sku);
+      }
+      setByOrderSkus(s);
+    })();
+    return () => { cancelled = true; };
+  }, [order]);
+  const hasByOrder = byOrderSkus.size > 0;
+
   const grouped = useMemo(() => {
     const g = new Map<string, OrderItem[]>();
     for (const it of order?.order_items ?? []) {
