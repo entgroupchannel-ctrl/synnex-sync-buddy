@@ -7,6 +7,7 @@ import { CATEGORIES } from "@/lib/cart";
 import { useSupabaseUser } from "@/lib/auth-sheet";
 import { AddToCartSheet } from "@/components/add-to-cart-sheet";
 import { useLanguage } from "@/lib/i18n";
+import entLogo from "@/assets/entgroup-logo.jpg.asset.json";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
