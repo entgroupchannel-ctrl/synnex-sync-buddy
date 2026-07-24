@@ -208,6 +208,7 @@ const QUICK_CATS = [
   { icon: Monitor,    label: "Monitor",      sub: "Monitor",        cat: "Monitor" },
   { icon: Printer,    label: "Printer",      sub: "Printer",        cat: "Printer" },
   { icon: Cpu,        label: "PC / Desktop", sub: "PC & Desktop",   cat: "PC" },
+  { icon: MonitorCog, label: "คอมพิวเตอร์ชุด", sub: "Computer Set",   cat: "Computer Set" },
   { icon: Smartphone, label: "สมาร์ตโฟน",     sub: "Smart Phone",    cat: "Smartphone" },
   { icon: Wifi,       label: "Network",      sub: "Network",        cat: "Network" },
   { icon: HardDrive,  label: "Storage",      sub: "Storage",        cat: "Storage" },
