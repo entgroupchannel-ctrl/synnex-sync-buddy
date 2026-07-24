@@ -9,8 +9,11 @@ import { toast } from "sonner";
 import {
   Laptop, Monitor, Printer, Cpu, Smartphone, Wifi, HardDrive, Package,
   Cable, LayoutGrid, ShoppingCart, Truck, Award, FileText, Phone, ArrowRight,
-  ChevronLeft, ChevronRight, Mail, Flame,
+  ChevronLeft, ChevronRight, Mail, Flame, ShieldCheck, Building2, Warehouse,
 } from "lucide-react";
+import heroWarehouse from "@/assets/hero-warehouse.jpg";
+import heroEnterprise from "@/assets/hero-enterprise.jpg";
+import heroDelivery from "@/assets/hero-delivery.jpg";
 import { displayPrice, getSellingPrice, useCustomerTier } from "@/lib/cart";
 import { triggerAuthPrompt, useSupabaseUser } from "@/lib/auth-sheet";
 import { useCart } from "@/lib/cart";
