@@ -517,7 +517,11 @@ function HomePage() {
                 return (
                   <div key={p.id} className="group relative flex flex-col overflow-hidden rounded-lg border bg-white transition hover:shadow-lg">
                     <BrandLogo brand={p.brand} />
-                    {lowStock && (
+                    {!ready ? (
+                      <div className="absolute right-2 top-2 z-10 rounded bg-red-600 px-2 py-0.5 text-[10px] font-bold text-white shadow-sm">
+                        สินค้าหมด
+                      </div>
+                    ) : lowStock && (
                       <div className="absolute right-2 top-2 z-10 rounded bg-red-500 px-1.5 py-0.5 text-[10px] font-bold text-white shadow-sm">
                         เหลือน้อย
                       </div>
