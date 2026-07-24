@@ -81,6 +81,7 @@ type ProductRow = {
   stock_status: string | null;
   stock_qty: number | null;
   distributor: string | null;
+  fulfillment_type: string | null;
 };
 
 function useCountdown() {
