@@ -361,7 +361,7 @@ function HomePage() {
         <div className="mb-2 text-sm font-bold text-[color:var(--brand-navy)]">หมวดหมู่</div>
         <div className="space-y-0.5">
           <button
-            onClick={() => update({ category: "all" })}
+            onClick={() => setCategory("all")}
             className={`flex w-full items-center justify-between rounded-md px-2 py-1.5 text-sm ${search.category === "all" ? "bg-[color:var(--brand-navy)] text-white" : "hover:bg-slate-100"}`}
           >
             ทั้งหมด <ChevronRight className="h-3 w-3 opacity-50" />
@@ -369,12 +369,13 @@ function HomePage() {
           {CATEGORIES.map((c) => (
             <button
               key={c}
-              onClick={() => update({ category: c })}
+              onClick={() => setCategory(c)}
               className={`flex w-full items-center justify-between rounded-md px-2 py-1.5 text-sm ${search.category === c ? "bg-[color:var(--brand-navy)] text-white" : "hover:bg-slate-100"}`}
             >
               {c} <ChevronRight className="h-3 w-3 opacity-50" />
             </button>
           ))}
+
         </div>
       </div>
 
