@@ -214,6 +214,7 @@ const QUICK_CATS = [
   { icon: HardDrive,  label: "Storage",      sub: "Storage",        cat: "Storage" },
   { icon: Package,    label: "Software",     sub: "Software",       cat: "Software" },
   { icon: Cable,      label: "อุปกรณ์เสริม",   sub: "Accessories",    cat: "Accessories" },
+  { icon: Cpu,        label: "คอมโพเนนท์",     sub: "Components",     cat: "Components" },
   { icon: LayoutGrid, label: "ดูทั้งหมด",     sub: "View All",       cat: "all" },
 ];
 
@@ -1151,4 +1152,42 @@ export function StorageDeals() {
     </section>
   );
 }
+
+/* ---------- Components (CPU & RAM) ---------- */
+
+export function ComponentsShowcase() {
+  const q = useQuery({
+    queryKey: ["components-showcase"],
+    queryFn: async () => {
+      const { data } = await supabase.from("synnex_products")
+        .select("*")
+        .eq("category", "Components")
+        .eq("price_approved", true)
+        .gt("selling_price", 0)
+        .order("selling_price", { ascending: false })
+        .limit(8);
+      return (data ?? []) as ProductRow[];
+    },
+    staleTime: 5 * 60_000,
+  });
+
+  if ((q.data?.length ?? 0) === 0) return null;
+
+  return (
+    <section className="border-b bg-white">
+      <div className="mx-auto max-w-7xl px-4 py-8">
+        <SectionHeader
+          title="⚙️ CPU & RAM / ชิ้นส่วนคอมพิวเตอร์"
+          en="Components — CPU & Memory"
+          sub="AMD Ryzen, Intel Core Ultra, DDR4/DDR5 Memory"
+          link={{ to: "/", search: { category: "Components" }, label: "ดู Components ทั้งหมด" }}
+        />
+        <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
+          {q.data!.map((p) => <CategoryGridCard key={p.id} p={p} />)}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 

@@ -35,6 +35,7 @@ import {
   MicrosoftFeatured,
   NetworkSecurity,
   StorageDeals,
+  ComponentsShowcase,
 } from "@/components/home-sections";
 
 import { FrequentlyBought } from "@/components/frequently-bought";
@@ -49,6 +50,7 @@ const searchSchema = z.object({
   max: fallback(z.number(), 100000).default(100000),
   ready: fallback(z.boolean(), false).default(false),
   fulfill: fallback(z.enum(["all", "stock", "by_order"]), "all").default("all"),
+  compType: fallback(z.enum(["all", "cpu", "ram"]), "all").default("all"),
   sort: fallback(z.string(), "new").default("new"),
   view: fallback(z.string(), "grid").default("grid"),
   page: fallback(z.number().int(), 1).default(1),
@@ -278,6 +280,11 @@ function HomePage() {
         q = q.eq("price_approved", true).gt("selling_price", 0);
         if (s) q = q.or(`name.ilike.%${s}%,sku.ilike.%${s}%,brand.ilike.%${s}%,description.ilike.%${s}%`);
         if (search.category !== "all") q = q.eq("category", search.category);
+        if (search.category === "Components" && search.compType === "cpu") {
+          q = q.or("name.ilike.%CPU%,name.ilike.%Ryzen%,name.ilike.%Core Ultra%");
+        } else if (search.category === "Components" && search.compType === "ram") {
+          q = q.or("name.ilike.%RAM%,name.ilike.%DDR%,name.ilike.%Memory%");
+        }
         if (selectedBrands.length > 0) q = q.in("brand", selectedBrands);
         if (search.min > 0) q = q.gte("price", search.min);
         if (search.max < PRICE_MAX) q = q.lte("price", search.max);
@@ -654,6 +661,9 @@ function HomePage() {
           {/* Network & Security */}
           <NetworkSecurity />
 
+          {/* Components (CPU & RAM) */}
+          <ComponentsShowcase />
+
           {/* Storage Deals */}
           <StorageDeals />
 
@@ -730,6 +740,29 @@ function HomePage() {
               </div>
             </div>
           </div>
+
+          {/* Components sub-type pills */}
+          {search.category === "Components" && (
+            <div className="mb-3 flex flex-wrap gap-2">
+              {([
+                { v: "all", label: "ทั้งหมด" },
+                { v: "cpu", label: "CPU" },
+                { v: "ram", label: "RAM / Memory" },
+              ] as const).map((o) => (
+                <button
+                  key={o.v}
+                  onClick={() => update({ compType: o.v, page: 1 })}
+                  className={`rounded-full border px-3.5 py-1.5 text-xs font-medium transition ${
+                    search.compType === o.v
+                      ? "border-[color:var(--brand-navy)] bg-[color:var(--brand-navy)] text-white"
+                      : "bg-white hover:bg-slate-50"
+                  }`}
+                >
+                  {o.label}
+                </button>
+              ))}
+            </div>
+          )}
 
           {/* Active filter summary */}
           {hasActiveFilters && (
