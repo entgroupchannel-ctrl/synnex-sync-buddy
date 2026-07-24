@@ -24,35 +24,22 @@ import entLogo from "@/assets/entgroup-logo.jpg.asset.json";
 /* Small helpers                                                  */
 /* -------------------------------------------------------------- */
 
-function LogoBadge({
-  src,
-  alt,
-  label,
-  className = "",
-}: {
-  src: string;
-  alt: string;
-  label: string;
-  className?: string;
-}) {
-  const [failed, setFailed] = useState(false);
+function PillList({ items }: { items: string[] }) {
   return (
-    <span
-      title={alt}
-      className={`inline-flex h-10 items-center justify-center rounded-md border border-slate-200 bg-white px-2 shadow-sm ${className}`}
-    >
-      {failed ? (
-        <span className="text-[11px] font-semibold text-slate-700">{label}</span>
-      ) : (
-        <img
-          src={src}
-          alt={alt}
-          loading="lazy"
-          onError={() => setFailed(true)}
-          className="max-h-6 max-w-full object-contain"
-        />
-      )}
-    </span>
+    <div className="flex flex-wrap gap-1.5">
+      {items.map((label) => (
+        <span
+          key={label}
+          className="rounded-md border px-2.5 py-1 text-[11px] font-medium"
+          style={{
+            borderColor: "rgba(255,255,255,0.3)",
+            color: "rgba(255,255,255,0.8)",
+          }}
+        >
+          {label}
+        </span>
+      ))}
+    </div>
   );
 }
 
