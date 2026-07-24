@@ -14,7 +14,7 @@ import {
 import heroWarehouse from "@/assets/hero-warehouse.jpg";
 import heroEnterprise from "@/assets/hero-enterprise.jpg";
 import heroDelivery from "@/assets/hero-delivery.jpg";
-import { displayPrice, getSellingPrice, useCustomerTier } from "@/lib/cart";
+import { displayPrice, getSellingPrice, priceFmt, useCustomerTier } from "@/lib/cart";
 import { triggerAuthPrompt, useSupabaseUser } from "@/lib/auth-sheet";
 import { useCart } from "@/lib/cart";
 import { useLanguage } from "@/lib/i18n";
