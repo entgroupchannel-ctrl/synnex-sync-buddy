@@ -42,9 +42,6 @@ import {
   SolarEnergy,
 } from "@/components/home-sections";
 import { AppleFeatured } from "@/components/apple-featured";
-  SolarEnergy,
-} from "@/components/home-sections";
-import { AppleFeatured } from "@/components/apple-featured";
 
 import { FrequentlyBought } from "@/components/frequently-bought";
 import { BrandLogo } from "@/components/brand-logo";
