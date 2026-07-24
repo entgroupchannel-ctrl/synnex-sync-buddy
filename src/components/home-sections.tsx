@@ -214,6 +214,7 @@ const QUICK_CATS = [
   { icon: HardDrive,  label: "Storage",      sub: "Storage",        cat: "Storage" },
   { icon: Package,    label: "Software",     sub: "Software",       cat: "Software" },
   { icon: Cable,      label: "อุปกรณ์เสริม",   sub: "Accessories",    cat: "Accessories" },
+  { icon: Cpu,        label: "คอมโพเนนท์",     sub: "Components",     cat: "Components" },
   { icon: LayoutGrid, label: "ดูทั้งหมด",     sub: "View All",       cat: "all" },
 ];
 
