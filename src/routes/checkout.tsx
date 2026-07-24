@@ -93,14 +93,18 @@ function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false);
   const [orderCreated, setOrderCreated] = useState(false);
 
+  const [shippingMethod, setShippingMethod] = useShippingMethod();
+  const isPickup = shippingMethod === "pickup";
+  const isExpress = shippingMethod === "express";
+
   // Shipping — weight-based Kerry rule (see @/lib/shipping)
   const shipCalc = useMemo(
     () =>
       getWeightBasedShippingFee(
         items.map((i) => ({ price: i.price, qty: i.qty, weight_kg: getItemWeightKg(i) })),
-        f.shipping_province,
+        isPickup ? OFFICE_ADDRESS.province : f.shipping_province,
       ),
-    [items, f.shipping_province],
+    [items, f.shipping_province, isPickup],
   );
   const totalWeight = shipCalc.totalWeight;
 
