@@ -82,7 +82,7 @@ function CartPage() {
   }, [user?.id, user?.email, items, total]);
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 overflow-x-hidden">
       <SiteHeader />
       <div className="mx-auto max-w-5xl px-4 py-6">
         <Link to="/" className="mb-4 inline-flex items-center gap-1 text-sm text-slate-600 hover:text-[color:var(--brand-navy)]">
@@ -106,18 +106,29 @@ function CartPage() {
               )}
               {items.map((it) => {
                 const itemByOrder = fulfillMap[it.sku] === "by_order";
+                const decodedSku = (() => {
+                  try {
+                    const decoded = decodeURIComponent(it.sku || '');
+                    if (decoded.includes('%') || decoded.length > 60) return null;
+                    return decoded;
+                  } catch { return null; }
+                })();
                 return (
-                <div key={it.id} className="flex gap-4 rounded-lg border bg-white p-4">
+                <div key={it.id} className="flex max-w-full gap-4 rounded-lg border bg-white p-4">
                   <div className="grid h-24 w-24 shrink-0 place-items-center rounded-md bg-slate-50">
                     <ProductImage src={it.image_url} alt={it.name} className="h-full w-full object-contain p-1" iconClassName="h-8 w-8 text-slate-300" />
 
                   </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-xs text-slate-500">{it.sku}</div>
+                  <div className="min-w-0 flex-1 max-w-full">
+                    {decodedSku && (
+                      <div className="text-xs text-slate-400 truncate max-w-full">
+                        {decodedSku}
+                      </div>
+                    )}
                     <Link
                       to="/product/$slug"
                       params={{ slug: it.slug || it.id }}
-                      className="line-clamp-2 text-sm font-medium hover:text-[color:var(--brand-navy)]"
+                      className="text-sm font-semibold break-words line-clamp-2 max-w-full hover:text-[color:var(--brand-navy)]"
                     >
                       {it.name}
                     </Link>
