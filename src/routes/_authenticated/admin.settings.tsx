@@ -74,8 +74,9 @@ function StoreInfo() {
     <Card>
       <Field label="ชื่อร้าน" value="ENT Group IT Shop" />
       <Field label="Tagline" value="Authorized Dealer — Synnex & VST ECS" />
-      <Field label="โทร" value="02-045-6104" />
-      <Field label="อีเมล" value="info@entgroup.co.th" />
+      <Field label="โทร" value="02-045-6104, 095-739-1053, 084-046-1315" />
+      <Field label="Fax" value="02-045-6105" />
+      <Field label="อีเมล" value="Sales@entgroup.co.th" />
       <Field label="Tax ID" value="0135558013167" />
       <div className="grid gap-1 sm:grid-cols-[180px_1fr]">
         <label className="text-xs font-semibold text-slate-600">ที่อยู่</label>
@@ -83,9 +84,9 @@ function StoreInfo() {
           readOnly
           rows={3}
           className="rounded-md border bg-slate-50 px-3 py-2 text-sm"
-          defaultValue={`70/5 หมู่บ้านเมกาโฮม บิซทาวน์
-แจ้งวัฒนะ 2 หมู่ 4 ต.คลองพระอุดม
-อ.ปากเกร็ด นนทบุรี 11120`}
+          defaultValue={`70/5 หมู่ 4 เมทโทร บิซทาวน์ แจ้งวัฒนะ 2
+ตำบลคลองพระอุดม อำเภอปากเกร็ด
+นนทบุรี 11120`}
         />
       </div>
       <p className="text-[11px] text-slate-500">* บันทึกลงฐานข้อมูล — เร็วๆ นี้</p>
