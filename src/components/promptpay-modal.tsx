@@ -120,9 +120,9 @@ export function PromptPayPaymentModal({ orderId, orderNumber, amount, onPaid }: 
     <>
       <Dialog open={open} onOpenChange={() => { /* prevent outside/esc close */ }}>
         <DialogPortal>
-          <DialogOverlay />
+          <DialogOverlay className="backdrop-blur-sm bg-black/20" />
           <DialogContent
-            className="max-w-sm gap-0 p-0 [&>button]:hidden"
+            className="max-w-sm gap-0 border border-gray-100 p-0 shadow-2xl [&>button]:hidden"
             onPointerDownOutside={(e) => e.preventDefault()}
             onEscapeKeyDown={(e) => e.preventDefault()}
             onInteractOutside={(e) => e.preventDefault()}
