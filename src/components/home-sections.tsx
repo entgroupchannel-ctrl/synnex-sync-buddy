@@ -377,7 +377,7 @@ export function PopularNotebooks() {
                   <div className="absolute z-10 m-2 rounded bg-white/90 px-1.5 py-0.5 text-[10px] font-bold text-slate-700 shadow-sm">{p.brand}</div>
                 )}
                 <Link to="/product/$slug" params={{ slug }} className="grid aspect-square place-items-center bg-white p-3">
-                  {p.image_url ? <img src={p.image_url} alt={p.name ?? p.sku} className="h-full w-full object-contain transition group-hover:scale-105" loading="lazy" /> : <Package className="h-16 w-16 text-slate-300" />}
+                  <ProductImage src={p.image_url} alt={p.name ?? p.sku} className="h-full w-full object-contain transition group-hover:scale-105" iconClassName="h-16 w-16 text-slate-300" />
                 </Link>
                 <div className="flex flex-1 flex-col gap-1 border-t p-3">
                   <div className="text-[10px] uppercase tracking-wide text-slate-500">{p.sku}</div>
