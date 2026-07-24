@@ -61,10 +61,24 @@ type Order = {
   status: string | null;
   notes: string | null;
   tracking_number: string | null;
+  shipping_provider: string | null;
+  tracking_url: string | null;
+  estimated_delivery: string | null;
+  shipped_at: string | null;
+  delivered_at: string | null;
   quotation_url: string | null;
   tax_invoice_url: string | null;
   order_items: OrderItem[];
   history: HistoryRow[];
+};
+
+type ShippingEvent = {
+  id: string;
+  event_time: string | null;
+  status: string | null;
+  location: string | null;
+  description: string | null;
+  description_en: string | null;
 };
 
 type EmailLog = {
