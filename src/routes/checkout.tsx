@@ -420,51 +420,47 @@ function CheckoutPage() {
               </div>
             </section>
 
-            {/* Shipping method */}
+            {/* Shipping method — Kerry weight-based */}
             <section className="space-y-3 rounded-lg border bg-white p-6">
               <h2 className="font-bold text-[color:var(--brand-navy)]">วิธีจัดส่ง</h2>
-              {shipOptions.length === 0 ? (
-                <div className="text-sm text-slate-500">กำลังโหลดตัวเลือกจัดส่ง...</div>
-              ) : (
-                <RadioGroup value={shipId} onValueChange={setShipId} className="grid gap-2">
-                  {shipOptions.map((o, idx) => {
-                    const active = shipId === o.id;
-                    return (
-                      <label
-                        key={o.id}
-                        className={`flex cursor-pointer items-center gap-3 rounded-lg border-2 p-3 transition ${active ? "border-[color:var(--brand-orange)] bg-orange-50" : "hover:bg-slate-50"}`}
-                      >
-                        <RadioGroupItem value={o.id} />
-                        <Truck className="h-5 w-5 shrink-0 text-[color:var(--brand-navy)]" />
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center gap-2">
-                            <span className="font-semibold">{o.name}</span>
-                            {idx === 0 && <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700">แนะนำ</span>}
-                          </div>
-                          <div className="text-xs text-slate-500">{o.estimatedDays}</div>
-                        </div>
-                        <div className="shrink-0 text-right">
-                          {o.isFree ? (
-                            <>
-                              <div className="text-sm font-bold text-emerald-600">ฟรี!</div>
-                              {o.freeThreshold && <div className="text-[10px] text-slate-500">ซื้อครบ ฿{o.freeThreshold.toLocaleString()}</div>}
-                            </>
-                          ) : (
-                            <>
-                              <div className="font-semibold">฿{o.fee.toLocaleString()}</div>
-                              {o.freeThreshold && subtotal < o.freeThreshold && (
-                                <div className="text-[10px] text-slate-500">
-                                  เพิ่ม ฿{(o.freeThreshold - subtotal).toLocaleString()} ฟรี
-                                </div>
-                              )}
-                            </>
-                          )}
-                        </div>
-                      </label>
-                    );
-                  })}
-                </RadioGroup>
+              <div className="flex items-start gap-3 rounded-lg border-2 border-[color:var(--brand-orange)] bg-orange-50 p-3">
+                <Truck className="h-5 w-5 shrink-0 text-[color:var(--brand-navy)]" />
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold">Kerry Express</span>
+                    <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700">แนะนำ</span>
+                  </div>
+                  <div className="text-xs text-slate-500">{shipCalc.reason}</div>
+                  <div className="mt-0.5 text-xs text-slate-500">น้ำหนักรวม {shipCalc.totalWeight.toFixed(1)} กก.</div>
+                </div>
+                <div className="shrink-0 text-right">
+                  {shipCalc.freeShipping ? (
+                    <div className="text-sm font-bold text-emerald-600">ฟรี!</div>
+                  ) : (
+                    <div className="font-semibold">฿{shipCalc.fee.toLocaleString()}</div>
+                  )}
+                </div>
+              </div>
+              {!f.shipping_province && (
+                <p className="text-xs text-slate-500">เลือกจังหวัดด้านบนเพื่อคำนวณค่าจัดส่ง</p>
               )}
+              {!shipCalc.freeShipping && shipCalc.inBkkMetro && subtotal < 5000 && (
+                <p className="text-xs text-emerald-700">
+                  ซื้อเพิ่มอีก ฿{(5000 - subtotal).toLocaleString()} รับสิทธิ์ส่งฟรี กทม./ปริมณฑล
+                </p>
+              )}
+              <div className="rounded-md bg-slate-50 p-3 text-xs text-slate-600">
+                <div className="mb-1 font-semibold text-slate-700">อัตราค่าจัดส่งต่างจังหวัด (Kerry)</div>
+                <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
+                  <span>≤ 1 กก.</span><span>฿50</span>
+                  <span>≤ 3 กก.</span><span>฿80</span>
+                  <span>≤ 5 กก.</span><span>฿120</span>
+                  <span>≤ 10 กก.</span><span>฿180</span>
+                  <span>≤ 15 กก.</span><span>฿250</span>
+                  <span>≤ 20 กก.</span><span>฿320</span>
+                  <span>&gt; 20 กก.</span><span>฿400</span>
+                </div>
+              </div>
             </section>
 
             {/* Discount code */}
