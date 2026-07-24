@@ -23,7 +23,9 @@ import {
   Flame,
   Settings,
   CreditCard,
+  Search,
   ExternalLink,
+
   LogOut,
   Menu,
   X,
