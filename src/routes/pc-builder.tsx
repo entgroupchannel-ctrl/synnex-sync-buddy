@@ -401,6 +401,42 @@ function StepCard({
   );
 }
 
+/* ---------- Filter Tabs ---------- */
+
+function FilterTabs({
+  value,
+  onChange,
+  options,
+  className = "",
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  options: { value: string; label: string }[];
+  className?: string;
+}) {
+  return (
+    <div className={`flex flex-wrap gap-2 ${className}`}>
+      {options.map((opt) => {
+        const active = value === opt.value;
+        return (
+          <button
+            key={opt.value}
+            type="button"
+            onClick={() => onChange(opt.value)}
+            className={
+              active
+                ? "rounded-full bg-[color:var(--brand-navy)] px-4 py-1.5 text-sm font-medium text-white"
+                : "rounded-full bg-white px-4 py-1.5 text-sm text-slate-700 ring-1 ring-slate-200 hover:ring-slate-400"
+            }
+          >
+            {opt.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 /* ---------- Product Picker (inline grid) ---------- */
 
 function ProductPicker({
