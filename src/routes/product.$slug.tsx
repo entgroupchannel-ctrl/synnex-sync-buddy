@@ -367,6 +367,49 @@ function ProductDetail() {
                 </div>
               )}
 
+              {/* Computer Set — extracted spec table + shipping disclaimer */}
+              {p.category === "Computer Set" && (() => {
+                const src = `${p.name ?? ""} ${p.description ?? ""}`;
+                const gpuMatch = src.match(/RTX\s*\d{3,4}\w*/i) ?? src.match(/GTX\s*\d{3,4}/i) ?? src.match(/RX\s*\d{3,4}\w*/i);
+                const gpuVram = src.match(/RTX\s*\d{3,4}\w*\s*(\d{1,3})\s*GB/i);
+                const ultra = src.match(/(?:Intel\s*Core\s*)?ULTRA\s*\d\s*\w*/i);
+                const iSeries = src.match(/\b[iI][3579][-\s]?\d{3,5}\w*/);
+                const ryzen = src.match(/Ryzen\s*[3579]\s*\d{3,4}\w*/i);
+                const cpuStr = ultra?.[0] ?? iSeries?.[0] ?? ryzen?.[0] ?? null;
+                const ramMatch = src.match(/(\d{1,3})\s*GB\s*(DDR\d)?/i);
+                const rows = [
+                  ["CPU", cpuStr ? cpuStr.replace(/\s+/g, " ").trim() : "—"],
+                  ["GPU", gpuMatch ? `NVIDIA GeForce ${gpuMatch[0].toUpperCase().replace(/\s+/g, " ")}${gpuVram ? ` ${gpuVram[1]}GB` : ""}` : "—"],
+                  ["RAM", ramMatch ? `${ramMatch[1]}GB${ramMatch[2] ? ` ${ramMatch[2].toUpperCase()}` : ""}` : "—"],
+                  ["Brand", p.brand ?? "—"],
+                ];
+                return (
+                  <>
+                    <section className="mt-6 overflow-hidden rounded-lg border-2 border-[color:var(--brand-navy)]/20 bg-white" aria-label="สเปคชุดคอมพิวเตอร์">
+                      <div className="border-b bg-[color:var(--brand-navy)] px-4 py-2 text-sm font-bold text-white">
+                        🖥 สเปคชุดคอมพิวเตอร์ / Computer Set Spec
+                      </div>
+                      <table className="w-full text-sm">
+                        <tbody>
+                          {rows.map(([k, v]) => (
+                            <tr key={k}>
+                              <th scope="row" className="w-[110px] border-b bg-slate-50 px-3 py-2 text-left text-[13px] font-bold text-slate-700">{k}</th>
+                              <td className="border-b px-3 py-2 text-[13px] font-medium text-slate-900">{v}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </section>
+                    <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-[12px] leading-relaxed text-amber-900">
+                      <div>* ราคานี้รวมชุดประกอบพร้อมใช้งาน</div>
+                      <div>* ส่งฟรีใน กทม และปริมณฑล เมื่อสั่งซื้อครบ ฿5,000</div>
+                      <div>* ต่างจังหวัดคิดค่าจัดส่งตามน้ำหนักจริง (Kerry Express)</div>
+                      <div>* รับประกันตามเงื่อนไขของแต่ละชิ้นส่วน</div>
+                    </div>
+                  </>
+                );
+              })()}
+
               {/* AEO — Answer-Ready Summary (for AI answer engines & voice search) */}
               {(() => {
                 const priceNum = Number(p.selling_price ?? 0);
