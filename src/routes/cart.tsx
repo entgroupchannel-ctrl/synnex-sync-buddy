@@ -1,9 +1,11 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus, Trash2, Package, ArrowLeft, ShoppingCart, ShoppingBag, Truck } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { ProductImage } from "@/components/product-image";
+import { supabase } from "@/integrations/supabase/client";
 
 import { CATEGORIES, priceFmt, useCart } from "@/lib/cart";
 import { useLanguage } from "@/lib/i18n";
