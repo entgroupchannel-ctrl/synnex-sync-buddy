@@ -28,6 +28,7 @@ function CartPage() {
   const navigate = useNavigate();
   const { t } = useLanguage();
   const [recent, setRecent] = useState<RecentItem[]>([]);
+  const { user } = useSupabaseUser();
 
   useEffect(() => {
     try {
@@ -36,6 +37,16 @@ function CartPage() {
       setRecent(arr.slice(0, 4));
     } catch { /* ignore */ }
   }, []);
+
+  // Persist cart snapshot for logged-in users so the reminder job can email them.
+  useEffect(() => {
+    if (!user?.id || !user?.email) return;
+    if (items.length === 0) {
+      deleteCartReminder(user.id).catch(() => {});
+    } else {
+      saveCartReminder(user.id, user.email, items, total).catch(() => {});
+    }
+  }, [user?.id, user?.email, items, total]);
 
   return (
     <div className="min-h-screen bg-slate-50" style={{ fontFamily: "Sarabun, system-ui, sans-serif" }}>
