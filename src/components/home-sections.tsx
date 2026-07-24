@@ -593,8 +593,7 @@ function BrandCardLogo({ brand }: { brand: string }) {
   const domain = BRAND_DOMAINS[brand];
   const sources = domain
     ? [
-        `https://icon.horse/icon/${domain}`,
-        `https://www.google.com/s2/favicons?sz=128&domain=${domain}`,
+        `https://unavatar.io/${domain}?fallback=false`,
       ]
     : [];
   const failed = !domain || idx >= sources.length;

@@ -24,8 +24,7 @@ export function BrandLogo({ brand, className = "" }: { brand: string | null | un
   const domain = key in BRAND_DOMAINS ? BRAND_DOMAINS[key] : null;
   const sources = domain
     ? [
-        `https://icon.horse/icon/${domain}`,
-        `https://www.google.com/s2/favicons?sz=64&domain=${domain}`,
+        `https://unavatar.io/${domain}?fallback=false`,
       ]
     : [];
   const showImg = domain && idx < sources.length;
