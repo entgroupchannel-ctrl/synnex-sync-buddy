@@ -231,6 +231,8 @@ function Column({
 export function SiteFooter() {
   const year = new Date().getFullYear();
   const beYear = year + 543;
+  const foundingBeYear = 2558;
+
 
   return (
     <footer className="mt-10">
@@ -399,8 +401,9 @@ export function SiteFooter() {
         <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-4 text-[11px] md:flex-row md:items-center md:justify-between">
           <div className="space-y-1">
             <div>
-              © {beYear}–{beYear} บริษัท อี เอ็น ที กรุ๊ป จำกัด · เลขประจำตัวผู้เสียภาษี: 0135558013167
+              © {foundingBeYear}–{beYear} บริษัท อี เอ็น ที กรุ๊ป จำกัด · เลขประจำตัวผู้เสียภาษี: 0135558013167
             </div>
+
             <div className="text-emerald-300/90">
               ✓ จดทะเบียนถูกต้อง เลขทะเบียน 0135558013167
             </div>
