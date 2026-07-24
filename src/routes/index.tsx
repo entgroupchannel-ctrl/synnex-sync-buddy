@@ -683,6 +683,10 @@ function HomePage() {
           {/* Solar & Energy */}
           <SolarEnergy />
 
+          {/* Industrial Grade Computer — links to entgroup.co.th */}
+          <IndustrialComputer />
+
+
 
           {/* Popular Notebooks */}
           <PopularNotebooks />
