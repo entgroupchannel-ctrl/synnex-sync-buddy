@@ -2,8 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { priceFmt } from "@/lib/cart";
-import { Package, FileText, Receipt } from "lucide-react";
+import { Package, FileText, Receipt, Truck } from "lucide-react";
 import { STATUS_META, PAYMENT_STATUS_META, isValidStatus } from "@/lib/order-helpers";
+import { providerLabel, eventLabel } from "@/lib/shipping";
 import { ReorderButton } from "@/components/reorder-dialog";
 import { FrequentlyBought } from "@/components/frequently-bought";
 
