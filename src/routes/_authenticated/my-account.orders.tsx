@@ -53,7 +53,9 @@ function MyOrders() {
   );
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-6">
+      <FrequentlyBought />
+      <div className="space-y-3">
       {q.data!.map((o) => {
         const stMeta = STATUS_META[isValidStatus(o.status) ? o.status : "pending"];
         const payMeta = PAYMENT_STATUS_META[o.payment_status === "paid" ? "paid" : "pending"];
