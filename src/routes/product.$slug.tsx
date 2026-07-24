@@ -297,7 +297,7 @@ function ProductDetail() {
               {relatedQ.data!.map((r) => (
                 <Link key={r.id} to="/product/$slug" params={{ slug: r.slug || r.id }} className="group flex flex-col overflow-hidden rounded-lg border bg-white transition hover:shadow-md">
                   <div className="grid aspect-square place-items-center bg-white p-2">
-                    {r.image_url ? <img src={r.image_url} alt={r.name ?? r.sku} className="h-full w-full object-contain" loading="lazy" /> : <Package className="h-16 w-16 text-slate-300" />}
+                    <ProductImage src={r.image_url} alt={r.name ?? r.sku} iconClassName="h-16 w-16 text-slate-300" />
                   </div>
                   <div className="border-t p-3">
                     <div className="line-clamp-2 min-h-10 text-sm font-medium">{r.name ?? r.sku}</div>
