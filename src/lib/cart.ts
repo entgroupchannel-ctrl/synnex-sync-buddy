@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export type CartItem = {
   id: string;
@@ -69,18 +70,109 @@ export const priceFmt = new Intl.NumberFormat("th-TH", {
 });
 
 /**
- * Returns the customer-facing selling price, or null when not yet approved.
- * Shop pages must show "ติดต่อสอบถาม" instead of ฿0.
+ * Customer tier used to resolve the correct price for a product.
+ *   - guest                           → selling_price
+ *   - b2c / b2c_silver / b2c_gold / b2c_vip → member_price (fallback selling_price * 0.95), then tier discount
+ *   - b2b / b2b_silver / b2b_gold     → b2b_price, then tier discount
  */
-export function getSellingPrice(p: { selling_price?: number | null; price_approved?: boolean | null }): number | null {
-  const s = Number(p.selling_price ?? 0);
-  if (!s || s <= 0) return null;
-  return s;
+export type CustomerTier =
+  | "guest"
+  | "b2c"
+  | "b2c_silver"
+  | "b2c_gold"
+  | "b2c_vip"
+  | "b2b"
+  | "b2b_silver"
+  | "b2b_gold";
+
+export type PricingProduct = {
+  selling_price?: number | null;
+  member_price?: number | null;
+  b2b_price?: number | null;
+  price_approved?: boolean | null;
+};
+
+function round(n: number): number {
+  return Math.round(n);
 }
 
-export function displayPrice(p: { selling_price?: number | null; price_approved?: boolean | null }): string {
-  const s = getSellingPrice(p);
+/**
+ * Returns the customer-facing price for the given tier, or null when not yet approved / no base price.
+ * Shop pages must show "ติดต่อสอบถาม" instead of ฿0.
+ */
+export function getSellingPrice(p: PricingProduct, tier: CustomerTier = "guest"): number | null {
+  const selling = Number(p.selling_price ?? 0);
+  if (!selling || selling <= 0) return null;
+
+  const memberBase = Number(p.member_price ?? 0) > 0 ? Number(p.member_price) : selling * 0.95;
+  const b2bBase = Number(p.b2b_price ?? 0) > 0 ? Number(p.b2b_price) : null;
+
+  switch (tier) {
+    case "guest":
+      return round(selling);
+    case "b2c":
+      return round(memberBase);
+    case "b2c_silver":
+      return round(memberBase * 0.97);
+    case "b2c_gold":
+      return round(memberBase * 0.94);
+    case "b2c_vip":
+      return round(memberBase * 0.92);
+    case "b2b":
+      return round(b2bBase ?? memberBase);
+    case "b2b_silver":
+      return round((b2bBase ?? memberBase) * 0.98);
+    case "b2b_gold":
+      return round((b2bBase ?? memberBase) * 0.95);
+    default:
+      return round(selling);
+  }
+}
+
+export function displayPrice(p: PricingProduct, tier: CustomerTier = "guest"): string {
+  const s = getSellingPrice(p, tier);
   return s == null ? "ติดต่อสอบถาม" : priceFmt.format(s);
+}
+
+/**
+ * Hook that resolves the current customer's pricing tier from Supabase auth + user_profiles.
+ * Returns "guest" until the profile is loaded.
+ */
+export function useCustomerTier(): CustomerTier {
+  const [tier, setTier] = useState<CustomerTier>("guest");
+  useEffect(() => {
+    let mounted = true;
+    const load = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        if (mounted) setTier("guest");
+        return;
+      }
+      const { data } = await supabase
+        .from("user_profiles")
+        .select("user_type, loyalty_tier, b2b_tier")
+        .eq("id", user.id)
+        .maybeSingle();
+      if (!mounted) return;
+      const ut = (data?.user_type ?? "b2c").toLowerCase();
+      if (ut === "b2b") {
+        const t = (data?.b2b_tier ?? "").toLowerCase();
+        setTier(t === "gold" ? "b2b_gold" : t === "silver" ? "b2b_silver" : "b2b");
+      } else {
+        const t = (data?.loyalty_tier ?? "").toLowerCase();
+        setTier(
+          t === "vip" ? "b2c_vip" : t === "gold" ? "b2c_gold" : t === "silver" ? "b2c_silver" : "b2c",
+        );
+      }
+    };
+    load();
+    const { data: sub } = supabase.auth.onAuthStateChange(() => load());
+    return () => {
+      mounted = false;
+      sub.subscription.unsubscribe();
+    };
+  }, []);
+  return tier;
 }
 
 

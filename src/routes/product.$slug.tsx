@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { ShoppingCart, Package, Zap, Minus, Plus, ChevronRight } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
-import { displayPrice, getSellingPrice, priceFmt, useCart } from "@/lib/cart";
+import { displayPrice, getSellingPrice, priceFmt, useCart, useCustomerTier } from "@/lib/cart";
 import { triggerAuthPrompt, useSupabaseUser } from "@/lib/auth-sheet";
 
 export const Route = createFileRoute("/product/$slug")({
@@ -40,6 +40,7 @@ function ProductDetail() {
   const { add } = useCart();
   const { user } = useSupabaseUser();
   const [qty, setQty] = useState(1);
+  const tier = useCustomerTier();
 
   const productQ = useQuery({
     queryKey: ["product", slug],
@@ -74,7 +75,7 @@ function ProductDetail() {
     try {
       const raw = localStorage.getItem("ent_recently_viewed");
       const arr: Array<{ sku: string; name: string; image?: string | null; price?: number | null; slug?: string | null }> = raw ? JSON.parse(raw) : [];
-      const price = getSellingPrice(p as { selling_price?: number | null }) ?? null;
+      const price = getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier) ?? null;
       const entry = { sku: p.sku, name: p.name ?? p.sku, image: p.image_url ?? null, price, slug: p.slug ?? null };
       const next = [entry, ...arr.filter((x) => x.sku !== entry.sku)].slice(0, 8);
       localStorage.setItem("ent_recently_viewed", JSON.stringify(next));
@@ -84,7 +85,7 @@ function ProductDetail() {
   const addToCart = (n = qty) => {
     if (!p) return;
     const name = p.name ?? p.sku;
-    add({ id: p.id, sku: p.sku, slug: p.slug, name, price: getSellingPrice(p as { selling_price?: number | null }) ?? 0, image_url: p.image_url, distributor: (p as { distributor?: string | null }).distributor ?? null }, n);
+    add({ id: p.id, sku: p.sku, slug: p.slug, name, price: getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier) ?? 0, image_url: p.image_url, distributor: (p as { distributor?: string | null }).distributor ?? null }, n);
     if (!user) {
       triggerAuthPrompt({ name, sku: p.sku, image_url: p.image_url });
     } else {
@@ -124,9 +125,9 @@ function ProductDetail() {
               <div className="mt-1 text-sm text-slate-500">SKU / Model: {p.sku}</div>
 
               <div className="mt-5 flex items-center gap-3">
-                {getSellingPrice(p as { selling_price?: number | null }) != null && !!p.price_approved ? (
+                {getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier) != null && !!p.price_approved ? (
                   <div className="text-4xl font-black text-[color:var(--brand-orange)]">
-                    {displayPrice(p as { selling_price?: number | null })}
+                    {displayPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier)}
                   </div>
                 ) : (
                   <div className="text-lg text-gray-400">ติดต่อสอบถาม</div>
@@ -136,7 +137,7 @@ function ProductDetail() {
                 </Badge>
               </div>
 
-              {getSellingPrice(p as { selling_price?: number | null }) != null && !!p.price_approved ? (
+              {getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier) != null && !!p.price_approved ? (
                 <>
                   <div className="mt-6">
                     <div className="mb-2 text-sm text-slate-600">จำนวน</div>
@@ -203,7 +204,7 @@ function ProductDetail() {
                   </div>
                   <div className="border-t p-3">
                     <div className="line-clamp-2 min-h-10 text-sm font-medium">{r.name ?? r.sku}</div>
-                    <div className="mt-1 text-base font-black text-[color:var(--brand-orange)]">{displayPrice(r as { selling_price?: number | null })}</div>
+                    <div className="mt-1 text-base font-black text-[color:var(--brand-orange)]">{displayPrice(r as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier)}</div>
                   </div>
                 </Link>
               ))}

@@ -461,6 +461,7 @@ export type Database = {
           image_url: string | null
           markup_applied: number | null
           markup_override: number | null
+          member_price: number | null
           name: string | null
           price: number | null
           price_approved: boolean | null
@@ -488,6 +489,7 @@ export type Database = {
           image_url?: string | null
           markup_applied?: number | null
           markup_override?: number | null
+          member_price?: number | null
           name?: string | null
           price?: number | null
           price_approved?: boolean | null
@@ -515,6 +517,7 @@ export type Database = {
           image_url?: string | null
           markup_applied?: number | null
           markup_override?: number | null
+          member_price?: number | null
           name?: string | null
           price?: number | null
           price_approved?: boolean | null
@@ -579,11 +582,13 @@ export type Database = {
         Row: {
           account_status: string
           admin_notes: string | null
+          b2b_tier: string | null
           company_address: string | null
           company_name: string | null
           created_at: string
           full_name: string | null
           id: string
+          loyalty_tier: string | null
           phone: string | null
           position: string | null
           tags: string[]
@@ -597,11 +602,13 @@ export type Database = {
         Insert: {
           account_status?: string
           admin_notes?: string | null
+          b2b_tier?: string | null
           company_address?: string | null
           company_name?: string | null
           created_at?: string
           full_name?: string | null
           id: string
+          loyalty_tier?: string | null
           phone?: string | null
           position?: string | null
           tags?: string[]
@@ -615,11 +622,13 @@ export type Database = {
         Update: {
           account_status?: string
           admin_notes?: string | null
+          b2b_tier?: string | null
           company_address?: string | null
           company_name?: string | null
           created_at?: string
           full_name?: string | null
           id?: string
+          loyalty_tier?: string | null
           phone?: string | null
           position?: string | null
           tags?: string[]
