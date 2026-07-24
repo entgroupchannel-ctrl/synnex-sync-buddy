@@ -53,10 +53,11 @@ function addJsonLd(obj: unknown) {
 export function useDynamicSeo(input: DynamicSeoInput | null) {
   useEffect(() => {
     if (!input) return;
-    // Remove prior dynamic tags managed by this hook.
+    // Only remove tags previously created by this hook. Do NOT touch
+    // head nodes rendered by TanStack Router's <HeadContent /> (e.g. the
+    // canonical <link> from route head()) — deleting them out from under
+    // React causes a removeChild crash on route unmount.
     document.head.querySelectorAll(`[${MARK}]`).forEach((n) => n.remove());
-    // Also override the static canonical from route head() by removing any existing canonical.
-    document.head.querySelectorAll(`link[rel="canonical"]:not([${MARK}])`).forEach((n) => n.remove());
 
     replaceLink("canonical", input.canonical);
     if (input.hreflang) {
