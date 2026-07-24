@@ -1035,6 +1035,8 @@ function CategoryGridCard({ p }: { p: ProductRow }) {
         <StockBadge
           stockQty={(p as { stock_qty?: number | null }).stock_qty}
           fulfillmentType={(p as { fulfillment_type?: string | null }).fulfillment_type}
+          stockStatus={(p as { stock_status?: string | null }).stock_status}
+          distributor={(p as { distributor?: string | null }).distributor}
         />
       </div>
       <Link to="/product/$slug" params={{ slug }} className="grid aspect-square place-items-center bg-white p-3">
