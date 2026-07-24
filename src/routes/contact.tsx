@@ -40,9 +40,7 @@ const CALLBACK_TIMES = [
   "เช้า (9:00-12:00)", "บ่าย (13:00-16:00)", "เย็น (16:00-18:00)", "เวลาใดก็ได้",
 ];
 
-const MAPS_URL =
-  "https://www.google.com/maps/search/?api=1&query=" +
-  encodeURIComponent("70/5 หมู่4 เมทโทร บิซทาวน์ แจ้งวัฒนะ2 ปากเกร็ด นนทบุรี");
+const MAPS_URL = "https://www.google.com/maps/place/ENT+GROUP+Co.,Ltd./@13.9320709,100.4819588,17z";
 
 function ContactPage() {
   const [form, setForm] = useState({
