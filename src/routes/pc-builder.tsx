@@ -529,11 +529,12 @@ function ProductPicker({
         case "gpu": {
           q = q
             .eq("category", "Components")
-            .or("name.ilike.%RTX%,name.ilike.%GTX%,name.ilike.%RX 6%,name.ilike.%RX 7%,name.ilike.%RX 9%,name.ilike.%VGA%,name.ilike.%GPU%,name.ilike.%Graphic%")
+            .or("name.ilike.%RTX%,name.ilike.%GTX%,name.ilike.%Radeon RX%,name.ilike.%GeForce%,name.ilike.%RX 9%,name.ilike.%RX 7%")
+            .not("name", "ilike", "%Threadripper%")
             .not("name", "ilike", "%CPU%")
             .not("name", "ilike", "%Mainboard%");
           if (gpuBrand === "nvidia") q = q.or("name.ilike.%RTX%,name.ilike.%GTX%");
-          else if (gpuBrand === "amd") q = q.or("name.ilike.%RX 6%,name.ilike.%RX 7%,name.ilike.%RX 9%");
+          else if (gpuBrand === "amd") q = q.or("name.ilike.%Radeon RX%,name.ilike.%RX 9%,name.ilike.%RX 7%");
           limit = 30;
           break;
         }
