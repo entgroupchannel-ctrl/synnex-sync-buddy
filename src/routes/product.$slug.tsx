@@ -433,13 +433,12 @@ function ProductDetail() {
               {(() => {
                 const priceNum = Number(p.selling_price ?? 0);
                 const stockLabel = ready ? "พร้อมจัดส่ง" : byOrder ? "By Order 30 วัน" : (p.stock_status ?? "สินค้าหมด");
-                const distributor = (p as { distributor?: string | null }).distributor;
                 const summary = [
                   `${p.name ?? p.sku} ราคา ฿${priceNum.toLocaleString("th-TH")}`,
                   stockLabel,
                   p.brand ? `แบรนด์ ${p.brand}` : "",
                   `รหัสสินค้า ${p.sku}`,
-                  `จำหน่ายโดย ENT Group Authorized Dealer${distributor ? ` ของ ${distributor} Thailand` : ""}`,
+                  `จำหน่ายโดย ENT Group IT Shop`,
                   "รับประกันศูนย์ไทย",
                 ].filter(Boolean).join(" · ");
                 return (
