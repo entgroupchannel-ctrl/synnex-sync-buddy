@@ -362,7 +362,11 @@ function ProductDetail() {
                     )}
                   </div>
 
+                  <ProductTrustBar />
+
                   <DeliveryInfoBox category={p.category} name={p.name} price={(p as { selling_price?: number | null }).selling_price ?? undefined} />
+
+                  <ReturnPolicyAccordion />
 
                   {(() => {
                     const isB2B = tier.startsWith("b2b");
