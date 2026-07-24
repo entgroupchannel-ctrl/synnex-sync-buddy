@@ -737,29 +737,62 @@ function HomePage() {
               ))}
             </div>
           ) : (productsQuery.data?.rows.length ?? 0) === 0 ? (
-            <div className="space-y-3 rounded-lg border border-dashed bg-white p-12 text-center text-slate-500">
-              <div className="text-base font-medium text-slate-700">ไม่พบสินค้าที่ตรงเงื่อนไข</div>
-              {activeCategory && selectedBrands.length > 0 && (
-                <div className="text-sm">
-                  ลองล้างตัวกรองแบรนด์ เพื่อดูสินค้าในหมวด {activeCategory} ทั้งหมด
+            searchMode ? (
+              <div className="space-y-4 rounded-lg border border-dashed bg-white p-10 text-center">
+                <div className="text-2xl">🔍</div>
+                <div className="text-lg font-semibold text-slate-800">
+                  ไม่พบสินค้าสำหรับ "{search.q}"
                 </div>
-              )}
-              <div className="flex flex-wrap justify-center gap-2 pt-2">
-                {selectedBrands.length > 0 && (
-                  <Button variant="outline" size="sm" onClick={() => update({ brands: "" })}>
-                    ล้างแบรนด์
+                <ul className="mx-auto max-w-sm space-y-1 text-left text-sm text-slate-600">
+                  <li>• ตรวจสอบการสะกด</li>
+                  <li>• ใช้คำค้นหาที่สั้นกว่า</li>
+                  <li>• ค้นหาด้วยรหัสสินค้า (SKU)</li>
+                </ul>
+                <div className="pt-2 text-sm text-slate-500">หรือเลือกดูตามหมวดหมู่:</div>
+                <div className="flex flex-wrap justify-center gap-2">
+                  {["Notebook", "Monitor", "Network", "Storage", "Software"].map((c) => (
+                    <Button
+                      key={c}
+                      variant="outline"
+                      size="sm"
+                      onClick={() => navigate({ to: "/", search: { category: c } as never })}
+                    >
+                      {c}
+                    </Button>
+                  ))}
+                </div>
+                <div className="pt-2">
+                  <Button size="sm" onClick={() => update({ q: "" })} className="bg-[color:var(--brand-green)] hover:opacity-90">
+                    × ล้างการค้นหา
                   </Button>
-                )}
-                {activeCategory && (
-                  <Button variant="outline" size="sm" onClick={() => setCategory("all")}>
-                    ดูทุกหมวดหมู่
-                  </Button>
-                )}
-                <Button size="sm" onClick={clearAllFilters} className="bg-[color:var(--brand-green)] hover:bg-[color:var(--brand-green)]/90">
-                  × ล้างทั้งหมด
-                </Button>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="space-y-3 rounded-lg border border-dashed bg-white p-12 text-center text-slate-500">
+                <div className="text-base font-medium text-slate-700">ไม่พบสินค้าที่ตรงเงื่อนไข</div>
+                {activeCategory && selectedBrands.length > 0 && (
+                  <div className="text-sm">
+                    ลองล้างตัวกรองแบรนด์ เพื่อดูสินค้าในหมวด {activeCategory} ทั้งหมด
+                  </div>
+                )}
+                <div className="flex flex-wrap justify-center gap-2 pt-2">
+                  {selectedBrands.length > 0 && (
+                    <Button variant="outline" size="sm" onClick={() => update({ brands: "" })}>
+                      ล้างแบรนด์
+                    </Button>
+                  )}
+                  {activeCategory && (
+                    <Button variant="outline" size="sm" onClick={() => setCategory("all")}>
+                      ดูทุกหมวดหมู่
+                    </Button>
+                  )}
+                  <Button size="sm" onClick={clearAllFilters} className="bg-[color:var(--brand-green)] hover:bg-[color:var(--brand-green)]/90">
+                    × ล้างทั้งหมด
+                  </Button>
+                </div>
+              </div>
+            )
+
 
           ) : search.view === "list" ? (
             <div className="space-y-3">
