@@ -178,8 +178,8 @@ function CartPage() {
               </div>
 
               {isBkkFree ? (
-                <div className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 p-2.5 text-xs font-semibold text-emerald-800">
-                  🎉 ยินดีด้วย! คุณได้รับสิทธิ์ส่งฟรีในเขต กทม./ปริมณฑล
+                <div className="mt-3 flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 p-2.5 text-xs font-semibold text-emerald-800">
+                  <PartyPopper className="h-4 w-4 shrink-0" /> ยินดีด้วย! คุณได้รับสิทธิ์ส่งฟรีในเขต กทม./ปริมณฑล
                 </div>
               ) : remainingForFree > 0 ? (
                 <div className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 p-2.5 text-xs">
