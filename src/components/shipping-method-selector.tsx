@@ -135,15 +135,14 @@ function PickupMap() {
           <Clock className="h-3.5 w-3.5 text-gray-400" />
           <span>เวลาทำการ: จันทร์-ศุกร์ {OFFICE_ADDRESS.hours.replace("จ-ศ ", "")}</span>
         </div>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 flex-wrap">
           <Phone className="h-3.5 w-3.5 text-gray-400" />
-          <a href={`tel:${OFFICE_ADDRESS.phone}`} className="hover:text-gray-900">
-            โทร: {OFFICE_ADDRESS.phone}
+          <a href={`tel:${OFFICE_ADDRESS.phone.replace(/-/g, "")}`} className="hover:text-gray-900">
+            โทร {OFFICE_ADDRESS.phone}
           </a>
-        </div>
-        <div className="flex items-center gap-1.5">
+          <span className="text-gray-300">|</span>
           <Printer className="h-3.5 w-3.5 text-gray-400" />
-          <span>แฟกซ์: {OFFICE_ADDRESS.fax}</span>
+          <span>แฟกซ์ {OFFICE_ADDRESS.fax}</span>
         </div>
       </div>
     </div>

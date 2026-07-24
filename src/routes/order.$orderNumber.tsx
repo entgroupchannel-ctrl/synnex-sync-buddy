@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { CheckCircle2, Copy, Package, Upload, FileCheck2, Loader2, Phone, Smartphone, MessageCircle } from "lucide-react";
+import { CheckCircle2, Copy, Package, Upload, FileCheck2, Loader2, Phone, Smartphone, MessageCircle, Mail } from "lucide-react";
 
 
 import { toast } from "sonner";
@@ -331,11 +331,14 @@ function SupportContact() {
     <div className="mt-6 rounded-2xl bg-green-800 p-6 text-white">
       <div className="text-center text-sm">ทีมงานจะติดต่อกลับภายใน 1 วันทำการ</div>
       <div className="mt-4 flex flex-wrap justify-center gap-3">
-        <a href="tel:02-045-6104" className="inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-2 text-sm font-medium hover:bg-white/30">
+        <a href="tel:020456104" className="inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-2 text-sm font-medium hover:bg-white/30">
           <Phone className="h-4 w-4" /> 02-045-6104
         </a>
-        <a href="tel:095-739-1053" className="inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-2 text-sm font-medium hover:bg-white/30">
+        <a href="tel:0957391053" className="inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-2 text-sm font-medium hover:bg-white/30">
           <Smartphone className="h-4 w-4" /> 095-739-1053
+        </a>
+        <a href="mailto:sales@entgroup.co.th" className="inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-2 text-sm font-medium hover:bg-white/30">
+          <Mail className="h-4 w-4" /> sales@entgroup.co.th
         </a>
         <LineQrDialog>
           <button type="button" className="inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-2 text-sm font-medium hover:bg-white/30">

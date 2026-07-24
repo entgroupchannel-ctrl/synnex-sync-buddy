@@ -436,7 +436,7 @@ function ProductDetail() {
                     </Button>
                     {byOrder ? (
                       <Button asChild variant="outline" size="lg" className="border-blue-300 text-blue-800 hover:bg-blue-50">
-                        <a href="mailto:Sales@entgroup.co.th?subject=ขอใบเสนอราคา">📄 ขอใบเสนอราคา</a>
+                        <a href="mailto:sales@entgroup.co.th?subject=ขอใบเสนอราคา">📄 ขอใบเสนอราคา</a>
                       </Button>
                     ) : (
                       <Button
