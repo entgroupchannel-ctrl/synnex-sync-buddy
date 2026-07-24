@@ -75,37 +75,16 @@ function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false);
   const [orderCreated, setOrderCreated] = useState(false);
 
-  // Shipping
-  const totalWeight = useMemo(() => items.reduce((s, i) => s + i.qty, 0) || 1, [items]);
-  const [shipOptions, setShipOptions] = useState<ShippingOption[]>([]);
-  const [shipId, setShipId] = useState<string>("");
-
-  // Discount
-  const [codeInput, setCodeInput] = useState("");
-  const [applyingCode, setApplyingCode] = useState(false);
-  const [discount, setDiscount] = useState<DiscountApplied | null>(null);
-  const [codeError, setCodeError] = useState<string | null>(null);
-
-  // Guard: cart must be non-empty
-  useEffect(() => {
-    if (items.length === 0 && !orderCreated) {
-      const t = setTimeout(() => {
-        if (items.length === 0 && !orderCreated) navigate({ to: "/cart" });
-      }, 50);
-      return () => clearTimeout(t);
-    }
-  }, [items.length, navigate, orderCreated]);
-
-  // Load shipping options (recompute when subtotal or weight changes)
-  useEffect(() => {
-    let cancelled = false;
-    getShippingOptions(subtotal, totalWeight).then((opts) => {
-      if (cancelled) return;
-      setShipOptions(opts);
-      setShipId((prev) => prev && opts.find((o) => o.id === prev) ? prev : (opts[0]?.id ?? ""));
-    });
-    return () => { cancelled = true; };
-  }, [subtotal, totalWeight]);
+  // Shipping — weight-based Kerry rule (see @/lib/shipping)
+  const shipCalc = useMemo(
+    () =>
+      getWeightBasedShippingFee(
+        items.map((i) => ({ price: i.price, qty: i.qty, weight_kg: 1 })),
+        f.shipping_province,
+      ),
+    [items, f.shipping_province],
+  );
+  const totalWeight = shipCalc.totalWeight;
 
   // Prefill from user profile
   useEffect(() => {
