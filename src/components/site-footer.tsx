@@ -16,6 +16,8 @@ import {
   ChevronDown,
   Globe,
   Mail as MailIcon,
+  CheckCircle2,
+  Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
 import entLogo from "@/assets/entgroup-logo.jpg.asset.json";
