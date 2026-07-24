@@ -16,16 +16,91 @@ import { usePurchaseHistoryForSku } from "@/lib/reorder";
 
 export const Route = createFileRoute("/product/$slug")({
   ssr: false,
+  loader: async ({ params }) => {
+    const { data } = await supabase
+      .from("synnex_products")
+      .select("id, sku, slug, name, brand, category, description, image_url, selling_price, member_price, stock_status")
+      .or(`slug.eq.${params.slug},id.eq.${params.slug}`)
+      .maybeSingle();
+    return { product: data };
+  },
   component: ProductDetail,
-  head: ({ params }) => ({
-    meta: [
-      { title: `${params.slug} — IT Dealer` },
-      { name: "description", content: `รายละเอียดสินค้า ${params.slug}` },
-      { property: "og:title", content: `${params.slug} — IT Dealer` },
-      { property: "og:description", content: `รายละเอียดสินค้า ${params.slug}` },
-    ],
-  }),
+  head: ({ params, loaderData }) => {
+    const p = loaderData?.product;
+    const name = p?.name ?? params.slug;
+    const price = p?.selling_price ?? 0;
+    const url = `https://shop.entgroup.co.th/product/${params.slug}`;
+    const title = p
+      ? `${name} ราคา ฿${Number(price).toLocaleString("th-TH")} | ENT Group IT Shop`.slice(0, 70)
+      : `${name} | ENT Group IT Shop`;
+    const desc = p
+      ? `${name} ราคา ฿${Number(price).toLocaleString("th-TH")} ${p.stock_status === "พร้อมจัดส่ง" ? "พร้อมจัดส่ง" : "สั่งจอง"} รับประกันศูนย์ไทย จาก ENT Group Authorized Dealer ของ Synnex และ VST ECS`.slice(0, 160)
+      : `รายละเอียดสินค้า ${params.slug} จาก ENT Group IT Shop`;
+
+    const meta = [
+      { title },
+      { name: "description", content: desc },
+      { property: "og:type", content: "product" },
+      { property: "og:title", content: title },
+      { property: "og:description", content: desc },
+      { property: "og:url", content: url },
+      { name: "twitter:title", content: title },
+      { name: "twitter:description", content: desc },
+    ];
+    if (p?.image_url) {
+      meta.push({ property: "og:image", content: p.image_url });
+      meta.push({ name: "twitter:image", content: p.image_url });
+    }
+
+    const scripts: Array<{ type: string; children: string }> = [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "หน้าแรก", item: "https://shop.entgroup.co.th/" },
+            ...(p?.category ? [{ "@type": "ListItem", position: 2, name: p.category, item: `https://shop.entgroup.co.th/?category=${encodeURIComponent(p.category)}` }] : []),
+            { "@type": "ListItem", position: p?.category ? 3 : 2, name },
+          ],
+        }),
+      },
+    ];
+
+    if (p && price > 0) {
+      const validUntil = new Date(Date.now() + 30 * 24 * 3600 * 1000).toISOString().split("T")[0];
+      scripts.push({
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Product",
+          name,
+          description: p.description || desc,
+          sku: p.sku,
+          mpn: p.sku,
+          brand: p.brand ? { "@type": "Brand", name: p.brand } : undefined,
+          image: p.image_url || undefined,
+          offers: {
+            "@type": "Offer",
+            priceCurrency: "THB",
+            price: String(price),
+            availability: p.stock_status === "พร้อมจัดส่ง" ? "https://schema.org/InStock" : "https://schema.org/PreOrder",
+            priceValidUntil: validUntil,
+            url,
+            seller: { "@type": "Organization", name: "ENT Group IT Shop" },
+          },
+        }),
+      });
+    }
+
+    return {
+      meta,
+      links: [{ rel: "canonical", href: url }],
+      scripts,
+    };
+  },
 });
+
 
 function parseSpecs(desc: string | null | undefined): [string, string][] {
   if (!desc) return [];
