@@ -226,6 +226,15 @@ function CheckoutPage() {
           shipping_district: base.data.shipping_district,
           shipping_province: base.data.shipping_province,
           shipping_postcode: base.data.shipping_postcode,
+          shipping_method_id: selectedShip?.id ?? null,
+          shipping_method_name: selectedShip?.name ?? null,
+          shipping_provider: selectedShip?.provider ?? null,
+          shipping_weight_kg: totalWeight,
+          shipping_fee: shippingFee,
+          discount_code: discount?.code ?? null,
+          discount_code_id: discount?.codeId ?? null,
+          discount_amount: discountAmount,
+          discount: discountAmount,
           need_tax_invoice: !!taxInvoice,
           company_name: taxInvoice?.company_name ?? null,
           tax_id: taxInvoice?.tax_id ?? null,
@@ -239,6 +248,7 @@ function CheckoutPage() {
         })
         .select("id, order_number")
         .single();
+
 
       if (oErr || !order) throw oErr ?? new Error("ไม่สามารถบันทึกออเดอร์ได้");
 
