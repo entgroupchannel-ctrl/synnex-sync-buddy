@@ -1,13 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { ArrowLeft, ExternalLink, Save, FileText } from "lucide-react";
+import { ArrowLeft, ExternalLink, Save, FileText, Truck, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteHeader } from "@/components/site-header";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ORDER_STATUSES, STATUS_META, PAYMENT_STATUS_META, distMeta, bahtFmt, isValidStatus } from "@/lib/order-helpers";
+import { SHIPPING_PROVIDERS, EVENT_PRESETS, buildTrackingUrl, providerLabel, eventLabel } from "@/lib/shipping";
 
 export const Route = createFileRoute("/_authenticated/admin/orders/$id")({
   ssr: false,
@@ -60,10 +61,24 @@ type Order = {
   status: string | null;
   notes: string | null;
   tracking_number: string | null;
+  shipping_provider: string | null;
+  tracking_url: string | null;
+  estimated_delivery: string | null;
+  shipped_at: string | null;
+  delivered_at: string | null;
   quotation_url: string | null;
   tax_invoice_url: string | null;
   order_items: OrderItem[];
   history: HistoryRow[];
+};
+
+type ShippingEvent = {
+  id: string;
+  event_time: string | null;
+  status: string | null;
+  location: string | null;
+  description: string | null;
+  description_en: string | null;
 };
 
 type EmailLog = {
@@ -86,15 +101,24 @@ function AdminOrderDetail() {
   const [saving, setSaving] = useState(false);
   const [slipUrl, setSlipUrl] = useState<string | null>(null);
   const [tracking, setTracking] = useState<string>("");
+  const [shipProvider, setShipProvider] = useState<string>("kerry");
+  const [estDelivery, setEstDelivery] = useState<string>("");
+  const [shippedAt, setShippedAt] = useState<string>("");
+  const [events, setEvents] = useState<ShippingEvent[]>([]);
+  const [savingShip, setSavingShip] = useState(false);
+  const [newEvent, setNewEvent] = useState<{ time: string; status: string; location: string }>({
+    time: "", status: "in_transit", location: "",
+  });
   const [emailLogs, setEmailLogs] = useState<EmailLog[]>([]);
   const [emailBusy, setEmailBusy] = useState<string | null>(null);
 
   const load = async () => {
     setLoading(true);
-    const [{ data: o }, { data: h }, { data: logs }] = await Promise.all([
+    const [{ data: o }, { data: h }, { data: logs }, { data: evs }] = await Promise.all([
       supabase.from("orders").select("*, order_items(*)").eq("id", id).maybeSingle(),
       supabase.from("order_status_history").select("*").eq("order_id", id).order("created_at", { ascending: true }),
       supabase.from("email_logs").select("*").eq("order_id", id).order("created_at", { ascending: false }).limit(50),
+      supabase.from("shipping_events").select("*").eq("order_id", id).order("event_time", { ascending: true }),
     ]);
     if (o) {
       const merged = { ...(o as Record<string, unknown>), history: (h ?? []) as HistoryRow[] } as unknown as Order;
@@ -103,6 +127,9 @@ function AdminOrderDetail() {
       setPaymentStatus(merged.payment_status ?? "pending");
       setNotes(merged.notes ?? "");
       setTracking(merged.tracking_number ?? "");
+      setShipProvider(merged.shipping_provider ?? "kerry");
+      setEstDelivery(merged.estimated_delivery ?? "");
+      setShippedAt(merged.shipped_at ? merged.shipped_at.slice(0, 10) : "");
       if (merged.payment_slip_url) {
         const { data } = await supabase.storage.from("payment-slips").createSignedUrl(merged.payment_slip_url, 60 * 60);
         setSlipUrl(data?.signedUrl ?? null);
@@ -110,6 +137,7 @@ function AdminOrderDetail() {
         setSlipUrl(null);
       }
     }
+    setEvents((evs ?? []) as ShippingEvent[]);
     setEmailLogs((logs ?? []) as EmailLog[]);
     setLoading(false);
   };
@@ -177,6 +205,87 @@ function AdminOrderDetail() {
     } finally {
       setEmailBusy(null);
     }
+  };
+
+  const saveShipping = async () => {
+    if (!order) return;
+    if (!tracking.trim()) { toast.error("กรุณาระบุเลขพัสดุ"); return; }
+    setSavingShip(true);
+    const wasStatus = order.status ?? "pending";
+    const trackingUrl = buildTrackingUrl(shipProvider, tracking.trim());
+    const shippedAtIso = shippedAt ? new Date(shippedAt + "T00:00:00").toISOString() : new Date().toISOString();
+    const { error } = await supabase.from("orders").update({
+      shipping_provider: shipProvider,
+      tracking_number: tracking.trim(),
+      tracking_url: trackingUrl,
+      estimated_delivery: estDelivery || null,
+      shipped_at: shippedAtIso,
+      status: "shipped",
+    }).eq("id", id);
+    if (error) { setSavingShip(false); toast.error(error.message); return; }
+
+    const { data: userData } = await supabase.auth.getUser();
+    const by = userData?.user?.email ?? "admin";
+
+    // Initial shipping event
+    await supabase.from("shipping_events").insert({
+      order_id: id,
+      event_time: shippedAtIso,
+      status: "picked_up",
+      location: "คลังสินค้า ENT Group นนทบุรี",
+      description: `รับพัสดุแล้ว — ${providerLabel(shipProvider)} ${tracking.trim()}`,
+      description_en: `Picked up — ${providerLabel(shipProvider)} ${tracking.trim()}`,
+    });
+
+    // Status history
+    if (wasStatus !== "shipped") {
+      await supabase.from("order_status_history").insert({
+        order_id: id, status: "shipped",
+        note: `จัดส่งโดย ${providerLabel(shipProvider)} · ${tracking.trim()}`,
+        changed_by: by,
+      });
+    }
+
+    setStatus("shipped");
+    // Fire notification
+    supabase.functions.invoke("send-shipping-notification", {
+      body: { order_id: id, tracking_number: tracking.trim() },
+    }).catch((e) => console.warn("[send-shipping-notification]", e));
+
+    toast.success("บันทึกและแจ้งลูกค้าแล้ว");
+    setSavingShip(false);
+    load();
+  };
+
+  const addShippingEvent = async () => {
+    if (!newEvent.status) { toast.error("เลือกสถานะ"); return; }
+    const t = newEvent.time ? new Date(newEvent.time).toISOString() : new Date().toISOString();
+    const preset = EVENT_PRESETS.find((p) => p.value === newEvent.status);
+    const { error } = await supabase.from("shipping_events").insert({
+      order_id: id,
+      event_time: t,
+      status: newEvent.status,
+      location: newEvent.location || null,
+      description: preset?.label ?? newEvent.status,
+      description_en: preset?.labelEn ?? newEvent.status,
+    });
+    if (error) { toast.error(error.message); return; }
+
+    // If delivered → update order
+    if (newEvent.status === "delivered") {
+      await supabase.from("orders").update({
+        delivered_at: t, status: "delivered",
+      }).eq("id", id);
+      const { data: userData } = await supabase.auth.getUser();
+      await supabase.from("order_status_history").insert({
+        order_id: id, status: "delivered", note: "ลูกค้าได้รับพัสดุแล้ว",
+        changed_by: userData?.user?.email ?? "admin",
+      });
+    }
+
+    setNewEvent({ time: "", status: "in_transit", location: "" });
+    toast.success("เพิ่มสถานะแล้ว");
+    load();
   };
 
   if (loading) {
@@ -293,15 +402,105 @@ function AdminOrderDetail() {
                 </SelectContent>
               </Select>
               <Textarea value={statusNote} onChange={(e) => setStatusNote(e.target.value)} rows={2} className="mt-2" placeholder="โน๊ตการเปลี่ยนสถานะ (บันทึกใน timeline)" />
-              <div className="mt-3">
-                <label className="text-xs font-semibold text-slate-500">เลขพัสดุ (tracking)</label>
-                <input
-                  value={tracking}
-                  onChange={(e) => setTracking(e.target.value)}
-                  placeholder="เช่น TH1234567890"
-                  className="mt-1 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-mono focus:border-emerald-400 focus:outline-none"
-                />
-                <p className="mt-1 text-xs text-slate-500">จะแนบในอีเมลแจ้งจัดส่ง (ส่งอัตโนมัติเมื่อเปลี่ยนสถานะเป็น &quot;จัดส่งแล้ว&quot;)</p>
+            </div>
+
+            {/* Shipping panel */}
+            <div className="rounded-lg border bg-white p-5">
+              <h2 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-slate-500">
+                <Truck className="h-4 w-4" /> 📦 ข้อมูลการจัดส่ง
+              </h2>
+              <div className="space-y-3">
+                <div>
+                  <label className="text-xs font-semibold text-slate-500">บริษัทขนส่ง</label>
+                  <div className="mt-1 grid grid-cols-3 gap-1">
+                    {SHIPPING_PROVIDERS.map((p) => (
+                      <button
+                        key={p.value}
+                        type="button"
+                        onClick={() => setShipProvider(p.value)}
+                        className={`rounded-md border px-2 py-1.5 text-xs font-semibold ${shipProvider === p.value ? "border-[color:var(--brand-green)] bg-emerald-50 text-emerald-700" : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"}`}
+                      >
+                        {p.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-slate-500">เลขพัสดุ</label>
+                  <input
+                    value={tracking}
+                    onChange={(e) => setTracking(e.target.value)}
+                    placeholder="เช่น EF123456789TH"
+                    className="mt-1 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-mono focus:border-emerald-400 focus:outline-none"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="text-xs font-semibold text-slate-500">วันที่ส่งออก</label>
+                    <input type="date" value={shippedAt} onChange={(e) => setShippedAt(e.target.value)}
+                      className="mt-1 w-full rounded-md border border-slate-200 bg-white px-2 py-2 text-sm focus:border-emerald-400 focus:outline-none" />
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-slate-500">กำหนดส่ง (ประมาณ)</label>
+                    <input type="date" value={estDelivery} onChange={(e) => setEstDelivery(e.target.value)}
+                      className="mt-1 w-full rounded-md border border-slate-200 bg-white px-2 py-2 text-sm focus:border-emerald-400 focus:outline-none" />
+                  </div>
+                </div>
+                {tracking && buildTrackingUrl(shipProvider, tracking) && (
+                  <a href={buildTrackingUrl(shipProvider, tracking)!} target="_blank" rel="noreferrer"
+                    className="inline-flex items-center gap-1 text-xs text-emerald-700 hover:underline">
+                    <ExternalLink className="h-3 w-3" /> ตรวจสอบที่ {providerLabel(shipProvider)}
+                  </a>
+                )}
+                <Button onClick={saveShipping} disabled={savingShip}
+                  className="w-full bg-[color:var(--brand-green,#10B981)] hover:bg-emerald-600">
+                  <Save className="mr-2 h-4 w-4" />
+                  {savingShip ? "กำลังบันทึก..." : "บันทึก + แจ้งลูกค้า"}
+                </Button>
+              </div>
+
+              {/* Shipping events timeline */}
+              {events.length > 0 && (
+                <div className="mt-5 border-t pt-4">
+                  <h3 className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">เหตุการณ์การจัดส่ง</h3>
+                  <ol className="relative space-y-3 border-l-2 border-slate-200 pl-4">
+                    {events.map((ev) => (
+                      <li key={ev.id} className="relative">
+                        <span className={`absolute -left-[22px] top-1 h-3 w-3 rounded-full ring-2 ring-white ${ev.status === "delivered" ? "bg-emerald-500" : ev.status === "failed" ? "bg-red-500" : "bg-blue-500"}`} />
+                        <div className="text-xs text-slate-500">{ev.event_time ? new Date(ev.event_time).toLocaleString("th-TH") : ""}</div>
+                        <div className="text-sm font-semibold">{eventLabel(ev.status)}</div>
+                        {(ev.description || ev.location) && (
+                          <div className="text-xs text-slate-600">
+                            {ev.description}{ev.location && <span className="text-slate-400"> · {ev.location}</span>}
+                          </div>
+                        )}
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              )}
+
+              {/* Add new event */}
+              <div className="mt-5 border-t pt-4">
+                <h3 className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">+ เพิ่มสถานะการจัดส่ง</h3>
+                <div className="space-y-2">
+                  <input type="datetime-local" value={newEvent.time}
+                    onChange={(e) => setNewEvent((s) => ({ ...s, time: e.target.value }))}
+                    className="w-full rounded-md border border-slate-200 bg-white px-2 py-2 text-sm focus:border-emerald-400 focus:outline-none" />
+                  <Select value={newEvent.status} onValueChange={(v) => setNewEvent((s) => ({ ...s, status: v }))}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {EVENT_PRESETS.map((p) => <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                  <input value={newEvent.location}
+                    onChange={(e) => setNewEvent((s) => ({ ...s, location: e.target.value }))}
+                    placeholder="สถานที่ (เช่น ศูนย์กระจายสินค้ากรุงเทพ)"
+                    className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus:border-emerald-400 focus:outline-none" />
+                  <Button onClick={addShippingEvent} variant="outline" className="w-full">
+                    <Plus className="mr-1 h-4 w-4" /> เพิ่มเหตุการณ์
+                  </Button>
+                </div>
               </div>
             </div>
 

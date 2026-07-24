@@ -2,8 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { priceFmt } from "@/lib/cart";
-import { Package, FileText, Receipt } from "lucide-react";
+import { Package, FileText, Receipt, Truck } from "lucide-react";
 import { STATUS_META, PAYMENT_STATUS_META, isValidStatus } from "@/lib/order-helpers";
+import { providerLabel, eventLabel } from "@/lib/shipping";
 import { ReorderButton } from "@/components/reorder-dialog";
 import { FrequentlyBought } from "@/components/frequently-bought";
 
@@ -29,7 +30,10 @@ type Row = {
   total: number | null;
   quotation_url: string | null;
   tax_invoice_url: string | null;
+  tracking_number: string | null;
+  shipping_provider: string | null;
   order_items: { product_name: string; quantity: number }[];
+  shipping_events: { status: string | null; event_time: string | null }[];
 };
 
 function MyOrders() {
@@ -38,7 +42,7 @@ function MyOrders() {
     queryFn: async () => {
       const { data } = await supabase
         .from("orders")
-        .select("id,order_number,created_at,status,payment_status,payment_method,total,quotation_url,tax_invoice_url,order_items(product_name,quantity)")
+        .select("id,order_number,created_at,status,payment_status,payment_method,total,quotation_url,tax_invoice_url,tracking_number,shipping_provider,order_items(product_name,quantity),shipping_events(status,event_time)")
         .order("created_at", { ascending: false });
       return (data ?? []) as unknown as Row[];
     },
@@ -82,6 +86,21 @@ function MyOrders() {
                 {items.length > 3 && <div className="text-xs text-slate-500">และอีก {items.length - 3} รายการ</div>}
               </div>
             </Link>
+            {o.tracking_number && (
+              <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs">
+                <div className="flex items-center gap-1.5 text-emerald-800">
+                  <Truck className="h-3.5 w-3.5" />
+                  <span className="font-semibold">{providerLabel(o.shipping_provider)}</span>
+                  <span className="font-mono">{o.tracking_number}</span>
+                  {(o.shipping_events?.length ?? 0) > 0 && (
+                    <span className="text-slate-500">— {eventLabel(o.shipping_events[o.shipping_events.length - 1].status)}</span>
+                  )}
+                </div>
+                <Link to="/track/$orderNumber" params={{ orderNumber: o.order_number }} className="font-semibold text-emerald-700 hover:underline">
+                  ติดตามพัสดุ →
+                </Link>
+              </div>
+            )}
             <div className="mt-3 flex flex-wrap gap-2 border-t pt-3">
               {canUploadSlip && (
                 <Link to="/order/$orderNumber" params={{ orderNumber: o.order_number }} className="rounded-md bg-[color:var(--brand-green)] px-3 py-1.5 text-xs font-semibold text-white hover:opacity-90">
