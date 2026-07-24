@@ -930,7 +930,7 @@ export function MicrosoftFeatured() {
         <SectionHeader
           title="💿 Software & Licenses / ซอฟต์แวร์ลิขสิทธิ์"
           en="Software & Licenses — Genuine"
-          sub="Microsoft 365, Office 2024, Windows 11, Kaspersky, ESET, McAfee — Authorized Dealer"
+          sub="Microsoft 365, Office 2024, Windows 11, Kaspersky, ESET, McAfee — สินค้าแท้ 100%"
           link={{ to: "/", search: { category: "Software" }, label: "ดู Software ทั้งหมด" }}
         />
 
@@ -1102,7 +1102,7 @@ export function NetworkSecurity() {
         <SectionHeader
           title="Network & Security / เครือข่ายและระบบรักษาความปลอดภัย"
           en="Network & Security Solutions"
-          sub="Cisco, Hikvision, Dahua, D-Link — Authorized Dealer"
+          sub="Cisco, Hikvision, Dahua, D-Link — สินค้าแท้ 100%"
           link={{ to: "/", search: { category: "Network" }, label: "ดู Network ทั้งหมด" }}
         />
         <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">

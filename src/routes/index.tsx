@@ -406,7 +406,7 @@ function HomePage() {
         "@context": "https://schema.org",
         "@type": "ItemList",
         name: `${activeCategory} — ENT Group IT Shop`,
-        description: `รายการสินค้า ${activeCategory} จาก ENT Group Authorized Dealer`,
+        description: `รายการสินค้า ${activeCategory} จาก ENT Group IT Shop สินค้าแท้ 100%`,
         url: canonical,
         numberOfItems: totalItems,
         itemListElement: productRows.slice(0, 10).map((p, i) => ({

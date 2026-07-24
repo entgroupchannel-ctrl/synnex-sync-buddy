@@ -6,7 +6,7 @@ import { CheckCircle2, ShieldCheck, Truck, Phone, MapPin, Mail, Award, Building2
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "เกี่ยวกับเรา — ENT Group Authorized Dealer ตั้งแต่ปี 2558" },
+      { title: "เกี่ยวกับเรา — ENT Group สินค้าแท้ 100% ตั้งแต่ปี 2558" },
       { name: "description", content: "บริษัท อี เอ็น ที กรุ๊ป จำกัด ผู้ให้บริการโซลูชันไอทีครบวงจร สินค้าแท้ 100% ราคา Dealer จริง B2B และ Consumer พร้อมใบกำกับภาษีและรับประกันศูนย์ไทย" },
       { property: "og:type", content: "website" },
       { property: "og:title", content: "About ENT Group — Authorized IT Dealer Thailand" },
@@ -46,7 +46,7 @@ function AboutPage() {
       <section className="bg-gradient-to-br from-[color:var(--brand-navy)] to-[color:var(--brand-navy-2)] text-white">
         <div className="mx-auto max-w-5xl px-4 py-14">
           <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold">
-            <Award className="h-3.5 w-3.5" /> Authorized Dealer ตั้งแต่ปี 2558
+            <Award className="h-3.5 w-3.5" /> สินค้าแท้ 100% ตั้งแต่ปี 2558
           </div>
           <h1 className="mt-4 text-3xl font-black md:text-5xl">เกี่ยวกับ ENT Group</h1>
           <p className="mt-3 max-w-3xl text-white/85 md:text-lg">

@@ -90,8 +90,8 @@ function TrustBar() {
   const items = [
     {
       icon: Award,
-      title: "Authorized Dealer",
-      desc: "Synnex & VST ECS",
+      title: "สินค้าแท้ 100%",
+      desc: "ENT Group IT Shop",
     },
     {
       icon: ShieldCheck,
@@ -270,8 +270,8 @@ export function SiteFooter() {
             <ul className="space-y-2">
               <li><FooterLink href="https://entgroup.co.th/about">เกี่ยวกับเรา</FooterLink></li>
               <li><FooterLink href="https://entgroup.co.th">ผลิตภัณฑ์ ENT Group</FooterLink></li>
-              <li><FooterLink href="https://www.synnex.co.th">Authorized Dealer Synnex</FooterLink></li>
-              <li><FooterLink href="https://www.vstecs.co.th">Authorized Dealer VST ECS</FooterLink></li>
+              <li><FooterLink href="/about">เกี่ยวกับเรา</FooterLink></li>
+              <li><FooterLink to="/contact">ติดต่อเรา</FooterLink></li>
               <li><FooterLink to="/careers">ร่วมงานกับเรา</FooterLink></li>
               <li><FooterLink href="https://entgroup.co.th/blog">ENT Group Blog</FooterLink></li>
             </ul>
