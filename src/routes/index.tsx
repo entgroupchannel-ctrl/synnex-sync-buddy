@@ -27,6 +27,7 @@ import {
   RecentlyViewed,
   NewsletterSignup,
 } from "@/components/home-sections";
+import entLogo from "@/assets/entgroup-logo.jpg.asset.json";
 
 const searchSchema = z.object({
   q: fallback(z.string(), "").default(""),
@@ -520,11 +521,15 @@ function HomePage() {
 
         <div className="mx-auto grid max-w-7xl gap-6 px-4 md:grid-cols-3">
           <div>
-            <div className="flex items-center gap-2">
-              <div className="grid h-9 w-11 place-items-center rounded-md bg-[color:var(--brand-green)] font-black text-white">ENT</div>
+            <div className="flex items-center gap-3">
+              <img
+                src={entLogo.url}
+                alt="ENT Group"
+                className="h-14 w-14 rounded-md bg-white object-contain p-1 shadow-sm"
+              />
               <div>
-                <div className="font-bold text-white">Group IT Shop</div>
-                <div className="text-[11px] text-white/60">Authorized Dealer — Synnex & VST ECS</div>
+                <div className="font-bold text-white">ENT Group IT Shop</div>
+                <div className="text-[11px] text-[color:var(--brand-green)]">Computer for all</div>
               </div>
             </div>
             <p className="mt-3 text-xs leading-relaxed">

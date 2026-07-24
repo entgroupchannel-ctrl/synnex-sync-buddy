@@ -7,6 +7,7 @@ import { CATEGORIES } from "@/lib/cart";
 import { useSupabaseUser } from "@/lib/auth-sheet";
 import { AddToCartSheet } from "@/components/add-to-cart-sheet";
 import { useLanguage } from "@/lib/i18n";
+import entLogo from "@/assets/entgroup-logo.jpg.asset.json";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -72,11 +73,15 @@ export function SiteHeader() {
           >
             <Menu className="h-5 w-5" />
           </button>
-          <Link to="/" className="flex shrink-0 items-center gap-2">
-            <div className="grid h-9 w-11 place-items-center rounded-md bg-[color:var(--brand-green)] font-black tracking-tight">ENT</div>
+          <Link to="/" className="flex shrink-0 items-center gap-2.5">
+            <img
+              src={entLogo.url}
+              alt="ENT Group"
+              className="h-10 w-10 rounded-md bg-white object-contain p-0.5 shadow-sm sm:h-11 sm:w-11"
+            />
             <div className="hidden sm:block">
-              <div className="text-lg font-bold leading-tight">Group IT Shop</div>
-              <div className="text-[10px] leading-tight text-white/60">Authorized Dealer — Synnex & VST ECS</div>
+              <div className="text-lg font-bold leading-tight">ENT Group IT Shop</div>
+              <div className="text-[10px] leading-tight text-[color:var(--brand-green)]">Computer for all</div>
             </div>
           </Link>
 
