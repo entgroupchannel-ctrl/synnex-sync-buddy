@@ -673,7 +673,8 @@ function HomePage() {
           {/* Computer Sets */}
           <ComputerSets />
 
-
+          {/* PC Builder landing */}
+          <PcBuilderLanding />
 
           {/* Components (CPU & Memory) */}
           <ComponentsShowcase />
