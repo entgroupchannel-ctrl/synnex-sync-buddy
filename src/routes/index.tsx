@@ -39,7 +39,9 @@ import {
   NetworkSecurity,
   StorageDeals,
   ComponentsShowcase,
-  MacBookShowcase,
+  SolarEnergy,
+} from "@/components/home-sections";
+import { AppleFeatured } from "@/components/apple-featured";
   SolarEnergy,
 } from "@/components/home-sections";
 import { AppleFeatured } from "@/components/apple-featured";
