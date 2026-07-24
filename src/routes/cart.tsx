@@ -7,7 +7,7 @@ import { SiteHeader } from "@/components/site-header";
 import { ProductImage } from "@/components/product-image";
 import { supabase } from "@/integrations/supabase/client";
 
-import { CATEGORIES, priceFmt, useCart } from "@/lib/cart";
+import { CATEGORIES, getItemWeightKg, priceFmt, useCart } from "@/lib/cart";
 import { useLanguage } from "@/lib/i18n";
 import { useSupabaseUser } from "@/lib/auth-sheet";
 import { saveCartReminder, deleteCartReminder } from "@/lib/cart-reminder";
