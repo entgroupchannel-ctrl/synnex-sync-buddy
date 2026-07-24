@@ -876,6 +876,10 @@ function QuotationDialog({
       toast.error("กรุณากรอกชื่อ อีเมล และเบอร์โทร");
       return;
     }
+    if (availableTime.length === 0) {
+      toast.error("กรุณาเลือกช่วงเวลาที่สะดวกรับโทร");
+      return;
+    }
     const anyPicked = STEPS.some((s) => selected[s.key]);
     if (!anyPicked) {
       toast.error("กรุณาเลือกชิ้นส่วนอย่างน้อย 1 ชิ้น");
