@@ -9,6 +9,7 @@ import { ShoppingCart, Package, Zap, Minus, Plus, ChevronRight } from "lucide-re
 import { SiteHeader } from "@/components/site-header";
 import { displayPrice, getSellingPrice, priceFmt, useCart, useCustomerTier } from "@/lib/cart";
 import { triggerAuthPrompt, useSupabaseUser } from "@/lib/auth-sheet";
+import { usePurchaseHistoryForSku } from "@/lib/reorder";
 
 export const Route = createFileRoute("/product/$slug")({
   ssr: false,
@@ -67,6 +68,7 @@ function ProductDetail() {
   });
 
   const p = productQ.data;
+  const historyQ = usePurchaseHistoryForSku(p?.sku);
   const ready = p?.stock_status === "พร้อมจัดส่ง";
   const specs = parseSpecs(p?.description);
 
@@ -161,6 +163,14 @@ function ProductDetail() {
                       <Zap className="mr-2 h-5 w-5" /> สั่งซื้อทันที
                     </Button>
                   </div>
+                  {user && (historyQ.data?.count ?? 0) > 0 && (
+                    <div className="mt-3 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-900">
+                      คุณเคยซื้อสินค้านี้ <b>{historyQ.data!.count}</b> ครั้ง
+                      {historyQ.data!.lastDate && (
+                        <> — ครั้งล่าสุด: {new Date(historyQ.data!.lastDate).toLocaleDateString("th-TH")} ราคา {priceFmt.format(historyQ.data!.lastPrice)}</>
+                      )}
+                    </div>
+                  )}
                 </>
               ) : (
                 <div className="mt-6">

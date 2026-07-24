@@ -4,6 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { priceFmt } from "@/lib/cart";
 import { Package, FileText, Receipt } from "lucide-react";
 import { STATUS_META, PAYMENT_STATUS_META, isValidStatus } from "@/lib/order-helpers";
+import { ReorderButton } from "@/components/reorder-dialog";
+import { FrequentlyBought } from "@/components/frequently-bought";
 
 export const Route = createFileRoute("/_authenticated/my-account/orders")({
   head: () => ({
@@ -51,7 +53,9 @@ function MyOrders() {
   );
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-6">
+      <FrequentlyBought />
+      <div className="space-y-3">
       {q.data!.map((o) => {
         const stMeta = STATUS_META[isValidStatus(o.status) ? o.status : "pending"];
         const payMeta = PAYMENT_STATUS_META[o.payment_status === "paid" ? "paid" : "pending"];
@@ -94,10 +98,13 @@ function MyOrders() {
                   <Receipt className="h-3.5 w-3.5" /> ใบกำกับภาษี
                 </a>
               )}
+              <ReorderButton orderId={o.id} className="ml-auto" />
             </div>
           </div>
         );
       })}
+      </div>
     </div>
   );
 }
+

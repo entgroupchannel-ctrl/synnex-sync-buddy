@@ -27,6 +27,7 @@ import {
   RecentlyViewed,
   NewsletterSignup,
 } from "@/components/home-sections";
+import { FrequentlyBought } from "@/components/frequently-bought";
 import entLogo from "@/assets/entgroup-logo.jpg.asset.json";
 
 const searchSchema = z.object({
@@ -320,6 +321,7 @@ function HomePage() {
       )}
 
       {/* Today's Best Deals */}
+      <FrequentlyBought />
       <TodaysBestDeals />
 
       {/* Popular Notebooks */}
