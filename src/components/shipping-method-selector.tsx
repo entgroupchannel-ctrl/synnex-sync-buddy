@@ -1,4 +1,4 @@
-import { Truck, Building2, Zap, MapPin, Clock, Phone, ExternalLink } from "lucide-react";
+import { Truck, Building2, Zap, MapPin, Clock, Phone, Printer, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   OFFICE_ADDRESS,
@@ -139,8 +139,12 @@ function PickupMap() {
         <div className="flex items-center gap-1.5">
           <Phone className="h-3.5 w-3.5 text-gray-400" />
           <a href={`tel:${OFFICE_ADDRESS.phone}`} className="hover:text-gray-900">
-            นัดหมาย: {OFFICE_ADDRESS.phone}
+            โทร: {OFFICE_ADDRESS.phone}
           </a>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <Printer className="h-3.5 w-3.5 text-gray-400" />
+          <span>แฟกซ์: {OFFICE_ADDRESS.fax}</span>
         </div>
       </div>
     </div>

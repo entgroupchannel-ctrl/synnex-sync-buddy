@@ -13,21 +13,22 @@ export const SHIPPING_METHOD_LABEL: Record<ShippingMethod, string> = {
 
 export const OFFICE_ADDRESS = {
   name: "บริษัท เอ็นที กรุ๊ป จำกัด",
-  line1: "70/5 หมู่ 4 เมกาโทร บิซทาวน์ แจ้งวัฒนะ 2 ถ.หอการค้าไทย",
-  line2: "ต.คลองพระอุดม อ.ปากเกร็ด นนทบุรี 11120",
+  line1: "เลขที่ 70/5 หมู่ 4 เมทโทร บิซทาวน์ แจ้งวัฒนะ 2 ถ.หอการค้าไทย",
+  line2: "ต.คลองพระอุดม อ.ปากเกร็ด จ.นนทบุรี 11120",
   district: "ปากเกร็ด",
   province: "นนทบุรี",
   postcode: "11120",
   phone: "02-045-6104",
+  fax: "02-045-6105",
   hours: "จ-ศ 9:00-18:00 น.",
   lat: 13.9125,
   lng: 100.5018,
   mapsUrl:
     "https://www.google.com/maps/search/?api=1&query=" +
-    encodeURIComponent("บริษัท เอ็นที กรุ๊ป จำกัด ปากเกร็ด นนทบุรี"),
+    encodeURIComponent("70/5 หมู่4 เมทโทร บิซทาวน์ แจ้งวัฒนะ2 ปากเกร็ด นนทบุรี"),
   embedUrl:
     "https://www.google.com/maps?q=" +
-    encodeURIComponent("บริษัท เอ็นที กรุ๊ป จำกัด ปากเกร็ด นนทบุรี") +
+    encodeURIComponent("70/5 หมู่4 เมทโทร บิซทาวน์ แจ้งวัฒนะ2 ปากเกร็ด นนทบุรี") +
     "&output=embed",
 };
 

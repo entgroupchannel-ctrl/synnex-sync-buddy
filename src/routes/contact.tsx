@@ -42,7 +42,7 @@ const CALLBACK_TIMES = [
 
 const MAPS_URL =
   "https://www.google.com/maps/search/?api=1&query=" +
-  encodeURIComponent("ENT Group 70/5 Metro Biztown Chaengwattana 2, Pak Kret, Nonthaburi 11120");
+  encodeURIComponent("70/5 หมู่4 เมทโทร บิซทาวน์ แจ้งวัฒนะ2 ปากเกร็ด นนทบุรี");
 
 function ContactPage() {
   const [form, setForm] = useState({
@@ -130,9 +130,9 @@ function ContactPage() {
                 <div>
                   <div className="font-semibold text-[color:var(--brand-navy)]">สำนักงานใหญ่ & สำนักงานขาย</div>
                   <div className="whitespace-pre-line text-slate-600">
-                    70/5 หมู่ 4 เมทโทร บิซทาวน์ แจ้งวัฒนะ 2{"\n"}
-                    ตำบลคลองพระอุดม อำเภอปากเกร็ด{"\n"}
-                    นนทบุรี 11120
+                    เลขที่ 70/5 หมู่ 4 เมทโทร บิซทาวน์ แจ้งวัฒนะ 2{"\n"}
+                    ถ.หอการค้าไทย ตำบลคลองพระอุดม{"\n"}
+                    อำเภอปากเกร็ด จังหวัดนนทบุรี 11120
                   </div>
                   <a href={MAPS_URL} target="_blank" rel="noopener noreferrer" className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-[color:var(--brand-green)] hover:underline">
                     เปิดใน Google Maps →
