@@ -589,25 +589,29 @@ const BRAND_DOMAINS: Record<string, string> = {
 };
 
 function BrandCardLogo({ brand }: { brand: string }) {
-  const [failed, setFailed] = useState(false);
+  const [idx, setIdx] = useState(0);
   const domain = BRAND_DOMAINS[brand];
-  if (!domain) {
-    return (
-      <div className="mb-2 flex h-10 items-center justify-center">
-        <span className="text-base font-black text-[color:var(--brand-navy)]">{brand}</span>
-      </div>
-    );
-  }
+  const sources = domain
+    ? [
+        `https://icon.horse/icon/${domain}`,
+        `https://www.google.com/s2/favicons?sz=128&domain=${domain}`,
+      ]
+    : [];
+  const failed = !domain || idx >= sources.length;
   return (
     <div className="mb-2 flex h-10 items-center justify-center">
-      <img
-        src={`https://logo.clearbit.com/${domain}`}
-        alt={brand}
-        className={`max-h-8 max-w-20 object-contain transition group-hover:grayscale-0 ${failed ? "hidden" : "grayscale-[20%]"}`}
-        onError={() => setFailed(true)}
-      />
-      {failed && (
-        <span className="text-base font-black text-[color:var(--brand-navy)]">{brand}</span>
+      {!failed ? (
+        <img
+          src={sources[idx]}
+          alt={brand}
+          loading="lazy"
+          className="max-h-8 max-w-[72px] object-contain transition group-hover:scale-105"
+          onError={() => setIdx((i) => i + 1)}
+        />
+      ) : (
+        <span className="text-sm font-black tracking-tight text-[color:var(--brand-navy)]">
+          {brand}
+        </span>
       )}
     </div>
   );
