@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 import { ProductImage } from "@/components/product-image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -350,6 +351,7 @@ function MyOrdersPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <SiteFooter />
     </div>
   );
 }

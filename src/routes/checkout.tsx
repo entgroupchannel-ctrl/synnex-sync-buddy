@@ -11,6 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { ArrowLeft, Banknote, Truck, Building2, User, Loader2, Tag, X, CheckCircle2 } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 import { CheckoutTrustBox } from "@/components/trust-signals";
 import { ShippingMethodSelector } from "@/components/shipping-method-selector";
 import { getItemWeightKg, priceFmt, useCart } from "@/lib/cart";
@@ -685,6 +686,7 @@ function CheckoutPage() {
           </aside>
         </form>
       </div>
+      <SiteFooter />
     </div>
   );
 }

@@ -7,6 +7,7 @@ import { CheckCircle2, Copy, Package, Upload, FileCheck2, Loader2, Phone, Smartp
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 import { ProductImage } from "@/components/product-image";
 
 import { Button } from "@/components/ui/button";
@@ -322,6 +323,7 @@ function OrderConfirm() {
           </Button>
         </div>
       </div>
+      <SiteFooter />
     </div>
   );
 }

@@ -3,6 +3,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Phone, Mail, MapPin, Send, MessageCircle, Globe, ArrowLeft, CreditCard, Printer } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -294,6 +295,7 @@ function ContactPage() {
           )}
         </div>
       </div>
+      <SiteFooter />
     </div>
   );
 }
