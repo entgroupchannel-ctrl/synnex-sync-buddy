@@ -9,8 +9,19 @@ Disallow: /my-account
 Disallow: /my-orders
 Disallow: /order/
 Disallow: /track/
+Crawl-delay: 10
+
+# Preferred search engines — lighter throttle
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 2
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 5
 
 Sitemap: https://shop.entgroup.co.th/sitemap.xml
+
 
 # AI crawlers (GEO / AEO)
 User-agent: GPTBot
