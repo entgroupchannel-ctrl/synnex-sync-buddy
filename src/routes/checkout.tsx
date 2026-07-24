@@ -195,10 +195,15 @@ function CheckoutPage() {
   }
 
 
+  const [hp, setHp] = useState("");
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Honeypot: real users never fill this hidden field
+    if (hp) { console.warn("Bot detected via honeypot"); return; }
     if (items.length === 0) { toast.error("ตะกร้าว่างเปล่า"); return; }
     setErrors({});
+
 
     // For pickup, only validate contact info + recipient name/phone (fall back to customer).
     const formToValidate: Fields = isPickup
