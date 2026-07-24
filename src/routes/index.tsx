@@ -310,8 +310,22 @@ function HomePage() {
   const toggleBrand = (b: string) => {
     const set = new Set(selectedBrands);
     if (set.has(b)) set.delete(b); else set.add(b);
-    update({ brands: [...set].join(",") });
+    // Selecting/deselecting a brand auto-clears category to prevent 0-result conflicts.
+    update({ brands: [...set].join(","), category: "all" });
   };
+
+  const setCategory = (c: string) => {
+    // Changing category auto-clears brand filter to prevent 0-result conflicts.
+    update({ category: c, brands: "" });
+  };
+
+  const clearAllFilters = () => {
+    navigate({ to: "/", search: {} as never });
+  };
+
+  const activeCategory = search.category !== "all" ? search.category : null;
+  const hasActiveFilters = !!activeCategory || selectedBrands.length > 0 || !!search.q;
+
 
   const addToCart = (p: Record<string, unknown>) => {
     const name = (p.name as string) ?? (p.sku as string);
@@ -347,7 +361,7 @@ function HomePage() {
         <div className="mb-2 text-sm font-bold text-[color:var(--brand-navy)]">หมวดหมู่</div>
         <div className="space-y-0.5">
           <button
-            onClick={() => update({ category: "all" })}
+            onClick={() => setCategory("all")}
             className={`flex w-full items-center justify-between rounded-md px-2 py-1.5 text-sm ${search.category === "all" ? "bg-[color:var(--brand-navy)] text-white" : "hover:bg-slate-100"}`}
           >
             ทั้งหมด <ChevronRight className="h-3 w-3 opacity-50" />
@@ -355,12 +369,13 @@ function HomePage() {
           {CATEGORIES.map((c) => (
             <button
               key={c}
-              onClick={() => update({ category: c })}
+              onClick={() => setCategory(c)}
               className={`flex w-full items-center justify-between rounded-md px-2 py-1.5 text-sm ${search.category === c ? "bg-[color:var(--brand-navy)] text-white" : "hover:bg-slate-100"}`}
             >
               {c} <ChevronRight className="h-3 w-3 opacity-50" />
             </button>
           ))}
+
         </div>
       </div>
 
@@ -564,6 +579,53 @@ function HomePage() {
             </div>
           </div>
 
+          {/* Active filter summary */}
+          {hasActiveFilters && (
+            <div
+              className={`mb-4 flex flex-wrap items-center gap-2 rounded-lg border p-3 text-sm ${
+                (productsQuery.data?.count ?? 0) === 0 && !productsQuery.isLoading
+                  ? "border-red-300 bg-red-50 text-red-700"
+                  : "border-slate-200 bg-white text-slate-700"
+              }`}
+            >
+              <span className="font-medium">กรองโดย:</span>
+              {search.q && (
+                <button
+                  onClick={() => update({ q: "" })}
+                  className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-xs hover:bg-slate-200"
+                >
+                  ค้นหา: {search.q} <span aria-hidden>×</span>
+                </button>
+              )}
+              {activeCategory && (
+                <button
+                  onClick={() => setCategory("all")}
+                  className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-xs hover:bg-slate-200"
+                >
+                  {activeCategory} <span aria-hidden>×</span>
+                </button>
+              )}
+              {selectedBrands.map((b: string) => (
+                <button
+                  key={b}
+                  onClick={() => toggleBrand(b)}
+                  className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-xs hover:bg-slate-200"
+                >
+                  {b} <span aria-hidden>×</span>
+                </button>
+              ))}
+              <span className="ml-1 text-xs opacity-80">
+                พบ {productsQuery.data?.count ?? 0} รายการ
+              </span>
+              <button
+                onClick={clearAllFilters}
+                className="ml-auto inline-flex items-center gap-1 rounded-md border border-current px-2.5 py-1 text-xs font-medium hover:bg-white/50"
+              >
+                × ล้างทั้งหมด
+              </button>
+            </div>
+          )}
+
           {productsQuery.isLoading ? (
             <div className={search.view === "list" ? "space-y-3" : "grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-3 xl:grid-cols-4"}>
               {Array.from({ length: 8 }).map((_, i) => (
@@ -571,9 +633,30 @@ function HomePage() {
               ))}
             </div>
           ) : (productsQuery.data?.rows.length ?? 0) === 0 ? (
-            <div className="rounded-lg border border-dashed bg-white p-12 text-center text-slate-500">
-              ไม่พบสินค้าที่ตรงเงื่อนไข
+            <div className="space-y-3 rounded-lg border border-dashed bg-white p-12 text-center text-slate-500">
+              <div className="text-base font-medium text-slate-700">ไม่พบสินค้าที่ตรงเงื่อนไข</div>
+              {activeCategory && selectedBrands.length > 0 && (
+                <div className="text-sm">
+                  ลองล้างตัวกรองแบรนด์ เพื่อดูสินค้าในหมวด {activeCategory} ทั้งหมด
+                </div>
+              )}
+              <div className="flex flex-wrap justify-center gap-2 pt-2">
+                {selectedBrands.length > 0 && (
+                  <Button variant="outline" size="sm" onClick={() => update({ brands: "" })}>
+                    ล้างแบรนด์
+                  </Button>
+                )}
+                {activeCategory && (
+                  <Button variant="outline" size="sm" onClick={() => setCategory("all")}>
+                    ดูทุกหมวดหมู่
+                  </Button>
+                )}
+                <Button size="sm" onClick={clearAllFilters} className="bg-[color:var(--brand-green)] hover:bg-[color:var(--brand-green)]/90">
+                  × ล้างทั้งหมด
+                </Button>
+              </div>
             </div>
+
           ) : search.view === "list" ? (
             <div className="space-y-3">
               {productsQuery.data!.rows.map((p) => {
