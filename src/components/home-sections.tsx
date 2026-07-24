@@ -209,12 +209,12 @@ const QUICK_CATS = [
   { icon: Printer,    label: "Printer",      sub: "Printer",        cat: "Printer" },
   { icon: Cpu,        label: "PC / Desktop", sub: "PC & Desktop",   cat: "PC" },
   { icon: MonitorCog, label: "คอมพิวเตอร์ชุด", sub: "Computer Set",   cat: "Computer Set" },
-  { icon: Smartphone, label: "สมาร์ตโฟน",     sub: "Smart Phone",    cat: "Smartphone" },
-  { icon: Wifi,       label: "Network",      sub: "Network",        cat: "Network" },
-  { icon: HardDrive,  label: "Storage",      sub: "Storage",        cat: "Storage" },
+  { icon: Cpu,        label: "ชิ้นส่วน/CPU",  sub: "Components",     cat: "Components" },
   { icon: Package,    label: "Software",     sub: "Software",       cat: "Software" },
   { icon: Cable,      label: "อุปกรณ์เสริม",   sub: "Accessories",    cat: "Accessories" },
-  { icon: Cpu,        label: "คอมโพเนนท์",     sub: "Components",     cat: "Components" },
+  { icon: Wifi,       label: "Network",      sub: "Network",        cat: "Network" },
+  { icon: HardDrive,  label: "Storage",      sub: "Storage",        cat: "Storage" },
+  { icon: Smartphone, label: "สมาร์ตโฟน",     sub: "Smart Phone",    cat: "Smart Phone & Tablet" },
   { icon: LayoutGrid, label: "ดูทั้งหมด",     sub: "View All",       cat: "all" },
 ];
 
