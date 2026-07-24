@@ -531,11 +531,11 @@ function ProductPicker({
         case "gpu": {
           q = q
             .eq("category", "Components")
-            .or("name.ilike.%RTX%,name.ilike.%GTX%,name.ilike.%Radeon RX%,name.ilike.%GeForce%")
+            .or("name.ilike.%RTX%,name.ilike.%GTX%,name.ilike.%GeForce%,name.ilike.%Radeon RX%")
             .not("name", "ilike", "%CPU%")
             .not("name", "ilike", "%Mainboard%")
             .not("name", "ilike", "%Threadripper%");
-          if (gpuBrand === "nvidia") q = q.or("name.ilike.%RTX%,name.ilike.%GTX%");
+          if (gpuBrand === "nvidia") q = q.or("name.ilike.%RTX%,name.ilike.%GTX%,name.ilike.%GeForce%");
           else if (gpuBrand === "amd") q = q.or("name.ilike.%Radeon RX%,name.ilike.%RX 9%,name.ilike.%RX 7%");
           limit = 30;
           break;
@@ -694,7 +694,7 @@ function ProductPicker({
                 </div>
                 {isGpuZeroPrice ? (
                   <>
-                    <div className="mt-1 inline-block rounded bg-amber-100 px-1.5 py-0.5 text-[9px] font-semibold text-amber-700">
+                    <div className="mt-1 inline-block rounded bg-orange-100 px-1.5 py-0.5 text-[9px] font-semibold text-orange-700">
                       By Order
                     </div>
                     <div className="mt-0.5 text-xs font-bold text-slate-500">ติดต่อสอบถาม</div>
@@ -710,7 +710,7 @@ function ProductPicker({
                     e.stopPropagation();
                     if (isGpuZeroPrice) {
                       window.open(
-                        `mailto:sales@entgroup.co.th?subject=ขอใบเสนอราคา ${p.name}`,
+                        `mailto:sales@entgroup.co.th?subject=ขอใบเสนอราคาการ์ดจอ ${p.name}`,
                         "_blank",
                       );
                     } else {
