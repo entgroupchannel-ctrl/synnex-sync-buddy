@@ -85,7 +85,7 @@ function TrackPage() {
                 <div className="text-sm text-slate-500">ยังไม่มีสถานะการจัดส่ง</div>
               ) : (
                 <ol className="relative space-y-4 border-l-2 border-slate-200 pl-4">
-                  {q.data.events.map((ev) => (
+                  {q.data.events.map((ev: { id: string; event_time: string | null; status: string | null; location: string | null; description: string | null; description_en: string | null }) => (
                     <li key={ev.id} className="relative">
                       <span className="absolute -left-[22px] top-1 h-3 w-3 rounded-full bg-emerald-500 ring-2 ring-white" />
                       <div className="text-xs text-slate-500">
