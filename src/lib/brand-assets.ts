@@ -24,6 +24,14 @@ export const BRAND_LOGO_URLS: Record<string, string> = {
   KINGSTON: KINGSTON.url,
   LENOVO: LENOVO.url,
   LOGITECH: LOGITECH.url,
+  RAPOO: RAPOO.url,
+  RAZER: RAZER.url,
+  TKS: TKS.url,
+  "TKS PAPER": TKS.url,
+  TPLINK: TPLINK.url,
+  "TP-LINK": TPLINK.url,
+  WD: WD.url,
+  "WESTERN DIGITAL": WD.url,
 };
 
 export function getBrandLogoUrl(brand: string | null | undefined): string | null {
