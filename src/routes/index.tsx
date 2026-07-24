@@ -19,6 +19,7 @@ import { ProductImage } from "@/components/product-image";
 import { SiteFooter } from "@/components/site-footer";
 import { useDynamicSeo, getRobotsForCategory } from "@/lib/dynamic-seo";
 import { DeliveryHint } from "@/components/delivery-info";
+import { StockBadge } from "@/components/stock-badge";
 
 
 import { CATEGORIES, detectCategory, displayPrice, getSellingPrice, useCart, useCustomerTier } from "@/lib/cart";
@@ -620,7 +621,6 @@ function HomePage() {
                     const selling = getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier) ?? 0;
                     const orig = (p as { price?: number | null }).price ?? 0;
                     const pct = orig > 0 && selling > 0 && selling < orig ? Math.round((1 - selling / orig) * 100) : 0;
-                    const lowStock = p.stock_status === "พร้อมจัดส่ง" && (p.stock_qty ?? 999) < 10;
                     return (
                       <Link
                         key={p.id}
@@ -631,11 +631,9 @@ function HomePage() {
                         {pct > 0 && (
                           <div className="absolute left-1.5 top-1.5 z-10 rounded bg-red-600 px-1.5 py-0.5 text-[10px] font-black text-white shadow">-{pct}%</div>
                         )}
-                        {lowStock && (
-                          <div className="absolute right-1.5 top-1.5 z-10 rounded bg-orange-600 px-1.5 py-0.5 text-[10px] font-bold text-white shadow">
-                            เหลือ {p.stock_qty} ชิ้น
-                          </div>
-                        )}
+                        <div className="absolute right-1.5 top-1.5 z-10">
+                          <StockBadge stockQty={p.stock_qty} fulfillmentType={p.fulfillment_type} />
+                        </div>
                         <div className="grid aspect-square place-items-center bg-white p-2">
                           <ProductImage src={p.image_url} alt={p.name ?? p.sku} />
 
@@ -903,7 +901,7 @@ function HomePage() {
                 const ready = p.stock_status === "พร้อมจัดส่ง";
                 const available = ready || byOrder;
                 const slug = p.slug || p.id;
-                const lowStock = ready && (p.stock_qty ?? 999) < 10;
+                
                 const priced = getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier) != null && !!p.price_approved;
                 return (
                   <div key={p.id} className="flex gap-4 rounded-lg border bg-white p-3 transition hover:shadow-md">
@@ -915,15 +913,9 @@ function HomePage() {
                       <Link to="/product/$slug" params={{ slug }} className="line-clamp-2 text-sm font-semibold hover:text-[color:var(--brand-navy)]">{p.name ?? p.sku}</Link>
                       {p.description && <div className="mt-1 line-clamp-2 text-xs text-slate-500">{p.description}</div>}
                       <div className="mt-auto flex items-center gap-2 pt-1">
-                        {byOrder ? (
-                          <Badge className="bg-blue-100 text-[10px] text-blue-700 hover:bg-blue-100">📋 By Order</Badge>
-                        ) : (
-                          <>
-                            <span className={`inline-block h-2 w-2 rounded-full ${ready ? "bg-green-500" : "bg-red-500"}`} />
-                            <span className="text-xs text-slate-600">{p.stock_status ?? "—"}</span>
-                            {lowStock && <Badge className="bg-red-100 text-[10px] text-red-700 hover:bg-red-100">เหลือน้อย</Badge>}
-                          </>
-                        )}
+                        <span className={`inline-block h-2 w-2 rounded-full ${ready || byOrder ? "bg-green-500" : "bg-red-500"}`} />
+                        <span className="text-xs text-slate-600">{byOrder ? "By Order" : (p.stock_status ?? "—")}</span>
+                        <StockBadge stockQty={p.stock_qty} fulfillmentType={p.fulfillment_type} />
                       </div>
                     </div>
                     <div className="flex w-40 shrink-0 flex-col items-end justify-between gap-1">
@@ -968,24 +960,14 @@ function HomePage() {
                 const ready = p.stock_status === "พร้อมจัดส่ง";
                 const available = ready || byOrder;
                 const slug = p.slug || p.id;
-                const lowStock = ready && (p.stock_qty ?? 999) < 10;
+                
                 const priced = getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier) != null && !!p.price_approved;
                 return (
                   <div key={p.id} className="group relative flex flex-col overflow-hidden rounded-lg border bg-white transition hover:shadow-lg">
                     <BrandLogo brand={p.brand} />
-                    {byOrder ? (
-                      <div className="absolute right-2 top-2 z-10 rounded bg-blue-600 px-2 py-0.5 text-[10px] font-bold text-white shadow-sm">
-                        📋 By Order
-                      </div>
-                    ) : !ready ? (
-                      <div className="absolute right-2 top-2 z-10 rounded bg-red-600 px-2 py-0.5 text-[10px] font-bold text-white shadow-sm">
-                        สินค้าหมด
-                      </div>
-                    ) : lowStock && (
-                      <div className="absolute right-2 top-2 z-10 rounded bg-red-500 px-1.5 py-0.5 text-[10px] font-bold text-white shadow-sm">
-                        เหลือน้อย
-                      </div>
-                    )}
+                    <div className="absolute right-2 top-2 z-10">
+                      <StockBadge stockQty={p.stock_qty} fulfillmentType={p.fulfillment_type} />
+                    </div>
                     <Link to="/product/$slug" params={{ slug }} className="grid aspect-square place-items-center bg-white p-3">
                       <ProductImage
                         src={p.image_url}

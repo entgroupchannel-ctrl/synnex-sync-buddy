@@ -20,6 +20,7 @@ import { useCart } from "@/lib/cart";
 import { useLanguage } from "@/lib/i18n";
 import { ProductImage } from "@/components/product-image";
 import { BrandLogo } from "@/components/brand-logo";
+import { StockBadge } from "@/components/stock-badge";
 
 
 /* ---------- Hero Carousel (compact, split layout) ---------- */
@@ -303,7 +304,6 @@ export function TodaysBestDeals() {
             const slug = p.slug || p.id;
             const selling = getSellingPrice(p, tier) ?? 0;
             const freeShip = selling > 5000;
-            const lowStock = ready && (p.stock_qty ?? 999) < 10;
             return (
               <div key={p.id} className="group flex overflow-hidden rounded-lg border bg-white transition hover:shadow-lg lg:flex-col">
                 <Link to="/product/$slug" params={{ slug }} className="grid h-32 w-36 shrink-0 place-items-center bg-white p-2 lg:h-40 lg:w-full">
@@ -317,7 +317,7 @@ export function TodaysBestDeals() {
                   <Link to="/product/$slug" params={{ slug }} className="line-clamp-2 text-sm font-semibold hover:text-[color:var(--brand-navy)]">{p.name ?? p.sku}</Link>
                   <div className="flex flex-wrap items-center gap-1">
                     {freeShip && <Badge className="bg-green-100 text-[10px] text-green-700 hover:bg-green-100">🚚 ฟรีจัดส่ง</Badge>}
-                    {lowStock && <Badge className="bg-red-100 text-[10px] text-red-700 hover:bg-red-100">เหลือน้อย</Badge>}
+                    <StockBadge stockQty={p.stock_qty as number | null | undefined} fulfillmentType={p.fulfillment_type as string | null | undefined} />
                   </div>
                   <div className="mt-1 text-xl font-black text-[color:var(--brand-orange)]">{displayPrice(p, tier)}</div>
                   <div className="flex items-center gap-1.5 text-[11px] text-slate-600">
@@ -1028,19 +1028,15 @@ function CategoryGridCard({ p }: { p: ProductRow }) {
   const byOrder = (p as { fulfillment_type?: string | null }).fulfillment_type === "by_order";
   const available = ready || byOrder;
   const slug = p.slug || p.id;
-  const lowStock = ready && (p.stock_qty ?? 999) < 5;
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-lg border bg-white transition hover:shadow-lg">
       <BrandLogo brand={p.brand} />
-      {byOrder ? (
-        <div className="absolute right-2 top-2 z-10 rounded bg-blue-600 px-2 py-0.5 text-[10px] font-bold text-white shadow-sm">
-          📋 By Order
-        </div>
-      ) : lowStock ? (
-        <div className="absolute right-2 top-2 z-10 rounded bg-red-500 px-1.5 py-0.5 text-[10px] font-bold text-white shadow-sm">
-          เหลือน้อย
-        </div>
-      ) : null}
+      <div className="absolute right-2 top-2 z-10">
+        <StockBadge
+          stockQty={(p as { stock_qty?: number | null }).stock_qty}
+          fulfillmentType={(p as { fulfillment_type?: string | null }).fulfillment_type}
+        />
+      </div>
       <Link to="/product/$slug" params={{ slug }} className="grid aspect-square place-items-center bg-white p-3">
         <ProductImage
           src={p.image_url}
