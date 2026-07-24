@@ -168,36 +168,11 @@ function ContactPage() {
                 <div className="min-w-0 flex-1">
                   <div className="font-semibold text-[color:var(--brand-navy)]">LINE Official</div>
                   <div className="text-xs text-slate-500">สอบถามเพิ่มเติมผ่าน LINE — คลิกเพื่อสแกน QR</div>
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button size="sm" className="mt-2 gap-1.5 bg-[#06C755] font-semibold text-white hover:bg-[#05a548]">
-                        <MessageCircle className="h-4 w-4" /> แอดไลน์ <span className="font-mono">{LINE_ID}</span>
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-sm">
-                      <DialogHeader>
-                        <DialogTitle>เพิ่มเพื่อนใน LINE</DialogTitle>
-                        <DialogDescription>
-                          สแกน QR Code เพื่อแอดเพื่อน <span className="font-mono font-semibold text-[color:var(--brand-navy)]">{LINE_ID}</span> แล้วคุยกับทีมขายได้ทันที
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="mx-auto mt-2 rounded-2xl border-2 border-[#06C755]/20 bg-white p-4">
-                        <img
-                          src={LINE_QR_URL}
-                          alt={`LINE QR Code ${LINE_ID}`}
-                          width={320}
-                          height={320}
-                          className="h-72 w-72"
-                          loading="lazy"
-                        />
-                      </div>
-                      <Button asChild className="mt-2 w-full gap-2 bg-[#06C755] font-semibold text-white hover:bg-[#05a548]">
-                        <a href={LINE_ADD_URL} target="_blank" rel="noopener noreferrer">
-                          เปิดในแอป LINE <ExternalLink className="h-4 w-4" />
-                        </a>
-                      </Button>
-                    </DialogContent>
-                  </Dialog>
+                  <LineQrDialog>
+                    <Button size="sm" className="mt-2 gap-1.5 bg-[#06C755] font-semibold text-white hover:bg-[#05a548]">
+                      <MessageCircle className="h-4 w-4" /> แอดไลน์ <span className="font-mono">@entgroup</span>
+                    </Button>
+                  </LineQrDialog>
                 </div>
               </div>
 
