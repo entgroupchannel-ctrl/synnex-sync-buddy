@@ -500,13 +500,14 @@ function ProductDetail() {
                 const priceNum = Number(p.selling_price ?? 0);
                 const stockLabel = ready ? "พร้อมจัดส่ง" : byOrder ? "By Order 30 วัน" : (p.stock_status ?? "สินค้าหมด");
                 const summary = [
-                  `${p.name ?? p.sku} ราคา ฿${priceNum.toLocaleString("th-TH")}`,
+                  `${p.name ?? decodedSku} ราคา ฿${priceNum.toLocaleString("th-TH")}`,
                   stockLabel,
                   p.brand ? `แบรนด์ ${p.brand}` : "",
-                  `รหัสสินค้า ${p.sku}`,
+                  showSku ? `รหัสสินค้า ${decodedSku}` : "",
                   `จำหน่ายโดย ENT Group IT Shop`,
                   "รับประกันศูนย์ไทย",
                 ].filter(Boolean).join(" · ");
+
                 return (
                   <section className="mt-6 rounded-lg border border-slate-200 bg-slate-50 p-4" aria-label="สรุปรายละเอียดสินค้า">
                     <div className="mb-1 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-slate-500">
