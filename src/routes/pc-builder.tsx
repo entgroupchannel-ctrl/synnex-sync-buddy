@@ -892,6 +892,8 @@ function QuotationDialog({
       customer_email: email.trim(),
       customer_phone: phone.trim(),
       note: notes.trim() || null,
+      line_id: lineId.trim() || null,
+      available_time: availableTime.join(", "),
       cpu_id: pick("cpu")?.id ?? null,
       cpu_name: pick("cpu")?.name ?? null,
       cpu_price: priceOf(pick("cpu")) || 0,
