@@ -97,8 +97,8 @@ export function SiteHeader() {
     e.preventDefault();
     setSuggestOpen(false);
     navigate({ to: "/", search: { q: q.trim(), category: "all" } as never });
-    scrollToGrid();
   };
+
 
   const clearSearch = () => {
     setQ("");
