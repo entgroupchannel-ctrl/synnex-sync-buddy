@@ -19,19 +19,21 @@ import { triggerAuthPrompt, useSupabaseUser } from "@/lib/auth-sheet";
 import { useCart } from "@/lib/cart";
 import { useLanguage } from "@/lib/i18n";
 
-/* ---------- Hero Carousel ---------- */
+/* ---------- Hero Carousel (compact, split layout) ---------- */
 
-type Slide = {
+import promoClearance from "@/assets/promo-clearance.jpg";
+import promoGaming from "@/assets/promo-gaming.jpg";
+import promoBusiness from "@/assets/promo-business.jpg";
+
+type Trust = { icon: typeof Flame; title: string; sub: string };
+
+type Promo = {
   image: string;
-  align: "left" | "right";
-  eyebrowIcon: typeof Flame;
-  eyebrow: string;
+  tag: string;
   title: string;
-  titleAccent: string;
-  sub: string;
-  stats?: { value: string; label: string }[];
-  cta: string;
-  ctaAction: () => void;
+  subtitle: string;
+  action: () => void;
+  tint: string; // gradient overlay
 };
 
 export function HeroCarousel({ onBrowse, onReady }: { onBrowse: () => void; onReady: () => void }) {
@@ -39,148 +41,156 @@ export function HeroCarousel({ onBrowse, onReady }: { onBrowse: () => void; onRe
   const [i, setI] = useState(0);
   const [paused, setPaused] = useState(false);
 
-  const slides: Slide[] = useMemo(() => [
+  const promos: Promo[] = useMemo(() => [
     {
-      image: heroWarehouse,
-      align: "left",
-      eyebrowIcon: Warehouse,
-      eyebrow: "Authorized Dealer • Synnex Thailand & VST ECS",
-      title: "สินค้าแท้ 100%",
-      titleAccent: "จากผู้จัดจำหน่ายไทยโดยตรง",
-      sub: "เราเปิดเผยที่มาชัดเจน — นำเข้าและจัดจำหน่ายผ่าน Synnex (Thailand) และ VST ECS ผู้จัดจำหน่ายไอทีรายใหญ่ที่สุดของไทย พร้อมสต๊อกในประเทศ ส่งไว รับประกันศูนย์ไทยเต็มรูปแบบ",
-      stats: [
-        { value: "10+", label: "ปีในวงการ IT" },
-        { value: "100%", label: "สินค้าแท้ประกันศูนย์" },
-        { value: "2 แบรนด์", label: "Distributor หลัก" },
-      ],
-      cta: "ดูสินค้าพร้อมส่ง / Shop In-Stock",
-      ctaAction: onReady,
+      image: promoClearance,
+      tag: "CLEARANCE",
+      title: "ล้างสต๊อก ราคาพิเศษ",
+      subtitle: "ลดสูงสุด 50% เฉพาะสินค้าคงเหลือ",
+      action: onReady,
+      tint: "from-red-900/70 via-red-800/30 to-transparent",
     },
     {
-      image: heroEnterprise,
-      align: "right",
-      eyebrowIcon: Building2,
-      eyebrow: "ENT Group — ผู้ให้บริการไอทีองค์กร",
-      title: "8,000+ องค์กร",
-      titleAccent: "ไว้วางใจเรา",
-      sub: "ต่อยอดจาก ENTerprise.co.th เว็บไซต์หลักของเรา ที่ให้บริการลูกค้าองค์กรกว่า 8,000 รายทั่วประเทศ วันนี้เราเปิดร้านค้าออนไลน์นี้ให้ลูกค้า ทั่วไป / สมาชิก / องค์กร เข้าถึงราคา Dealer จริงได้โดยตรง",
-      stats: [
-        { value: "8,000+", label: "ลูกค้าองค์กร" },
-        { value: "B2C · B2B", label: "ครบทุกกลุ่ม" },
-        { value: "VAT", label: "ออกใบกำกับภาษีได้" },
-      ],
-      cta: "สมัครสมาชิก / Join Now",
-      ctaAction: () => navigate({ to: "/auth" }),
+      image: promoGaming,
+      tag: "GAMING",
+      title: "Gaming Notebook",
+      subtitle: "แรง เย็น คุ้ม พร้อมส่งจากไทย",
+      action: () => navigate({ to: "/", search: { category: "Notebook" } as never }),
+      tint: "from-purple-900/70 via-fuchsia-900/30 to-transparent",
     },
     {
-      image: heroDelivery,
-      align: "left",
-      eyebrowIcon: ShieldCheck,
-      eyebrow: "พร้อมส่งจากสต๊อกไทย • ประกันครบวงจร",
-      title: "ส่งไว มั่นใจ",
-      titleAccent: "ก่อน · ระหว่าง · หลังการขาย",
-      sub: "สินค้าพร้อมส่งจากคลังในประเทศไทย — จัดส่งเร็ว ตรวจสอบสถานะได้ พร้อมทีมงานผู้เชี่ยวชาญให้คำปรึกษาก่อนซื้อ ดูแลระหว่างใช้งาน และบริการหลังการขายผ่านศูนย์บริการทั่วประเทศ",
-      stats: [
-        { value: "1-3 วัน", label: "จัดส่งทั่วไทย" },
-        { value: "24/7", label: "ทีมซัพพอร์ต" },
-        { value: "ศูนย์ไทย", label: "รับประกันเต็มรูปแบบ" },
-      ],
-      cta: "เริ่มช้อปเลย / Browse All",
-      ctaAction: onBrowse,
+      image: promoBusiness,
+      tag: "BUSINESS",
+      title: "Office Essentials",
+      subtitle: "ราคาองค์กร + ใบกำกับภาษี",
+      action: onBrowse,
+      tint: "from-emerald-900/70 via-emerald-800/30 to-transparent",
     },
   ], [onBrowse, onReady, navigate]);
 
   useEffect(() => {
     if (paused) return;
-    const t = setInterval(() => setI((v) => (v + 1) % slides.length), 6000);
+    const t = setInterval(() => setI((v) => (v + 1) % promos.length), 4500);
     return () => clearInterval(t);
-  }, [paused, slides.length]);
+  }, [paused, promos.length]);
 
-  const s = slides[i];
-  const EyebrowIcon = s.eyebrowIcon;
-  const isRight = s.align === "right";
+  const trust: Trust[] = [
+    { icon: ShieldCheck, title: "สินค้าแท้ 100%", sub: "Synnex & VST ECS" },
+    { icon: Building2,   title: "8,000+ องค์กร", sub: "ไว้วางใจ ENT Group" },
+    { icon: Truck,       title: "พร้อมส่งจากไทย", sub: "1-3 วันทั่วประเทศ" },
+  ];
 
   return (
-    <section
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-      className="relative overflow-hidden bg-[color:var(--brand-navy)]"
-    >
-      {/* Background image + gradient scrim */}
-      <div className="absolute inset-0">
-        <img
-          key={s.image}
-          src={s.image}
-          alt=""
-          className="h-full w-full object-cover animate-fade-in"
-          loading="eager"
-          width={1920}
-          height={1088}
-        />
-        <div
-          className={`absolute inset-0 ${
-            isRight
-              ? "bg-gradient-to-l from-[color:var(--brand-navy)]/95 via-[color:var(--brand-navy)]/70 to-transparent"
-              : "bg-gradient-to-r from-[color:var(--brand-navy)]/95 via-[color:var(--brand-navy)]/70 to-transparent"
-          }`}
-        />
-        <div className="absolute inset-0 bg-[color:var(--brand-navy)]/30" />
-      </div>
+    <section className="relative overflow-hidden bg-gradient-to-br from-[color:var(--brand-navy)] via-[color:var(--brand-navy-2)] to-[color:var(--brand-navy)]">
+      <div
+        className="absolute inset-0 opacity-25"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle at 15% 20%, #f97316 0, transparent 40%), radial-gradient(circle at 85% 80%, #10b981 0, transparent 40%)",
+        }}
+      />
+      <div className="relative mx-auto grid max-w-7xl gap-6 px-4 py-6 md:grid-cols-2 md:gap-8 md:py-10">
+        {/* LEFT — compact message + trust chips */}
+        <div className="flex flex-col justify-center">
+          <div className="mb-3 inline-flex w-fit items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-medium text-white backdrop-blur">
+            <Flame className="h-3.5 w-3.5 text-[color:var(--brand-orange)]" />
+            Authorized Dealer • Synnex Thailand & VST ECS
+          </div>
+          <h1 className="text-2xl font-black leading-tight text-white md:text-4xl">
+            ราคา Dealer จริง <span className="text-[color:var(--brand-orange)]">พร้อมส่งจากสต๊อกไทย</span>
+          </h1>
+          <p className="mt-2 max-w-md text-sm text-white/80 md:text-base">
+            IT ครบครัน สำหรับลูกค้าทั่วไป · สมาชิก · องค์กร — ประกันศูนย์ไทยเต็มรูปแบบ
+          </p>
 
-      <div className="relative mx-auto max-w-7xl px-4 py-14 md:py-24">
-        <div className={`flex ${isRight ? "justify-end" : "justify-start"}`}>
-          <div className="max-w-xl animate-fade-in" key={i}>
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-md">
-              <EyebrowIcon className="h-3.5 w-3.5 text-[color:var(--brand-orange)]" />
-              {s.eyebrow}
-            </div>
-            <h1 className="text-4xl font-black leading-[1.05] text-white md:text-6xl">
-              {s.title}<br />
-              <span className="text-[color:var(--brand-orange)]">{s.titleAccent}</span>
-            </h1>
-            <p className="mt-4 max-w-lg text-base leading-relaxed text-white/85 md:text-lg">{s.sub}</p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Button size="sm" className="bg-[color:var(--brand-orange)] font-bold text-white hover:bg-[color:var(--brand-orange-dark)]" onClick={onBrowse}>
+              เริ่มช้อป / Shop Now
+            </Button>
+            <Button size="sm" variant="outline" className="border-white/30 bg-white/5 font-semibold text-white backdrop-blur hover:bg-white/15 hover:text-white" onClick={onReady}>
+              สินค้าแนะนำ
+            </Button>
+          </div>
 
-            {s.stats && (
-              <div className="mt-6 grid max-w-md grid-cols-3 gap-3">
-                {s.stats.map((st) => (
-                  <div key={st.label} className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 backdrop-blur">
-                    <div className="text-lg font-black text-[color:var(--brand-orange)] md:text-xl">{st.value}</div>
-                    <div className="text-[10px] leading-tight text-white/70 md:text-[11px]">{st.label}</div>
+          {/* trust chips */}
+          <div className="mt-5 grid grid-cols-3 gap-2">
+            {trust.map((t) => {
+              const Icon = t.icon;
+              return (
+                <div key={t.title} className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-2.5 py-2 backdrop-blur">
+                  <Icon className="h-4 w-4 shrink-0 text-[color:var(--brand-orange)]" />
+                  <div className="min-w-0">
+                    <div className="truncate text-[11px] font-bold text-white md:text-xs">{t.title}</div>
+                    <div className="truncate text-[10px] text-white/60">{t.sub}</div>
                   </div>
-                ))}
-              </div>
-            )}
-
-            <div className="mt-7 flex flex-wrap gap-3">
-              <Button size="lg" className="bg-[color:var(--brand-orange)] font-bold text-white shadow-lg shadow-orange-500/20 hover:bg-[color:var(--brand-orange-dark)]" onClick={s.ctaAction}>
-                {s.cta}
-              </Button>
-              <Button size="lg" variant="outline" className="border-white/30 bg-white/5 font-semibold text-white backdrop-blur hover:bg-white/15 hover:text-white" onClick={() => navigate({ to: "/contact" })}>
-                ติดต่อเรา / Contact
-              </Button>
-            </div>
+                </div>
+              );
+            })}
           </div>
         </div>
 
-        {/* controls */}
-        <div className={`mt-10 flex items-center gap-2 ${isRight ? "justify-end" : "justify-start"}`}>
-          <button
-            onClick={() => setI((v) => (v - 1 + slides.length) % slides.length)}
-            className="grid h-9 w-9 place-items-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur hover:bg-white/20"
-            aria-label="Previous slide"
-          ><ChevronLeft className="h-4 w-4" /></button>
-          {slides.map((_, idx) => (
+        {/* RIGHT — animated promo slider */}
+        <div
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
+          className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-white/10 bg-black/30 shadow-2xl md:aspect-[4/3]"
+        >
+          {promos.map((p, idx) => (
             <button
-              key={idx}
-              onClick={() => setI(idx)}
-              className={`h-2 rounded-full transition-all ${idx === i ? "w-10 bg-[color:var(--brand-orange)]" : "w-2 bg-white/40 hover:bg-white/70"}`}
-              aria-label={`Slide ${idx + 1}`}
-            />
+              key={p.tag}
+              onClick={p.action}
+              className={`absolute inset-0 block h-full w-full text-left transition-opacity duration-700 ease-out ${
+                idx === i ? "z-10 opacity-100" : "z-0 opacity-0"
+              }`}
+              aria-hidden={idx !== i}
+              tabIndex={idx === i ? 0 : -1}
+            >
+              <img
+                src={p.image}
+                alt={p.title}
+                className={`h-full w-full object-cover transition-transform duration-[6000ms] ease-out ${
+                  idx === i ? "scale-110" : "scale-100"
+                }`}
+                loading={idx === 0 ? "eager" : "lazy"}
+                width={800}
+                height={1000}
+              />
+              <div className={`absolute inset-0 bg-gradient-to-t ${p.tint}`} />
+              <div className="absolute inset-x-0 bottom-0 p-4 md:p-5">
+                <span className="mb-2 inline-block rounded-md bg-[color:var(--brand-orange)] px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-white shadow">
+                  {p.tag}
+                </span>
+                <div className="text-lg font-black leading-tight text-white drop-shadow-lg md:text-2xl">{p.title}</div>
+                <div className="mt-0.5 text-xs text-white/90 drop-shadow md:text-sm">{p.subtitle}</div>
+                <div className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-[color:var(--brand-orange)] md:text-sm">
+                  ดูเลย <ArrowRight className="h-3.5 w-3.5" />
+                </div>
+              </div>
+            </button>
           ))}
+
+          {/* dots */}
+          <div className="absolute right-3 top-3 z-20 flex gap-1.5">
+            {promos.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => setI(idx)}
+                className={`h-1.5 rounded-full transition-all ${idx === i ? "w-6 bg-white" : "w-1.5 bg-white/50 hover:bg-white/80"}`}
+                aria-label={`Promo ${idx + 1}`}
+              />
+            ))}
+          </div>
+
+          {/* arrows */}
           <button
-            onClick={() => setI((v) => (v + 1) % slides.length)}
-            className="grid h-9 w-9 place-items-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur hover:bg-white/20"
-            aria-label="Next slide"
+            onClick={() => setI((v) => (v - 1 + promos.length) % promos.length)}
+            className="absolute left-2 top-1/2 z-20 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full bg-black/40 text-white backdrop-blur hover:bg-black/60"
+            aria-label="Previous promo"
+          ><ChevronLeft className="h-4 w-4" /></button>
+          <button
+            onClick={() => setI((v) => (v + 1) % promos.length)}
+            className="absolute right-2 top-1/2 z-20 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full bg-black/40 text-white backdrop-blur hover:bg-black/60"
+            aria-label="Next promo"
           ><ChevronRight className="h-4 w-4" /></button>
         </div>
       </div>
