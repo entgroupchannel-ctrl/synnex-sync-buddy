@@ -658,6 +658,10 @@ function HomePage() {
           {/* Components (CPU & Memory) */}
           <ComponentsShowcase />
 
+          {/* Solar & Energy */}
+          <SolarEnergy />
+
+
           {/* Popular Notebooks */}
           <PopularNotebooks />
 
