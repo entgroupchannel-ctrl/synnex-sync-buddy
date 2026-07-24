@@ -106,14 +106,23 @@ function SignInForm({ redirectTo }: { redirectTo: string }) {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     setBusy(false);
     if (error) {
       toast.error(error.message);
       return;
     }
     toast.success("เข้าสู่ระบบสำเร็จ");
-    navigate({ to: redirectTo as never, replace: true });
+    let dest = redirectTo;
+    if (data.user && (redirectTo === "/" || !redirectTo)) {
+      const { data: profile } = await supabase
+        .from("user_profiles")
+        .select("is_admin")
+        .eq("id", data.user.id)
+        .maybeSingle();
+      if (profile?.is_admin) dest = "/admin";
+    }
+    navigate({ to: dest as never, replace: true });
   };
 
   return (
