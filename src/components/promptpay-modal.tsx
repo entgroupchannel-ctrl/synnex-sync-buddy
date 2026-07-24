@@ -109,6 +109,15 @@ export function PromptPayPaymentModal({ orderId, orderNumber, amount, onPaid }: 
     }
   };
 
+  const copyAccount = async (number: string) => {
+    try {
+      await navigator.clipboard.writeText(number);
+      toast.success("คัดลอกเลขบัญชีแล้ว");
+    } catch {
+      toast.error("คัดลอกไม่สำเร็จ");
+    }
+  };
+
   const mm = String(Math.floor(remaining / 60)).padStart(2, "0");
   const ss = String(remaining % 60).padStart(2, "0");
   const expired = remaining <= 0;
