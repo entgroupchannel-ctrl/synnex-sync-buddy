@@ -573,14 +573,20 @@ function HomePage() {
           ) : (
             <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-3 xl:grid-cols-4">
               {productsQuery.data!.rows.map((p) => {
+                const byOrder = p.fulfillment_type === "by_order";
                 const ready = p.stock_status === "พร้อมจัดส่ง";
+                const available = ready || byOrder;
                 const slug = p.slug || p.id;
                 const lowStock = ready && (p.stock_qty ?? 999) < 10;
                 const priced = getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier) != null && !!p.price_approved;
                 return (
                   <div key={p.id} className="group relative flex flex-col overflow-hidden rounded-lg border bg-white transition hover:shadow-lg">
                     <BrandLogo brand={p.brand} />
-                    {!ready ? (
+                    {byOrder ? (
+                      <div className="absolute right-2 top-2 z-10 rounded bg-blue-600 px-2 py-0.5 text-[10px] font-bold text-white shadow-sm">
+                        📋 By Order
+                      </div>
+                    ) : !ready ? (
                       <div className="absolute right-2 top-2 z-10 rounded bg-red-600 px-2 py-0.5 text-[10px] font-bold text-white shadow-sm">
                         สินค้าหมด
                       </div>
@@ -611,19 +617,23 @@ function HomePage() {
                         ) : (
                           <div className="text-sm text-gray-400">ติดต่อสอบถาม</div>
                         )}
-                        <div className="mt-1 flex items-center gap-1.5">
-                          <span className={`inline-block h-2 w-2 rounded-full ${ready ? "bg-green-500" : "bg-red-500"}`} />
-                          <span className="text-[11px] text-slate-600">{p.stock_status ?? "—"}</span>
-                        </div>
+                        {byOrder ? (
+                          <div className="mt-1 text-[11px] font-medium text-blue-700">⏱ รับสินค้าภายใน 30 วัน</div>
+                        ) : (
+                          <div className="mt-1 flex items-center gap-1.5">
+                            <span className={`inline-block h-2 w-2 rounded-full ${ready ? "bg-green-500" : "bg-red-500"}`} />
+                            <span className="text-[11px] text-slate-600">{p.stock_status ?? "—"}</span>
+                          </div>
+                        )}
                       </div>
                       {priced ? (
-                        ready ? (
+                        available ? (
                           <Button
                             onClick={() => addToCart(p as Record<string, unknown>)}
                             className="mt-2 w-full bg-[color:var(--brand-navy)] font-semibold hover:bg-[color:var(--brand-navy-2)]"
                             size="sm"
                           >
-                            <ShoppingCart className="mr-1.5 h-4 w-4" /> ใส่ตะกร้า
+                            <ShoppingCart className="mr-1.5 h-4 w-4" /> {byOrder ? "สั่งจอง" : "ใส่ตะกร้า"}
                           </Button>
                         ) : (
                           <>
