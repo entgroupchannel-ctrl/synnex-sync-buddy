@@ -37,6 +37,7 @@ import {
   StorageDeals,
   ComponentsShowcase,
   MacBookShowcase,
+  SolarEnergy,
 } from "@/components/home-sections";
 
 import { FrequentlyBought } from "@/components/frequently-bought";
