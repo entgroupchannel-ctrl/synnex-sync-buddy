@@ -403,7 +403,31 @@ function CheckoutPage() {
               </div>
             </section>
 
-            {/* Shipping */}
+            {/* Shipping method selector */}
+            <section className="space-y-3 rounded-lg border bg-white p-6">
+              <h2 className="font-bold text-[color:var(--brand-navy)]">🚚 วิธีรับสินค้า</h2>
+              <ShippingMethodSelector className="!mt-0" />
+            </section>
+
+            {isPickup && (
+              <section className="space-y-2 rounded-lg border-2 border-green-600 bg-green-50 p-6">
+                <h2 className="font-bold text-[color:var(--brand-navy)]">รับสินค้าที่สำนักงาน</h2>
+                <p className="text-sm text-gray-700">
+                  คุณเลือกรับสินค้าที่สำนักงาน — ไม่ต้องกรอกที่อยู่จัดส่ง
+                </p>
+                <div className="mt-2 rounded-md bg-white p-3 text-xs text-gray-700">
+                  <div className="font-semibold text-gray-900">{OFFICE_ADDRESS.name}</div>
+                  <div>{OFFICE_ADDRESS.line1}</div>
+                  <div>{OFFICE_ADDRESS.line2}</div>
+                  <div className="mt-1 text-gray-500">
+                    เวลาทำการ: {OFFICE_ADDRESS.hours} · โทรนัดหมาย: {OFFICE_ADDRESS.phone}
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {!isPickup && (
+
             <section className="space-y-4 rounded-lg border bg-white p-6">
               <h2 className="font-bold text-[color:var(--brand-navy)]">ที่อยู่จัดส่ง</h2>
               <div className="grid gap-4 sm:grid-cols-2">
