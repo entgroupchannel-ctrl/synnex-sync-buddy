@@ -712,3 +712,239 @@ function SectionHeader({
 
 // Prevent unused-import warning in strict mode
 export const _ = useRef;
+
+/* ---------- Microsoft Software (featured) ---------- */
+
+export function MicrosoftFeatured() {
+  const tier = useCustomerTier();
+  const addToCart = useAddToCart();
+  const q = useQuery({
+    queryKey: ["microsoft-featured"],
+    queryFn: async () => {
+      const { data } = await supabase.from("synnex_products")
+        .select("*")
+        .eq("brand", "MICROSOFT")
+        .eq("price_approved", true)
+        .gt("selling_price", 0)
+        .order("selling_price", { ascending: true })
+        .limit(4);
+      return (data ?? []) as ProductRow[];
+    },
+    staleTime: 5 * 60_000,
+  });
+
+  if ((q.data?.length ?? 0) === 0) return null;
+
+  return (
+    <section
+      className="border-b"
+      style={{ background: "linear-gradient(180deg, #f0f4ff 0%, #e8eeff 100%)" }}
+    >
+      <div className="mx-auto max-w-7xl px-4 py-8">
+        <SectionHeader
+          title="Microsoft Software / ลิขสิทธิ์แท้"
+          en="Microsoft Software — Genuine License"
+          sub="Authorized by Synnex & VST ECS Thailand"
+          link={{ to: "/", search: { brands: "MICROSOFT" }, label: "ดู Microsoft ทั้งหมด" }}
+        />
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {q.data!.map((p) => {
+            const ready = p.stock_status === "พร้อมจัดส่ง";
+            const byOrder = (p as { fulfillment_type?: string | null }).fulfillment_type === "by_order";
+            const available = ready || byOrder;
+            const slug = p.slug || p.id;
+            return (
+              <div
+                key={p.id}
+                className="group relative flex flex-col overflow-hidden rounded-xl bg-white shadow-sm transition hover:shadow-lg"
+                style={{ border: "1px solid #bfdbfe" }}
+              >
+                {/* Microsoft logo top-left */}
+                <div className="absolute left-2 top-2 z-10 rounded-md border border-slate-200 bg-white p-1 shadow-sm">
+                  <img
+                    src="https://img.icons8.com/color/48/microsoft.png"
+                    alt="Microsoft"
+                    className="h-5 w-5 object-contain"
+                  />
+                </div>
+                {/* Genuine license pill */}
+                <div className="absolute right-2 top-2 z-10 rounded-full bg-emerald-500 px-2 py-0.5 text-[10px] font-bold text-white shadow-sm">
+                  ลิขสิทธิ์แท้
+                </div>
+
+                <Link to="/product/$slug" params={{ slug }} className="grid aspect-[4/3] place-items-center bg-white p-4">
+                  <ProductImage
+                    src={p.image_url}
+                    alt={p.name ?? p.sku}
+                    className="h-full w-full object-contain transition group-hover:scale-105"
+                    iconClassName="h-16 w-16 text-blue-200"
+                  />
+                </Link>
+
+                <div className="flex flex-1 flex-col gap-1.5 border-t border-blue-100 bg-white/70 p-4">
+                  <div className="text-[10px] uppercase tracking-wide text-blue-700/70">{p.sku}</div>
+                  <Link
+                    to="/product/$slug"
+                    params={{ slug }}
+                    className="line-clamp-2 min-h-10 text-sm font-semibold text-slate-900 hover:text-[color:var(--brand-navy)]"
+                  >
+                    {p.name ?? p.sku}
+                  </Link>
+                  <ul className="mt-1 space-y-0.5 text-[11px] text-slate-600">
+                    <li>✓ ลิขสิทธิ์แท้ ใช้งานได้ถูกกฎหมาย</li>
+                    <li>✓ จาก Authorized Dealer</li>
+                  </ul>
+                  <div className="mt-2 text-xl font-black text-blue-800">
+                    {displayPrice(p, tier)}
+                  </div>
+                  <Button
+                    disabled={!available}
+                    onClick={() => addToCart(p)}
+                    size="sm"
+                    className="mt-1 w-full bg-blue-700 font-semibold hover:bg-blue-800"
+                  >
+                    <ShoppingCart className="mr-1.5 h-4 w-4" />
+                    {byOrder ? "สั่งจอง" : available ? "ใส่ตะกร้า" : "สินค้าหมด"}
+                  </Button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---------- Reusable product grid card (Network / Storage) ---------- */
+
+function CategoryGridCard({ p }: { p: ProductRow }) {
+  const tier = useCustomerTier();
+  const addToCart = useAddToCart();
+  const ready = p.stock_status === "พร้อมจัดส่ง";
+  const byOrder = (p as { fulfillment_type?: string | null }).fulfillment_type === "by_order";
+  const available = ready || byOrder;
+  const slug = p.slug || p.id;
+  const lowStock = ready && (p.stock_qty ?? 999) < 5;
+  return (
+    <div className="group relative flex flex-col overflow-hidden rounded-lg border bg-white transition hover:shadow-lg">
+      <BrandLogo brand={p.brand} />
+      {byOrder ? (
+        <div className="absolute right-2 top-2 z-10 rounded bg-blue-600 px-2 py-0.5 text-[10px] font-bold text-white shadow-sm">
+          📋 By Order
+        </div>
+      ) : lowStock ? (
+        <div className="absolute right-2 top-2 z-10 rounded bg-red-500 px-1.5 py-0.5 text-[10px] font-bold text-white shadow-sm">
+          เหลือน้อย
+        </div>
+      ) : null}
+      <Link to="/product/$slug" params={{ slug }} className="grid aspect-square place-items-center bg-white p-3">
+        <ProductImage
+          src={p.image_url}
+          alt={p.name ?? p.sku}
+          className="h-full w-full object-contain transition group-hover:scale-105"
+          iconClassName="h-14 w-14 text-slate-300"
+        />
+      </Link>
+      <div className="flex flex-1 flex-col gap-1 border-t p-3">
+        <div className="text-[10px] uppercase tracking-wide text-slate-500">{p.sku}</div>
+        <Link
+          to="/product/$slug"
+          params={{ slug }}
+          className="line-clamp-2 min-h-10 text-sm font-medium hover:text-[color:var(--brand-navy)]"
+        >
+          {p.name ?? p.sku}
+        </Link>
+        <div className="mt-auto text-lg font-black text-[color:var(--brand-orange)]">
+          {displayPrice(p, tier)}
+        </div>
+        <Button
+          disabled={!available}
+          onClick={() => addToCart(p)}
+          size="sm"
+          className="mt-2 w-full bg-[color:var(--brand-navy)] font-semibold hover:bg-[color:var(--brand-navy-2)]"
+        >
+          <ShoppingCart className="mr-1.5 h-4 w-4" />
+          {byOrder ? "สั่งจอง" : available ? "ใส่ตะกร้า" : "สินค้าหมด"}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- Network & Security ---------- */
+
+export function NetworkSecurity() {
+  const q = useQuery({
+    queryKey: ["network-security"],
+    queryFn: async () => {
+      const { data } = await supabase.from("synnex_products")
+        .select("*")
+        .eq("category", "Network")
+        .eq("price_approved", true)
+        .eq("stock_status", "พร้อมจัดส่ง")
+        .gt("selling_price", 0)
+        .order("selling_price", { ascending: false })
+        .limit(8);
+      return (data ?? []) as ProductRow[];
+    },
+    staleTime: 5 * 60_000,
+  });
+
+  if ((q.data?.length ?? 0) === 0) return null;
+
+  return (
+    <section className="border-b bg-white">
+      <div className="mx-auto max-w-7xl px-4 py-8">
+        <SectionHeader
+          title="Network & Security / เครือข่ายและระบบรักษาความปลอดภัย"
+          en="Network & Security Solutions"
+          sub="Cisco, Hikvision, Dahua, D-Link — Authorized Dealer"
+          link={{ to: "/", search: { category: "Network" }, label: "ดู Network ทั้งหมด" }}
+        />
+        <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
+          {q.data!.map((p) => <CategoryGridCard key={p.id} p={p} />)}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---------- Storage Deals ---------- */
+
+export function StorageDeals() {
+  const q = useQuery({
+    queryKey: ["storage-deals"],
+    queryFn: async () => {
+      const { data } = await supabase.from("synnex_products")
+        .select("*")
+        .eq("category", "Storage")
+        .eq("price_approved", true)
+        .eq("stock_status", "พร้อมจัดส่ง")
+        .gt("selling_price", 0)
+        .order("selling_price", { ascending: true })
+        .limit(8);
+      return (data ?? []) as ProductRow[];
+    },
+    staleTime: 5 * 60_000,
+  });
+
+  if ((q.data?.length ?? 0) === 0) return null;
+
+  return (
+    <section className="border-b bg-slate-50">
+      <div className="mx-auto max-w-7xl px-4 py-8">
+        <SectionHeader
+          title="Storage Deals / อุปกรณ์จัดเก็บข้อมูล"
+          en="Storage Deals"
+          sub="SanDisk, Kingston, Seagate, WD"
+          link={{ to: "/", search: { category: "Storage" }, label: "ดู Storage ทั้งหมด" }}
+        />
+        <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
+          {q.data!.map((p) => <CategoryGridCard key={p.id} p={p} />)}
+        </div>
+      </div>
+    </section>
+  );
+}
+
