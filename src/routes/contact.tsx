@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Phone, Mail, MapPin, Send, MessageCircle, Globe, ArrowLeft, CreditCard, Printer, ExternalLink } from "lucide-react";
+import { Phone, Mail, MapPin, Send, Globe, ArrowLeft, CreditCard, Printer } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
