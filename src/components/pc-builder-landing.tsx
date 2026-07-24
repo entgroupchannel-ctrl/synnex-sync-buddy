@@ -4,6 +4,22 @@ import { useQuery } from "@tanstack/react-query";
 import { Wrench, ClipboardList, CheckCircle2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { ProductImage } from "@/components/product-image";
+import cpuFallback from "@/assets/pc-parts/cpu.jpg";
+import mbFallback from "@/assets/pc-parts/mb.jpg";
+import ramFallback from "@/assets/pc-parts/ram.jpg";
+import gpuFallback from "@/assets/pc-parts/gpu.jpg";
+import ssdFallback from "@/assets/pc-parts/ssd.jpg";
+import osFallback from "@/assets/pc-parts/os.jpg";
+
+const PART_FALLBACK: Record<string, string> = {
+  CPU: cpuFallback,
+  MB: mbFallback,
+  RAM: ramFallback,
+  GPU: gpuFallback,
+  SSD: ssdFallback,
+  Storage: ssdFallback,
+  OS: osFallback,
+};
 
 type Part = {
   icon: string;
@@ -284,14 +300,25 @@ export function PcBuilderLanding() {
                 className="rounded-2xl border border-white/20 bg-white/10 p-4 backdrop-blur transition-all duration-200 hover:scale-[1.02] hover:bg-white/15"
               >
                 <div className="relative mb-3 h-32 overflow-hidden rounded-xl bg-white/90 p-2">
-                  <ProductImage
-                    src={sample?.image_url}
-                    alt={part.name}
-                    category={null}
-                    productName={part.name}
-                    className="h-full w-full object-contain"
-                    fallbackLabel="ไม่มีรูปสินค้า"
-                  />
+                  {sample?.image_url ? (
+                    <ProductImage
+                      src={sample.image_url}
+                      alt={part.name}
+                      category={null}
+                      productName={part.name}
+                      className="h-full w-full object-contain"
+                      fallbackLabel="ไม่มีรูปสินค้า"
+                    />
+                  ) : (
+                    <img
+                      src={PART_FALLBACK[part.type] ?? cpuFallback}
+                      alt={part.name}
+                      loading="lazy"
+                      width={1024}
+                      height={1024}
+                      className="h-full w-full object-contain"
+                    />
+                  )}
                   <span
                     className={
                       "absolute right-2 top-2 rounded-full px-2.5 py-0.5 text-[11px] font-semibold " +
