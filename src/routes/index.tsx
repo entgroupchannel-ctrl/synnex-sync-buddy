@@ -41,6 +41,7 @@ const searchSchema = z.object({
   min: fallback(z.number(), 0).default(0),
   max: fallback(z.number(), 100000).default(100000),
   ready: fallback(z.boolean(), false).default(false),
+  fulfill: fallback(z.enum(["all", "stock", "by_order"]), "all").default("all"),
   sort: fallback(z.string(), "new").default("new"),
   view: fallback(z.string(), "grid").default("grid"),
   page: fallback(z.number().int(), 1).default(1),
@@ -80,6 +81,7 @@ type ProductRow = {
   stock_status: string | null;
   stock_qty: number | null;
   distributor: string | null;
+  fulfillment_type: string | null;
 };
 
 function useCountdown() {
@@ -182,34 +184,65 @@ function HomePage() {
         return q;
       };
       type Result = { data: Record<string, unknown>[] | null; error: unknown; count: number | null };
+      const table = () => supabase.from("synnex_products");
 
-      if (search.ready) {
-        const base = supabase.from("synnex_products").select("*", { count: "exact" });
-        const q = applyCommon(base).eq("stock_status", "พร้อมจัดส่ง").range(from, to);
+      // Explicit fulfillment filter
+      if (search.fulfill === "stock") {
+        const q = applyCommon(table().select("*", { count: "exact" })).eq("stock_status", "พร้อมจัดส่ง").range(from, to);
+        const { data, error, count } = await (q as unknown as Promise<Result>);
+        if (error) throw error;
+        return { rows: (data ?? []) as ProductRow[], count: count ?? 0 };
+      }
+      if (search.fulfill === "by_order") {
+        const q = applyCommon(table().select("*", { count: "exact" })).eq("fulfillment_type", "by_order").range(from, to);
         const { data, error, count } = await (q as unknown as Promise<Result>);
         if (error) throw error;
         return { rows: (data ?? []) as ProductRow[], count: count ?? 0 };
       }
 
-      const inCountRes = await (applyCommon(supabase.from("synnex_products").select("*", { count: "exact", head: true })).neq("stock_status", "สินค้าหมด") as unknown as Promise<Result>);
-      const outCountRes = await (applyCommon(supabase.from("synnex_products").select("*", { count: "exact", head: true })).eq("stock_status", "สินค้าหมด") as unknown as Promise<Result>);
+      // ready toggle keeps its stricter meaning: only in-stock stock items
+      if (search.ready) {
+        const q = applyCommon(table().select("*", { count: "exact" })).eq("stock_status", "พร้อมจัดส่ง").eq("fulfillment_type", "stock").range(from, to);
+        const { data, error, count } = await (q as unknown as Promise<Result>);
+        if (error) throw error;
+        return { rows: (data ?? []) as ProductRow[], count: count ?? 0 };
+      }
+
+      // Default: three tiers — in-stock → by_order → out-of-stock
+      const inCountRes = await (applyCommon(table().select("*", { count: "exact", head: true })).eq("stock_status", "พร้อมจัดส่ง") as unknown as Promise<Result>);
+      const byoCountRes = await (applyCommon(table().select("*", { count: "exact", head: true })).eq("fulfillment_type", "by_order") as unknown as Promise<Result>);
+      const outCountRes = await (applyCommon(table().select("*", { count: "exact", head: true })).eq("stock_status", "สินค้าหมด") as unknown as Promise<Result>);
       const inCount = inCountRes.count ?? 0;
+      const byoCount = byoCountRes.count ?? 0;
       const outCount = outCountRes.count ?? 0;
       const rows: Record<string, unknown>[] = [];
+
+      // Tier 1: in-stock
       if (from < inCount) {
-        const inTo = Math.min(to, inCount - 1);
-        const r = await (applyCommon(supabase.from("synnex_products").select("*")).neq("stock_status", "สินค้าหมด").range(from, inTo) as unknown as Promise<Result>);
+        const t1To = Math.min(to, inCount - 1);
+        const r = await (applyCommon(table().select("*")).eq("stock_status", "พร้อมจัดส่ง").range(from, t1To) as unknown as Promise<Result>);
         if (r.error) throw r.error;
         rows.push(...(r.data ?? []));
       }
-      if (to >= inCount && outCount > 0) {
-        const outFrom = Math.max(0, from - inCount);
-        const outTo = to - inCount;
-        const r = await (applyCommon(supabase.from("synnex_products").select("*")).eq("stock_status", "สินค้าหมด").range(outFrom, outTo) as unknown as Promise<Result>);
+      // Tier 2: by_order
+      if (to >= inCount && byoCount > 0) {
+        const t2From = Math.max(0, from - inCount);
+        const t2To = Math.min(to - inCount, byoCount - 1);
+        if (t2From <= t2To) {
+          const r = await (applyCommon(table().select("*")).eq("fulfillment_type", "by_order").range(t2From, t2To) as unknown as Promise<Result>);
+          if (r.error) throw r.error;
+          rows.push(...(r.data ?? []));
+        }
+      }
+      // Tier 3: out-of-stock (stock items only; by_order already covered above)
+      if (to >= inCount + byoCount && outCount > 0) {
+        const t3From = Math.max(0, from - inCount - byoCount);
+        const t3To = to - inCount - byoCount;
+        const r = await (applyCommon(table().select("*")).eq("stock_status", "สินค้าหมด").eq("fulfillment_type", "stock").range(t3From, t3To) as unknown as Promise<Result>);
         if (r.error) throw r.error;
         rows.push(...(r.data ?? []));
       }
-      return { rows: rows as unknown as ProductRow[], count: inCount + outCount };
+      return { rows: rows as unknown as ProductRow[], count: inCount + byoCount + outCount };
     },
   });
 
@@ -300,6 +333,25 @@ function HomePage() {
         <div className="mt-2 flex justify-between text-xs text-slate-500">
           <span>฿{search.min.toLocaleString()}</span>
           <span>฿{search.max.toLocaleString()}</span>
+        </div>
+      </div>
+
+      <div>
+        <div className="mb-2 text-sm font-bold text-[color:var(--brand-navy)]">รูปแบบสินค้า</div>
+        <div className="flex flex-wrap gap-1.5">
+          {([
+            { v: "all", label: "ทั้งหมด" },
+            { v: "stock", label: "พร้อมส่ง" },
+            { v: "by_order", label: "📋 By Order" },
+          ] as const).map((o) => (
+            <button
+              key={o.v}
+              onClick={() => update({ fulfill: o.v })}
+              className={`rounded-full border px-3 py-1 text-xs ${search.fulfill === o.v ? "border-[color:var(--brand-navy)] bg-[color:var(--brand-navy)] text-white" : "bg-white hover:bg-slate-50"}`}
+            >
+              {o.label}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -457,7 +509,9 @@ function HomePage() {
           ) : search.view === "list" ? (
             <div className="space-y-3">
               {productsQuery.data!.rows.map((p) => {
+                const byOrder = p.fulfillment_type === "by_order";
                 const ready = p.stock_status === "พร้อมจัดส่ง";
+                const available = ready || byOrder;
                 const slug = p.slug || p.id;
                 const lowStock = ready && (p.stock_qty ?? 999) < 10;
                 const priced = getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier) != null && !!p.price_approved;
@@ -471,12 +525,18 @@ function HomePage() {
                       <Link to="/product/$slug" params={{ slug }} className="line-clamp-2 text-sm font-semibold hover:text-[color:var(--brand-navy)]">{p.name ?? p.sku}</Link>
                       {p.description && <div className="mt-1 line-clamp-2 text-xs text-slate-500">{p.description}</div>}
                       <div className="mt-auto flex items-center gap-2 pt-1">
-                        <span className={`inline-block h-2 w-2 rounded-full ${ready ? "bg-green-500" : "bg-red-500"}`} />
-                        <span className="text-xs text-slate-600">{p.stock_status ?? "—"}</span>
-                        {lowStock && <Badge className="bg-red-100 text-[10px] text-red-700 hover:bg-red-100">เหลือน้อย</Badge>}
+                        {byOrder ? (
+                          <Badge className="bg-blue-100 text-[10px] text-blue-700 hover:bg-blue-100">📋 By Order</Badge>
+                        ) : (
+                          <>
+                            <span className={`inline-block h-2 w-2 rounded-full ${ready ? "bg-green-500" : "bg-red-500"}`} />
+                            <span className="text-xs text-slate-600">{p.stock_status ?? "—"}</span>
+                            {lowStock && <Badge className="bg-red-100 text-[10px] text-red-700 hover:bg-red-100">เหลือน้อย</Badge>}
+                          </>
+                        )}
                       </div>
                     </div>
-                    <div className="flex w-40 shrink-0 flex-col items-end justify-between">
+                    <div className="flex w-40 shrink-0 flex-col items-end justify-between gap-1">
                       {priced ? (
                         <div className="text-xl font-black text-[color:var(--brand-orange)]">
                           {displayPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier)}
@@ -484,10 +544,11 @@ function HomePage() {
                       ) : (
                         <span className="text-sm text-gray-400">ติดต่อสอบถาม</span>
                       )}
+                      {byOrder && <div className="text-[11px] text-blue-700">⏱ รับสินค้าภายใน 30 วัน</div>}
                       {priced ? (
-                        ready ? (
+                        available ? (
                           <Button onClick={() => addToCart(p as Record<string, unknown>)} className="w-full bg-[color:var(--brand-navy)] hover:bg-[color:var(--brand-navy-2)]" size="sm">
-                            <ShoppingCart className="mr-1.5 h-4 w-4" /> ใส่ตะกร้า
+                            <ShoppingCart className="mr-1.5 h-4 w-4" /> {byOrder ? "สั่งจอง" : "ใส่ตะกร้า"}
                           </Button>
                         ) : (
                           <div className="flex w-full flex-col items-end gap-1">
@@ -512,14 +573,20 @@ function HomePage() {
           ) : (
             <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-3 xl:grid-cols-4">
               {productsQuery.data!.rows.map((p) => {
+                const byOrder = p.fulfillment_type === "by_order";
                 const ready = p.stock_status === "พร้อมจัดส่ง";
+                const available = ready || byOrder;
                 const slug = p.slug || p.id;
                 const lowStock = ready && (p.stock_qty ?? 999) < 10;
                 const priced = getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier) != null && !!p.price_approved;
                 return (
                   <div key={p.id} className="group relative flex flex-col overflow-hidden rounded-lg border bg-white transition hover:shadow-lg">
                     <BrandLogo brand={p.brand} />
-                    {!ready ? (
+                    {byOrder ? (
+                      <div className="absolute right-2 top-2 z-10 rounded bg-blue-600 px-2 py-0.5 text-[10px] font-bold text-white shadow-sm">
+                        📋 By Order
+                      </div>
+                    ) : !ready ? (
                       <div className="absolute right-2 top-2 z-10 rounded bg-red-600 px-2 py-0.5 text-[10px] font-bold text-white shadow-sm">
                         สินค้าหมด
                       </div>
@@ -550,19 +617,23 @@ function HomePage() {
                         ) : (
                           <div className="text-sm text-gray-400">ติดต่อสอบถาม</div>
                         )}
-                        <div className="mt-1 flex items-center gap-1.5">
-                          <span className={`inline-block h-2 w-2 rounded-full ${ready ? "bg-green-500" : "bg-red-500"}`} />
-                          <span className="text-[11px] text-slate-600">{p.stock_status ?? "—"}</span>
-                        </div>
+                        {byOrder ? (
+                          <div className="mt-1 text-[11px] font-medium text-blue-700">⏱ รับสินค้าภายใน 30 วัน</div>
+                        ) : (
+                          <div className="mt-1 flex items-center gap-1.5">
+                            <span className={`inline-block h-2 w-2 rounded-full ${ready ? "bg-green-500" : "bg-red-500"}`} />
+                            <span className="text-[11px] text-slate-600">{p.stock_status ?? "—"}</span>
+                          </div>
+                        )}
                       </div>
                       {priced ? (
-                        ready ? (
+                        available ? (
                           <Button
                             onClick={() => addToCart(p as Record<string, unknown>)}
                             className="mt-2 w-full bg-[color:var(--brand-navy)] font-semibold hover:bg-[color:var(--brand-navy-2)]"
                             size="sm"
                           >
-                            <ShoppingCart className="mr-1.5 h-4 w-4" /> ใส่ตะกร้า
+                            <ShoppingCart className="mr-1.5 h-4 w-4" /> {byOrder ? "สั่งจอง" : "ใส่ตะกร้า"}
                           </Button>
                         ) : (
                           <>

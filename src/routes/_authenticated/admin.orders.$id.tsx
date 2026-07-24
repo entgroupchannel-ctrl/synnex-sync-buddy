@@ -146,6 +146,24 @@ function AdminOrderDetail() {
 
   useEffect(() => { load(); /* eslint-disable-next-line */ }, [id]);
 
+  const [byOrderSkus, setByOrderSkus] = useState<Set<string>>(new Set());
+  useEffect(() => {
+    const skus = (order?.order_items ?? []).map((i) => i.product_sku).filter(Boolean);
+    if (skus.length === 0) { setByOrderSkus(new Set()); return; }
+    let cancelled = false;
+    (async () => {
+      const { data } = await supabase.from("synnex_products").select("sku,fulfillment_type").in("sku", skus);
+      if (cancelled) return;
+      const s = new Set<string>();
+      for (const r of data ?? []) {
+        if ((r as { fulfillment_type: string | null }).fulfillment_type === "by_order") s.add((r as { sku: string }).sku);
+      }
+      setByOrderSkus(s);
+    })();
+    return () => { cancelled = true; };
+  }, [order]);
+  const hasByOrder = byOrderSkus.size > 0;
+
   const grouped = useMemo(() => {
     const g = new Map<string, OrderItem[]>();
     for (const it of order?.order_items ?? []) {
@@ -328,6 +346,7 @@ function AdminOrderDetail() {
               <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${payMeta.badge}`}>{payMeta.label}</span>
               {order.customer_type === "b2b" && <span className="inline-flex items-center rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-semibold text-indigo-700 ring-1 ring-indigo-200">B2B</span>}
               {order.need_tax_invoice && <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-700 ring-1 ring-blue-200"><FileText className="h-3 w-3" />ใบกำกับภาษี</span>}
+              {hasByOrder && <span className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-800 ring-1 ring-blue-300" title="ต้องสั่ง distributor ก่อน 30 วัน">📋 มีสินค้า By Order</span>}
             </div>
           </div>
           <div className="text-right">
@@ -336,6 +355,12 @@ function AdminOrderDetail() {
           </div>
         </div>
 
+        {hasByOrder && (
+          <div className="mb-4 rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-900">
+            <div className="font-semibold">📋 ออเดอร์นี้มีสินค้า By Order</div>
+            <div>ต้องสั่ง distributor ก่อน — ระยะเวลาจัดหา ~30 วัน</div>
+          </div>
+        )}
         <div className="grid gap-6 lg:grid-cols-[360px_1fr]">
           {/* LEFT */}
           <div className="space-y-4">

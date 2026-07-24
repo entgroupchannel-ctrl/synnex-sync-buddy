@@ -795,6 +795,7 @@ export type Database = {
           created_at: string
           description: string | null
           distributor: string | null
+          fulfillment_type: string | null
           id: string
           image_url: string | null
           markup_applied: number | null
@@ -824,6 +825,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           distributor?: string | null
+          fulfillment_type?: string | null
           id?: string
           image_url?: string | null
           markup_applied?: number | null
@@ -853,6 +855,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           distributor?: string | null
+          fulfillment_type?: string | null
           id?: string
           image_url?: string | null
           markup_applied?: number | null

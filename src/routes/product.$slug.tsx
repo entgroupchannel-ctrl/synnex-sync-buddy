@@ -72,7 +72,9 @@ function ProductDetail() {
 
   const p = productQ.data;
   const historyQ = usePurchaseHistoryForSku(p?.sku);
+  const byOrder = (p as { fulfillment_type?: string | null } | undefined)?.fulfillment_type === "by_order";
   const ready = p?.stock_status === "พร้อมจัดส่ง";
+  const available = ready || byOrder;
   const specs = parseSpecs(p?.description);
 
   useEffect(() => {
@@ -187,6 +189,21 @@ function ProductDetail() {
                 );
               })()}
 
+              {byOrder && (
+                <div className="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm">
+                  <div className="mb-2 flex items-center gap-2 font-bold text-blue-900">
+                    📋 สินค้า By Order
+                  </div>
+                  <div className="text-blue-900">ระยะเวลาจัดหา: ประมาณ 30 วันทำการ</div>
+                  <div className="text-blue-900">เหมาะสำหรับ: องค์กร / B2B</div>
+                  <ul className="mt-2 space-y-0.5 text-blue-800">
+                    <li>✓ ราคาพิเศษสำหรับองค์กร</li>
+                    <li>✓ มีใบกำกับภาษี</li>
+                    <li>✓ รับประกันศูนย์ไทย</li>
+                  </ul>
+                </div>
+              )}
+
               {getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier) != null && !!p.price_approved ? (
                 <>
                   <div className="mt-6">
@@ -199,17 +216,23 @@ function ProductDetail() {
                   </div>
 
                   <div className="mt-5 grid gap-2 sm:grid-cols-2">
-                    <Button disabled={!ready} onClick={() => addToCart()} className="bg-[color:var(--brand-navy)] hover:bg-[color:var(--brand-navy-2)]" size="lg">
-                      <ShoppingCart className="mr-2 h-5 w-5" /> ใส่ตะกร้า
+                    <Button disabled={!available} onClick={() => addToCart()} className="bg-[color:var(--brand-navy)] hover:bg-[color:var(--brand-navy-2)]" size="lg">
+                      <ShoppingCart className="mr-2 h-5 w-5" /> {byOrder ? "สั่งจอง" : "ใส่ตะกร้า"}
                     </Button>
-                    <Button
-                      disabled={!ready}
-                      onClick={() => { addToCart(); navigate({ to: "/checkout" }); }}
-                      className="bg-[color:var(--brand-orange)] hover:bg-[color:var(--brand-orange-dark)]"
-                      size="lg"
-                    >
-                      <Zap className="mr-2 h-5 w-5" /> สั่งซื้อทันที
-                    </Button>
+                    {byOrder ? (
+                      <Button asChild variant="outline" size="lg" className="border-blue-300 text-blue-800 hover:bg-blue-50">
+                        <a href="mailto:Sales@entgroup.co.th?subject=ขอใบเสนอราคา">📄 ขอใบเสนอราคา</a>
+                      </Button>
+                    ) : (
+                      <Button
+                        disabled={!available}
+                        onClick={() => { addToCart(); navigate({ to: "/checkout" }); }}
+                        className="bg-[color:var(--brand-orange)] hover:bg-[color:var(--brand-orange-dark)]"
+                        size="lg"
+                      >
+                        <Zap className="mr-2 h-5 w-5" /> สั่งซื้อทันที
+                      </Button>
+                    )}
                   </div>
 
                   {(() => {
