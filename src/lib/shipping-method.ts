@@ -21,15 +21,10 @@ export const OFFICE_ADDRESS = {
   phone: "02-045-6104",
   fax: "02-045-6105",
   hours: "จ-ศ 9:00-18:00 น.",
-  lat: 13.9125,
-  lng: 100.5018,
-  mapsUrl:
-    "https://www.google.com/maps/search/?api=1&query=" +
-    encodeURIComponent("70/5 หมู่4 เมทโทร บิซทาวน์ แจ้งวัฒนะ2 ปากเกร็ด นนทบุรี"),
-  embedUrl:
-    "https://www.google.com/maps?q=" +
-    encodeURIComponent("70/5 หมู่4 เมทโทร บิซทาวน์ แจ้งวัฒนะ2 ปากเกร็ด นนทบุรี") +
-    "&output=embed",
+  lat: 13.9320709,
+  lng: 100.4819588,
+  mapsUrl: "https://www.google.com/maps/place/ENT+GROUP+Co.,Ltd./@13.9320709,100.4819588,17z",
+  embedUrl: "https://maps.google.com/maps?q=13.9320709,100.4819588&z=16&output=embed",
 };
 
 export function readShippingMethod(): ShippingMethod {

@@ -110,14 +110,13 @@ function PickupMap() {
 
       <div className="mt-3 overflow-hidden rounded-xl border border-gray-200">
         <iframe
-          title="แผนที่สำนักงาน ENT Group"
-          src={OFFICE_ADDRESS.embedUrl}
+          src="https://maps.google.com/maps?q=13.9320709,100.4819588&z=16&output=embed"
           width="100%"
           height={250}
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-          className="block w-full border-0"
+          style={{ border: 0, borderRadius: "12px" }}
           allowFullScreen
+          loading="lazy"
+          title="ENT GROUP Office Location"
         />
       </div>
 
