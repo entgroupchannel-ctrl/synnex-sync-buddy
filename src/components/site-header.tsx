@@ -345,6 +345,10 @@ export function SiteHeader() {
 
       </header>
 
+      <DeliveryZoneDialog />
+
+
+
       {menuOpen && (
         <div className="fixed inset-0 z-50 lg:hidden" onClick={() => setMenuOpen(false)}>
           <div className="absolute inset-0 bg-black/50" />
