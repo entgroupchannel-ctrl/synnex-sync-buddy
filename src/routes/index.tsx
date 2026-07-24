@@ -483,9 +483,20 @@ function HomePage() {
                         <span className="text-sm text-gray-400">ติดต่อสอบถาม</span>
                       )}
                       {priced ? (
-                        <Button disabled={!ready} onClick={() => addToCart(p as Record<string, unknown>)} className="w-full bg-[color:var(--brand-navy)] hover:bg-[color:var(--brand-navy-2)]" size="sm">
-                          <ShoppingCart className="mr-1.5 h-4 w-4" /> ใส่ตะกร้า
-                        </Button>
+                        ready ? (
+                          <Button onClick={() => addToCart(p as Record<string, unknown>)} className="w-full bg-[color:var(--brand-navy)] hover:bg-[color:var(--brand-navy-2)]" size="sm">
+                            <ShoppingCart className="mr-1.5 h-4 w-4" /> ใส่ตะกร้า
+                          </Button>
+                        ) : (
+                          <div className="flex w-full flex-col items-end gap-1">
+                            <Button disabled className="w-full cursor-not-allowed bg-slate-300 text-slate-600 hover:bg-slate-300" size="sm">
+                              <ShoppingCart className="mr-1.5 h-4 w-4" /> สินค้าหมด
+                            </Button>
+                            <button onClick={() => notifyMe(p.sku)} className="text-[11px] text-[color:var(--brand-navy)] underline underline-offset-2 hover:text-[color:var(--brand-orange)]">
+                              🔔 แจ้งเตือนเมื่อมีสินค้า
+                            </button>
+                          </div>
+                        )
                       ) : (
                         <Button asChild className="w-full bg-[color:var(--brand-green)] hover:opacity-90" size="sm">
                           <a href="tel:020456104">📞 สอบถามราคา</a>
