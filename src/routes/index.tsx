@@ -605,7 +605,7 @@ function HomePage() {
                   {activeCategory} <span aria-hidden>×</span>
                 </button>
               )}
-              {selectedBrands.map((b) => (
+              {selectedBrands.map((b: string) => (
                 <button
                   key={b}
                   onClick={() => toggleBrand(b)}
