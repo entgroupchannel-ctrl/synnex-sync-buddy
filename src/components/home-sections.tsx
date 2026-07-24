@@ -209,12 +209,12 @@ const QUICK_CATS = [
   { icon: Printer,    label: "Printer",      sub: "Printer",        cat: "Printer" },
   { icon: Cpu,        label: "PC / Desktop", sub: "PC & Desktop",   cat: "PC" },
   { icon: MonitorCog, label: "คอมพิวเตอร์ชุด", sub: "Computer Set",   cat: "Computer Set" },
-  { icon: Smartphone, label: "สมาร์ตโฟน",     sub: "Smart Phone",    cat: "Smartphone" },
-  { icon: Wifi,       label: "Network",      sub: "Network",        cat: "Network" },
-  { icon: HardDrive,  label: "Storage",      sub: "Storage",        cat: "Storage" },
+  { icon: Cpu,        label: "ชิ้นส่วน/CPU",  sub: "Components",     cat: "Components" },
   { icon: Package,    label: "Software",     sub: "Software",       cat: "Software" },
   { icon: Cable,      label: "อุปกรณ์เสริม",   sub: "Accessories",    cat: "Accessories" },
-  { icon: Cpu,        label: "คอมโพเนนท์",     sub: "Components",     cat: "Components" },
+  { icon: Wifi,       label: "Network",      sub: "Network",        cat: "Network" },
+  { icon: HardDrive,  label: "Storage",      sub: "Storage",        cat: "Storage" },
+  { icon: Smartphone, label: "สมาร์ตโฟน",     sub: "Smart Phone",    cat: "Smart Phone & Tablet" },
   { icon: LayoutGrid, label: "ดูทั้งหมด",     sub: "View All",       cat: "all" },
 ];
 
@@ -440,8 +440,7 @@ export function ComputerSets() {
         .select("*")
         .eq("category", "Computer Set")
         .eq("price_approved", true).gt("selling_price", 0)
-        .order("selling_price", { ascending: false })
-        .limit(8);
+        .order("selling_price", { ascending: false });
       return (data ?? []) as (ProductRow & { description: string | null })[];
     },
     staleTime: 5 * 60_000,
@@ -453,9 +452,9 @@ export function ComputerSets() {
     <section className="border-b bg-gradient-to-br from-slate-50 to-white">
       <div className="mx-auto max-w-7xl px-4 py-8">
         <SectionHeader
-          title="🖥 Computer Set / คอมพิวเตอร์ชุดประกอบ"
+          title="🖥 Computer Set / ชุดคอมพิวเตอร์"
           en="Computer Sets"
-          sub="Gaming PC และ Workstation พร้อมใช้งาน · ส่งฟรีใน กทม เมื่อซื้อครบ ฿5,000"
+          sub="Gaming PC และ Workstation พร้อมใช้งาน · RTX 5090 / RTX 5070 / RTX 5060 · ส่งฟรีใน กทม เมื่อซื้อครบ ฿5,000"
           link={{ to: "/", search: { category: "Computer Set" }, label: "ดูทั้งหมด" }}
         />
         <div className="-mx-4 overflow-x-auto px-4 pb-2 [scrollbar-width:thin]">
@@ -903,16 +902,14 @@ export function MicrosoftFeatured() {
   const tier = useCustomerTier();
   const addToCart = useAddToCart();
   const q = useQuery({
-    queryKey: ["microsoft-featured"],
+    queryKey: ["software-licenses"],
     queryFn: async () => {
       const { data } = await supabase.from("synnex_products")
         .select("*")
-        .eq("brand", "MICROSOFT")
+        .eq("category", "Software")
         .eq("price_approved", true)
-        .eq("stock_status", "พร้อมจัดส่ง")
         .gt("selling_price", 0)
-        .order("selling_price", { ascending: true })
-        .limit(8);
+        .order("selling_price", { ascending: true });
       return (data ?? []) as ProductRow[];
     },
     staleTime: 5 * 60_000,
@@ -930,10 +927,10 @@ export function MicrosoftFeatured() {
     >
       <div className="mx-auto max-w-7xl px-4 py-8">
         <SectionHeader
-          title="🪟 Microsoft Software — ลิขสิทธิ์แท้"
-          en="Microsoft Software — Genuine License"
-          sub="Authorized Dealer จาก Synnex & VST ECS Thailand"
-          link={{ to: "/", search: { category: "Software", brands: "MICROSOFT" }, label: "ดู Microsoft Software ทั้งหมด" }}
+          title="💿 Software & Licenses / ซอฟต์แวร์ลิขสิทธิ์"
+          en="Software & Licenses — Genuine"
+          sub="Microsoft 365, Office 2024, Windows 11, Kaspersky, ESET, McAfee — Authorized Dealer"
+          link={{ to: "/", search: { category: "Software" }, label: "ดู Software ทั้งหมด" }}
         />
 
         <div className="flex gap-4 overflow-x-auto pb-3 no-scrollbar snap-x">
@@ -1190,20 +1187,20 @@ export function ComponentsShowcase() {
   );
 }
 
-/* ---------- Apple MacBook (ADVICE) ---------- */
+/* ---------- Apple Products (ADVICE) ---------- */
 
 export function MacBookShowcase() {
   const q = useQuery({
-    queryKey: ["macbook-showcase"],
+    queryKey: ["apple-products"],
     queryFn: async () => {
       const { data } = await supabase.from("synnex_products")
         .select("*")
-        .eq("category", "Notebook")
         .eq("distributor", "ADVICE")
+        .in("category", ["Smart Phone & Tablet", "Notebook"])
         .eq("price_approved", true)
         .gt("selling_price", 0)
-        .or("name.ilike.%macbook%,name.ilike.%apple%")
-        .order("selling_price", { ascending: true })
+        .or("name.ilike.%Apple%,name.ilike.%iPhone%,name.ilike.%iPad%,name.ilike.%MacBook%,name.ilike.%AirPods%,name.ilike.%Apple Watch%")
+        .order("selling_price", { ascending: false })
         .limit(8);
       return (data ?? []) as ProductRow[];
     },
@@ -1216,10 +1213,10 @@ export function MacBookShowcase() {
     <section className="border-b bg-gradient-to-br from-slate-50 to-white">
       <div className="mx-auto max-w-7xl px-4 py-8">
         <SectionHeader
-          title="🍎 Apple MacBook / แมคบุ๊คทุกรุ่น"
-          en="Apple MacBook"
-          sub="MacBook Air M5, MacBook Pro M5 · ราคา Dealer จาก Authorized Reseller"
-          link={{ to: "/", search: { category: "Notebook", q: "MacBook" }, label: "ดู MacBook ทั้งหมด" }}
+          title="🍎 Apple Products / ผลิตภัณฑ์ Apple"
+          en="Apple Products"
+          sub="iPhone 17, MacBook Air M5, iPad · Authorized Reseller"
+          link={{ to: "/", search: { q: "Apple" }, label: "ดู Apple ทั้งหมด" }}
         />
         <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
           {q.data!.map((p) => <CategoryGridCard key={p.id} p={p} />)}
