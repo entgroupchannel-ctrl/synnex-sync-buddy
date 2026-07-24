@@ -1,72 +1,39 @@
-## Overview
-Build a full customer management system with a unified `/my-account` layout for customers and a redesigned `/admin/customers` + detail page for staff. Uses existing `user_profiles`, `user_addresses`, `orders`, and `email_logs` tables; adds tags, admin notes, and cached order stats.
+## สาเหตุที่คลิก "🔧 Config PC" แล้วหน้าไม่ปรากฏทันที
 
-## Database migration
-```sql
-ALTER TABLE public.user_profiles
-  ADD COLUMN IF NOT EXISTS tags text[] NOT NULL DEFAULT '{}',
-  ADD COLUMN IF NOT EXISTS admin_notes text,
-  ADD COLUMN IF NOT EXISTS total_orders integer NOT NULL DEFAULT 0,
-  ADD COLUMN IF NOT EXISTS total_spent numeric NOT NULL DEFAULT 0;
-```
-`user_addresses` already exists with matching schema + RLS — skip.
+ตรวจสอบแล้วพบ **3 สาเหตุหลัก**:
 
-Add `has_role`-style admin check via existing `user_profiles` (project uses `account_status` + admin flag — will check current admin RLS; if none, keep current pattern where any authenticated user reads own row and admins are identified in app). Add an RLS policy so admins can read/update all `user_profiles` (guarded by a security-definer `is_admin(uid)` helper) if not present.
+### 1. Router ไม่ได้เปิด preload (สาเหตุหลัก)
+`src/router.tsx` ตั้ง `defaultPreloadStaleTime: 0` แต่**ไม่มี `defaultPreload: "intent"`** → ตอน hover ที่ลิงก์ TanStack Router ไม่ pre-fetch route chunk ล่วงหน้า พอคลิกจริงต้องดาวน์โหลด chunk แบบ cold
 
-Trigger: recompute `total_orders`/`total_spent` on orders insert/update (status not cancelled).
+### 2. Route file หนัก (1,063 บรรทัด)
+`src/routes/pc-builder.tsx` รวม 7-step wizard + quotation dialog + form ในไฟล์เดียว → chunk ใหญ่ ดาวน์โหลดช้าโดยเฉพาะบน mobile
 
-## `/my-account` layout
-New route file `src/routes/_authenticated/my-account.tsx` — layout with sidebar (ข้อมูลส่วนตัว / ที่อยู่ / ประวัติสั่งซื้อ / ข้อมูลบริษัท B2B-only) and `<Outlet />`. Child routes:
-- `my-account.index.tsx` → redirect to profile
-- `my-account.profile.tsx` — edit name/phone/email + change password (requires old password via reauth) + type badge
-- `my-account.addresses.tsx` — reuse existing addresses UI, list/create/default/delete
-- `my-account.orders.tsx` — order list; each row links to `/order/$orderNumber`; slip upload + PDF download already handled on order detail page (keep link)
-- `my-account.company.tsx` — B2B only; shows company info + `account_status` message
+### 3. Query Supabase ยิงตอน mount ไม่มี skeleton
+`useEffect` บรรทัด 462 ยิง query ตอน mount และตั้ง `loading = true` แต่พื้นที่รายการสินค้าแสดงเป็นว่าง ทำให้รู้สึกว่าหน้ายัง "ไม่มา" ทั้งที่ shell มาแล้ว
 
-Redirect old `/account/*` routes to `/my-account/*` (or keep both — simpler: rewrite existing files to live under new path). Plan: create new routes; remove old `account.*` files.
+Link ใน `src/components/site-header.tsx` (บรรทัด 327) ก็ไม่มี `preload="intent"` เฉพาะตัว
 
-## `/admin/customers` overhaul
-Rewrite `admin.customers.tsx`:
-- Columns: ชื่อ | Type | บริษัท | เบอร์ | Orders | ยอดรวม | สมัครเมื่อ | สถานะ
-- Filter chips: ทั้งหมด / B2C / B2B / รอ Approve / VIP (tag)
-- Search across name/email/phone/company
-- Row click → `/admin/customers/$id`
-- Badges: B2C blue, B2B active purple, B2B pending yellow, VIP pink
+---
 
-## `/admin/customers/$id` detail
-New route `admin.customers.$id.tsx`, 3-column grid:
-- **LEFT** customer info (name/email/phone/joined, type+status, B2B company/tax/address)
-- **CENTER** orders list w/ cumulative total + latest order
-- **RIGHT** actions:
-  - Approve / Reject B2B → update `account_status`; call new edge function `send-b2b-status-email`
-  - Tag manager (add/remove: VIP, Blacklist, Corporate) → updates `tags[]`
-  - Admin notes textarea with debounced auto-save (~800ms)
+## แผนแก้ไข
 
-## Edge function `send-b2b-status-email`
-`supabase/functions/send-b2b-status-email/index.ts` — accepts `{ user_id, status }`, loads profile+auth email, sends Resend email using shared helper. Deploy via edge function tool.
+### Step 1 — เปิด preload ระดับ router
+แก้ `src/router.tsx` เพิ่ม `defaultPreload: "intent"` และ `defaultPreloadDelay: 50` เพื่อให้ทุก `<Link>` pre-fetch chunk ตอน hover/focus/touchstart — คลิกจริงจะรู้สึก instant
 
-## Checkout auto-fill
-In `checkout.tsx`, if authenticated, load default address from `user_addresses` and prefill shipping fields (only if user hasn't typed anything yet).
+### Step 2 — เพิ่ม preload ที่ nav link
+ระบุ `preload="intent"` ให้ `<Link to="/pc-builder">` ใน `site-header.tsx` เป็น safety net
 
-## Files
-Create:
-- `src/routes/_authenticated/my-account.tsx` (layout)
-- `src/routes/_authenticated/my-account.index.tsx`
-- `src/routes/_authenticated/my-account.profile.tsx`
-- `src/routes/_authenticated/my-account.addresses.tsx`
-- `src/routes/_authenticated/my-account.orders.tsx`
-- `src/routes/_authenticated/my-account.company.tsx`
-- `src/routes/_authenticated/admin.customers.$id.tsx`
-- `supabase/functions/send-b2b-status-email/index.ts`
+### Step 3 — Skeleton แทน blank ระหว่างโหลด
+ใน `pc-builder.tsx` ช่วง `loading = true` แสดง skeleton card 8–12 ใบ แทนพื้นที่ว่าง เพื่อให้หน้ารู้สึก "ปรากฏทันที"
 
-Modify:
-- `src/routes/_authenticated/admin.customers.tsx` (new columns/filters + link to detail)
-- `src/routes/checkout.tsx` (auto-fill from default address)
-- `src/components/site-header.tsx` (menu: /account/* → /my-account/*)
+### (Optional) Step 4 — ลดขนาด chunk ด้วย lazy dialog
+แยก quotation dialog (`Dialog`, `Textarea`, form logic) ออกเป็นไฟล์ย่อย import ด้วย `React.lazy` เฉพาะตอนกดปุ่ม → ลด initial chunk ของ `/pc-builder` อย่างมีนัยสำคัญ
 
-Delete (replaced): `src/routes/_authenticated/account.profile.tsx`, `account.addresses.tsx`, `account.orders.tsx`.
+หมายเหตุ: TanStack Start เปิด `autoCodeSplitting` อยู่แล้ว → component ของ route นี้ถูก split เป็น chunk แยกอัตโนมัติ ปัญหาจึงอยู่ที่ **ไม่มี prefetch** ไม่ใช่ splitting
 
-## Confirmations needed
-1. OK to delete the old `/account/*` routes and replace with `/my-account/*`? (Or keep `/account/*` as redirects for existing links?)
-2. Tag list fixed to `VIP / Blacklist / Corporate`, or allow free-form tags too?
-3. Send B2B approval/reject email from Resend with generic template — confirm sender `Sales@entgroup.co.th`?
+---
+
+## Technical notes
+- `defaultPreload: "intent"` + `defaultPreloadStaleTime: 0` เป็นคู่ที่แนะนำ (Query เป็นเจ้าของ freshness แทน router)
+- ไม่แตะ database, edge function, business logic
+- Step 1–3 ควรแก้อาการได้ครบ; Step 4 เป็น optimization

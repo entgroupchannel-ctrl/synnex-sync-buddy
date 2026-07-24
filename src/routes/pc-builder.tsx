@@ -676,7 +676,19 @@ function ProductPicker({
       )}
 
       {loading ? (
-        <div className="py-10 text-center text-sm text-slate-500">กำลังโหลด...</div>
+        <div className="grid max-h-[440px] grid-cols-3 gap-1.5 overflow-hidden pr-1 sm:grid-cols-4 sm:gap-2">
+          {Array.from({ length: 12 }).map((_, i) => (
+            <div key={i} className="rounded-lg border bg-white p-2">
+              <div
+                className="mb-1.5 aspect-square animate-pulse rounded-md bg-slate-200"
+                style={{ maxHeight: "80px" }}
+              />
+              <div className="mb-1 h-3 animate-pulse rounded bg-slate-200" />
+              <div className="h-3 w-2/3 animate-pulse rounded bg-slate-200" />
+              <div className="mt-2 h-4 w-1/2 animate-pulse rounded bg-slate-200" />
+            </div>
+          ))}
+        </div>
       ) : filtered.length === 0 ? (
         <div className="py-10 text-center text-sm text-slate-500">
           ไม่พบสินค้า — ลองปรึกษาผู้เชี่ยวชาญได้ที่ Line @entgroup
