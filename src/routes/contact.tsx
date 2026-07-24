@@ -151,7 +151,9 @@ function ContactPage() {
                   <div className="font-semibold text-[color:var(--brand-navy)]">โทรศัพท์</div>
                   <div className="flex flex-col gap-0.5">
                     {PHONES.map((p) => (
-                      <a key={p} href={`tel:${p.replace(/-/g, "")}`} className="text-slate-600 hover:text-[color:var(--brand-green)]">{p}</a>
+                      <a key={p.num} href={`tel:${p.num.replace(/-/g, "")}`} className="text-slate-600 hover:text-[color:var(--brand-green)]">
+                        <span className="font-mono">{p.num}</span> <span className="text-xs text-slate-400">— {p.label}</span>
+                      </a>
                     ))}
                   </div>
                   <div className="mt-1 flex items-center gap-1.5 text-xs text-slate-500">
