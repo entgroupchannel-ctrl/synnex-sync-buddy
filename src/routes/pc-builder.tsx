@@ -977,6 +977,36 @@ function QuotationDialog({
             <Input value={phone} onChange={(e) => setPhone(e.target.value)} />
           </div>
           <div>
+            <label className="mb-1 block text-sm font-medium">LINE ID (ไม่บังคับ)</label>
+            <Input
+              placeholder="เช่น @username หรือ 0812345678"
+              value={lineId}
+              onChange={(e) => setLineId(e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium">ช่วงเวลาที่สะดวกรับโทร *</label>
+            <div className="grid grid-cols-2 gap-2">
+              {TIME_SLOTS.map((t) => {
+                const active = availableTime.includes(t.v);
+                return (
+                  <button
+                    key={t.v}
+                    type="button"
+                    onClick={() => toggleTime(t.v)}
+                    className={
+                      active
+                        ? "rounded-full border-2 border-green-600 bg-green-50 px-4 py-2 text-sm font-medium text-green-700"
+                        : "rounded-full border border-gray-200 bg-white px-4 py-2 text-sm text-gray-600"
+                    }
+                  >
+                    {t.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+          <div>
             <label className="mb-1 block text-sm font-medium">หมายเหตุ</label>
             <Textarea
               rows={3}
@@ -986,18 +1016,31 @@ function QuotationDialog({
             />
           </div>
           <div className="rounded-md bg-slate-50 p-3 text-sm">
-            <div className="mb-1 font-semibold">สรุปสเปค ({priceFmt.format(total)})</div>
-            <ul className="space-y-0.5 text-xs text-slate-600">
-              {STEPS.map((s) => {
-                const p = selected[s.key];
-                if (!p) return null;
-                return (
-                  <li key={s.key} className="truncate">
-                    <span className="font-medium">{s.short}:</span> {p.name}
-                  </li>
-                );
-              })}
-            </ul>
+            <div className="mb-1 font-semibold">สรุปสเปค</div>
+            {STEPS.every((s) => !selected[s.key]) ? (
+              <div className="text-xs text-slate-500">ยังไม่ได้เลือกชิ้นส่วน</div>
+            ) : (
+              <>
+                <ul className="space-y-0.5 text-xs text-slate-600">
+                  {STEPS.map((s) => {
+                    const p = selected[s.key];
+                    if (!p) return null;
+                    return (
+                      <li key={s.key} className="flex justify-between gap-2">
+                        <span className="truncate">
+                          <span className="font-medium">{s.short}:</span> {p.name}
+                        </span>
+                        <span className="shrink-0 tabular-nums">{priceFmt.format(priceOf(p))}</span>
+                      </li>
+                    );
+                  })}
+                </ul>
+                <div className="mt-2 flex justify-between border-t pt-2 text-sm font-semibold">
+                  <span>รวม</span>
+                  <span className="tabular-nums">{priceFmt.format(total)}</span>
+                </div>
+              </>
+            )}
           </div>
         </div>
         <DialogFooter>
