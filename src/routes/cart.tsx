@@ -230,6 +230,9 @@ function CartPage() {
                 <span>{t("cart.total")}</span>
                 <span>{priceFmt.format(total + cheapestFee)}</span>
               </div>
+              {hasByOrder && (
+                <p className="mt-2 text-xs text-orange-600">* ราคาสินค้า By Order จะแจ้งแยกต่างหาก</p>
+              )}
               <Button asChild className="mt-4 w-full bg-[color:var(--brand-orange)] hover:bg-[color:var(--brand-orange-dark)]" size="lg">
                 <Link to="/checkout">{t("cart.checkout")}</Link>
               </Button>
@@ -239,6 +242,7 @@ function CartPage() {
           </div>
         )}
       </div>
+      <SiteFooter />
     </div>
   );
 }
