@@ -279,13 +279,37 @@ export function SiteFooter() {
 
           {/* Column 3 — Payment */}
           <Column title="วิธีการชำระเงิน / Payment">
-            <div className="grid grid-cols-2 gap-1.5">
-              <Badge label="PromptPay" color="#003178" />
-              <Badge label="โอนเงิน" color="#0a1628" />
-              <Badge label="VISA" color="#1A1F71" />
-              <Badge label="Mastercard" color="#EB001B" />
-              <Badge label="KBank" color="#138f2d" />
-              <Badge label="SCB" color="#4E2683" />
+            <div className="grid grid-cols-3 gap-1.5">
+              <LogoBadge
+                label="PromptPay"
+                alt="PromptPay"
+                src="https://upload.wikimedia.org/wikipedia/commons/9/94/Logo_Prompt_Pay.png"
+              />
+              <LogoBadge
+                label="VISA"
+                alt="Visa"
+                src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg"
+              />
+              <LogoBadge
+                label="Mastercard"
+                alt="Mastercard"
+                src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg"
+              />
+              <LogoBadge
+                label="KBank"
+                alt="Kasikornbank"
+                src="https://upload.wikimedia.org/wikipedia/commons/2/23/Kasikornbank_logo.svg"
+              />
+              <LogoBadge
+                label="SCB"
+                alt="Siam Commercial Bank"
+                src="https://upload.wikimedia.org/wikipedia/commons/8/8e/Logo_Siam_Commercial_Bank.svg"
+              />
+              <LogoBadge
+                label="โอนเงิน"
+                alt="Bank transfer"
+                src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3e6.svg"
+              />
             </div>
             <p className="mt-3 text-[11px] text-white/50">
               * บัตรเครดิต/เดบิต เร็วๆ นี้
@@ -294,14 +318,39 @@ export function SiteFooter() {
 
           {/* Column 4 — Shipping */}
           <Column title="บริการจัดส่ง / Delivery">
-            <div className="grid grid-cols-2 gap-1.5">
-              <Badge label="Kerry (KEX)" color="#e8000f" />
-              <Badge label="Flash" color="#f97316" />
-              <Badge label="ThaiPost" color="#003087" />
-              <Badge label="SCG Express" color="#e8000f" />
-              <Badge label="NIM Express" color="#0066cc" />
-              <Badge label="J&T Express" color="#e8000f" />
+            <div className="grid grid-cols-3 gap-1.5">
+              <LogoBadge
+                label="Kerry"
+                alt="Kerry Express"
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Kerry_Logistics.svg/320px-Kerry_Logistics.svg.png"
+              />
+              <LogoBadge
+                label="Flash"
+                alt="Flash Express"
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Flash_Express_logo.svg/320px-Flash_Express_logo.svg.png"
+              />
+              <LogoBadge
+                label="ThaiPost"
+                alt="Thailand Post"
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Thailand_Post_Logo.svg/320px-Thailand_Post_Logo.svg.png"
+              />
+              <LogoBadge
+                label="SCG"
+                alt="SCG Express"
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/SCG_Logo.svg/320px-SCG_Logo.svg.png"
+              />
+              <LogoBadge
+                label="NIM"
+                alt="NIM Express"
+                src="https://www.nimexpress.com/web/wp-content/uploads/2020/09/NimExpress-Logo.png"
+              />
+              <LogoBadge
+                label="J&T"
+                alt="J&T Express"
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/J%26T_Express_logo.svg/320px-J%26T_Express_logo.svg.png"
+              />
             </div>
+
             <p className="mt-3 text-[11px] text-white/60">
               จัดส่งทั่วประเทศไทย ครอบคลุมทุกพื้นที่
             </p>
