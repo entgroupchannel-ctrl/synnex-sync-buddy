@@ -300,7 +300,8 @@ function HomePage() {
                       </div>
                     )}
                     <div className="grid aspect-square place-items-center bg-white p-2">
-                      {p.image_url ? <img src={p.image_url} alt={p.name ?? p.sku} className="h-full w-full object-contain" loading="lazy" /> : <Package className="h-10 w-10 text-slate-300" />}
+                      <ProductImage src={p.image_url} alt={p.name ?? p.sku} />
+
                     </div>
                     <div className="border-t p-2">
                       <div className="line-clamp-2 min-h-9 text-xs font-medium">{p.name ?? p.sku}</div>
