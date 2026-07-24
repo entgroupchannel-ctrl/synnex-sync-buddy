@@ -422,11 +422,12 @@ export function ShopByBrand() {
     staleTime: 10 * 60_000,
   });
 
-  if ((q.data?.length ?? 0) === 0) return null;
-
   const navigate = useNavigate();
   const currentSearch = useSearch({ strict: false }) as { brands?: string };
   const selected = (currentSearch.brands ?? "").split(",").filter(Boolean);
+
+  if ((q.data?.length ?? 0) === 0) return null;
+
 
   const scrollToGrid = () => {
     if (typeof window === "undefined") return;
