@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { ShoppingCart, Package, Zap, Minus, Plus, ChevronRight, FileText, Phone, MessageCircle, Facebook, Link as LinkIcon, Check, Heart, Twitter } from "lucide-react";
 import { toggleWishlist, isWishlisted } from "@/lib/wishlist";
 import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 import { ProductImage } from "@/components/product-image";
 import { DeliveryInfoBox } from "@/components/delivery-info";
 import { ProductTrustBar, ReturnPolicyAccordion } from "@/components/trust-signals";
@@ -726,6 +727,7 @@ function ProductDetail() {
           </div>
         )}
       </div>
+      <SiteFooter />
     </div>
   );
 }
