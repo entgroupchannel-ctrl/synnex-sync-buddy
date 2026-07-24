@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -9,10 +9,19 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { ArrowLeft, Banknote, Truck, Building2, User, Loader2 } from "lucide-react";
+import { ArrowLeft, Banknote, Truck, Building2, User, Loader2, Tag, X, CheckCircle2 } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { priceFmt, useCart } from "@/lib/cart";
 import { useSupabaseUser } from "@/lib/auth-sheet";
+import {
+  getShippingOptions,
+  applyDiscountCode,
+  recordDiscountUsage,
+  type ShippingOption,
+  type DiscountApplied,
+  type UserType,
+} from "@/lib/shipping";
+
 
 export const Route = createFileRoute("/checkout")({
   ssr: false,
@@ -49,6 +58,7 @@ const taxSchema = z.object({
 type Fields = z.infer<typeof shippingSchema>;
 
 function CheckoutPage() {
+
   const { items, total: subtotal, clear } = useCart();
   const navigate = useNavigate();
   const { user } = useSupabaseUser();
@@ -65,16 +75,37 @@ function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false);
   const [orderCreated, setOrderCreated] = useState(false);
 
-  // Guard: cart must be non-empty (skip when order was just created so we can redirect to order page)
+  // Shipping
+  const totalWeight = useMemo(() => items.reduce((s, i) => s + i.qty, 0) || 1, [items]);
+  const [shipOptions, setShipOptions] = useState<ShippingOption[]>([]);
+  const [shipId, setShipId] = useState<string>("");
+
+  // Discount
+  const [codeInput, setCodeInput] = useState("");
+  const [applyingCode, setApplyingCode] = useState(false);
+  const [discount, setDiscount] = useState<DiscountApplied | null>(null);
+  const [codeError, setCodeError] = useState<string | null>(null);
+
+  // Guard: cart must be non-empty
   useEffect(() => {
     if (items.length === 0 && !orderCreated) {
-      // small delay so the effect can render toast, not thrash
       const t = setTimeout(() => {
         if (items.length === 0 && !orderCreated) navigate({ to: "/cart" });
       }, 50);
       return () => clearTimeout(t);
     }
   }, [items.length, navigate, orderCreated]);
+
+  // Load shipping options (recompute when subtotal or weight changes)
+  useEffect(() => {
+    let cancelled = false;
+    getShippingOptions(subtotal, totalWeight).then((opts) => {
+      if (cancelled) return;
+      setShipOptions(opts);
+      setShipId((prev) => prev && opts.find((o) => o.id === prev) ? prev : (opts[0]?.id ?? ""));
+    });
+    return () => { cancelled = true; };
+  }, [subtotal, totalWeight]);
 
   // Prefill from user profile
   useEffect(() => {
@@ -105,8 +136,48 @@ function CheckoutPage() {
     })();
   }, [user]);
 
+  const selectedShip = shipOptions.find((o) => o.id === shipId) ?? null;
   const codFee = payment === "cod" ? COD_FEE : 0;
-  const grandTotal = subtotal + codFee;
+  const shippingFee = selectedShip
+    ? (discount?.isFreeShipping ? 0 : selectedShip.fee)
+    : 0;
+  const discountAmount = discount?.discountAmount ?? 0;
+  const grandTotal = Math.max(0, subtotal + shippingFee + codFee - discountAmount);
+
+  const userType: UserType = user
+    ? (wantsTaxInvoice ? "b2b" : "b2c")
+    : "guest";
+
+  async function onApplyCode() {
+    if (!codeInput.trim()) return;
+    setApplyingCode(true);
+    setCodeError(null);
+    try {
+      const res = await applyDiscountCode({
+        code: codeInput,
+        subtotal,
+        shippingFee: selectedShip?.fee ?? 0,
+        userType,
+        userId: user?.id ?? null,
+      });
+      if (res.ok) {
+        setDiscount(res.applied);
+        toast.success(`ใช้โค้ด ${res.applied.code} แล้ว`);
+      } else {
+        setDiscount(null);
+        setCodeError(res.error);
+      }
+    } finally {
+      setApplyingCode(false);
+    }
+  }
+
+  function clearDiscount() {
+    setDiscount(null);
+    setCodeInput("");
+    setCodeError(null);
+  }
+
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -155,6 +226,15 @@ function CheckoutPage() {
           shipping_district: base.data.shipping_district,
           shipping_province: base.data.shipping_province,
           shipping_postcode: base.data.shipping_postcode,
+          shipping_method_id: selectedShip?.id ?? null,
+          shipping_method_name: selectedShip?.name ?? null,
+          shipping_provider: selectedShip?.provider ?? null,
+          shipping_weight_kg: totalWeight,
+          shipping_fee: shippingFee,
+          discount_code: discount?.code ?? null,
+          discount_code_id: discount?.codeId ?? null,
+          discount_amount: discountAmount,
+          discount: discountAmount,
           need_tax_invoice: !!taxInvoice,
           company_name: taxInvoice?.company_name ?? null,
           tax_id: taxInvoice?.tax_id ?? null,
@@ -168,6 +248,7 @@ function CheckoutPage() {
         })
         .select("id, order_number")
         .single();
+
 
       if (oErr || !order) throw oErr ?? new Error("ไม่สามารถบันทึกออเดอร์ได้");
 
@@ -197,6 +278,18 @@ function CheckoutPage() {
       // Fire-and-forget: send order confirmation email
       supabase.functions.invoke("send-order-confirmation", { body: { order_id: order.id } })
         .catch((e) => console.warn("[send-order-confirmation]", e));
+
+      // Record discount usage (fire-and-forget)
+      if (discount?.codeId) {
+        recordDiscountUsage({
+          codeId: discount.codeId,
+          orderId: order.id,
+          userId: user?.id ?? null,
+          customerEmail: base.data.customer_email,
+          discountAmount,
+        }).catch((e) => console.warn("[discount usage]", e));
+      }
+
 
       if (order?.order_number) {
         setOrderCreated(true);
@@ -316,7 +409,92 @@ function CheckoutPage() {
               </div>
             </section>
 
-            {/* Tax invoice */}
+            {/* Shipping method */}
+            <section className="space-y-3 rounded-lg border bg-white p-6">
+              <h2 className="font-bold text-[color:var(--brand-navy)]">วิธีจัดส่ง</h2>
+              {shipOptions.length === 0 ? (
+                <div className="text-sm text-slate-500">กำลังโหลดตัวเลือกจัดส่ง...</div>
+              ) : (
+                <RadioGroup value={shipId} onValueChange={setShipId} className="grid gap-2">
+                  {shipOptions.map((o, idx) => {
+                    const active = shipId === o.id;
+                    return (
+                      <label
+                        key={o.id}
+                        className={`flex cursor-pointer items-center gap-3 rounded-lg border-2 p-3 transition ${active ? "border-[color:var(--brand-orange)] bg-orange-50" : "hover:bg-slate-50"}`}
+                      >
+                        <RadioGroupItem value={o.id} />
+                        <Truck className="h-5 w-5 shrink-0 text-[color:var(--brand-navy)]" />
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold">{o.name}</span>
+                            {idx === 0 && <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700">แนะนำ</span>}
+                          </div>
+                          <div className="text-xs text-slate-500">{o.estimatedDays}</div>
+                        </div>
+                        <div className="shrink-0 text-right">
+                          {o.isFree ? (
+                            <>
+                              <div className="text-sm font-bold text-emerald-600">ฟรี!</div>
+                              {o.freeThreshold && <div className="text-[10px] text-slate-500">ซื้อครบ ฿{o.freeThreshold.toLocaleString()}</div>}
+                            </>
+                          ) : (
+                            <>
+                              <div className="font-semibold">฿{o.fee.toLocaleString()}</div>
+                              {o.freeThreshold && subtotal < o.freeThreshold && (
+                                <div className="text-[10px] text-slate-500">
+                                  เพิ่ม ฿{(o.freeThreshold - subtotal).toLocaleString()} ฟรี
+                                </div>
+                              )}
+                            </>
+                          )}
+                        </div>
+                      </label>
+                    );
+                  })}
+                </RadioGroup>
+              )}
+            </section>
+
+            {/* Discount code */}
+            <section className="space-y-3 rounded-lg border bg-white p-6">
+              <h2 className="flex items-center gap-2 font-bold text-[color:var(--brand-navy)]">
+                <Tag className="h-5 w-5" /> โค้ดส่วนลด / Discount Code
+              </h2>
+              {!discount ? (
+                <>
+                  <div className="flex gap-2">
+                    <Input
+                      value={codeInput}
+                      onChange={(e) => { setCodeInput(e.target.value.toUpperCase()); setCodeError(null); }}
+                      placeholder="กรอกโค้ดส่วนลด"
+                      maxLength={40}
+                    />
+                    <Button type="button" onClick={onApplyCode} disabled={applyingCode || !codeInput.trim()}>
+                      {applyingCode ? <Loader2 className="h-4 w-4 animate-spin" /> : "ใช้โค้ด"}
+                    </Button>
+                  </div>
+                  {codeError && <p className="text-sm text-red-600">{codeError}</p>}
+                </>
+              ) : (
+                <div className="flex items-start gap-3 rounded-lg border border-emerald-200 bg-emerald-50 p-3">
+                  <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600" />
+                  <div className="min-w-0 flex-1">
+                    <div className="font-semibold text-emerald-800">{discount.code}</div>
+                    {discount.description && <div className="text-xs text-emerald-700">{discount.description}</div>}
+                    <div className="mt-0.5 text-sm text-emerald-700">
+                      {discount.isFreeShipping
+                        ? `ส่งฟรี — ประหยัด ฿${(selectedShip?.fee ?? 0).toLocaleString()}`
+                        : `ประหยัด ฿${discount.discountAmount.toLocaleString()}`}
+                    </div>
+                  </div>
+                  <button type="button" onClick={clearDiscount} className="text-emerald-700 hover:text-red-600">
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              )}
+            </section>
+
             <section className="space-y-4 rounded-lg border bg-white p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -401,9 +579,16 @@ function CheckoutPage() {
                 <span>ค่าเก็บปลายทาง (COD)</span><span>{priceFmt.format(codFee)}</span>
               </div>
             )}
-            <div className="flex justify-between text-sm text-slate-500">
-              <span>ค่าจัดส่ง</span><span>ทีมงานแจ้ง</span>
+            <div className={`flex justify-between text-sm ${shippingFee === 0 && selectedShip ? "text-emerald-600" : "text-slate-700"}`}>
+              <span>ค่าจัดส่ง{selectedShip ? ` (${selectedShip.name})` : ""}</span>
+              <span>{selectedShip ? (shippingFee === 0 ? "ฟรี" : priceFmt.format(shippingFee)) : "-"}</span>
             </div>
+            {discount && discountAmount > 0 && (
+              <div className="flex justify-between text-sm text-emerald-600">
+                <span>ส่วนลด ({discount.code})</span><span>-{priceFmt.format(discountAmount)}</span>
+              </div>
+            )}
+
             <div className="my-2 h-px bg-slate-200" />
             <div className="flex justify-between text-xl font-black text-[color:var(--brand-orange)]">
               <span>รวม</span><span>{priceFmt.format(grandTotal)}</span>

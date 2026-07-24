@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Minus, Plus, Trash2, Package, ArrowLeft, ShoppingCart, ShoppingBag } from "lucide-react";
+import { Minus, Plus, Trash2, Package, ArrowLeft, ShoppingCart, ShoppingBag, Truck } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { ProductImage } from "@/components/product-image";
 
@@ -9,6 +9,8 @@ import { CATEGORIES, priceFmt, useCart } from "@/lib/cart";
 import { useLanguage } from "@/lib/i18n";
 import { useSupabaseUser } from "@/lib/auth-sheet";
 import { saveCartReminder, deleteCartReminder } from "@/lib/cart-reminder";
+import { getShippingOptions, type ShippingOption } from "@/lib/shipping";
+
 
 export const Route = createFileRoute("/cart")({
   ssr: false,
@@ -31,6 +33,8 @@ function CartPage() {
   const { t } = useLanguage();
   const [recent, setRecent] = useState<RecentItem[]>([]);
   const { user } = useSupabaseUser();
+  const [shipOpts, setShipOpts] = useState<ShippingOption[]>([]);
+  const totalWeight = items.reduce((s, i) => s + i.qty, 0) || 1;
 
   useEffect(() => {
     try {
@@ -39,6 +43,17 @@ function CartPage() {
       setRecent(arr.slice(0, 4));
     } catch { /* ignore */ }
   }, []);
+
+  useEffect(() => {
+    if (items.length === 0) { setShipOpts([]); return; }
+    let cancelled = false;
+    getShippingOptions(total, totalWeight).then((opts) => { if (!cancelled) setShipOpts(opts); });
+    return () => { cancelled = true; };
+  }, [total, totalWeight, items.length]);
+
+  const cheapest = shipOpts[0] ?? null;
+  const nextFree = shipOpts.find((o) => o.freeThreshold && total < o.freeThreshold) ?? null;
+
 
   // Persist cart snapshot for logged-in users so the reminder job can email them.
   useEffect(() => {
@@ -108,19 +123,51 @@ function CartPage() {
                 <span>{t("cart.subtotal")}</span>
                 <span>{priceFmt.format(total)}</span>
               </div>
-              <div className="mt-1 flex justify-between text-sm text-slate-500">
+              <div className="mt-1 flex justify-between text-sm text-slate-600">
                 <span>{t("cart.shipping")}</span>
-                <span>{t("cart.shipping_calc")}</span>
+                <span>
+                  {cheapest
+                    ? (cheapest.isFree
+                        ? <span className="text-emerald-600">ฟรี · {cheapest.name}</span>
+                        : <>{priceFmt.format(cheapest.fee)} <span className="text-xs text-slate-400">({cheapest.name})</span></>)
+                    : t("cart.shipping_calc")}
+                </span>
               </div>
+
+              {nextFree && (
+                <div className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 p-2.5 text-xs">
+                  <div className="flex items-start gap-2">
+                    <Truck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
+                    <div className="flex-1">
+                      <div className="font-semibold text-emerald-800">
+                        ซื้อเพิ่ม {priceFmt.format(nextFree.freeThreshold! - total)} รับสิทธิ์ส่งฟรี {nextFree.name}
+                      </div>
+                      <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-emerald-100">
+                        <div
+                          className="h-full bg-emerald-500 transition-all"
+                          style={{ width: `${Math.min(100, Math.round((total / nextFree.freeThreshold!) * 100))}%` }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              {cheapest?.isFree && (
+                <div className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 p-2.5 text-xs font-semibold text-emerald-800">
+                  🎉 ยินดีด้วย! คุณได้รับสิทธิ์ส่งฟรี {cheapest.name}
+                </div>
+              )}
+
               <div className="my-4 h-px bg-slate-200" />
               <div className="flex justify-between text-lg font-bold text-[color:var(--brand-navy)]">
                 <span>{t("cart.total")}</span>
-                <span>{priceFmt.format(total)}</span>
+                <span>{priceFmt.format(total + (cheapest?.fee ?? 0))}</span>
               </div>
               <Button asChild className="mt-4 w-full bg-[color:var(--brand-orange)] hover:bg-[color:var(--brand-orange-dark)]" size="lg">
                 <Link to="/checkout">{t("cart.checkout")}</Link>
               </Button>
             </aside>
+
           </div>
         )}
       </div>

@@ -121,10 +121,14 @@ function PricingPage() {
             <Button asChild variant="secondary" size="sm">
               <Link to="/admin/pricing/products"><Package className="mr-1.5 h-4 w-4" />สินค้ารายชิ้น</Link>
             </Button>
+            <Button asChild variant="secondary" size="sm">
+              <Link to="/admin/discount-codes">🎟 โค้ดส่วนลด</Link>
+            </Button>
             <Button asChild variant="ghost" size="sm" className="text-white hover:bg-white/10">
               <Link to="/admin/sync">← กลับ Dashboard</Link>
             </Button>
           </div>
+
         </div>
       </header>
 
