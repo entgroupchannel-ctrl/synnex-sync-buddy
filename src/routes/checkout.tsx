@@ -64,6 +64,13 @@ function CheckoutPage() {
 
   const [f, setF] = useState<Fields>({
     customer_name: "", customer_phone: "", customer_email: "",
+function CheckoutPage() {
+  const { items, total: subtotal, clear } = useCart();
+  const navigate = useNavigate();
+  const { user } = useSupabaseUser();
+
+  const [f, setF] = useState<Fields>({
+    customer_name: "", customer_phone: "", customer_email: "",
     shipping_name: "", shipping_phone: "",
     shipping_address: "", shipping_district: "", shipping_province: "", shipping_postcode: "",
   });
@@ -74,16 +81,37 @@ function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false);
   const [orderCreated, setOrderCreated] = useState(false);
 
-  // Guard: cart must be non-empty (skip when order was just created so we can redirect to order page)
+  // Shipping
+  const totalWeight = useMemo(() => items.reduce((s, i) => s + i.qty, 0) || 1, [items]);
+  const [shipOptions, setShipOptions] = useState<ShippingOption[]>([]);
+  const [shipId, setShipId] = useState<string>("");
+
+  // Discount
+  const [codeInput, setCodeInput] = useState("");
+  const [applyingCode, setApplyingCode] = useState(false);
+  const [discount, setDiscount] = useState<DiscountApplied | null>(null);
+  const [codeError, setCodeError] = useState<string | null>(null);
+
+  // Guard: cart must be non-empty
   useEffect(() => {
     if (items.length === 0 && !orderCreated) {
-      // small delay so the effect can render toast, not thrash
       const t = setTimeout(() => {
         if (items.length === 0 && !orderCreated) navigate({ to: "/cart" });
       }, 50);
       return () => clearTimeout(t);
     }
   }, [items.length, navigate, orderCreated]);
+
+  // Load shipping options (recompute when subtotal or weight changes)
+  useEffect(() => {
+    let cancelled = false;
+    getShippingOptions(subtotal, totalWeight).then((opts) => {
+      if (cancelled) return;
+      setShipOptions(opts);
+      setShipId((prev) => prev && opts.find((o) => o.id === prev) ? prev : (opts[0]?.id ?? ""));
+    });
+    return () => { cancelled = true; };
+  }, [subtotal, totalWeight]);
 
   // Prefill from user profile
   useEffect(() => {
@@ -114,8 +142,48 @@ function CheckoutPage() {
     })();
   }, [user]);
 
+  const selectedShip = shipOptions.find((o) => o.id === shipId) ?? null;
   const codFee = payment === "cod" ? COD_FEE : 0;
-  const grandTotal = subtotal + codFee;
+  const shippingFee = selectedShip
+    ? (discount?.isFreeShipping ? 0 : selectedShip.fee)
+    : 0;
+  const discountAmount = discount?.discountAmount ?? 0;
+  const grandTotal = Math.max(0, subtotal + shippingFee + codFee - discountAmount);
+
+  const userType: UserType = user
+    ? (wantsTaxInvoice ? "b2b" : "b2c")
+    : "guest";
+
+  async function onApplyCode() {
+    if (!codeInput.trim()) return;
+    setApplyingCode(true);
+    setCodeError(null);
+    try {
+      const res = await applyDiscountCode({
+        code: codeInput,
+        subtotal,
+        shippingFee: selectedShip?.fee ?? 0,
+        userType,
+        userId: user?.id ?? null,
+      });
+      if (res.ok) {
+        setDiscount(res.applied);
+        toast.success(`ใช้โค้ด ${res.applied.code} แล้ว`);
+      } else {
+        setDiscount(null);
+        setCodeError(res.error);
+      }
+    } finally {
+      setApplyingCode(false);
+    }
+  }
+
+  function clearDiscount() {
+    setDiscount(null);
+    setCodeInput("");
+    setCodeError(null);
+  }
+
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
