@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus, Trash2, Package, ArrowLeft, ShoppingCart, ShoppingBag, Truck, AlertTriangle, ClipboardList, PartyPopper, Lightbulb } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 import { ProductImage } from "@/components/product-image";
 import { supabase } from "@/integrations/supabase/client";
 
