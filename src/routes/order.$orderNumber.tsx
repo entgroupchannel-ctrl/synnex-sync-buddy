@@ -5,6 +5,8 @@ import { CheckCircle2, Copy, Package, Upload, FileCheck2, Loader2 } from "lucide
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteHeader } from "@/components/site-header";
+import { ProductImage } from "@/components/product-image";
+
 import { Button } from "@/components/ui/button";
 import { BANK_ACCOUNTS, SUPPORT_PHONE, STATUS_META, VAT_NOTES, isValidStatus, bahtFmt } from "@/lib/order-helpers";
 import { GuestSignupPrompt } from "@/components/guest-signup-prompt";
