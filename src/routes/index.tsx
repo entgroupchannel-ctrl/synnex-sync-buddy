@@ -985,7 +985,7 @@ function HomePage() {
 
                     </Link>
                     <div className="flex flex-1 flex-col gap-1 border-t p-3">
-                      <div className="text-[10px] uppercase tracking-wide text-slate-500">{p.sku}</div>
+                      {p.brand && <div className="text-[10px] uppercase tracking-wide text-slate-500">{p.brand}</div>}
                       <Link to="/product/$slug" params={{ slug }} className="line-clamp-2 min-h-10 text-sm font-medium hover:text-[color:var(--brand-navy)]">
                         {p.name ?? p.sku}
                       </Link>
