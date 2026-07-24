@@ -248,9 +248,10 @@ function ProductDetail() {
           </div>
         ) : (
           <div className="grid gap-8 rounded-lg border bg-white p-4 md:p-6 lg:grid-cols-2">
-            <div className="grid aspect-square place-items-center rounded-lg bg-slate-50 p-6">
-              <ProductImage src={p.image_url} alt={p.name ?? p.sku} className="max-h-full max-w-full object-contain" iconClassName="h-24 w-24 text-slate-300" />
+            <div className="grid w-full min-h-[400px] place-items-center rounded-lg bg-slate-50 p-6">
+              <ProductImage src={p.image_url} alt={p.name ?? decodedSku} className="h-full w-full object-contain" iconClassName="h-24 w-24 text-slate-300" />
             </div>
+
             <div className="flex flex-col">
               {p.brand && <div className="mb-1 inline-flex w-fit rounded bg-slate-100 px-2 py-0.5 text-xs font-bold text-slate-700">{p.brand}</div>}
               <h1 className="text-2xl font-bold text-slate-900 md:text-3xl">{p.name ?? p.sku}</h1>
