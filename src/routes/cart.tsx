@@ -82,7 +82,7 @@ function CartPage() {
   }, [user?.id, user?.email, items, total]);
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 overflow-x-hidden">
       <SiteHeader />
       <div className="mx-auto max-w-5xl px-4 py-6">
         <Link to="/" className="mb-4 inline-flex items-center gap-1 text-sm text-slate-600 hover:text-[color:var(--brand-navy)]">
