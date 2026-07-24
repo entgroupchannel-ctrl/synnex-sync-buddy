@@ -388,7 +388,19 @@ function CheckoutPage() {
         )}
 
         <form onSubmit={submit} className="grid gap-6 lg:grid-cols-[1fr_360px]">
+          {/* Honeypot — hidden from users, bots may fill it */}
+          <input
+            type="text"
+            name="website"
+            value={hp}
+            onChange={(e) => setHp(e.target.value)}
+            tabIndex={-1}
+            autoComplete="off"
+            aria-hidden="true"
+            style={{ position: "absolute", left: "-10000px", width: 1, height: 1, opacity: 0 }}
+          />
           <div className="space-y-6">
+
             {/* Contact */}
             <section className="space-y-4 rounded-lg border bg-white p-6">
               <h2 className="font-bold text-[color:var(--brand-navy)]">ข้อมูลผู้ติดต่อ</h2>
