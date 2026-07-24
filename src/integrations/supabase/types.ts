@@ -236,6 +236,7 @@ export type Database = {
           id: string
           is_active: boolean | null
           source: string | null
+          subscribed_at: string | null
         }
         Insert: {
           created_at?: string | null
@@ -243,6 +244,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           source?: string | null
+          subscribed_at?: string | null
         }
         Update: {
           created_at?: string | null
@@ -250,6 +252,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           source?: string | null
+          subscribed_at?: string | null
         }
         Relationships: []
       }
