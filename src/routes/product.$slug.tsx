@@ -199,7 +199,11 @@ function ProductDetail() {
         {productQ.isLoading ? (
           <div className="h-96 animate-pulse rounded-lg bg-slate-200" />
         ) : !p ? (
-          <div className="rounded-lg border bg-white p-12 text-center text-slate-500">ไม่พบสินค้า</div>
+          <div className="rounded-lg border bg-white p-12 text-center">
+            <h1 className="mb-2 text-2xl font-bold text-slate-900">ไม่พบสินค้า</h1>
+            <p className="mb-6 text-slate-500">สินค้านี้อาจถูกลบหรือไม่มีในระบบ</p>
+            <Link to="/" className="inline-flex items-center rounded-md bg-[color:var(--brand-green)] px-4 py-2 text-sm font-semibold text-white hover:opacity-90">กลับหน้าแรก</Link>
+          </div>
         ) : (
           <div className="grid gap-8 rounded-lg border bg-white p-4 md:p-6 lg:grid-cols-2">
             <div className="grid aspect-square place-items-center rounded-lg bg-slate-50 p-6">
