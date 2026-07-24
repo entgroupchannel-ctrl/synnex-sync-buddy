@@ -672,8 +672,7 @@ function HomePage() {
           {/* Computer Sets */}
           <ComputerSets />
 
-          {/* Apple Products */}
-          <MacBookShowcase />
+
 
           {/* Components (CPU & Memory) */}
           <ComponentsShowcase />
