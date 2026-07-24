@@ -104,7 +104,7 @@ export function AppleFeatured() {
             {products.map((p) => {
               const slug = p.slug || p.id;
               const price = getSellingPrice(p, tier);
-              const info = displayPrice(p, tier);
+              const orig = p.price ?? null;
               return (
                 <Link
                   key={p.id}
@@ -126,10 +126,10 @@ export function AppleFeatured() {
                     {p.name ?? p.sku}
                   </div>
                   <div className="mt-2 text-lg font-bold text-[#1d4ed8]" style={{ letterSpacing: "-0.01em" }}>
-                    {price != null ? priceFmt(price) : "—"}
+                    {price != null ? priceFmt.format(price) : "—"}
                   </div>
-                  {info?.original != null && info.original > (price ?? 0) && (
-                    <div className="text-xs text-slate-400 line-through">{priceFmt(info.original)}</div>
+                  {orig != null && price != null && orig > price && (
+                    <div className="text-xs text-slate-400 line-through">{priceFmt.format(orig)}</div>
                   )}
                   <div className="mt-1 text-[11px] text-slate-500">ประกัน 1 ปี Apple Thailand</div>
                 </Link>
