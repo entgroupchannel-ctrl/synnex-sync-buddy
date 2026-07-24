@@ -18,6 +18,8 @@ import { displayPrice, getSellingPrice, useCustomerTier } from "@/lib/cart";
 import { triggerAuthPrompt, useSupabaseUser } from "@/lib/auth-sheet";
 import { useCart } from "@/lib/cart";
 import { useLanguage } from "@/lib/i18n";
+import { ProductImage } from "@/components/product-image";
+
 
 /* ---------- Hero Carousel (compact, split layout) ---------- */
 
