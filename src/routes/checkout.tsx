@@ -84,7 +84,7 @@ function CheckoutPage() {
   const [errors, setErrors] = useState<Partial<Record<keyof Fields | keyof z.infer<typeof taxSchema>, string>>>({});
   const [wantsTaxInvoice, setWantsTaxInvoice] = useState(false);
   const [tax, setTax] = useState({ company_name: "", tax_id: "", company_address: "" });
-  const [payment, setPayment] = useState<"transfer" | "cod">("transfer");
+  const [payment, setPayment] = useState<"transfer" | "cod" | "promptpay">("promptpay");
   const [submitting, setSubmitting] = useState(false);
   const [orderCreated, setOrderCreated] = useState(false);
 
