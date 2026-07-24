@@ -83,10 +83,21 @@ export function SiteHeader() {
     staleTime: 30_000,
   });
 
+  const scrollToGrid = () => {
+    setTimeout(() => {
+      const el = document.getElementById("product-grid");
+      if (!el) return;
+      const headerHeight = window.innerWidth < 768 ? 60 : 120;
+      const top = el.getBoundingClientRect().top + window.scrollY - headerHeight;
+      window.scrollTo({ top, behavior: "smooth" });
+    }, 300);
+  };
+
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     setSuggestOpen(false);
     navigate({ to: "/", search: { q: q.trim(), category: "all" } as never });
+    scrollToGrid();
   };
 
   const clearSearch = () => {
