@@ -279,6 +279,11 @@ function HomePage() {
         q = q.eq("price_approved", true).gt("selling_price", 0);
         if (s) q = q.or(`name.ilike.%${s}%,sku.ilike.%${s}%,brand.ilike.%${s}%,description.ilike.%${s}%`);
         if (search.category !== "all") q = q.eq("category", search.category);
+        if (search.category === "Components" && search.compType === "cpu") {
+          q = q.or("name.ilike.%CPU%,name.ilike.%Ryzen%,name.ilike.%Core Ultra%");
+        } else if (search.category === "Components" && search.compType === "ram") {
+          q = q.or("name.ilike.%RAM%,name.ilike.%DDR%,name.ilike.%Memory%");
+        }
         if (selectedBrands.length > 0) q = q.in("brand", selectedBrands);
         if (search.min > 0) q = q.gte("price", search.min);
         if (search.max < PRICE_MAX) q = q.lte("price", search.max);
