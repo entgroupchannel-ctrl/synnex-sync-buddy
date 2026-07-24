@@ -476,11 +476,9 @@ function ProductDetail() {
               {/* AEO — Visible FAQ for voice search / AI answers */}
               {(() => {
                 const priceNum = Number(p.selling_price ?? 0);
-                const memberNum = Number(p.member_price ?? 0);
-                const b2bNum = Number((p as { b2b_price?: number | null }).b2b_price ?? 0);
                 const name = p.name ?? p.sku;
                 const q1 = `${name} ราคาเท่าไหร่?`;
-                const a1 = `${name} ราคา ฿${priceNum.toLocaleString("th-TH")} สำหรับลูกค้าทั่วไป${memberNum ? `, ฿${memberNum.toLocaleString("th-TH")} สำหรับสมาชิก` : ""}${b2bNum ? `, และ ฿${b2bNum.toLocaleString("th-TH")} สำหรับลูกค้าองค์กร B2B` : ""} จาก ENT Group IT Shop`;
+                const a1 = `${name} ราคา ฿${priceNum.toLocaleString("th-TH")} จาก ENT Group IT Shop`;
                 const q2 = `${name} มีสินค้าพร้อมส่งไหม?`;
                 const a2 = ready
                   ? `${name} มีสินค้าพร้อมจัดส่งทันที จัดส่งทั่วไทยผ่าน Kerry, Flash, ไปรษณีย์ไทย`
