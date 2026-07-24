@@ -1190,4 +1190,44 @@ export function ComponentsShowcase() {
   );
 }
 
+/* ---------- Apple MacBook (ADVICE) ---------- */
+
+export function MacBookShowcase() {
+  const q = useQuery({
+    queryKey: ["macbook-showcase"],
+    queryFn: async () => {
+      const { data } = await supabase.from("synnex_products")
+        .select("*")
+        .eq("category", "Notebook")
+        .eq("distributor", "ADVICE")
+        .eq("price_approved", true)
+        .gt("selling_price", 0)
+        .or("name.ilike.%macbook%,name.ilike.%apple%")
+        .order("selling_price", { ascending: true })
+        .limit(8);
+      return (data ?? []) as ProductRow[];
+    },
+    staleTime: 5 * 60_000,
+  });
+
+  if ((q.data?.length ?? 0) === 0) return null;
+
+  return (
+    <section className="border-b bg-gradient-to-br from-slate-50 to-white">
+      <div className="mx-auto max-w-7xl px-4 py-8">
+        <SectionHeader
+          title="🍎 Apple MacBook / แมคบุ๊คทุกรุ่น"
+          en="Apple MacBook"
+          sub="MacBook Air M5, MacBook Pro M5 · ราคา Dealer จาก Authorized Reseller"
+          link={{ to: "/", search: { category: "Notebook", q: "MacBook" }, label: "ดู MacBook ทั้งหมด" }}
+        />
+        <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
+          {q.data!.map((p) => <CategoryGridCard key={p.id} p={p} />)}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+
 
