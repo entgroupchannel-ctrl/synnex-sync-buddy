@@ -11,6 +11,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { User, Building2, LogIn } from "lucide-react";
 
@@ -94,6 +95,7 @@ function AuthPage() {
           </Link>
         </p>
       </div>
+      <SiteFooter />
     </div>
   );
 }

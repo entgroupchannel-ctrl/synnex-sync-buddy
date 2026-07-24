@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 import { getPublicTracking } from "@/lib/tracking.functions";
 import { buildTrackingUrl, providerLabel, eventLabel, eventIcon } from "@/lib/shipping";
 import { ExternalLink, Package, MapPin } from "lucide-react";
@@ -131,6 +132,7 @@ function TrackPage() {
           </div>
         )}
       </div>
+      <SiteFooter />
     </div>
   );
 }

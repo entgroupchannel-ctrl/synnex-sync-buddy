@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus, Trash2, Package, ArrowLeft, ShoppingCart, ShoppingBag, Truck, AlertTriangle, ClipboardList, PartyPopper, Lightbulb } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 import { ProductImage } from "@/components/product-image";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -124,7 +125,7 @@ function CartPage() {
                 return (
                 <div key={it.id} className="flex max-w-full gap-4 rounded-lg border bg-white p-4">
                   <div className="grid h-24 w-24 shrink-0 place-items-center rounded-md bg-slate-50">
-                    <ProductImage src={it.image_url} alt={it.name} className="h-full w-full object-contain p-1" iconClassName="h-8 w-8 text-slate-300" />
+                    <ProductImage src={it.image_url} alt={it.name} category={it.category} productName={it.name} className="h-full w-full object-contain p-1" iconClassName="h-8 w-8 text-slate-300" />
 
                   </div>
                   <div className="min-w-0 flex-1 max-w-full">
@@ -160,8 +161,14 @@ function CartPage() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-sm font-bold text-[color:var(--brand-navy)]">{priceFmt.format(it.price * it.qty)}</div>
-                    <div className="text-xs text-slate-500">{priceFmt.format(it.price)} / ชิ้น</div>
+                    {it.price === 0 ? (
+                      <div className="text-sm font-bold text-orange-600">ติดต่อสอบถาม</div>
+                    ) : (
+                      <>
+                        <div className="text-sm font-bold text-[color:var(--brand-navy)]">{priceFmt.format(it.price * it.qty)}</div>
+                        <div className="text-xs text-slate-500">{priceFmt.format(it.price)} / ชิ้น</div>
+                      </>
+                    )}
                   </div>
                 </div>
               );})}
@@ -223,6 +230,9 @@ function CartPage() {
                 <span>{t("cart.total")}</span>
                 <span>{priceFmt.format(total + cheapestFee)}</span>
               </div>
+              {hasByOrder && (
+                <p className="mt-2 text-xs text-orange-600">* ราคาสินค้า By Order จะแจ้งแยกต่างหาก</p>
+              )}
               <Button asChild className="mt-4 w-full bg-[color:var(--brand-orange)] hover:bg-[color:var(--brand-orange-dark)]" size="lg">
                 <Link to="/checkout">{t("cart.checkout")}</Link>
               </Button>
@@ -232,6 +242,7 @@ function CartPage() {
           </div>
         )}
       </div>
+      <SiteFooter />
     </div>
   );
 }
