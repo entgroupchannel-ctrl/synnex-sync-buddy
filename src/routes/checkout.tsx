@@ -86,6 +86,22 @@ function CheckoutPage() {
   );
   const totalWeight = shipCalc.totalWeight;
 
+  // Discount
+  const [codeInput, setCodeInput] = useState("");
+  const [applyingCode, setApplyingCode] = useState(false);
+  const [discount, setDiscount] = useState<DiscountApplied | null>(null);
+  const [codeError, setCodeError] = useState<string | null>(null);
+
+  // Guard: cart must be non-empty
+  useEffect(() => {
+    if (items.length === 0 && !orderCreated) {
+      const t = setTimeout(() => {
+        if (items.length === 0 && !orderCreated) navigate({ to: "/cart" });
+      }, 50);
+      return () => clearTimeout(t);
+    }
+  }, [items.length, navigate, orderCreated]);
+
   // Prefill from user profile
   useEffect(() => {
     if (!user) return;
