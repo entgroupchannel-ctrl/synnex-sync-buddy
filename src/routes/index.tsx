@@ -34,7 +34,6 @@ import {
   ShopByBrand,
   TrustBadges,
   RecentlyViewed,
-  NewsletterSignup,
   MicrosoftFeatured,
   NetworkSecurity,
   StorageDeals,
@@ -1072,9 +1071,6 @@ function HomePage() {
 
       {/* Recently viewed */}
       <RecentlyViewed />
-
-      {/* Newsletter */}
-      <NewsletterSignup />
 
       <SiteFooter />
     </div>
