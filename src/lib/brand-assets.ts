@@ -7,6 +7,11 @@ import HP from "@/assets/brands/HPI.png.asset.json";
 import KINGSTON from "@/assets/brands/KINGSTON.png.asset.json";
 import LENOVO from "@/assets/brands/LENOVO.png.asset.json";
 import LOGITECH from "@/assets/brands/LOGITECH.png.asset.json";
+import RAPOO from "@/assets/brands/RAPOO.png.asset.json";
+import RAZER from "@/assets/brands/RAZER.png.asset.json";
+import TKS from "@/assets/brands/TKS.png.asset.json";
+import TPLINK from "@/assets/brands/TPLINK.png.asset.json";
+import WD from "@/assets/brands/WD.png.asset.json";
 
 export const BRAND_LOGO_URLS: Record<string, string> = {
   ACER: ACER.url,
