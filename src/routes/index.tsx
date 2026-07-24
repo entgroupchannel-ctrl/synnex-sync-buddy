@@ -15,7 +15,7 @@ import { toast } from "sonner";
 import { ShoppingCart, Search, Package, Grid2x2, List, SlidersHorizontal, Flame, ChevronRight } from "lucide-react";
 import { useLanguage } from "@/lib/i18n";
 import { SiteHeader } from "@/components/site-header";
-import { CATEGORIES, detectCategory, displayPrice, getSellingPrice, useCart } from "@/lib/cart";
+import { CATEGORIES, detectCategory, displayPrice, getSellingPrice, useCart, useCustomerTier } from "@/lib/cart";
 import { triggerAuthPrompt, useSupabaseUser } from "@/lib/auth-sheet";
 import {
   HeroCarousel,
