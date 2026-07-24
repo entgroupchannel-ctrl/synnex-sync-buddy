@@ -589,12 +589,13 @@ function HomePage() {
   );
 
   const searchMode = !!search.q.trim();
+  const filterMode = searchMode || search.category !== "all" || !!search.brands;
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <SiteHeader />
 
-      {!searchMode && (
+      {!filterMode && (
         <>
           {/* Quick category icons */}
           <QuickCategoryGrid />
