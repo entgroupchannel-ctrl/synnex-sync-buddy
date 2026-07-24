@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_logs: {
+        Row: {
+          action: string | null
+          admin_email: string | null
+          admin_id: string | null
+          created_at: string | null
+          details: Json | null
+          id: string
+          target_id: string | null
+          target_type: string | null
+        }
+        Insert: {
+          action?: string | null
+          admin_email?: string | null
+          admin_id?: string | null
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          target_id?: string | null
+          target_type?: string | null
+        }
+        Update: {
+          action?: string | null
+          admin_email?: string | null
+          admin_id?: string | null
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          target_id?: string | null
+          target_type?: string | null
+        }
+        Relationships: []
+      }
       cart_reminders: {
         Row: {
           cart_snapshot: Json
@@ -896,6 +929,7 @@ export type Database = {
           created_at: string
           full_name: string | null
           id: string
+          is_admin: boolean | null
           loyalty_tier: string | null
           phone: string | null
           position: string | null
@@ -916,6 +950,7 @@ export type Database = {
           created_at?: string
           full_name?: string | null
           id: string
+          is_admin?: boolean | null
           loyalty_tier?: string | null
           phone?: string | null
           position?: string | null
@@ -936,6 +971,7 @@ export type Database = {
           created_at?: string
           full_name?: string | null
           id?: string
+          is_admin?: boolean | null
           loyalty_tier?: string | null
           phone?: string | null
           position?: string | null
