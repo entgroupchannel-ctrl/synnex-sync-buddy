@@ -4,6 +4,8 @@ import { toast } from "sonner";
 import { ArrowLeft, ExternalLink, Save, FileText, Truck, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteHeader } from "@/components/site-header";
+import { ProductImage } from "@/components/product-image";
+
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -539,7 +541,7 @@ function AdminOrderDetail() {
                   <div>
                     {items.map((it) => (
                       <div key={it.id} className="flex items-center gap-3 border-b px-4 py-3 last:border-b-0">
-                        {it.product_image_url ? <img src={it.product_image_url} alt="" className="h-12 w-12 rounded border object-contain" /> : <div className="h-12 w-12 rounded border bg-slate-50" />}
+                        <div className="h-12 w-12 shrink-0 overflow-hidden rounded border"><ProductImage src={it.product_image_url} alt={it.product_name} iconClassName="h-5 w-5 text-slate-300" fallbackLabel="" /></div>
                         <div className="min-w-0 flex-1">
                           <div className="truncate text-sm font-medium">{it.product_name}</div>
                           <div className="text-xs text-slate-500">SKU: {it.product_sku}</div>

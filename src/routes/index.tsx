@@ -15,6 +15,8 @@ import { toast } from "sonner";
 import { ShoppingCart, Search, Package, Grid2x2, List, SlidersHorizontal, Flame, ChevronRight } from "lucide-react";
 import { useLanguage } from "@/lib/i18n";
 import { SiteHeader } from "@/components/site-header";
+import { ProductImage } from "@/components/product-image";
+
 import { CATEGORIES, detectCategory, displayPrice, getSellingPrice, useCart, useCustomerTier } from "@/lib/cart";
 import { triggerAuthPrompt, useSupabaseUser } from "@/lib/auth-sheet";
 import {
@@ -300,7 +302,8 @@ function HomePage() {
                       </div>
                     )}
                     <div className="grid aspect-square place-items-center bg-white p-2">
-                      {p.image_url ? <img src={p.image_url} alt={p.name ?? p.sku} className="h-full w-full object-contain" loading="lazy" /> : <Package className="h-10 w-10 text-slate-300" />}
+                      <ProductImage src={p.image_url} alt={p.name ?? p.sku} />
+
                     </div>
                     <div className="border-t p-2">
                       <div className="line-clamp-2 min-h-9 text-xs font-medium">{p.name ?? p.sku}</div>
@@ -398,7 +401,7 @@ function HomePage() {
                 return (
                   <div key={p.id} className="flex gap-4 rounded-lg border bg-white p-3 transition hover:shadow-md">
                     <Link to="/product/$slug" params={{ slug }} className="grid h-28 w-28 shrink-0 place-items-center rounded-md bg-white">
-                      {p.image_url ? <img src={p.image_url} alt={p.name ?? p.sku} className="h-full w-full object-contain" loading="lazy" /> : <Package className="h-10 w-10 text-slate-300" />}
+                      <ProductImage src={p.image_url} alt={p.name ?? p.sku} />
                     </Link>
                     <div className="flex min-w-0 flex-1 flex-col">
                       <div className="text-[11px] uppercase tracking-wide text-slate-500">{p.brand ?? (p.category || detectCategory(p.name))} · {p.sku}</div>
@@ -452,11 +455,13 @@ function HomePage() {
                       </div>
                     )}
                     <Link to="/product/$slug" params={{ slug }} className="grid aspect-square place-items-center bg-white p-3">
-                      {p.image_url ? (
-                        <img src={p.image_url} alt={p.name ?? p.sku} className="h-full w-full object-contain transition group-hover:scale-105" loading="lazy" />
-                      ) : (
-                        <Package className="h-16 w-16 text-slate-300" />
-                      )}
+                      <ProductImage
+                        src={p.image_url}
+                        alt={p.name ?? p.sku}
+                        className="h-full w-full object-contain transition group-hover:scale-105"
+                        iconClassName="h-16 w-16 text-slate-300"
+                      />
+
                     </Link>
                     <div className="flex flex-1 flex-col gap-1 border-t p-3">
                       <div className="text-[10px] uppercase tracking-wide text-slate-500">{p.sku}</div>

@@ -18,6 +18,8 @@ import { displayPrice, getSellingPrice, useCustomerTier } from "@/lib/cart";
 import { triggerAuthPrompt, useSupabaseUser } from "@/lib/auth-sheet";
 import { useCart } from "@/lib/cart";
 import { useLanguage } from "@/lib/i18n";
+import { ProductImage } from "@/components/product-image";
+
 
 /* ---------- Hero Carousel (compact, split layout) ---------- */
 
@@ -300,7 +302,7 @@ export function TodaysBestDeals() {
             return (
               <div key={p.id} className="group flex overflow-hidden rounded-lg border bg-white transition hover:shadow-lg lg:flex-col">
                 <Link to="/product/$slug" params={{ slug }} className="grid h-32 w-36 shrink-0 place-items-center bg-white p-2 lg:h-40 lg:w-full">
-                  {p.image_url ? <img src={p.image_url} alt={p.name ?? p.sku} className="h-full w-full object-contain transition group-hover:scale-105" loading="lazy" /> : <Package className="h-12 w-12 text-slate-300" />}
+                  <ProductImage src={p.image_url} alt={p.name ?? p.sku} className="h-full w-full object-contain transition group-hover:scale-105" iconClassName="h-12 w-12 text-slate-300" />
                 </Link>
                 <div className="flex min-w-0 flex-1 flex-col gap-1 border-l p-3 lg:border-l-0 lg:border-t">
                   <div className="flex items-center gap-1 text-[10px] uppercase tracking-wide text-slate-500">
@@ -377,7 +379,7 @@ export function PopularNotebooks() {
                   <div className="absolute z-10 m-2 rounded bg-white/90 px-1.5 py-0.5 text-[10px] font-bold text-slate-700 shadow-sm">{p.brand}</div>
                 )}
                 <Link to="/product/$slug" params={{ slug }} className="grid aspect-square place-items-center bg-white p-3">
-                  {p.image_url ? <img src={p.image_url} alt={p.name ?? p.sku} className="h-full w-full object-contain transition group-hover:scale-105" loading="lazy" /> : <Package className="h-16 w-16 text-slate-300" />}
+                  <ProductImage src={p.image_url} alt={p.name ?? p.sku} className="h-full w-full object-contain transition group-hover:scale-105" iconClassName="h-16 w-16 text-slate-300" />
                 </Link>
                 <div className="flex flex-1 flex-col gap-1 border-t p-3">
                   <div className="text-[10px] uppercase tracking-wide text-slate-500">{p.sku}</div>

@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus, Trash2, Package, ArrowLeft, ShoppingCart, ShoppingBag } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
+import { ProductImage } from "@/components/product-image";
+
 import { CATEGORIES, priceFmt, useCart } from "@/lib/cart";
 import { useLanguage } from "@/lib/i18n";
 import { useSupabaseUser } from "@/lib/auth-sheet";
@@ -65,11 +67,8 @@ function CartPage() {
               {items.map((it) => (
                 <div key={it.id} className="flex gap-4 rounded-lg border bg-white p-4">
                   <div className="grid h-24 w-24 shrink-0 place-items-center rounded-md bg-slate-50">
-                    {it.image_url ? (
-                      <img src={it.image_url} alt={it.name} className="h-full w-full object-contain p-1" />
-                    ) : (
-                      <Package className="h-8 w-8 text-slate-300" />
-                    )}
+                    <ProductImage src={it.image_url} alt={it.name} className="h-full w-full object-contain p-1" iconClassName="h-8 w-8 text-slate-300" />
+
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="text-xs text-slate-500">{it.sku}</div>
