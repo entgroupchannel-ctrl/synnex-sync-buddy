@@ -1229,3 +1229,38 @@ export function MacBookShowcase() {
 
 
 
+/* ---------- Solar & Energy ---------- */
+
+export function SolarEnergy() {
+  const q = useQuery({
+    queryKey: ["solar-energy"],
+    queryFn: async () => {
+      const { data } = await supabase.from("synnex_products")
+        .select("*")
+        .eq("category", "Solar & Energy")
+        .eq("price_approved", true)
+        .gt("selling_price", 0)
+        .order("selling_price", { ascending: false });
+      return (data ?? []) as ProductRow[];
+    },
+    staleTime: 5 * 60_000,
+  });
+
+  if ((q.data?.length ?? 0) === 0) return null;
+
+  return (
+    <section className="border-b bg-gradient-to-br from-amber-50 to-white">
+      <div className="mx-auto max-w-7xl px-4 py-8">
+        <SectionHeader
+          title="☀️ Solar & Energy / โซลาร์และพลังงาน"
+          en="Solar & Energy"
+          sub="แผงโซลาร์เซลล์ Inverter และอุปกรณ์พลังงาน เหมาะสำหรับบ้านและองค์กร"
+          link={{ to: "/", search: { category: "Solar & Energy" }, label: "ดูทั้งหมด" }}
+        />
+        <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
+          {q.data!.map((p) => <CategoryGridCard key={p.id} p={p} />)}
+        </div>
+      </div>
+    </section>
+  );
+}
