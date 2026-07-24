@@ -131,6 +131,7 @@ export function SiteHeader() {
             </div>
           )}
 
+          <CartReminderBell />
           <Link
             to="/cart"
             className="relative grid h-10 w-10 shrink-0 place-items-center rounded-md hover:bg-white/10"
