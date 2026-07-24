@@ -901,7 +901,7 @@ function HomePage() {
                 const ready = p.stock_status === "พร้อมจัดส่ง";
                 const available = ready || byOrder;
                 const slug = p.slug || p.id;
-                const priced2 = priced;
+                
                 const priced = getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier) != null && !!p.price_approved;
                 return (
                   <div key={p.id} className="flex gap-4 rounded-lg border bg-white p-3 transition hover:shadow-md">
