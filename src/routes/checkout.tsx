@@ -21,6 +21,11 @@ import {
   type DiscountApplied,
   type UserType,
 } from "@/lib/shipping";
+import {
+  OFFICE_ADDRESS,
+  SHIPPING_METHOD_LABEL,
+  useShippingMethod,
+} from "@/lib/shipping-method";
 
 // Thai provinces excluding BKK metro (which are listed under "free shipping" optgroup)
 const THAI_PROVINCES: string[] = [
