@@ -402,10 +402,10 @@ function ProductDetail() {
                     </div>
                     <div className="mt-2 text-center text-xs text-gray-400">
                       02-045-6104 · 095-739-1053 · 084-046-1315
+                    </div>
                   </div>
 
                   <ShippingMethodSelector />
-                  </div>
 
                   <ProductTrustBar />
 
