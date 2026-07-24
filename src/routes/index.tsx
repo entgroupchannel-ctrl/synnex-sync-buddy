@@ -20,6 +20,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { useDynamicSeo, getRobotsForCategory } from "@/lib/dynamic-seo";
 import { DeliveryHint } from "@/components/delivery-info";
 import { StockBadge } from "@/components/stock-badge";
+import { WarrantyBadge } from "@/components/warranty-badge";
 
 
 import { CATEGORIES, detectCategory, displayPrice, getSellingPrice, useCart, useCustomerTier } from "@/lib/cart";
