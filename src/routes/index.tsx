@@ -36,6 +36,7 @@ import {
   NetworkSecurity,
   StorageDeals,
   ComponentsShowcase,
+  MacBookShowcase,
 } from "@/components/home-sections";
 
 import { FrequentlyBought } from "@/components/frequently-bought";
@@ -647,12 +648,17 @@ function HomePage() {
           {/* Microsoft Software (featured) */}
           <MicrosoftFeatured />
 
-          {/* Popular Notebooks */}
-          <PopularNotebooks />
-
           {/* Computer Sets */}
           <ComputerSets />
 
+          {/* Components (CPU & RAM) */}
+          <ComponentsShowcase />
+
+          {/* Apple MacBook */}
+          <MacBookShowcase />
+
+          {/* Popular Notebooks */}
+          <PopularNotebooks />
 
           {/* Today's Best Deals */}
           <FrequentlyBought />
@@ -660,9 +666,6 @@ function HomePage() {
 
           {/* Network & Security */}
           <NetworkSecurity />
-
-          {/* Components (CPU & RAM) */}
-          <ComponentsShowcase />
 
           {/* Storage Deals */}
           <StorageDeals />
