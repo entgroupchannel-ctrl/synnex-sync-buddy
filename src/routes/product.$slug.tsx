@@ -7,7 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { ShoppingCart, Package, Zap, Minus, Plus, ChevronRight } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
-import { displayPrice, getSellingPrice, priceFmt, useCart, useCustomerTier } from "@/lib/cart";
+import { displayPrice, getSellingPrice, priceFmt, useCart, useCustomerTier, type PricingProduct } from "@/lib/cart";
+import { computeProductPrice, useProductPrice } from "@/hooks/useProductPrice";
 import { triggerAuthPrompt, useSupabaseUser } from "@/lib/auth-sheet";
 import { usePurchaseHistoryForSku } from "@/lib/reorder";
 
@@ -87,7 +88,8 @@ function ProductDetail() {
   const addToCart = (n = qty) => {
     if (!p) return;
     const name = p.name ?? p.sku;
-    add({ id: p.id, sku: p.sku, slug: p.slug, name, price: getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier) ?? 0, image_url: p.image_url, distributor: (p as { distributor?: string | null }).distributor ?? null }, n);
+    const unit = computeProductPrice(p as PricingProduct, tier, n).displayPrice || getSellingPrice(p as PricingProduct, tier) || 0;
+    add({ id: p.id, sku: p.sku, slug: p.slug, name, price: unit, image_url: p.image_url, distributor: (p as { distributor?: string | null }).distributor ?? null }, n);
     if (!user) {
       triggerAuthPrompt({ name, sku: p.sku, image_url: p.image_url });
     } else {
@@ -126,18 +128,62 @@ function ProductDetail() {
               <h1 className="text-2xl font-bold text-slate-900 md:text-3xl">{p.name ?? p.sku}</h1>
               <div className="mt-1 text-sm text-slate-500">SKU / Model: {p.sku}</div>
 
-              <div className="mt-5 flex items-center gap-3">
-                {getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier) != null && !!p.price_approved ? (
-                  <div className="text-4xl font-black text-[color:var(--brand-orange)]">
-                    {displayPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier)}
+              {(() => {
+                const pr = computeProductPrice(p as PricingProduct, tier, qty);
+                const hasPrice = getSellingPrice(p as PricingProduct, tier) != null && !!p.price_approved;
+                if (!hasPrice) {
+                  return (
+                    <div className="mt-5 flex items-center gap-3">
+                      <div className="text-lg text-gray-400">ติดต่อสอบถาม</div>
+                      <Badge className={ready ? "bg-green-100 text-green-800 hover:bg-green-100" : "bg-red-100 text-red-700 hover:bg-red-100"}>
+                        {p.stock_status ?? "—"}
+                      </Badge>
+                    </div>
+                  );
+                }
+                const guestSaving = pr.userType === "guest" && p.member_price ? Number(p.selling_price ?? 0) - Number(p.member_price) : 0;
+                return (
+                  <div className="mt-5">
+                    <div className="flex flex-wrap items-center gap-2">
+                      {pr.tierBadge && (
+                        <span className="rounded-md bg-[color:var(--brand-navy)] px-2 py-0.5 text-xs font-bold text-white">
+                          {pr.tierBadge} Price
+                        </span>
+                      )}
+                      <span className="text-xs font-medium text-slate-500">{pr.priceLabel}</span>
+                      <Badge className={ready ? "bg-green-100 text-green-800 hover:bg-green-100" : "bg-red-100 text-red-700 hover:bg-red-100"}>
+                        {p.stock_status ?? "—"}
+                      </Badge>
+                    </div>
+                    <div className="mt-1 flex flex-wrap items-baseline gap-3">
+                      <div className="text-4xl font-black text-[color:var(--brand-orange)]">
+                        ฿{pr.displayPrice.toLocaleString("th-TH")}
+                      </div>
+                      {pr.savings > 0 && (
+                        <>
+                          <span className="text-lg text-slate-400 line-through">
+                            ฿{pr.originalPrice.toLocaleString("th-TH")}
+                          </span>
+                          <span className="rounded-md bg-red-100 px-2 py-0.5 text-xs font-bold text-red-700">
+                            ประหยัด {pr.savingsPct}%
+                          </span>
+                        </>
+                      )}
+                    </div>
+                    {pr.volumeDiscount > 0 && (
+                      <div className="mt-1 text-xs font-medium text-emerald-700">
+                        รวมส่วนลดตามจำนวน −{Math.round(pr.volumeDiscount * 100)}% (×{qty})
+                      </div>
+                    )}
+                    {guestSaving > 0 && (
+                      <p className="mt-2 rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-900">
+                        <Link to="/auth" className="font-bold underline">เข้าสู่ระบบ</Link>{" "}
+                        เพื่อรับราคาสมาชิก ประหยัดได้ ฿{guestSaving.toLocaleString("th-TH")}
+                      </p>
+                    )}
                   </div>
-                ) : (
-                  <div className="text-lg text-gray-400">ติดต่อสอบถาม</div>
-                )}
-                <Badge className={ready ? "bg-green-100 text-green-800 hover:bg-green-100" : "bg-red-100 text-red-700 hover:bg-red-100"}>
-                  {p.stock_status ?? "—"}
-                </Badge>
-              </div>
+                );
+              })()}
 
               {getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier) != null && !!p.price_approved ? (
                 <>
@@ -163,6 +209,45 @@ function ProductDetail() {
                       <Zap className="mr-2 h-5 w-5" /> สั่งซื้อทันที
                     </Button>
                   </div>
+
+                  {(() => {
+                    const isB2B = tier.startsWith("b2b");
+                    const shouldShow = isB2B || (historyQ.data?.count ?? 0) >= 3;
+                    if (!shouldShow) return null;
+                    const tiers = [
+                      { label: "1–2 ชิ้น", qty: 1, pct: 0 },
+                      { label: "3–4 ชิ้น", qty: 3, pct: 2 },
+                      { label: "5–9 ชิ้น", qty: 5, pct: 4 },
+                      { label: "10+ ชิ้น", qty: 10, pct: 7 },
+                    ];
+                    return (
+                      <div className="mt-5 rounded-lg border border-emerald-200 bg-emerald-50/40 p-3">
+                        <h4 className="mb-2 text-sm font-bold text-emerald-900">ส่วนลดตามจำนวน / Volume Discount</h4>
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="text-left text-xs text-emerald-800">
+                              <th className="py-1 font-medium">จำนวน</th>
+                              <th className="py-1 font-medium">ราคา/ชิ้น</th>
+                              <th className="py-1 text-right font-medium">ประหยัด</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {tiers.map((t) => {
+                              const row = computeProductPrice(p as PricingProduct, tier, t.qty);
+                              const active = qty >= t.qty && (t === tiers[tiers.length - 1] || qty < tiers[tiers.indexOf(t) + 1].qty);
+                              return (
+                                <tr key={t.qty} className={active ? "bg-emerald-100 font-semibold" : ""}>
+                                  <td className="py-1">{t.label}</td>
+                                  <td className="py-1">฿{row.displayPrice.toLocaleString("th-TH")}</td>
+                                  <td className="py-1 text-right text-emerald-700">{t.pct > 0 ? `−${t.pct}%` : "—"}</td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    );
+                  })()}
                   {user && (historyQ.data?.count ?? 0) > 0 && (
                     <div className="mt-3 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-900">
                       คุณเคยซื้อสินค้านี้ <b>{historyQ.data!.count}</b> ครั้ง
