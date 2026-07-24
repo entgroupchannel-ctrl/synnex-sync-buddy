@@ -38,8 +38,9 @@ const taxIdRe = /^\d{13}$/;
 
 function AuthPage() {
   const navigate = useNavigate();
-  const search = Route.useSearch();
-  const [tab, setTab] = useState(search.tab);
+  const raw = useSearch({ strict: false }) as { tab?: "signin" | "b2c" | "b2b"; redirect?: string };
+  const search = { tab: raw.tab ?? "signin", redirect: raw.redirect ?? "/" };
+  const [tab, setTab] = useState<"signin" | "b2c" | "b2b">(search.tab);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
