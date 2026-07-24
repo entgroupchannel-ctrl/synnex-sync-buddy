@@ -160,7 +160,19 @@ function useCountdown() {
 }
 
 function HomePage() {
-  const search = Route.useSearch();
+  const matchedSearch = useSearch({ from: "/", shouldThrow: false });
+  const search = matchedSearch ?? {
+    q: "",
+    category: "all",
+    brands: "",
+    min: 0,
+    max: PRICE_MAX,
+    ready: false,
+    fulfill: "all" as const,
+    sort: "new",
+    view: "grid",
+    page: 1,
+  };
   const navigate = useNavigate();
   const { add } = useCart();
  const { user } = useSupabaseUser();
