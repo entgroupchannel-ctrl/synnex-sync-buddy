@@ -685,8 +685,6 @@ function HomePage() {
           {/* Components (CPU & Memory) */}
           <ComponentsShowcase />
 
-          <IndustrialPromoBanner compact />
-
           {/* Solar & Energy */}
           <SolarEnergy />
 
