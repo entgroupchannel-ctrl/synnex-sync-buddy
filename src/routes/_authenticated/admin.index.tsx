@@ -117,8 +117,8 @@ function AdminDashboard() {
             .limit(10),
           supabase
             .from("synnex_products")
-            .select("id,last_synced_at", { count: "exact" })
-            .order("last_synced_at", { ascending: false })
+            .select("id,synced_at", { count: "exact" })
+            .order("synced_at", { ascending: false })
             .limit(1),
         ]);
 
@@ -138,7 +138,7 @@ function AdminDashboard() {
         unapproved: unapproved.count ?? 0,
         recent: recentOrders.data ?? [],
         productCount: syncMeta.count ?? 0,
-        lastSync: syncMeta.data?.[0]?.last_synced_at ?? null,
+        lastSync: syncMeta.data?.[0]?.synced_at ?? null,
       };
     },
   });
