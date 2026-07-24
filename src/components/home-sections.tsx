@@ -1239,8 +1239,8 @@ export function MacBookShowcase() {
     <section className="border-b bg-gradient-to-br from-slate-50 to-white">
       <div className="mx-auto max-w-7xl px-4 py-8">
         <SectionHeader
-          title="🍎 Apple Products / ผลิตภัณฑ์ Apple"
-          en="Apple Products"
+          title={<span className="inline-flex items-center gap-2"><AppleLogoSvg className="h-5 w-5 md:h-6 md:w-6" />Apple Products / ผลิตภัณฑ์ Apple</span>}
+          en={<span className="inline-flex items-center gap-2"><AppleLogoSvg className="h-5 w-5 md:h-6 md:w-6" />Apple Products</span>}
           sub="iPhone 17, MacBook Air M5, iPad · สินค้าของแท้ รับประกันศูนย์ไทย 1 ปี"
           link={{ to: "/", search: { q: "Apple" }, label: "ดู Apple ทั้งหมด" }}
         />
