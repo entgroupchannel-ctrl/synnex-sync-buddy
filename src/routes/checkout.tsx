@@ -254,6 +254,7 @@ function CheckoutPage() {
           customer_name: base.data.customer_name,
           customer_phone: base.data.customer_phone,
           customer_email: base.data.customer_email,
+          line_id: f.lineId || null,
           customer_address: fullAddr,
           shipping_name: base.data.shipping_name,
           shipping_phone: base.data.shipping_phone,
