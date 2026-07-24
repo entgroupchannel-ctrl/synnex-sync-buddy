@@ -243,6 +243,7 @@ function HomePage() {
     () => search.brands ? search.brands.split(",").filter(Boolean) : [],
     [search.brands]
   );
+  const isAppleOnly = selectedBrands.length === 1 && selectedBrands[0] === "APPLE";
 
   const update = (patch: Record<string, unknown>) => {
     navigate({ to: "/", search: (p: Record<string, unknown>) => ({ ...p, ...patch, page: 1 }) });
@@ -971,19 +972,22 @@ function HomePage() {
                 
                 const priced = getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier) != null && !!p.price_approved;
                 return (
-                  <div key={p.id} className="group relative flex flex-col overflow-hidden rounded-lg border bg-white transition hover:shadow-lg">
-                    <BrandLogo brand={p.brand} />
-                    <div className="absolute right-2 top-2 z-10">
-                      <StockBadge stockQty={p.stock_qty} fulfillmentType={p.fulfillment_type} stockStatus={p.stock_status} distributor={p.distributor} />
-                    </div>
+                  <div key={p.id} className="relative flex flex-col overflow-hidden rounded-lg border bg-white transition-all duration-200 hover:scale-[1.02] hover:shadow-md">
+                    {!isAppleOnly && (
+                      <>
+                        <BrandLogo brand={p.brand} />
+                        <div className="absolute right-2 top-2 z-10">
+                          <StockBadge stockQty={p.stock_qty} fulfillmentType={p.fulfillment_type} stockStatus={p.stock_status} distributor={p.distributor} />
+                        </div>
+                      </>
+                    )}
                     <Link to="/product/$slug" params={{ slug }} className="grid aspect-square place-items-center bg-white p-3">
                       <ProductImage
                         src={p.image_url}
                         alt={p.name ?? p.sku}
-                        className="h-full w-full object-contain transition group-hover:scale-105"
+                        className="h-full w-full object-contain transition"
                         iconClassName="h-16 w-16 text-slate-300"
                       />
-
                     </Link>
                     <div className="flex flex-1 flex-col gap-1 border-t p-3">
                       {p.brand && <div className="text-[10px] uppercase tracking-wide text-slate-500">{p.brand}</div>}
