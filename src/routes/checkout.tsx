@@ -398,10 +398,27 @@ function CheckoutPage() {
                   {fieldError("customer_phone") && <p className="mt-1 text-xs text-red-600">{fieldError("customer_phone")}</p>}
                 </div>
                 <div>
-                  <Label htmlFor="cemail">อีเมล *</Label>
-                  <Input id="cemail" type="email" value={f.customer_email} onChange={(e) => setField("customer_email", e.target.value)} maxLength={255} aria-invalid={!!fieldError("customer_email")} />
-                  {fieldError("customer_email") && <p className="mt-1 text-xs text-red-600">{fieldError("customer_email")}</p>}
+                  <Label htmlFor="clineid">LINE ID <span className="text-slate-400">(ไม่บังคับ)</span></Label>
+                  <div className="relative mt-1">
+                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                      <span className="text-xs font-semibold text-green-600">LINE</span>
+                    </div>
+                    <Input
+                      id="clineid"
+                      value={f.lineId ?? ''}
+                      onChange={(e) => setF((prev) => ({ ...prev, lineId: e.target.value }))}
+                      placeholder="@username หรือ entgroup"
+                      maxLength={60}
+                      className="w-full rounded-lg border border-slate-200 py-2.5 pl-14 pr-4 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                    />
+                  </div>
+                  <p className="mt-1 text-xs text-slate-500">ทีมงานจะติดต่อผ่าน LINE เพื่อแจ้งสถานะคำสั่งซื้อ</p>
                 </div>
+              </div>
+              <div>
+                <Label htmlFor="cemail">อีเมล *</Label>
+                <Input id="cemail" type="email" value={f.customer_email} onChange={(e) => setField("customer_email", e.target.value)} maxLength={255} aria-invalid={!!fieldError("customer_email")} />
+                {fieldError("customer_email") && <p className="mt-1 text-xs text-red-600">{fieldError("customer_email")}</p>}
               </div>
             </section>
 
