@@ -17,12 +17,23 @@ import { usePurchaseHistoryForSku } from "@/lib/reorder";
 export const Route = createFileRoute("/product/$slug")({
   ssr: false,
   loader: async ({ params }) => {
-    const { data } = await supabase
+    const slugOrId = params.slug;
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slugOrId);
+    const selectFields = "id, sku, slug, name, brand, category, description, image_url, selling_price, member_price, stock_status, price_approved";
+    const { data: slugProduct, error: slugError } = await supabase
       .from("synnex_products")
-      .select("id, sku, slug, name, brand, category, description, image_url, selling_price, member_price, stock_status")
-      .or(`slug.eq.${params.slug},id.eq.${params.slug}`)
+      .select(selectFields)
+      .eq("slug", slugOrId)
+      .eq("price_approved", true)
       .maybeSingle();
-    return { product: data };
+    if (slugProduct || !isUuid || slugError) return { product: slugProduct };
+    const { data: idProduct } = await supabase
+      .from("synnex_products")
+      .select(selectFields)
+      .eq("id", slugOrId)
+      .eq("price_approved", true)
+      .maybeSingle();
+    return { product: idProduct };
   },
   component: ProductDetail,
   head: ({ params, loaderData }) => {
@@ -128,10 +139,19 @@ function ProductDetail() {
     queryKey: ["product", slug],
     queryFn: async () => {
       const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug);
-      let q = supabase.from("synnex_products").select("*").eq("slug", slug).maybeSingle();
-      let { data, error } = await q;
+      let { data, error } = await supabase
+        .from("synnex_products")
+        .select("*")
+        .eq("slug", slug)
+        .eq("price_approved", true)
+        .maybeSingle();
       if (!data && isUuid) {
-        const r = await supabase.from("synnex_products").select("*").eq("id", slug).maybeSingle();
+        const r = await supabase
+          .from("synnex_products")
+          .select("*")
+          .eq("id", slug)
+          .eq("price_approved", true)
+          .maybeSingle();
         data = r.data; error = r.error;
       }
       if (error) throw error;
