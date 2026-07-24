@@ -75,7 +75,7 @@ const taxSchema = z.object({
   tax_id: z.string().trim().regex(/^\d{13}$/, "เลขประจำตัวผู้เสียภาษีต้อง 13 หลัก"),
   company_address: z.string().trim().min(5, "กรอกที่อยู่ออกใบกำกับ").max(500),
 });
-type Fields = z.infer<typeof shippingSchema>;
+type Fields = z.infer<typeof shippingSchema> & { lineId?: string };
 
 function CheckoutPage() {
 
