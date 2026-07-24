@@ -86,6 +86,21 @@ function MyOrders() {
                 {items.length > 3 && <div className="text-xs text-slate-500">และอีก {items.length - 3} รายการ</div>}
               </div>
             </Link>
+            {o.tracking_number && (
+              <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs">
+                <div className="flex items-center gap-1.5 text-emerald-800">
+                  <Truck className="h-3.5 w-3.5" />
+                  <span className="font-semibold">{providerLabel(o.shipping_provider)}</span>
+                  <span className="font-mono">{o.tracking_number}</span>
+                  {(o.shipping_events?.length ?? 0) > 0 && (
+                    <span className="text-slate-500">— {eventLabel(o.shipping_events[o.shipping_events.length - 1].status)}</span>
+                  )}
+                </div>
+                <Link to="/track/$orderNumber" params={{ orderNumber: o.order_number }} className="font-semibold text-emerald-700 hover:underline">
+                  ติดตามพัสดุ →
+                </Link>
+              </div>
+            )}
             <div className="mt-3 flex flex-wrap gap-2 border-t pt-3">
               {canUploadSlip && (
                 <Link to="/order/$orderNumber" params={{ orderNumber: o.order_number }} className="rounded-md bg-[color:var(--brand-green)] px-3 py-1.5 text-xs font-semibold text-white hover:opacity-90">
