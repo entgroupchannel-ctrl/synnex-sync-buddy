@@ -17,6 +17,7 @@ import { displayPrice, getSellingPrice, priceFmt, useCart, useCustomerTier, type
 import { computeProductPrice, useProductPrice } from "@/hooks/useProductPrice";
 import { triggerAuthPrompt, useSupabaseUser } from "@/lib/auth-sheet";
 import { usePurchaseHistoryForSku } from "@/lib/reorder";
+import { LineQrDialog } from "@/components/line-qr-dialog";
 
 export const Route = createFileRoute("/product/$slug")({
   ssr: false,
