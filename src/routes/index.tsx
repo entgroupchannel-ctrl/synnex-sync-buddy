@@ -76,7 +76,8 @@ function HomePage() {
   const search = Route.useSearch();
   const navigate = useNavigate();
   const { add } = useCart();
-  const { user } = useSupabaseUser();
+ const { user } = useSupabaseUser();
+ const tier = useCustomerTier();
   const [searchInput, setSearchInput] = useState(search.q);
   const countdown = useCountdown();
   const { t } = useLanguage();
