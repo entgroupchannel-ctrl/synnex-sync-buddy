@@ -402,15 +402,105 @@ function AdminOrderDetail() {
                 </SelectContent>
               </Select>
               <Textarea value={statusNote} onChange={(e) => setStatusNote(e.target.value)} rows={2} className="mt-2" placeholder="โน๊ตการเปลี่ยนสถานะ (บันทึกใน timeline)" />
-              <div className="mt-3">
-                <label className="text-xs font-semibold text-slate-500">เลขพัสดุ (tracking)</label>
-                <input
-                  value={tracking}
-                  onChange={(e) => setTracking(e.target.value)}
-                  placeholder="เช่น TH1234567890"
-                  className="mt-1 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-mono focus:border-emerald-400 focus:outline-none"
-                />
-                <p className="mt-1 text-xs text-slate-500">จะแนบในอีเมลแจ้งจัดส่ง (ส่งอัตโนมัติเมื่อเปลี่ยนสถานะเป็น &quot;จัดส่งแล้ว&quot;)</p>
+            </div>
+
+            {/* Shipping panel */}
+            <div className="rounded-lg border bg-white p-5">
+              <h2 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-slate-500">
+                <Truck className="h-4 w-4" /> 📦 ข้อมูลการจัดส่ง
+              </h2>
+              <div className="space-y-3">
+                <div>
+                  <label className="text-xs font-semibold text-slate-500">บริษัทขนส่ง</label>
+                  <div className="mt-1 grid grid-cols-3 gap-1">
+                    {SHIPPING_PROVIDERS.map((p) => (
+                      <button
+                        key={p.value}
+                        type="button"
+                        onClick={() => setShipProvider(p.value)}
+                        className={`rounded-md border px-2 py-1.5 text-xs font-semibold ${shipProvider === p.value ? "border-[color:var(--brand-green)] bg-emerald-50 text-emerald-700" : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"}`}
+                      >
+                        {p.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-slate-500">เลขพัสดุ</label>
+                  <input
+                    value={tracking}
+                    onChange={(e) => setTracking(e.target.value)}
+                    placeholder="เช่น EF123456789TH"
+                    className="mt-1 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-mono focus:border-emerald-400 focus:outline-none"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="text-xs font-semibold text-slate-500">วันที่ส่งออก</label>
+                    <input type="date" value={shippedAt} onChange={(e) => setShippedAt(e.target.value)}
+                      className="mt-1 w-full rounded-md border border-slate-200 bg-white px-2 py-2 text-sm focus:border-emerald-400 focus:outline-none" />
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-slate-500">กำหนดส่ง (ประมาณ)</label>
+                    <input type="date" value={estDelivery} onChange={(e) => setEstDelivery(e.target.value)}
+                      className="mt-1 w-full rounded-md border border-slate-200 bg-white px-2 py-2 text-sm focus:border-emerald-400 focus:outline-none" />
+                  </div>
+                </div>
+                {tracking && buildTrackingUrl(shipProvider, tracking) && (
+                  <a href={buildTrackingUrl(shipProvider, tracking)!} target="_blank" rel="noreferrer"
+                    className="inline-flex items-center gap-1 text-xs text-emerald-700 hover:underline">
+                    <ExternalLink className="h-3 w-3" /> ตรวจสอบที่ {providerLabel(shipProvider)}
+                  </a>
+                )}
+                <Button onClick={saveShipping} disabled={savingShip}
+                  className="w-full bg-[color:var(--brand-green,#10B981)] hover:bg-emerald-600">
+                  <Save className="mr-2 h-4 w-4" />
+                  {savingShip ? "กำลังบันทึก..." : "บันทึก + แจ้งลูกค้า"}
+                </Button>
+              </div>
+
+              {/* Shipping events timeline */}
+              {events.length > 0 && (
+                <div className="mt-5 border-t pt-4">
+                  <h3 className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">เหตุการณ์การจัดส่ง</h3>
+                  <ol className="relative space-y-3 border-l-2 border-slate-200 pl-4">
+                    {events.map((ev) => (
+                      <li key={ev.id} className="relative">
+                        <span className={`absolute -left-[22px] top-1 h-3 w-3 rounded-full ring-2 ring-white ${ev.status === "delivered" ? "bg-emerald-500" : ev.status === "failed" ? "bg-red-500" : "bg-blue-500"}`} />
+                        <div className="text-xs text-slate-500">{ev.event_time ? new Date(ev.event_time).toLocaleString("th-TH") : ""}</div>
+                        <div className="text-sm font-semibold">{eventLabel(ev.status)}</div>
+                        {(ev.description || ev.location) && (
+                          <div className="text-xs text-slate-600">
+                            {ev.description}{ev.location && <span className="text-slate-400"> · {ev.location}</span>}
+                          </div>
+                        )}
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              )}
+
+              {/* Add new event */}
+              <div className="mt-5 border-t pt-4">
+                <h3 className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">+ เพิ่มสถานะการจัดส่ง</h3>
+                <div className="space-y-2">
+                  <input type="datetime-local" value={newEvent.time}
+                    onChange={(e) => setNewEvent((s) => ({ ...s, time: e.target.value }))}
+                    className="w-full rounded-md border border-slate-200 bg-white px-2 py-2 text-sm focus:border-emerald-400 focus:outline-none" />
+                  <Select value={newEvent.status} onValueChange={(v) => setNewEvent((s) => ({ ...s, status: v }))}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {EVENT_PRESETS.map((p) => <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                  <input value={newEvent.location}
+                    onChange={(e) => setNewEvent((s) => ({ ...s, location: e.target.value }))}
+                    placeholder="สถานที่ (เช่น ศูนย์กระจายสินค้ากรุงเทพ)"
+                    className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus:border-emerald-400 focus:outline-none" />
+                  <Button onClick={addShippingEvent} variant="outline" className="w-full">
+                    <Plus className="mr-1 h-4 w-4" /> เพิ่มเหตุการณ์
+                  </Button>
+                </div>
               </div>
             </div>
 
