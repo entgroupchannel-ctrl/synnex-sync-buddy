@@ -436,19 +436,33 @@ function ProductPicker({
         .gt("selling_price", 0);
 
       switch (step.key) {
-        case "cpu":
+        case "cpu": {
+          const orExpr =
+            cpuBrand === "intel"
+              ? "name.ilike.%Core i3%,name.ilike.%Core i5%,name.ilike.%Core i7%,name.ilike.%Core i9%,name.ilike.%Core Ultra%,name.ilike.%Intel%"
+              : cpuBrand === "amd"
+                ? "name.ilike.%Ryzen 3%,name.ilike.%Ryzen 5%,name.ilike.%Ryzen 7%,name.ilike.%Ryzen 9%,name.ilike.%Athlon%,name.ilike.%AMD%"
+                : "name.ilike.%CPU%,name.ilike.%Ryzen%,name.ilike.%Core i%,name.ilike.%Core Ultra%,name.ilike.%Athlon%,name.ilike.%Processor%";
           q = q
-            .or("name.ilike.%CPU%,name.ilike.%Ryzen%,name.ilike.%Core i%,name.ilike.%Core Ultra%,name.ilike.%Athlon%,name.ilike.%Processor%")
+            .or(orExpr)
             .not("name", "ilike", "%Motherboard%")
             .not("name", "ilike", "%Mainboard%")
             .not("name", "ilike", "%MB%");
           break;
+        }
         case "mb":
           q = q
             .or("name.ilike.%Mainboard%,name.ilike.%Motherboard%,name.ilike.%MB%,name.ilike.%B650%,name.ilike.%B850%,name.ilike.%Z790%,name.ilike.%Z890%,name.ilike.%X670%,name.ilike.%A620%")
             .not("name", "ilike", "%RAM%")
             .not("name", "ilike", "%DDR%")
             .not("name", "ilike", "%CPU%");
+          if (mbBrand === "asus") q = q.ilike("brand", "%ASUS%");
+          else if (mbBrand === "gigabyte") q = q.ilike("brand", "%GIGABYTE%");
+          else if (mbBrand === "msi") q = q.ilike("brand", "%MSI%");
+          else if (mbBrand === "asrock") q = q.ilike("brand", "%ASRock%");
+          if (mbSocket === "am5") q = q.ilike("name", "%AM5%");
+          else if (mbSocket === "lga1851") q = q.ilike("name", "%LGA1851%");
+          else if (mbSocket === "lga1700") q = q.ilike("name", "%LGA1700%");
           break;
         case "ram":
           q = q
@@ -468,12 +482,19 @@ function ProductPicker({
             .or("name.ilike.%Windows%,name.ilike.%Office%,name.ilike.%Ubuntu%")
             .eq("category", "Software");
           break;
-        case "gpu":
+        case "gpu": {
+          const orExpr =
+            gpuBrand === "nvidia"
+              ? "name.ilike.%RTX%,name.ilike.%GTX%"
+              : gpuBrand === "amd"
+                ? "name.ilike.%RX 6%,name.ilike.%RX 7%,name.ilike.%RX 9%"
+                : "name.ilike.%RTX%,name.ilike.%GTX%,name.ilike.%RX 6%,name.ilike.%RX 7%,name.ilike.%RX 9%,name.ilike.%Arc%,name.ilike.%VGA%,name.ilike.%Graphic%";
           q = q
-            .or("name.ilike.%RTX%,name.ilike.%GTX%,name.ilike.%RX 6%,name.ilike.%RX 7%,name.ilike.%RX 9%,name.ilike.%Arc%,name.ilike.%VGA%,name.ilike.%Graphic%")
+            .or(orExpr)
             .not("name", "ilike", "%Mainboard%")
             .not("name", "ilike", "%RAM%");
           break;
+        }
         case "psu":
           q = q
             .or("name.ilike.%PSU%,name.ilike.%Power Supply%,name.ilike.%Case%,name.ilike.%Chassis%,name.ilike.%ATX%,name.ilike.%Watt%")
