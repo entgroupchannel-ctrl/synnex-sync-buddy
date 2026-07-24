@@ -231,6 +231,8 @@ function Column({
 export function SiteFooter() {
   const year = new Date().getFullYear();
   const beYear = year + 543;
+  const foundingBeYear = 2558;
+
 
   return (
     <footer className="mt-10">
