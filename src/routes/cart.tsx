@@ -11,7 +11,7 @@ import { CATEGORIES, priceFmt, useCart } from "@/lib/cart";
 import { useLanguage } from "@/lib/i18n";
 import { useSupabaseUser } from "@/lib/auth-sheet";
 import { saveCartReminder, deleteCartReminder } from "@/lib/cart-reminder";
-import { getShippingOptions, type ShippingOption } from "@/lib/shipping";
+import { getWeightBasedShippingFee } from "@/lib/shipping";
 
 
 export const Route = createFileRoute("/cart")({
