@@ -62,7 +62,7 @@ export function PromptPayPaymentModal({ orderId, orderNumber, amount, onPaid }: 
         if (error) throw error;
         const { qr_code_url, charge_id, expires_at, requires_manual_transfer } = data as ChargeResp;
         if (requires_manual_transfer) {
-          setCharge({ requires_manual_transfer: true });
+          setCharge({ requires_manual_transfer: true, bank_accounts: (data as ChargeResp).bank_accounts || [] });
         } else {
           if (!qr_code_url) throw new Error("ไม่ได้รับข้อมูล QR");
           setCharge({ qr_code_url, charge_id, expires_at });
