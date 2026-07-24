@@ -468,9 +468,11 @@ function ProductPicker({
         .from("synnex_products")
         .select(
           "id, sku, slug, name, brand, category, selling_price, member_price, b2b_price, price_approved, image_url, distributor",
-        )
-        .eq("price_approved", true)
-        .gt("selling_price", 0);
+        );
+
+      if (step.key !== "gpu") {
+        q = q.eq("price_approved", true).gt("selling_price", 0);
+      }
 
       let limit = 30;
 
@@ -529,10 +531,10 @@ function ProductPicker({
         case "gpu": {
           q = q
             .eq("category", "Components")
-            .or("name.ilike.%RTX%,name.ilike.%GTX%,name.ilike.%Radeon RX%,name.ilike.%GeForce%,name.ilike.%RX 9%,name.ilike.%RX 7%")
-            .not("name", "ilike", "%Threadripper%")
+            .or("name.ilike.%RTX%,name.ilike.%GTX%,name.ilike.%Radeon RX%,name.ilike.%GeForce%")
             .not("name", "ilike", "%CPU%")
-            .not("name", "ilike", "%Mainboard%");
+            .not("name", "ilike", "%Mainboard%")
+            .not("name", "ilike", "%Threadripper%");
           if (gpuBrand === "nvidia") q = q.or("name.ilike.%RTX%,name.ilike.%GTX%");
           else if (gpuBrand === "amd") q = q.or("name.ilike.%Radeon RX%,name.ilike.%RX 9%,name.ilike.%RX 7%");
           limit = 30;
@@ -668,6 +670,7 @@ function ProductPicker({
           {filtered.map((p) => {
             const price = getSellingPrice(p, tier) ?? p.selling_price ?? 0;
             const isSelected = selected?.id === p.id;
+            const isGpuZeroPrice = step.key === "gpu" && (p.selling_price === 0 || !p.selling_price);
             return (
               <div
                 key={p.id}
@@ -689,18 +692,34 @@ function ProductPicker({
                 <div className="line-clamp-2 min-h-[28px] text-[11px] leading-tight text-slate-700">
                   {p.name}
                 </div>
-                <div className="mt-1 text-xs font-bold text-[color:var(--brand-orange)]">
-                  ฿{price.toLocaleString()}
-                </div>
+                {isGpuZeroPrice ? (
+                  <>
+                    <div className="mt-1 inline-block rounded bg-amber-100 px-1.5 py-0.5 text-[9px] font-semibold text-amber-700">
+                      By Order
+                    </div>
+                    <div className="mt-0.5 text-xs font-bold text-slate-500">ติดต่อสอบถาม</div>
+                  </>
+                ) : (
+                  <div className="mt-1 text-xs font-bold text-[color:var(--brand-orange)]">
+                    ฿{price.toLocaleString()}
+                  </div>
+                )}
                 <button
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
-                    onPick(p);
+                    if (isGpuZeroPrice) {
+                      window.open(
+                        `mailto:sales@entgroup.co.th?subject=ขอใบเสนอราคา ${p.name}`,
+                        "_blank",
+                      );
+                    } else {
+                      onPick(p);
+                    }
                   }}
                   className="mt-1.5 w-full rounded-md bg-[color:var(--brand-navy)] py-1 text-[10px] font-semibold text-white hover:opacity-90"
                 >
-                  เลือก
+                  {isGpuZeroPrice ? "📋 ขอใบเสนอราคา" : "เลือก"}
                 </button>
               </div>
             );
