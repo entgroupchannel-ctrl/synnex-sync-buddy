@@ -647,7 +647,7 @@ function HomePage() {
                             </div>
                             {pct > 0 && <div className="text-[10px] text-slate-400 line-through">฿{orig.toLocaleString()}</div>}
                           </div>
-                          <DeliveryHint category={p.category} />
+                          <DeliveryHint category={p.category} name={p.name} price={getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier)} />
                           <div className="mt-1 font-mono text-[10px] font-bold text-red-600">⏱ {countdown}</div>
                         </div>
                       </Link>
@@ -928,7 +928,7 @@ function HomePage() {
                         <span className="text-sm text-gray-400">ติดต่อสอบถาม</span>
                       )}
                       {byOrder && <div className="text-[11px] text-blue-700">⏱ รับสินค้าภายใน 30 วัน</div>}
-                      {priced && !byOrder && <DeliveryHint category={p.category} />}
+                      {priced && !byOrder && <DeliveryHint category={p.category} name={p.name} price={getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier)} />}
                       {priced ? (
                         available ? (
                           <Button onClick={() => addToCart(p as Record<string, unknown>)} className="w-full bg-[color:var(--brand-navy)] hover:bg-[color:var(--brand-navy-2)]" size="sm">
@@ -999,7 +999,7 @@ function HomePage() {
                             <span className="text-[11px] text-slate-600">{p.stock_status ?? "—"}</span>
                           </div>
                         )}
-                        {priced && !byOrder && <DeliveryHint category={p.category} />}
+                        {priced && !byOrder && <DeliveryHint category={p.category} name={p.name} price={getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier)} />}
                       </div>
                       {priced ? (
                         available ? (
