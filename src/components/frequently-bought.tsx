@@ -84,8 +84,9 @@ export function FrequentlyBought({ title = "สินค้าที่คุณ
 
 function ImageBox({ image, name }: { image: string | null; name: string }) {
   return (
-    <div className="grid aspect-square place-items-center bg-slate-50 p-3">
-      {image ? <img src={image} alt={name} className="max-h-full max-w-full object-contain" loading="lazy" /> : <Package className="h-12 w-12 text-slate-300" />}
+    <div className="aspect-square bg-slate-50 p-3">
+      <ProductImage src={image} alt={name} className="max-h-full max-w-full object-contain" iconClassName="h-12 w-12 text-slate-300" />
     </div>
   );
 }
+
