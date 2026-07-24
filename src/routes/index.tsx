@@ -661,6 +661,9 @@ function HomePage() {
           {/* Network & Security */}
           <NetworkSecurity />
 
+          {/* Components (CPU & RAM) */}
+          <ComponentsShowcase />
+
           {/* Storage Deals */}
           <StorageDeals />
 
