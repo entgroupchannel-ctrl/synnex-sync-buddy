@@ -461,7 +461,7 @@ function ProductPicker({
 
   return (
     <div>
-      <div className="relative mb-3">
+      <div className="relative mb-2">
         <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
         <Input
           value={q}
@@ -478,29 +478,45 @@ function ProductPicker({
           ไม่พบสินค้า — ลองปรึกษาผู้เชี่ยวชาญได้ที่ Line @entgroup
         </div>
       ) : (
-        <div className="grid max-h-[440px] grid-cols-2 gap-3 overflow-y-auto pr-1 sm:grid-cols-3">
+        <div className="grid max-h-[440px] grid-cols-3 gap-1.5 overflow-y-auto pr-1 sm:grid-cols-4 sm:gap-2">
           {filtered.map((p) => {
             const price = getSellingPrice(p, tier) ?? p.selling_price ?? 0;
+            const isSelected = selected?.id === p.id;
             return (
-              <button
-                type="button"
+              <div
                 key={p.id}
                 onClick={() => onPick(p)}
-                className="group flex flex-col rounded-lg border bg-white p-2 text-left transition hover:border-[color:var(--brand-green)] hover:shadow"
+                className={`cursor-pointer rounded-lg border bg-white p-2 transition-all hover:border-green-500 hover:shadow-sm active:scale-95 ${
+                  isSelected ? "border-2 border-green-500 bg-green-50" : ""
+                }`}
               >
-                <div className="aspect-square overflow-hidden rounded-md bg-slate-50">
-                  <ProductImage src={p.image_url} alt={p.name} />
+                <div
+                  className="mb-1.5 grid aspect-square place-items-center overflow-hidden rounded-md bg-slate-50"
+                  style={{ maxHeight: "80px" }}
+                >
+                  <ProductImage
+                    src={p.image_url}
+                    alt={p.name}
+                    className="max-h-[75px] w-full object-contain"
+                  />
                 </div>
-                <div className="mt-2 line-clamp-2 text-xs font-medium text-slate-800">
+                <div className="line-clamp-2 min-h-[28px] text-[11px] leading-tight text-slate-700">
                   {p.name}
                 </div>
-                <div className="mt-1 text-sm font-bold text-[color:var(--brand-orange)]">
-                  {priceFmt.format(price)}
+                <div className="mt-1 text-xs font-bold text-[color:var(--brand-orange)]">
+                  ฿{price.toLocaleString()}
                 </div>
-                <div className="mt-1 text-center text-[10px] font-semibold text-emerald-700 opacity-0 transition group-hover:opacity-100">
-                  เลือกชิ้นนี้
-                </div>
-              </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onPick(p);
+                  }}
+                  className="mt-1.5 w-full rounded-md bg-[color:var(--brand-navy)] py-1 text-[10px] font-semibold text-white hover:opacity-90"
+                >
+                  เลือก
+                </button>
+              </div>
             );
           })}
         </div>
