@@ -52,10 +52,10 @@ export const Route = createFileRoute("/")({
   validateSearch: zodValidator(searchSchema),
   head: () => ({
     meta: [
-      { title: "ENT Group IT Shop — ราคา Dealer จริง" },
-      { name: "description", content: "ร้านค้าออนไลน์ ENT Group จำหน่ายสินค้าไอทีจาก Synnex และ VST ECS ราคา Dealer จริง" },
-      { property: "og:title", content: "ENT Group IT Shop — ราคา Dealer จริง" },
-      { property: "og:description", content: "ร้านค้าออนไลน์ ENT Group จำหน่ายสินค้าไอทีจาก Synnex และ VST ECS ราคา Dealer จริง" },
+      { title: "ENT Group — ผู้จำหน่ายสินค้าไอทีครบวงจร สำหรับองค์กรและผู้ใช้ทั่วไป" },
+      { name: "description", content: "ENT Group จำหน่ายคอมพิวเตอร์ โน้ตบุ๊ก อุปกรณ์ไอที และโซลูชันสำหรับองค์กร (B2B) และผู้ใช้ทั่วไป (Consumer) ราคา Dealer จริง พร้อมใบกำกับภาษี รับประกันศูนย์ไทย" },
+      { property: "og:title", content: "ENT Group — Computer for all | B2B & Consumer IT Shop" },
+      { property: "og:description", content: "ตัวแทนจำหน่ายสินค้าไอทีอย่างเป็นทางการจาก Synnex และ VST ECS ให้บริการทั้งลูกค้าองค์กรและผู้ใช้ทั่วไป ราคาพิเศษ พร้อมบริการหลังการขาย" },
     ],
   }),
   component: HomePage,
