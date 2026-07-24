@@ -1,0 +1,1 @@
+ALTER TABLE public.pc_builder_quotes ADD COLUMN IF NOT EXISTS line_id text, ADD COLUMN IF NOT EXISTS available_time text;
