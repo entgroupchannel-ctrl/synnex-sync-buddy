@@ -406,10 +406,12 @@ function StepCard({
 function ProductPicker({
   step,
   tier,
+  selected,
   onPick,
 }: {
   step: StepDef;
   tier: ReturnType<typeof useCustomerTier>;
+  selected: Product | null;
   onPick: (p: Product) => void;
 }) {
   const [items, setItems] = useState<Product[]>([]);
