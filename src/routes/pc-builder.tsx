@@ -251,7 +251,7 @@ function PcBuilderPage() {
           </div>
 
           {/* RIGHT — Summary (desktop sticky) */}
-          <aside className="hidden lg:block">
+          <aside id="pc-builder-quote" className="hidden lg:block">
             <div className="sticky top-4">
               <SummaryPanel
                 selected={selected}
