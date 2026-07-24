@@ -10,6 +10,7 @@ import { CATEGORIES } from "@/lib/cart";
 import { useSupabaseUser } from "@/lib/auth-sheet";
 import { AddToCartSheet } from "@/components/add-to-cart-sheet";
 import { CartReminderBell } from "@/components/cart-reminder-bell";
+import { DeliveryZoneDialog, DeliveryZoneBadge } from "@/components/delivery-zone-dialog";
 import { AppleMegaMenu } from "@/components/apple-mega-menu";
 import { useLanguage } from "@/lib/i18n";
 import entLogo from "@/assets/entgroup-logo.jpg.asset.json";
@@ -273,6 +274,7 @@ export function SiteHeader() {
             </div>
           )}
 
+          <DeliveryZoneBadge className="hidden sm:inline-flex" />
           <CartReminderBell />
           <Link
             to="/wishlist"
@@ -342,6 +344,10 @@ export function SiteHeader() {
         </nav>
 
       </header>
+
+      <DeliveryZoneDialog />
+
+
 
       {menuOpen && (
         <div className="fixed inset-0 z-50 lg:hidden" onClick={() => setMenuOpen(false)}>

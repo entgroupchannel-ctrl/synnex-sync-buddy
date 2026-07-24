@@ -23,6 +23,7 @@ import { triggerAuthPrompt, useSupabaseUser } from "@/lib/auth-sheet";
 import { usePurchaseHistoryForSku } from "@/lib/reorder";
 import { LineQrDialog } from "@/components/line-qr-dialog";
 import { ShippingMethodSelector } from "@/components/shipping-method-selector";
+import { DeliveryZoneInfoBox } from "@/components/delivery-zone-dialog";
 
 export const Route = createFileRoute("/product/$slug")({
   ssr: false,
@@ -489,6 +490,7 @@ function ProductDetail() {
                     </div>
                   </div>
 
+                  <DeliveryZoneInfoBox className="mb-3" />
                   <ShippingMethodSelector />
 
                   <ProductTrustBar />
