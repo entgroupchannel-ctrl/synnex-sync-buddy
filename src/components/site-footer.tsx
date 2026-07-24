@@ -378,13 +378,15 @@ export function SiteFooter() {
         {/* Brand strip */}
         <div className="mx-auto max-w-7xl border-t border-white/10 px-4 py-4">
           <div className="flex items-center gap-3">
-            <img
-              src={entLogo.url}
-              alt="ENT Group"
-              className="h-10 w-10 rounded-md bg-white object-contain p-1"
-            />
-            <div className="text-[11px] text-[color:var(--brand-green)]">
-              Computer for all
+            <img src="/favicon.png" alt="ENT Group IT Shop"
+              className="h-10 w-10 rounded-lg" />
+            <div>
+              <div className="text-sm font-medium text-white">
+                IT Shop
+              </div>
+              <div className="text-xs text-green-300">
+                Computer for all
+              </div>
             </div>
           </div>
         </div>
