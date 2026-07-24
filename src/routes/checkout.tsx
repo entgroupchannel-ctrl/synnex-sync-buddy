@@ -200,6 +200,10 @@ function CheckoutPage() {
 
       if (order?.order_number) {
         setOrderCreated(true);
+        if (user?.id) {
+          const { markCartRecovered } = await import("@/lib/cart-reminder");
+          markCartRecovered(user.id).catch(() => {});
+        }
         await navigate({ to: "/order/$orderNumber", params: { orderNumber: order.order_number } });
         clear();
         localStorage.removeItem("ent_cart");
