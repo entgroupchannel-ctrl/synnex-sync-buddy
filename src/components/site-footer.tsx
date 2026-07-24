@@ -24,24 +24,38 @@ import entLogo from "@/assets/entgroup-logo.jpg.asset.json";
 /* Small helpers                                                  */
 /* -------------------------------------------------------------- */
 
-function Badge({
+function LogoBadge({
+  src,
+  alt,
   label,
-  color,
   className = "",
 }: {
+  src: string;
+  alt: string;
   label: string;
-  color: string;
   className?: string;
 }) {
+  const [failed, setFailed] = useState(false);
   return (
     <span
-      className={`inline-flex items-center justify-center rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-semibold shadow-sm ${className}`}
-      style={{ color }}
+      title={alt}
+      className={`inline-flex h-10 items-center justify-center rounded-md border border-slate-200 bg-white px-2 shadow-sm ${className}`}
     >
-      {label}
+      {failed ? (
+        <span className="text-[11px] font-semibold text-slate-700">{label}</span>
+      ) : (
+        <img
+          src={src}
+          alt={alt}
+          loading="lazy"
+          onError={() => setFailed(true)}
+          className="max-h-6 max-w-full object-contain"
+        />
+      )}
     </span>
   );
 }
+
 
 function FooterLink({
   to,
