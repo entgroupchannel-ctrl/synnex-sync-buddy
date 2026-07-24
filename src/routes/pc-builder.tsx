@@ -501,20 +501,22 @@ function ProductPicker({
         case "ram": {
           q = q
             .eq("category", "Storage")
-            .or("name.ilike.%DDR4%,name.ilike.%DDR5%,name.ilike.%DDR3%,sku.ilike.%CMK%,sku.ilike.%CMH%,sku.ilike.%CMG%,sku.ilike.%F4-%,sku.ilike.%F5-%")
+            .or("name.ilike.%DDR4%,name.ilike.%DDR5%,name.ilike.%DDR3%,name.ilike.%Corsair%,name.ilike.%Kingston%,name.ilike.%G.Skill%,name.ilike.%Crucial%,sku.ilike.CMK%,sku.ilike.CMH%,sku.ilike.CMG%")
             .not("name", "ilike", "%SSD%")
-            .not("name", "ilike", "%HDD%")
             .not("name", "ilike", "%NVMe%")
             .not("name", "ilike", "%Case%")
             .not("name", "ilike", "%FRAME%")
             .not("name", "ilike", "%Mainboard%")
             .not("name", "ilike", "%PRO H%")
             .not("name", "ilike", "%PRO B%")
-            .not("name", "ilike", "%Flash%")
-            .not("name", "ilike", "%USB%")
+            .not("name", "ilike", "%PRO-B%")
+            .not("name", "ilike", "%PRO-H%")
+            .not("sku", "ilike", "%H610%")
+            .not("sku", "ilike", "%B760%")
             .eq("price_approved", true)
-            .gt("selling_price", 0);
-          limit = 20;
+            .gt("selling_price", 0)
+            .order("selling_price", { ascending: true })
+            .limit(20);
           break;
         }
         case "ssd":
