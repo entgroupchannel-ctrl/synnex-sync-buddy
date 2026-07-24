@@ -609,6 +609,11 @@ function HomePage() {
             onReady={() => update({ ready: true })}
           />
 
+          {/* Promo banner → Industrial Computer (entgroup.co.th) */}
+          <IndustrialPromoBanner />
+
+
+
           {/* Apple Featured — placed first */}
           <AppleFeatured />
 
