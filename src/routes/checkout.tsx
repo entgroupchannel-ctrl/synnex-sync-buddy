@@ -84,7 +84,7 @@ function CheckoutPage() {
   const [errors, setErrors] = useState<Partial<Record<keyof Fields | keyof z.infer<typeof taxSchema>, string>>>({});
   const [wantsTaxInvoice, setWantsTaxInvoice] = useState(false);
   const [tax, setTax] = useState({ company_name: "", tax_id: "", company_address: "" });
-  const [payment, setPayment] = useState<"transfer" | "cod">("transfer");
+  const [payment, setPayment] = useState<"transfer" | "cod" | "promptpay">("promptpay");
   const [submitting, setSubmitting] = useState(false);
   const [orderCreated, setOrderCreated] = useState(false);
 
@@ -558,7 +558,15 @@ function CheckoutPage() {
             {/* Payment */}
             <section className="space-y-3 rounded-lg border bg-white p-6">
               <h2 className="font-bold text-[color:var(--brand-navy)]">วิธีการชำระเงิน</h2>
-              <RadioGroup value={payment} onValueChange={(v) => setPayment(v as "transfer" | "cod")} className="grid gap-2 sm:grid-cols-2">
+              <RadioGroup value={payment} onValueChange={(v) => setPayment(v as "transfer" | "cod" | "promptpay")} className="grid gap-2 sm:grid-cols-3">
+                <label className={`flex cursor-pointer items-center gap-3 rounded-lg border-2 p-4 transition ${payment === "promptpay" ? "border-blue-600 bg-blue-50" : "hover:bg-slate-50"}`}>
+                  <RadioGroupItem value="promptpay" />
+                  <Banknote className="h-5 w-5 text-blue-700" />
+                  <div>
+                    <div className="font-semibold">PromptPay QR</div>
+                    <div className="text-xs text-slate-500">สแกนจ่ายทันที</div>
+                  </div>
+                </label>
                 <label className={`flex cursor-pointer items-center gap-3 rounded-lg border-2 p-4 transition ${payment === "transfer" ? "border-[color:var(--brand-orange)] bg-orange-50" : "hover:bg-slate-50"}`}>
                   <RadioGroupItem value="transfer" />
                   <Banknote className="h-5 w-5 text-[color:var(--brand-navy)]" />

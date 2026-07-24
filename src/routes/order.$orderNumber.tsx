@@ -10,6 +10,7 @@ import { ProductImage } from "@/components/product-image";
 import { Button } from "@/components/ui/button";
 import { BANK_ACCOUNTS, SUPPORT_PHONE, STATUS_META, VAT_NOTES, isValidStatus, bahtFmt } from "@/lib/order-helpers";
 import { GuestSignupPrompt } from "@/components/guest-signup-prompt";
+import { PromptPayQr } from "@/components/promptpay-qr";
 
 export const Route = createFileRoute("/order/$orderNumber")({
   ssr: false,
@@ -229,10 +230,22 @@ function OrderConfirm() {
           />
         )}
 
+        {/* PromptPay QR */}
+        {order.payment_method === "promptpay" && order.payment_status !== "paid" && (
+          <div className="mt-4">
+            <PromptPayQr
+              orderId={order.id}
+              orderNumber={order.order_number}
+              amount={Number(order.total ?? 0)}
+              onPaid={() => q.refetch()}
+            />
+          </div>
+        )}
+
         {/* Payment */}
         <section className="mt-4 rounded-2xl border bg-white p-6">
           <h2 className="mb-3 font-bold text-[color:var(--brand-navy)]">
-            วิธีชำระเงิน: {order.payment_method === "cod" ? "เก็บเงินปลายทาง (COD)" : "โอนเงิน"}
+            วิธีชำระเงิน: {order.payment_method === "cod" ? "เก็บเงินปลายทาง (COD)" : order.payment_method === "promptpay" ? "PromptPay QR" : "โอนเงิน"}
           </h2>
 
           {order.payment_method === "transfer" && (
