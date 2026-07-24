@@ -1228,7 +1228,7 @@ export function MacBookShowcase() {
         <SectionHeader
           title="🍎 Apple Products / ผลิตภัณฑ์ Apple"
           en="Apple Products"
-          sub="iPhone 17, MacBook Air M5, iPad · Authorized Reseller"
+          sub="iPhone 17, MacBook Air M5, iPad · สินค้าของแท้ รับประกันศูนย์ไทย 1 ปี"
           link={{ to: "/", search: { q: "Apple" }, label: "ดู Apple ทั้งหมด" }}
         />
         <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
