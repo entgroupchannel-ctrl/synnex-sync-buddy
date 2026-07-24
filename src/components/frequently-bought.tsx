@@ -1,5 +1,7 @@
 import { Link } from "@tanstack/react-router";
-import { Package, Plus, TrendingUp, TrendingDown } from "lucide-react";
+import { Plus, TrendingUp, TrendingDown } from "lucide-react";
+import { ProductImage } from "@/components/product-image";
+
 import { useFrequentlyBought } from "@/lib/reorder";
 import { useCart, getSellingPrice, priceFmt, useCustomerTier } from "@/lib/cart";
 import { toast } from "sonner";
