@@ -155,8 +155,8 @@ export function HeroCarousel({ onBrowse, onReady }: { onBrowse: () => void; onRe
               <Button size="lg" className="bg-[color:var(--brand-orange)] font-bold text-white shadow-lg shadow-orange-500/20 hover:bg-[color:var(--brand-orange-dark)]" onClick={s.ctaAction}>
                 {s.cta}
               </Button>
-              <Button size="lg" variant="outline" className="border-white/30 bg-white/5 font-semibold text-white backdrop-blur hover:bg-white/15 hover:text-white" onClick={() => navigate({ to: "/about" })}>
-                เกี่ยวกับ ENT Group
+              <Button size="lg" variant="outline" className="border-white/30 bg-white/5 font-semibold text-white backdrop-blur hover:bg-white/15 hover:text-white" onClick={() => navigate({ to: "/contact" })}>
+                ติดต่อเรา / Contact
               </Button>
             </div>
           </div>
