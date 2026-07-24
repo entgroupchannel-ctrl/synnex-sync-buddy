@@ -362,9 +362,9 @@ export function SiteFooter() {
               <div className="flex items-start gap-2">
                 <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[color:var(--brand-green)]" />
                 <div className="leading-relaxed text-white/60">
-                  70/5 หมู่ 4 เมทโทร บิซทาวน์ แจ้งวัฒนะ 2<br />
-                  ตำบลคลองพระอุดม อำเภอปากเกร็ด<br />
-                  นนทบุรี 11120
+                  เลขที่ 70/5 หมู่ 4 เมทโทร บิซทาวน์ แจ้งวัฒนะ 2<br />
+                  ถ.หอการค้าไทย ตำบลคลองพระอุดม<br />
+                  อำเภอปากเกร็ด จังหวัดนนทบุรี 11120
                 </div>
               </div>
 

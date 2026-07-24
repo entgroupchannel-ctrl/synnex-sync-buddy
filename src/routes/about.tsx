@@ -108,7 +108,7 @@ function AboutPage() {
             <div><span className="text-slate-500">ก่อตั้ง:</span> 2558 (2015)</div>
             <div className="flex items-start gap-2 md:col-span-2">
               <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-slate-500" />
-              <span>70/5 หมู่บ้านเมกาโฮม บิซทาวน์ ปากเกร็ด นนทบุรี 11120</span>
+              <span>เลขที่ 70/5 หมู่ 4 เมทโทร บิซทาวน์ แจ้งวัฒนะ 2 ถ.หอการค้าไทย ต.คลองพระอุดม อ.ปากเกร็ด จ.นนทบุรี 11120</span>
             </div>
             <div className="flex items-center gap-2">
               <Phone className="h-4 w-4 text-slate-500" />

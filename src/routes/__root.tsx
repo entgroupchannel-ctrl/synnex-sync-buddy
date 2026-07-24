@@ -115,7 +115,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
               taxID: "0135558013167",
               address: {
                 "@type": "PostalAddress",
-                streetAddress: "70/5 หมู่บ้านเมกาโฮม บิซทาวน์",
+                streetAddress: "เลขที่ 70/5 หมู่ 4 เมทโทร บิซทาวน์ แจ้งวัฒนะ 2 ถ.หอการค้าไทย ต.คลองพระอุดม",
                 addressLocality: "ปากเกร็ด",
                 addressRegion: "นนทบุรี",
                 postalCode: "11120",
@@ -139,7 +139,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
               priceRange: "฿฿฿",
               address: {
                 "@type": "PostalAddress",
-                streetAddress: "70/5 หมู่บ้านเมกาโฮม บิซทาวน์",
+                streetAddress: "เลขที่ 70/5 หมู่ 4 เมทโทร บิซทาวน์ แจ้งวัฒนะ 2 ถ.หอการค้าไทย ต.คลองพระอุดม",
                 addressLocality: "ปากเกร็ด",
                 addressRegion: "นนทบุรี",
                 postalCode: "11120",
