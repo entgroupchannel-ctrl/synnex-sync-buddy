@@ -304,7 +304,6 @@ export function TodaysBestDeals() {
             const slug = p.slug || p.id;
             const selling = getSellingPrice(p, tier) ?? 0;
             const freeShip = selling > 5000;
-            const freeShip = selling > 5000;
             return (
               <div key={p.id} className="group flex overflow-hidden rounded-lg border bg-white transition hover:shadow-lg lg:flex-col">
                 <Link to="/product/$slug" params={{ slug }} className="grid h-32 w-36 shrink-0 place-items-center bg-white p-2 lg:h-40 lg:w-full">
