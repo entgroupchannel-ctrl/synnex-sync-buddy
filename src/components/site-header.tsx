@@ -1,7 +1,9 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { ShoppingCart, Search, Menu, Home, Grid3x3, User, X, LogOut, Package, MapPin, Building2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+
 import { useCart } from "@/lib/cart";
 import { CATEGORIES } from "@/lib/cart";
 import { useSupabaseUser } from "@/lib/auth-sheet";
@@ -25,15 +27,74 @@ export function SiteHeader() {
   const { count } = useCart();
   const navigate = useNavigate();
   const [q, setQ] = useState("");
+  const [suggestOpen, setSuggestOpen] = useState(false);
+  const [debouncedQ, setDebouncedQ] = useState("");
+  const searchWrapRef = useRef<HTMLDivElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { user } = useSupabaseUser();
   const { lang, t, setLang } = useLanguage();
 
+  // Debounce for suggestion query
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedQ(q.trim()), 300);
+    return () => clearTimeout(t);
+  }, [q]);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      if (!searchWrapRef.current?.contains(e.target as Node)) setSuggestOpen(false);
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, []);
+
+  const suggestionsQ = useQuery({
+    queryKey: ["search-suggest", debouncedQ],
+    enabled: debouncedQ.length >= 2 && suggestOpen,
+    queryFn: async () => {
+      const s = debouncedQ.replace(/[%,]/g, "");
+      const { data: products } = await supabase
+        .from("synnex_products")
+        .select("id, sku, slug, name, brand, selling_price, image_url")
+        .eq("price_approved", true)
+        .gt("selling_price", 0)
+        .or(`name.ilike.%${s}%,sku.ilike.%${s}%,brand.ilike.%${s}%`)
+        .order("selling_price", { ascending: true })
+        .limit(5);
+      const { data: brandRows } = await supabase
+        .from("synnex_products")
+        .select("brand", { count: "exact", head: false })
+        .eq("price_approved", true)
+        .ilike("brand", `%${s}%`)
+        .limit(200);
+      const map = new Map<string, number>();
+      for (const r of brandRows ?? []) {
+        const b = (r as { brand: string | null }).brand;
+        if (b) map.set(b, (map.get(b) ?? 0) + 1);
+      }
+      const brands = Array.from(map.entries())
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3)
+        .map(([brand, count]) => ({ brand, count }));
+      return { products: products ?? [], brands };
+    },
+    staleTime: 30_000,
+  });
+
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    navigate({ to: "/", search: { q, category: "all" } as never });
+    setSuggestOpen(false);
+    navigate({ to: "/", search: { q: q.trim(), category: "all" } as never });
   };
+
+  const clearSearch = () => {
+    setQ("");
+    setSuggestOpen(false);
+    navigate({ to: "/", search: {} as never });
+  };
+
 
   const signOut = async () => {
     await supabase.auth.signOut();
@@ -86,22 +147,88 @@ export function SiteHeader() {
             </div>
           </Link>
 
-          <form onSubmit={submit} className="flex flex-1 items-stretch overflow-hidden rounded-lg bg-white text-slate-900 shadow-sm">
-            <input
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder={t("nav.search")}
-              className="min-w-0 flex-1 bg-transparent px-4 py-2.5 text-sm outline-none placeholder:text-slate-400"
-              maxLength={100}
-            />
-            <button
-              type="submit"
-              className="grid w-12 place-items-center bg-[color:var(--brand-orange)] text-white transition hover:bg-[color:var(--brand-orange-dark)]"
-              aria-label="Search"
-            >
-              <Search className="h-5 w-5" />
-            </button>
-          </form>
+          <div ref={searchWrapRef} className="relative flex flex-1">
+            <form onSubmit={submit} className="flex flex-1 items-stretch overflow-hidden rounded-lg bg-white text-slate-900 shadow-sm">
+              <input
+                value={q}
+                onChange={(e) => { setQ(e.target.value); setSuggestOpen(true); }}
+                onFocus={() => setSuggestOpen(true)}
+                placeholder={t("nav.search")}
+                className="min-w-0 flex-1 bg-transparent px-4 py-2.5 text-sm outline-none placeholder:text-slate-400"
+                maxLength={100}
+              />
+              {q && (
+                <button
+                  type="button"
+                  onClick={clearSearch}
+                  className="grid w-9 place-items-center text-slate-400 hover:text-slate-700"
+                  aria-label="Clear search"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+              <button
+                type="submit"
+                className="grid w-12 place-items-center bg-[color:var(--brand-orange)] text-white transition hover:bg-[color:var(--brand-orange-dark)]"
+                aria-label="Search"
+              >
+                <Search className="h-5 w-5" />
+              </button>
+            </form>
+            {suggestOpen && debouncedQ.length >= 2 && (suggestionsQ.data?.products.length || suggestionsQ.data?.brands.length) ? (
+              <div className="absolute left-0 right-0 top-full z-50 mt-1 max-h-[70vh] overflow-y-auto rounded-lg border bg-white text-slate-900 shadow-2xl">
+                {(suggestionsQ.data?.products.length ?? 0) > 0 && (
+                  <div className="border-b py-1">
+                    <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-slate-400">สินค้า</div>
+                    {suggestionsQ.data!.products.map((p) => (
+                      <Link
+                        key={p.id}
+                        to="/product/$slug"
+                        params={{ slug: p.slug || p.id }}
+                        onClick={() => setSuggestOpen(false)}
+                        className="flex items-center gap-3 px-3 py-2 text-sm hover:bg-slate-50"
+                      >
+                        <div className="grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded bg-slate-50">
+                          {p.image_url ? <img src={p.image_url} alt="" className="max-h-full max-w-full object-contain" /> : <Package className="h-4 w-4 text-slate-300" />}
+                        </div>
+                        <div className="line-clamp-1 flex-1 text-slate-800">📦 {p.name ?? p.sku}</div>
+                        <div className="shrink-0 whitespace-nowrap text-xs font-bold text-[color:var(--brand-orange)]">฿{Number(p.selling_price).toLocaleString()}</div>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+                {(suggestionsQ.data?.brands.length ?? 0) > 0 && (
+                  <div className="py-1">
+                    <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-slate-400">แบรนด์</div>
+                    {suggestionsQ.data!.brands.map((b) => (
+                      <button
+                        key={b.brand}
+                        type="button"
+                        onClick={() => {
+                          setSuggestOpen(false);
+                          setQ("");
+                          navigate({ to: "/", search: { brands: b.brand } as never });
+                        }}
+                        className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-slate-50"
+                      >
+                        <span>🏷</span>
+                        <span className="flex-1 text-slate-800">แบรนด์: {b.brand}</span>
+                        <span className="text-xs text-slate-400">({b.count} รายการ)</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+                <button
+                  type="button"
+                  onClick={() => submit({ preventDefault() {} } as React.FormEvent)}
+                  className="block w-full border-t bg-slate-50 px-3 py-2 text-center text-xs font-medium text-[color:var(--brand-navy)] hover:bg-slate-100"
+                >
+                  🔍 ดูผลลัพธ์ทั้งหมดสำหรับ "{debouncedQ}"
+                </button>
+              </div>
+            ) : null}
+          </div>
+
 
           <LangToggle className="hidden lg:inline-flex" />
 

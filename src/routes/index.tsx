@@ -233,7 +233,7 @@ function HomePage() {
       const applyCommon = (qi: unknown): AnyQ => {
         let q = qi as AnyQ;
         q = q.eq("price_approved", true).gt("selling_price", 0);
-        if (s) q = q.or(`name.ilike.%${s}%,sku.ilike.%${s}%`);
+        if (s) q = q.or(`name.ilike.%${s}%,sku.ilike.%${s}%,brand.ilike.%${s}%,description.ilike.%${s}%`);
         if (search.category !== "all") q = q.eq("category", search.category);
         if (selectedBrands.length > 0) q = q.in("brand", selectedBrands);
         if (search.min > 0) q = q.gte("price", search.min);
@@ -522,91 +522,98 @@ function HomePage() {
     </div>
   );
 
+  const searchMode = !!search.q.trim();
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <SiteHeader />
 
-      {/* Quick category icons */}
-      <QuickCategoryGrid />
+      {!searchMode && (
+        <>
+          {/* Quick category icons */}
+          <QuickCategoryGrid />
 
-      {/* Hero Carousel */}
-      <HeroCarousel
-        onBrowse={() => document.getElementById("catalog")?.scrollIntoView({ behavior: "smooth" })}
-        onReady={() => update({ ready: true })}
-      />
+          {/* Hero Carousel */}
+          <HeroCarousel
+            onBrowse={() => document.getElementById("catalog")?.scrollIntoView({ behavior: "smooth" })}
+            onReady={() => update({ ready: true })}
+          />
 
-      {/* Flash Deals */}
-      {(flashQ.data?.length ?? 0) > 0 && (
-        <section className="border-b bg-gradient-to-r from-orange-50 to-red-50">
-          <div className="mx-auto max-w-7xl px-4 py-5">
-            <div className="mb-3 flex items-center gap-3">
-              <div className="inline-flex items-center gap-1.5 rounded-md bg-[color:var(--brand-orange)] px-2.5 py-1 text-xs font-bold text-white">
-                <Flame className="h-3.5 w-3.5" /> ดีลพิเศษ
-              </div>
-              <div className="font-mono text-sm font-bold text-[color:var(--brand-orange-dark)]">{countdown}</div>
-              <div className="ml-auto text-xs text-slate-500">รีเซ็ตทุก 24 ชม.</div>
-            </div>
-            <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
-              {flashQ.data!.map((p) => {
-                const selling = getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier) ?? 0;
-                const orig = (p as { price?: number | null }).price ?? 0;
-                const pct = orig > 0 && selling > 0 && selling < orig ? Math.round((1 - selling / orig) * 100) : 0;
-                const lowStock = p.stock_status === "พร้อมจัดส่ง" && (p.stock_qty ?? 999) < 10;
-                return (
-                  <Link
-                    key={p.id}
-                    to="/product/$slug"
-                    params={{ slug: p.slug || p.id }}
-                    className="group relative w-40 shrink-0 overflow-hidden rounded-lg border-2 border-orange-200 bg-white transition hover:border-[color:var(--brand-orange)] hover:shadow-md md:w-44"
-                  >
-                    {pct > 0 && (
-                      <div className="absolute left-1.5 top-1.5 z-10 rounded bg-red-600 px-1.5 py-0.5 text-[10px] font-black text-white shadow">-{pct}%</div>
-                    )}
-                    {lowStock && (
-                      <div className="absolute right-1.5 top-1.5 z-10 rounded bg-orange-600 px-1.5 py-0.5 text-[10px] font-bold text-white shadow">
-                        เหลือ {p.stock_qty} ชิ้น
-                      </div>
-                    )}
-                    <div className="grid aspect-square place-items-center bg-white p-2">
-                      <ProductImage src={p.image_url} alt={p.name ?? p.sku} />
+          {/* Flash Deals */}
+          {(flashQ.data?.length ?? 0) > 0 && (
+            <section className="border-b bg-gradient-to-r from-orange-50 to-red-50">
+              <div className="mx-auto max-w-7xl px-4 py-5">
+                <div className="mb-3 flex items-center gap-3">
+                  <div className="inline-flex items-center gap-1.5 rounded-md bg-[color:var(--brand-orange)] px-2.5 py-1 text-xs font-bold text-white">
+                    <Flame className="h-3.5 w-3.5" /> ดีลพิเศษ
+                  </div>
+                  <div className="font-mono text-sm font-bold text-[color:var(--brand-orange-dark)]">{countdown}</div>
+                  <div className="ml-auto text-xs text-slate-500">รีเซ็ตทุก 24 ชม.</div>
+                </div>
+                <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
+                  {flashQ.data!.map((p) => {
+                    const selling = getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier) ?? 0;
+                    const orig = (p as { price?: number | null }).price ?? 0;
+                    const pct = orig > 0 && selling > 0 && selling < orig ? Math.round((1 - selling / orig) * 100) : 0;
+                    const lowStock = p.stock_status === "พร้อมจัดส่ง" && (p.stock_qty ?? 999) < 10;
+                    return (
+                      <Link
+                        key={p.id}
+                        to="/product/$slug"
+                        params={{ slug: p.slug || p.id }}
+                        className="group relative w-40 shrink-0 overflow-hidden rounded-lg border-2 border-orange-200 bg-white transition hover:border-[color:var(--brand-orange)] hover:shadow-md md:w-44"
+                      >
+                        {pct > 0 && (
+                          <div className="absolute left-1.5 top-1.5 z-10 rounded bg-red-600 px-1.5 py-0.5 text-[10px] font-black text-white shadow">-{pct}%</div>
+                        )}
+                        {lowStock && (
+                          <div className="absolute right-1.5 top-1.5 z-10 rounded bg-orange-600 px-1.5 py-0.5 text-[10px] font-bold text-white shadow">
+                            เหลือ {p.stock_qty} ชิ้น
+                          </div>
+                        )}
+                        <div className="grid aspect-square place-items-center bg-white p-2">
+                          <ProductImage src={p.image_url} alt={p.name ?? p.sku} />
 
-                    </div>
-                    <div className="border-t p-2">
-                      <div className="line-clamp-2 min-h-9 text-xs font-medium">{p.name ?? p.sku}</div>
-                      <div className="mt-1 flex items-baseline gap-1.5">
-                        <div className="text-base font-black text-[color:var(--brand-orange)]">
-                          {displayPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier)}
                         </div>
-                        {pct > 0 && <div className="text-[10px] text-slate-400 line-through">฿{orig.toLocaleString()}</div>}
-                      </div>
-                      <div className="mt-1 font-mono text-[10px] font-bold text-red-600">⏱ {countdown}</div>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-        </section>
+                        <div className="border-t p-2">
+                          <div className="line-clamp-2 min-h-9 text-xs font-medium">{p.name ?? p.sku}</div>
+                          <div className="mt-1 flex items-baseline gap-1.5">
+                            <div className="text-base font-black text-[color:var(--brand-orange)]">
+                              {displayPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier)}
+                            </div>
+                            {pct > 0 && <div className="text-[10px] text-slate-400 line-through">฿{orig.toLocaleString()}</div>}
+                          </div>
+                          <div className="mt-1 font-mono text-[10px] font-bold text-red-600">⏱ {countdown}</div>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* Microsoft Software (featured) */}
+          <MicrosoftFeatured />
+
+          {/* Popular Notebooks */}
+          <PopularNotebooks />
+
+          {/* Today's Best Deals */}
+          <FrequentlyBought />
+          <TodaysBestDeals />
+
+          {/* Network & Security */}
+          <NetworkSecurity />
+
+          {/* Storage Deals */}
+          <StorageDeals />
+
+          {/* Shop by Brand */}
+          <ShopByBrand />
+        </>
       )}
 
-      {/* Microsoft Software (featured) */}
-      <MicrosoftFeatured />
-
-      {/* Popular Notebooks */}
-      <PopularNotebooks />
-
-      {/* Today's Best Deals */}
-      <FrequentlyBought />
-      <TodaysBestDeals />
-
-      {/* Network & Security */}
-      <NetworkSecurity />
-
-      {/* Storage Deals */}
-      <StorageDeals />
-
-      {/* Shop by Brand */}
-      <ShopByBrand />
 
       {/* Catalog */}
       <div id="product-grid" className="mx-auto flex max-w-7xl gap-6 px-4 py-6 scroll-mt-20">
@@ -617,6 +624,25 @@ function HomePage() {
         </aside>
 
         <main className="min-w-0 flex-1">
+          {searchMode && (
+            <div className="mb-4 rounded-lg border bg-white p-4">
+              <div className="flex flex-wrap items-baseline justify-between gap-3">
+                <h1 className="text-lg font-bold text-[color:var(--brand-navy)]">
+                  ผลการค้นหา: <span className="text-[color:var(--brand-orange)]">"{search.q}"</span>
+                  <span className="ml-2 text-sm font-normal text-slate-500">
+                    ({(productsQuery.data?.count ?? 0).toLocaleString()} รายการ)
+                  </span>
+                </h1>
+                <button
+                  onClick={() => update({ q: "" })}
+                  className="text-sm text-slate-500 underline underline-offset-2 hover:text-[color:var(--brand-navy)]"
+                >
+                  × ล้างการค้นหา
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Sort bar */}
           <div className="mb-4 flex flex-wrap items-center gap-2 rounded-lg border bg-white p-3">
             <Sheet>
@@ -711,29 +737,62 @@ function HomePage() {
               ))}
             </div>
           ) : (productsQuery.data?.rows.length ?? 0) === 0 ? (
-            <div className="space-y-3 rounded-lg border border-dashed bg-white p-12 text-center text-slate-500">
-              <div className="text-base font-medium text-slate-700">ไม่พบสินค้าที่ตรงเงื่อนไข</div>
-              {activeCategory && selectedBrands.length > 0 && (
-                <div className="text-sm">
-                  ลองล้างตัวกรองแบรนด์ เพื่อดูสินค้าในหมวด {activeCategory} ทั้งหมด
+            searchMode ? (
+              <div className="space-y-4 rounded-lg border border-dashed bg-white p-10 text-center">
+                <div className="text-2xl">🔍</div>
+                <div className="text-lg font-semibold text-slate-800">
+                  ไม่พบสินค้าสำหรับ "{search.q}"
                 </div>
-              )}
-              <div className="flex flex-wrap justify-center gap-2 pt-2">
-                {selectedBrands.length > 0 && (
-                  <Button variant="outline" size="sm" onClick={() => update({ brands: "" })}>
-                    ล้างแบรนด์
+                <ul className="mx-auto max-w-sm space-y-1 text-left text-sm text-slate-600">
+                  <li>• ตรวจสอบการสะกด</li>
+                  <li>• ใช้คำค้นหาที่สั้นกว่า</li>
+                  <li>• ค้นหาด้วยรหัสสินค้า (SKU)</li>
+                </ul>
+                <div className="pt-2 text-sm text-slate-500">หรือเลือกดูตามหมวดหมู่:</div>
+                <div className="flex flex-wrap justify-center gap-2">
+                  {["Notebook", "Monitor", "Network", "Storage", "Software"].map((c) => (
+                    <Button
+                      key={c}
+                      variant="outline"
+                      size="sm"
+                      onClick={() => navigate({ to: "/", search: { category: c } as never })}
+                    >
+                      {c}
+                    </Button>
+                  ))}
+                </div>
+                <div className="pt-2">
+                  <Button size="sm" onClick={() => update({ q: "" })} className="bg-[color:var(--brand-green)] hover:opacity-90">
+                    × ล้างการค้นหา
                   </Button>
-                )}
-                {activeCategory && (
-                  <Button variant="outline" size="sm" onClick={() => setCategory("all")}>
-                    ดูทุกหมวดหมู่
-                  </Button>
-                )}
-                <Button size="sm" onClick={clearAllFilters} className="bg-[color:var(--brand-green)] hover:bg-[color:var(--brand-green)]/90">
-                  × ล้างทั้งหมด
-                </Button>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="space-y-3 rounded-lg border border-dashed bg-white p-12 text-center text-slate-500">
+                <div className="text-base font-medium text-slate-700">ไม่พบสินค้าที่ตรงเงื่อนไข</div>
+                {activeCategory && selectedBrands.length > 0 && (
+                  <div className="text-sm">
+                    ลองล้างตัวกรองแบรนด์ เพื่อดูสินค้าในหมวด {activeCategory} ทั้งหมด
+                  </div>
+                )}
+                <div className="flex flex-wrap justify-center gap-2 pt-2">
+                  {selectedBrands.length > 0 && (
+                    <Button variant="outline" size="sm" onClick={() => update({ brands: "" })}>
+                      ล้างแบรนด์
+                    </Button>
+                  )}
+                  {activeCategory && (
+                    <Button variant="outline" size="sm" onClick={() => setCategory("all")}>
+                      ดูทุกหมวดหมู่
+                    </Button>
+                  )}
+                  <Button size="sm" onClick={clearAllFilters} className="bg-[color:var(--brand-green)] hover:bg-[color:var(--brand-green)]/90">
+                    × ล้างทั้งหมด
+                  </Button>
+                </div>
+              </div>
+            )
+
 
           ) : search.view === "list" ? (
             <div className="space-y-3">
