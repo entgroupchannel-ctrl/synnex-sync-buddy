@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Minus, Plus, Trash2, Package, ArrowLeft, ShoppingCart, ShoppingBag, Truck } from "lucide-react";
+import { Minus, Plus, Trash2, Package, ArrowLeft, ShoppingCart, ShoppingBag, Truck, AlertTriangle, ClipboardList, PartyPopper, Lightbulb } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { ProductImage } from "@/components/product-image";
 import { supabase } from "@/integrations/supabase/client";
@@ -82,7 +82,7 @@ function CartPage() {
   }, [user?.id, user?.email, items, total]);
 
   return (
-    <div className="min-h-screen bg-slate-50" style={{ fontFamily: "Sarabun, system-ui, sans-serif" }}>
+    <div className="min-h-screen bg-slate-50">
       <SiteHeader />
       <div className="mx-auto max-w-5xl px-4 py-6">
         <Link to="/" className="mb-4 inline-flex items-center gap-1 text-sm text-slate-600 hover:text-[color:var(--brand-navy)]">
@@ -97,7 +97,9 @@ function CartPage() {
             <div className="space-y-3">
               {hasByOrder && (
                 <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">
-                  <div className="font-bold">⚠️ สินค้า By Order ในตะกร้าของคุณ</div>
+                  <div className="flex items-center gap-2 font-bold">
+                    <AlertTriangle className="h-4 w-4" /> สินค้า By Order ในตะกร้าของคุณ
+                  </div>
                   <div className="mt-1">จะใช้เวลาจัดหาประมาณ 30 วันทำการ</div>
                   <div>ทีมงานจะติดต่อยืนยันก่อนจัดส่ง</div>
                 </div>
@@ -121,7 +123,7 @@ function CartPage() {
                     </Link>
                     {itemByOrder && (
                       <div className="mt-1 inline-flex items-center gap-1 rounded bg-blue-100 px-2 py-0.5 text-[11px] font-medium text-blue-800">
-                        📋 สินค้านี้ใช้เวลา 30 วัน
+                        <ClipboardList className="h-3 w-3" /> สินค้านี้ใช้เวลา 30 วัน
                       </div>
                     )}
                     <div className="mt-2 flex items-center gap-3">
@@ -160,14 +162,14 @@ function CartPage() {
 
               <div className="mt-3 space-y-2 rounded-lg border border-slate-200 bg-slate-50 p-3 text-xs text-slate-700">
                 <div className="flex items-start gap-2">
-                  <span>🚚</span>
+                  <Truck className="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--brand-navy)]" />
                   <div>
                     <div className="font-semibold text-[color:var(--brand-navy)]">กรุงเทพฯ &amp; ปริมณฑล</div>
                     <div className="text-slate-600">ส่งฟรีเมื่อซื้อครบ ฿5,000 (กทม./นนทบุรี/ปทุมธานี/สมุทรปราการ)</div>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
-                  <span>📦</span>
+                  <Package className="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--brand-navy)]" />
                   <div>
                     <div className="font-semibold text-[color:var(--brand-navy)]">ต่างจังหวัด · Kerry Express</div>
                     <div className="text-slate-600">฿50–฿400 ตามน้ำหนัก (น้ำหนักตะกร้าตอนนี้ {totalWeight.toFixed(1)} กก. ≈ ฿{shipOther.fee})</div>
@@ -176,8 +178,8 @@ function CartPage() {
               </div>
 
               {isBkkFree ? (
-                <div className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 p-2.5 text-xs font-semibold text-emerald-800">
-                  🎉 ยินดีด้วย! คุณได้รับสิทธิ์ส่งฟรีในเขต กทม./ปริมณฑล
+                <div className="mt-3 flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 p-2.5 text-xs font-semibold text-emerald-800">
+                  <PartyPopper className="h-4 w-4 shrink-0" /> ยินดีด้วย! คุณได้รับสิทธิ์ส่งฟรีในเขต กทม./ปริมณฑล
                 </div>
               ) : remainingForFree > 0 ? (
                 <div className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 p-2.5 text-xs">
@@ -262,7 +264,7 @@ function EmptyCart({ recent, onBrowse }: { recent: RecentItem[]; onBrowse: () =>
         {recent.length > 0 && (
           <div className="mt-10 text-left">
             <div className="mb-3 flex items-center gap-2">
-              <span className="text-lg">💡</span>
+              <Lightbulb className="h-5 w-5 text-[color:var(--brand-orange)]" />
               <div>
                 <div className="font-bold text-[color:var(--brand-navy)]">{t("cart.recently_viewed")}</div>
               </div>
