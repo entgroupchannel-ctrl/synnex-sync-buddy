@@ -4,6 +4,8 @@ import { toast } from "sonner";
 import { ArrowLeft, ExternalLink, Save, FileText, Truck, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteHeader } from "@/components/site-header";
+import { ProductImage } from "@/components/product-image";
+
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
