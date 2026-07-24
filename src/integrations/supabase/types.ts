@@ -434,6 +434,39 @@ export type Database = {
         }
         Relationships: []
       }
+      pricing_tiers: {
+        Row: {
+          benefits: Json | null
+          created_at: string | null
+          discount_pct: number | null
+          id: string
+          is_active: boolean | null
+          min_spent: number | null
+          tier_name: string
+          tier_type: string
+        }
+        Insert: {
+          benefits?: Json | null
+          created_at?: string | null
+          discount_pct?: number | null
+          id?: string
+          is_active?: boolean | null
+          min_spent?: number | null
+          tier_name: string
+          tier_type: string
+        }
+        Update: {
+          benefits?: Json | null
+          created_at?: string | null
+          discount_pct?: number | null
+          id?: string
+          is_active?: boolean | null
+          min_spent?: number | null
+          tier_name?: string
+          tier_type?: string
+        }
+        Relationships: []
+      }
       quotation_requests: {
         Row: {
           company_name: string | null
@@ -736,11 +769,47 @@ export type Database = {
         }
         Relationships: []
       }
+      volume_discounts: {
+        Row: {
+          applies_to: string | null
+          discount_pct: number
+          id: string
+          is_active: boolean | null
+          min_qty: number
+        }
+        Insert: {
+          applies_to?: string | null
+          discount_pct: number
+          id?: string
+          is_active?: boolean | null
+          min_qty: number
+        }
+        Update: {
+          applies_to?: string | null
+          discount_pct?: number
+          id?: string
+          is_active?: boolean | null
+          min_qty?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      get_product_price: {
+        Args: {
+          p_b2b_price: number
+          p_b2b_tier: string
+          p_loyalty_tier: string
+          p_member_price: number
+          p_qty?: number
+          p_selling_price: number
+          p_user_type: string
+        }
+        Returns: number
+      }
       recompute_user_order_stats: { Args: { _uid: string }; Returns: undefined }
     }
     Enums: {
