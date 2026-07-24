@@ -186,7 +186,7 @@ function HomePage() {
         const q = applyCommon(base).eq("stock_status", "พร้อมจัดส่ง").range(from, to);
         const { data, error, count } = await (q as unknown as Promise<Result>);
         if (error) throw error;
-        return { rows: data ?? [], count: count ?? 0 };
+        return { rows: (data ?? []) as ProductRow[], count: count ?? 0 };
       }
 
       const inCountRes = await (applyCommon(supabase.from("synnex_products").select("*", { count: "exact", head: true })).neq("stock_status", "สินค้าหมด") as unknown as Promise<Result>);
@@ -207,7 +207,7 @@ function HomePage() {
         if (r.error) throw r.error;
         rows.push(...(r.data ?? []));
       }
-      return { rows, count: inCount + outCount };
+      return { rows: rows as unknown as ProductRow[], count: inCount + outCount };
     },
   });
 
