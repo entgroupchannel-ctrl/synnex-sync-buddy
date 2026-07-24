@@ -147,15 +147,15 @@ export function SiteHeader() {
           >
             <Menu className="h-5 w-5" />
           </button>
-          <Link to="/" className="flex shrink-0 items-center gap-2.5">
+          <Link to="/" className="flex shrink-0 items-center gap-2">
             <img
               src={entLogo.url}
               alt="ENT Group"
               className="h-10 w-10 rounded-md bg-white object-contain p-0.5 shadow-sm sm:h-11 sm:w-11"
             />
             <div className="hidden sm:block">
-              <div className="text-lg font-bold leading-tight">ENT Group IT Shop</div>
-              <div className="text-[10px] leading-tight text-[color:var(--brand-green)]">Computer for all</div>
+              <div className="text-sm font-medium text-white">IT Shop</div>
+              <div className="text-xs text-green-300">Computer for all</div>
             </div>
           </Link>
 
