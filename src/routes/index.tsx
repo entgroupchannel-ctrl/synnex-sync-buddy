@@ -251,6 +251,12 @@ function HomePage() {
     navigate({ to: "/", search: (p: Record<string, unknown>) => ({ ...p, ...patch, page: 1 }) });
   };
 
+  const goToPage = (p: number) => {
+    navigate({ to: "/", search: (prev: Record<string, unknown>) => ({ ...prev, page: p }) });
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+
 
 
   // Fetch brand list (top 20)
