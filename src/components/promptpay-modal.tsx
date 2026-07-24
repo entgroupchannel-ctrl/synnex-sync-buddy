@@ -68,9 +68,9 @@ export function PromptPayPaymentModal({ orderId, orderNumber, amount, onPaid }: 
     })();
   }, [orderId, amount]);
 
-  // Countdown
+  // Countdown (only for PromptPay QR)
   useEffect(() => {
-    if (!charge || paid) return;
+    if (!charge || paid || charge.requires_manual_transfer) return;
     const t = setInterval(() => setRemaining((r) => Math.max(0, r - 1)), 1000);
     return () => clearInterval(t);
   }, [charge, paid]);
