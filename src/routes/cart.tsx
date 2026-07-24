@@ -36,7 +36,7 @@ function CartPage() {
   const [recent, setRecent] = useState<RecentItem[]>([]);
   const { user } = useSupabaseUser();
   // Preview shipping under both zones (BKK metro vs. upcountry)
-  const weightedItems = items.map((i) => ({ price: i.price, qty: i.qty, weight_kg: 1 }));
+  const weightedItems = items.map((i) => ({ price: i.price, qty: i.qty, weight_kg: getItemWeightKg(i) }));
   const shipBkk = getWeightBasedShippingFee(weightedItems, "กรุงเทพมหานคร");
   const shipOther = getWeightBasedShippingFee(weightedItems, "เชียงใหม่");
   const totalWeight = shipBkk.totalWeight;
