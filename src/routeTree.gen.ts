@@ -15,6 +15,7 @@ import { Route as CartRouteImport } from './routes/cart'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TrackOrderNumberRouteImport } from './routes/track.$orderNumber'
 import { Route as ProductSlugRouteImport } from './routes/product.$slug'
 import { Route as OrderOrderNumberRouteImport } from './routes/order.$orderNumber'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
@@ -60,6 +61,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrackOrderNumberRoute = TrackOrderNumberRouteImport.update({
+  id: '/track/$orderNumber',
+  path: '/track/$orderNumber',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProductSlugRoute = ProductSlugRouteImport.update({
@@ -170,6 +176,7 @@ export interface FileRoutesByFullPath {
   '/auth/callback': typeof AuthCallbackRoute
   '/order/$orderNumber': typeof OrderOrderNumberRoute
   '/product/$slug': typeof ProductSlugRoute
+  '/track/$orderNumber': typeof TrackOrderNumberRoute
   '/admin/customers': typeof AuthenticatedAdminCustomersRouteWithChildren
   '/admin/orders': typeof AuthenticatedAdminOrdersRouteWithChildren
   '/admin/pricing': typeof AuthenticatedAdminPricingRouteWithChildren
@@ -193,6 +200,7 @@ export interface FileRoutesByTo {
   '/auth/callback': typeof AuthCallbackRoute
   '/order/$orderNumber': typeof OrderOrderNumberRoute
   '/product/$slug': typeof ProductSlugRoute
+  '/track/$orderNumber': typeof TrackOrderNumberRoute
   '/admin/customers': typeof AuthenticatedAdminCustomersRouteWithChildren
   '/admin/orders': typeof AuthenticatedAdminOrdersRouteWithChildren
   '/admin/pricing': typeof AuthenticatedAdminPricingRouteWithChildren
@@ -219,6 +227,7 @@ export interface FileRoutesById {
   '/auth/callback': typeof AuthCallbackRoute
   '/order/$orderNumber': typeof OrderOrderNumberRoute
   '/product/$slug': typeof ProductSlugRoute
+  '/track/$orderNumber': typeof TrackOrderNumberRoute
   '/_authenticated/admin/customers': typeof AuthenticatedAdminCustomersRouteWithChildren
   '/_authenticated/admin/orders': typeof AuthenticatedAdminOrdersRouteWithChildren
   '/_authenticated/admin/pricing': typeof AuthenticatedAdminPricingRouteWithChildren
@@ -245,6 +254,7 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/order/$orderNumber'
     | '/product/$slug'
+    | '/track/$orderNumber'
     | '/admin/customers'
     | '/admin/orders'
     | '/admin/pricing'
@@ -268,6 +278,7 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/order/$orderNumber'
     | '/product/$slug'
+    | '/track/$orderNumber'
     | '/admin/customers'
     | '/admin/orders'
     | '/admin/pricing'
@@ -293,6 +304,7 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/order/$orderNumber'
     | '/product/$slug'
+    | '/track/$orderNumber'
     | '/_authenticated/admin/customers'
     | '/_authenticated/admin/orders'
     | '/_authenticated/admin/pricing'
@@ -317,6 +329,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   OrderOrderNumberRoute: typeof OrderOrderNumberRoute
   ProductSlugRoute: typeof ProductSlugRoute
+  TrackOrderNumberRoute: typeof TrackOrderNumberRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -361,6 +374,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/track/$orderNumber': {
+      id: '/track/$orderNumber'
+      path: '/track/$orderNumber'
+      fullPath: '/track/$orderNumber'
+      preLoaderRoute: typeof TrackOrderNumberRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/product/$slug': {
@@ -591,6 +611,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   OrderOrderNumberRoute: OrderOrderNumberRoute,
   ProductSlugRoute: ProductSlugRoute,
+  TrackOrderNumberRoute: TrackOrderNumberRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
