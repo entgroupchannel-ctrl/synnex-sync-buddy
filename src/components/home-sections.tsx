@@ -304,7 +304,7 @@ export function TodaysBestDeals() {
             const slug = p.slug || p.id;
             const selling = getSellingPrice(p, tier) ?? 0;
             const freeShip = selling > 5000;
-            const lowStock = ready && (p.stock_qty ?? 999) < 10;
+            const freeShip = selling > 5000;
             return (
               <div key={p.id} className="group flex overflow-hidden rounded-lg border bg-white transition hover:shadow-lg lg:flex-col">
                 <Link to="/product/$slug" params={{ slug }} className="grid h-32 w-36 shrink-0 place-items-center bg-white p-2 lg:h-40 lg:w-full">
@@ -318,7 +318,7 @@ export function TodaysBestDeals() {
                   <Link to="/product/$slug" params={{ slug }} className="line-clamp-2 text-sm font-semibold hover:text-[color:var(--brand-navy)]">{p.name ?? p.sku}</Link>
                   <div className="flex flex-wrap items-center gap-1">
                     {freeShip && <Badge className="bg-green-100 text-[10px] text-green-700 hover:bg-green-100">🚚 ฟรีจัดส่ง</Badge>}
-                    {lowStock && <Badge className="bg-red-100 text-[10px] text-red-700 hover:bg-red-100">เหลือน้อย</Badge>}
+                    <StockBadge stockQty={p.stock_qty} fulfillmentType={p.fulfillment_type} />
                   </div>
                   <div className="mt-1 text-xl font-black text-[color:var(--brand-orange)]">{displayPrice(p, tier)}</div>
                   <div className="flex items-center gap-1.5 text-[11px] text-slate-600">
