@@ -642,6 +642,10 @@ function CheckoutPage() {
 
           <aside className="h-fit space-y-3 rounded-lg border bg-white p-5 lg:sticky lg:top-32">
             <h2 className="font-bold text-[color:var(--brand-navy)]">รายการสั่งซื้อ</h2>
+            <div className="rounded-md bg-slate-50 px-3 py-2 text-xs text-slate-700">
+              <div className="text-[10px] uppercase tracking-wide text-slate-500">วิธีรับสินค้า</div>
+              <div className="font-semibold text-slate-800">{SHIPPING_METHOD_LABEL[shippingMethod]}</div>
+            </div>
             <div className="max-h-56 space-y-2 overflow-y-auto text-sm">
               {items.map((i) => (
                 <div key={i.id} className="flex justify-between gap-2">
