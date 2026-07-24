@@ -279,6 +279,18 @@ function CheckoutPage() {
       supabase.functions.invoke("send-order-confirmation", { body: { order_id: order.id } })
         .catch((e) => console.warn("[send-order-confirmation]", e));
 
+      // Record discount usage (fire-and-forget)
+      if (discount?.codeId) {
+        recordDiscountUsage({
+          codeId: discount.codeId,
+          orderId: order.id,
+          userId: user?.id ?? null,
+          customerEmail: base.data.customer_email,
+          discountAmount,
+        }).catch((e) => console.warn("[discount usage]", e));
+      }
+
+
       if (order?.order_number) {
         setOrderCreated(true);
         if (user?.id) {
