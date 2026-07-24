@@ -148,7 +148,7 @@ function CheckoutPage() {
       const res = await applyDiscountCode({
         code: codeInput,
         subtotal,
-        shippingFee: selectedShip?.fee ?? 0,
+        shippingFee: shipCalc.fee,
         userType,
         userId: user?.id ?? null,
       });
