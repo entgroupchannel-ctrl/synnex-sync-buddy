@@ -491,7 +491,7 @@ function CheckoutPage() {
                     {discount.description && <div className="text-xs text-emerald-700">{discount.description}</div>}
                     <div className="mt-0.5 text-sm text-emerald-700">
                       {discount.isFreeShipping
-                        ? `ส่งฟรี — ประหยัด ฿${(selectedShip?.fee ?? 0).toLocaleString()}`
+                        ? `ส่งฟรี — ประหยัด ฿${shipCalc.fee.toLocaleString()}`
                         : `ประหยัด ฿${discount.discountAmount.toLocaleString()}`}
                     </div>
                   </div>
