@@ -509,7 +509,9 @@ function HomePage() {
           ) : search.view === "list" ? (
             <div className="space-y-3">
               {productsQuery.data!.rows.map((p) => {
+                const byOrder = p.fulfillment_type === "by_order";
                 const ready = p.stock_status === "พร้อมจัดส่ง";
+                const available = ready || byOrder;
                 const slug = p.slug || p.id;
                 const lowStock = ready && (p.stock_qty ?? 999) < 10;
                 const priced = getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier) != null && !!p.price_approved;
@@ -523,12 +525,18 @@ function HomePage() {
                       <Link to="/product/$slug" params={{ slug }} className="line-clamp-2 text-sm font-semibold hover:text-[color:var(--brand-navy)]">{p.name ?? p.sku}</Link>
                       {p.description && <div className="mt-1 line-clamp-2 text-xs text-slate-500">{p.description}</div>}
                       <div className="mt-auto flex items-center gap-2 pt-1">
-                        <span className={`inline-block h-2 w-2 rounded-full ${ready ? "bg-green-500" : "bg-red-500"}`} />
-                        <span className="text-xs text-slate-600">{p.stock_status ?? "—"}</span>
-                        {lowStock && <Badge className="bg-red-100 text-[10px] text-red-700 hover:bg-red-100">เหลือน้อย</Badge>}
+                        {byOrder ? (
+                          <Badge className="bg-blue-100 text-[10px] text-blue-700 hover:bg-blue-100">📋 By Order</Badge>
+                        ) : (
+                          <>
+                            <span className={`inline-block h-2 w-2 rounded-full ${ready ? "bg-green-500" : "bg-red-500"}`} />
+                            <span className="text-xs text-slate-600">{p.stock_status ?? "—"}</span>
+                            {lowStock && <Badge className="bg-red-100 text-[10px] text-red-700 hover:bg-red-100">เหลือน้อย</Badge>}
+                          </>
+                        )}
                       </div>
                     </div>
-                    <div className="flex w-40 shrink-0 flex-col items-end justify-between">
+                    <div className="flex w-40 shrink-0 flex-col items-end justify-between gap-1">
                       {priced ? (
                         <div className="text-xl font-black text-[color:var(--brand-orange)]">
                           {displayPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier)}
@@ -536,10 +544,11 @@ function HomePage() {
                       ) : (
                         <span className="text-sm text-gray-400">ติดต่อสอบถาม</span>
                       )}
+                      {byOrder && <div className="text-[11px] text-blue-700">⏱ รับสินค้าภายใน 30 วัน</div>}
                       {priced ? (
-                        ready ? (
+                        available ? (
                           <Button onClick={() => addToCart(p as Record<string, unknown>)} className="w-full bg-[color:var(--brand-navy)] hover:bg-[color:var(--brand-navy-2)]" size="sm">
-                            <ShoppingCart className="mr-1.5 h-4 w-4" /> ใส่ตะกร้า
+                            <ShoppingCart className="mr-1.5 h-4 w-4" /> {byOrder ? "สั่งจอง" : "ใส่ตะกร้า"}
                           </Button>
                         ) : (
                           <div className="flex w-full flex-col items-end gap-1">
