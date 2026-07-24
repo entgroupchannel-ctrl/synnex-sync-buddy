@@ -17,6 +17,8 @@ import { useLanguage } from "@/lib/i18n";
 import { SiteHeader } from "@/components/site-header";
 import { ProductImage } from "@/components/product-image";
 import { SiteFooter } from "@/components/site-footer";
+import { useDynamicSeo, getRobotsForCategory } from "@/lib/dynamic-seo";
+
 
 import { CATEGORIES, detectCategory, displayPrice, getSellingPrice, useCart, useCustomerTier } from "@/lib/cart";
 import { triggerAuthPrompt, useSupabaseUser } from "@/lib/auth-sheet";
@@ -325,6 +327,82 @@ function HomePage() {
 
   const activeCategory = search.category !== "all" ? search.category : null;
   const hasActiveFilters = !!activeCategory || selectedBrands.length > 0 || !!search.q;
+
+  // Dynamic SEO: canonical always base category (or "/"), robots noindex when filters/search applied,
+  // plus ItemList + BreadcrumbList JSON-LD for category pages.
+  const baseUrl = "https://shop.entgroup.co.th";
+  const catCanonPath = activeCategory
+    ? `/?category=${encodeURIComponent(activeCategory)}`
+    : "/";
+  const canonical = `${baseUrl}${catCanonPath}`;
+  const robots = getRobotsForCategory({
+    q: search.q,
+    category: activeCategory ?? undefined,
+    brands: search.brands,
+    min: search.min,
+    max: search.max,
+    page: search.page,
+    priceMax: PRICE_MAX,
+  });
+  const productRows = productsQuery.data?.rows ?? [];
+  const totalItems = productsQuery.data?.count ?? 0;
+  const itemList = activeCategory
+    ? {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        name: `${activeCategory} — ENT Group IT Shop`,
+        description: `รายการสินค้า ${activeCategory} จาก ENT Group Authorized Dealer`,
+        url: canonical,
+        numberOfItems: totalItems,
+        itemListElement: productRows.slice(0, 10).map((p, i) => ({
+          "@type": "ListItem",
+          position: i + 1,
+          item: {
+            "@type": "Product",
+            name: p.name ?? p.sku,
+            url: `${baseUrl}/product/${encodeURIComponent(p.slug || p.id)}`,
+            image: p.image_url ?? undefined,
+            offers: (p.selling_price ?? 0) > 0
+              ? {
+                  "@type": "Offer",
+                  price: String(p.selling_price),
+                  priceCurrency: "THB",
+                  availability: p.stock_status === "พร้อมจัดส่ง"
+                    ? "https://schema.org/InStock"
+                    : "https://schema.org/PreOrder",
+                }
+              : undefined,
+          },
+        })),
+      }
+    : null;
+  const breadcrumb = activeCategory
+    ? {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "หน้าแรก", item: `${baseUrl}/` },
+          { "@type": "ListItem", position: 2, name: activeCategory, item: canonical },
+        ],
+      }
+    : null;
+  const totalPagesForSeo = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
+  const prev = search.page > 1 ? `${canonical}${canonical.includes("?") ? "&" : "?"}page=${search.page - 1}` : null;
+  const next = search.page < totalPagesForSeo ? `${canonical}${canonical.includes("?") ? "&" : "?"}page=${search.page + 1}` : null;
+
+  useDynamicSeo({
+    canonical,
+    hreflang: {
+      th: canonical,
+      en: `${canonical}${canonical.includes("?") ? "&" : "?"}lang=en`,
+      xDefault: canonical,
+    },
+    robots,
+    prev,
+    next,
+    jsonLd: [itemList, breadcrumb].filter(Boolean) as unknown[],
+  });
+
 
 
   const addToCart = (p: Record<string, unknown>) => {
