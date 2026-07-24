@@ -207,6 +207,87 @@ function AdminOrderDetail() {
     }
   };
 
+  const saveShipping = async () => {
+    if (!order) return;
+    if (!tracking.trim()) { toast.error("กรุณาระบุเลขพัสดุ"); return; }
+    setSavingShip(true);
+    const wasStatus = order.status ?? "pending";
+    const trackingUrl = buildTrackingUrl(shipProvider, tracking.trim());
+    const shippedAtIso = shippedAt ? new Date(shippedAt + "T00:00:00").toISOString() : new Date().toISOString();
+    const { error } = await supabase.from("orders").update({
+      shipping_provider: shipProvider,
+      tracking_number: tracking.trim(),
+      tracking_url: trackingUrl,
+      estimated_delivery: estDelivery || null,
+      shipped_at: shippedAtIso,
+      status: "shipped",
+    }).eq("id", id);
+    if (error) { setSavingShip(false); toast.error(error.message); return; }
+
+    const { data: userData } = await supabase.auth.getUser();
+    const by = userData?.user?.email ?? "admin";
+
+    // Initial shipping event
+    await supabase.from("shipping_events").insert({
+      order_id: id,
+      event_time: shippedAtIso,
+      status: "picked_up",
+      location: "คลังสินค้า ENT Group นนทบุรี",
+      description: `รับพัสดุแล้ว — ${providerLabel(shipProvider)} ${tracking.trim()}`,
+      description_en: `Picked up — ${providerLabel(shipProvider)} ${tracking.trim()}`,
+    });
+
+    // Status history
+    if (wasStatus !== "shipped") {
+      await supabase.from("order_status_history").insert({
+        order_id: id, status: "shipped",
+        note: `จัดส่งโดย ${providerLabel(shipProvider)} · ${tracking.trim()}`,
+        changed_by: by,
+      });
+    }
+
+    setStatus("shipped");
+    // Fire notification
+    supabase.functions.invoke("send-shipping-notification", {
+      body: { order_id: id, tracking_number: tracking.trim() },
+    }).catch((e) => console.warn("[send-shipping-notification]", e));
+
+    toast.success("บันทึกและแจ้งลูกค้าแล้ว");
+    setSavingShip(false);
+    load();
+  };
+
+  const addShippingEvent = async () => {
+    if (!newEvent.status) { toast.error("เลือกสถานะ"); return; }
+    const t = newEvent.time ? new Date(newEvent.time).toISOString() : new Date().toISOString();
+    const preset = EVENT_PRESETS.find((p) => p.value === newEvent.status);
+    const { error } = await supabase.from("shipping_events").insert({
+      order_id: id,
+      event_time: t,
+      status: newEvent.status,
+      location: newEvent.location || null,
+      description: preset?.label ?? newEvent.status,
+      description_en: preset?.labelEn ?? newEvent.status,
+    });
+    if (error) { toast.error(error.message); return; }
+
+    // If delivered → update order
+    if (newEvent.status === "delivered") {
+      await supabase.from("orders").update({
+        delivered_at: t, status: "delivered",
+      }).eq("id", id);
+      const { data: userData } = await supabase.auth.getUser();
+      await supabase.from("order_status_history").insert({
+        order_id: id, status: "delivered", note: "ลูกค้าได้รับพัสดุแล้ว",
+        changed_by: userData?.user?.email ?? "admin",
+      });
+    }
+
+    setNewEvent({ time: "", status: "in_transit", location: "" });
+    toast.success("เพิ่มสถานะแล้ว");
+    load();
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50">
