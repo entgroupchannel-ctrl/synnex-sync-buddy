@@ -620,7 +620,7 @@ export function ShopByBrand() {
   });
 
   const navigate = useNavigate();
-  const currentSearch = useSearch({ strict: false }) as { brands?: string };
+  const currentSearch = (useSearch({ strict: false, shouldThrow: false }) ?? {}) as { brands?: string };
   const selected = (currentSearch.brands ?? "").split(",").filter(Boolean);
   const hasSelection = selected.length > 0;
 
