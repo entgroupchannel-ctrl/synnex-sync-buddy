@@ -694,7 +694,7 @@ function ProductPicker({
                 </div>
                 {isGpuZeroPrice ? (
                   <>
-                    <div className="mt-1 inline-block rounded bg-amber-100 px-1.5 py-0.5 text-[9px] font-semibold text-amber-700">
+                    <div className="mt-1 inline-block rounded bg-orange-100 px-1.5 py-0.5 text-[9px] font-semibold text-orange-700">
                       By Order
                     </div>
                     <div className="mt-0.5 text-xs font-bold text-slate-500">ติดต่อสอบถาม</div>
@@ -710,7 +710,7 @@ function ProductPicker({
                     e.stopPropagation();
                     if (isGpuZeroPrice) {
                       window.open(
-                        `mailto:sales@entgroup.co.th?subject=ขอใบเสนอราคา ${p.name}`,
+                        `mailto:sales@entgroup.co.th?subject=ขอใบเสนอราคาการ์ดจอ ${p.name}`,
                         "_blank",
                       );
                     } else {
