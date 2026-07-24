@@ -230,16 +230,14 @@ function OrderConfirm() {
           />
         )}
 
-        {/* PromptPay QR */}
+        {/* PromptPay QR modal (auto-opens on load) */}
         {order.payment_method === "promptpay" && order.payment_status !== "paid" && (
-          <div className="mt-4">
-            <PromptPayQr
-              orderId={order.id}
-              orderNumber={order.order_number}
-              amount={Number(order.total ?? 0)}
-              onPaid={() => q.refetch()}
-            />
-          </div>
+          <PromptPayPaymentModal
+            orderId={order.id}
+            orderNumber={order.order_number}
+            amount={Number(order.total ?? 0)}
+            onPaid={() => q.refetch()}
+          />
         )}
 
         {/* Payment */}
