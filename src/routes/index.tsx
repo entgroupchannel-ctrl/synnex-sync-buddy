@@ -172,7 +172,7 @@ function HomePage() {
       sku: p.sku as string,
       slug: p.slug as string | null,
       name,
-      price: getSellingPrice(p as { selling_price?: number | null }) ?? 0,
+      price: getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier) ?? 0,
       image_url: (p.image_url as string) ?? null,
       distributor: (p.distributor as string | null) ?? null,
     });
@@ -279,7 +279,7 @@ function HomePage() {
             </div>
             <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
               {flashQ.data!.map((p) => {
-                const selling = getSellingPrice(p as { selling_price?: number | null }) ?? 0;
+                const selling = getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier) ?? 0;
                 const orig = (p as { price?: number | null }).price ?? 0;
                 const pct = orig > 0 && selling > 0 && selling < orig ? Math.round((1 - selling / orig) * 100) : 0;
                 const lowStock = p.stock_status === "พร้อมจัดส่ง" && (p.stock_qty ?? 999) < 10;
@@ -305,7 +305,7 @@ function HomePage() {
                       <div className="line-clamp-2 min-h-9 text-xs font-medium">{p.name ?? p.sku}</div>
                       <div className="mt-1 flex items-baseline gap-1.5">
                         <div className="text-base font-black text-[color:var(--brand-orange)]">
-                          {displayPrice(p as { selling_price?: number | null })}
+                          {displayPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier)}
                         </div>
                         {pct > 0 && <div className="text-[10px] text-slate-400 line-through">฿{orig.toLocaleString()}</div>}
                       </div>
@@ -392,7 +392,7 @@ function HomePage() {
                 const ready = p.stock_status === "พร้อมจัดส่ง";
                 const slug = p.slug || p.id;
                 const lowStock = ready && (p.stock_qty ?? 999) < 10;
-                const priced = getSellingPrice(p as { selling_price?: number | null }) != null && !!p.price_approved;
+                const priced = getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier) != null && !!p.price_approved;
                 return (
                   <div key={p.id} className="flex gap-4 rounded-lg border bg-white p-3 transition hover:shadow-md">
                     <Link to="/product/$slug" params={{ slug }} className="grid h-28 w-28 shrink-0 place-items-center rounded-md bg-white">
@@ -411,7 +411,7 @@ function HomePage() {
                     <div className="flex w-40 shrink-0 flex-col items-end justify-between">
                       {priced ? (
                         <div className="text-xl font-black text-[color:var(--brand-orange)]">
-                          {displayPrice(p as { selling_price?: number | null })}
+                          {displayPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier)}
                         </div>
                       ) : (
                         <span className="text-sm text-gray-400">ติดต่อสอบถาม</span>
@@ -436,7 +436,7 @@ function HomePage() {
                 const ready = p.stock_status === "พร้อมจัดส่ง";
                 const slug = p.slug || p.id;
                 const lowStock = ready && (p.stock_qty ?? 999) < 10;
-                const priced = getSellingPrice(p as { selling_price?: number | null }) != null && !!p.price_approved;
+                const priced = getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier) != null && !!p.price_approved;
                 return (
                   <div key={p.id} className="group relative flex flex-col overflow-hidden rounded-lg border bg-white transition hover:shadow-lg">
                     {p.brand && (
@@ -464,7 +464,7 @@ function HomePage() {
                       <div className="mt-auto pt-1">
                         {priced ? (
                           <div className="text-xl font-black text-[color:var(--brand-orange)]">
-                            {displayPrice(p as { selling_price?: number | null })}
+                            {displayPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier)}
                           </div>
                         ) : (
                           <div className="text-sm text-gray-400">ติดต่อสอบถาม</div>
