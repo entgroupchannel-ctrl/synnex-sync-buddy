@@ -128,7 +128,7 @@ function ProductDetail() {
               <div className="mt-1 text-sm text-slate-500">SKU / Model: {p.sku}</div>
 
               {(() => {
-                const pr = useProductPrice(p as PricingProduct, qty);
+                const pr = computeProductPrice(p as PricingProduct, tier, qty);
                 const hasPrice = getSellingPrice(p as PricingProduct, tier) != null && !!p.price_approved;
                 if (!hasPrice) {
                   return (
