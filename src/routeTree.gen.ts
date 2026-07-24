@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WishlistRouteImport } from './routes/wishlist'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as PcBuilderRouteImport } from './routes/pc-builder'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CartRouteImport } from './routes/cart'
@@ -54,6 +55,11 @@ const WishlistRoute = WishlistRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PcBuilderRoute = PcBuilderRouteImport.update({
+  id: '/pc-builder',
+  path: '/pc-builder',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -250,6 +256,7 @@ export interface FileRoutesByFullPath {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
+  '/pc-builder': typeof PcBuilderRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/wishlist': typeof WishlistRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
@@ -287,6 +294,7 @@ export interface FileRoutesByTo {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
+  '/pc-builder': typeof PcBuilderRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/wishlist': typeof WishlistRoute
   '/my-orders': typeof AuthenticatedMyOrdersRoute
@@ -324,6 +332,7 @@ export interface FileRoutesById {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
+  '/pc-builder': typeof PcBuilderRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/wishlist': typeof WishlistRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
@@ -363,6 +372,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/contact'
+    | '/pc-builder'
     | '/sitemap.xml'
     | '/wishlist'
     | '/admin'
@@ -400,6 +410,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/contact'
+    | '/pc-builder'
     | '/sitemap.xml'
     | '/wishlist'
     | '/my-orders'
@@ -436,6 +447,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/contact'
+    | '/pc-builder'
     | '/sitemap.xml'
     | '/wishlist'
     | '/_authenticated/admin'
@@ -475,6 +487,7 @@ export interface RootRouteChildren {
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
   ContactRoute: typeof ContactRoute
+  PcBuilderRoute: typeof PcBuilderRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   WishlistRoute: typeof WishlistRoute
   OrderOrderNumberRoute: typeof OrderOrderNumberRoute
@@ -496,6 +509,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pc-builder': {
+      id: '/pc-builder'
+      path: '/pc-builder'
+      fullPath: '/pc-builder'
+      preLoaderRoute: typeof PcBuilderRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -871,6 +891,7 @@ const rootRouteChildren: RootRouteChildren = {
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
   ContactRoute: ContactRoute,
+  PcBuilderRoute: PcBuilderRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   WishlistRoute: WishlistRoute,
   OrderOrderNumberRoute: OrderOrderNumberRoute,
