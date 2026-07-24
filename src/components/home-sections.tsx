@@ -312,7 +312,7 @@ export function TodaysBestDeals() {
                 <div className="flex min-w-0 flex-1 flex-col gap-1 border-l p-3 lg:border-l-0 lg:border-t">
                   <div className="flex items-center gap-1 text-[10px] uppercase tracking-wide text-slate-500">
                     {p.brand && <span className="rounded bg-slate-100 px-1.5 py-0.5 font-bold">{p.brand}</span>}
-                    <span className="truncate">{p.sku}</span>
+                    
                   </div>
                   <Link to="/product/$slug" params={{ slug }} className="line-clamp-2 text-sm font-semibold hover:text-[color:var(--brand-navy)]">{p.name ?? p.sku}</Link>
                   <div className="flex flex-wrap items-center gap-1">
