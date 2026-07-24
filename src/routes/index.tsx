@@ -1069,10 +1069,24 @@ function HomePage() {
               <div className="text-sm text-slate-600">
                 {productsQuery.data!.count.toLocaleString()} รายการ · หน้า {search.page}/{totalPages}
               </div>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm" disabled={search.page <= 1} onClick={() => update({ page: search.page - 1 })}>ก่อนหน้า</Button>
-                <Button variant="outline" size="sm" disabled={search.page >= totalPages} onClick={() => update({ page: search.page + 1 })}>ถัดไป</Button>
+              <div className="flex flex-wrap items-center gap-2">
+                <Button variant="outline" size="sm" disabled={search.page <= 1} onClick={() => goToPage(search.page - 1)}>ก่อนหน้า</Button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1)
+                  .filter((p) => Math.abs(p - search.page) <= 2)
+                  .map((p) => (
+                    <Button
+                      key={p}
+                      size="sm"
+                      variant={p === search.page ? "default" : "outline"}
+                      className="h-9 w-9 p-0"
+                      onClick={() => goToPage(p)}
+                    >
+                      {p}
+                    </Button>
+                  ))}
+                <Button variant="outline" size="sm" disabled={search.page >= totalPages} onClick={() => goToPage(search.page + 1)}>ถัดไป</Button>
               </div>
+
             </div>
           )}
         </main>
