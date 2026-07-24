@@ -184,34 +184,65 @@ function HomePage() {
         return q;
       };
       type Result = { data: Record<string, unknown>[] | null; error: unknown; count: number | null };
+      const table = () => supabase.from("synnex_products");
 
-      if (search.ready) {
-        const base = supabase.from("synnex_products").select("*", { count: "exact" });
-        const q = applyCommon(base).eq("stock_status", "พร้อมจัดส่ง").range(from, to);
+      // Explicit fulfillment filter
+      if (search.fulfill === "stock") {
+        const q = applyCommon(table().select("*", { count: "exact" })).eq("stock_status", "พร้อมจัดส่ง").range(from, to);
+        const { data, error, count } = await (q as unknown as Promise<Result>);
+        if (error) throw error;
+        return { rows: (data ?? []) as ProductRow[], count: count ?? 0 };
+      }
+      if (search.fulfill === "by_order") {
+        const q = applyCommon(table().select("*", { count: "exact" })).eq("fulfillment_type", "by_order").range(from, to);
         const { data, error, count } = await (q as unknown as Promise<Result>);
         if (error) throw error;
         return { rows: (data ?? []) as ProductRow[], count: count ?? 0 };
       }
 
-      const inCountRes = await (applyCommon(supabase.from("synnex_products").select("*", { count: "exact", head: true })).neq("stock_status", "สินค้าหมด") as unknown as Promise<Result>);
-      const outCountRes = await (applyCommon(supabase.from("synnex_products").select("*", { count: "exact", head: true })).eq("stock_status", "สินค้าหมด") as unknown as Promise<Result>);
+      // ready toggle keeps its stricter meaning: only in-stock stock items
+      if (search.ready) {
+        const q = applyCommon(table().select("*", { count: "exact" })).eq("stock_status", "พร้อมจัดส่ง").eq("fulfillment_type", "stock").range(from, to);
+        const { data, error, count } = await (q as unknown as Promise<Result>);
+        if (error) throw error;
+        return { rows: (data ?? []) as ProductRow[], count: count ?? 0 };
+      }
+
+      // Default: three tiers — in-stock → by_order → out-of-stock
+      const inCountRes = await (applyCommon(table().select("*", { count: "exact", head: true })).eq("stock_status", "พร้อมจัดส่ง") as unknown as Promise<Result>);
+      const byoCountRes = await (applyCommon(table().select("*", { count: "exact", head: true })).eq("fulfillment_type", "by_order") as unknown as Promise<Result>);
+      const outCountRes = await (applyCommon(table().select("*", { count: "exact", head: true })).eq("stock_status", "สินค้าหมด") as unknown as Promise<Result>);
       const inCount = inCountRes.count ?? 0;
+      const byoCount = byoCountRes.count ?? 0;
       const outCount = outCountRes.count ?? 0;
       const rows: Record<string, unknown>[] = [];
+
+      // Tier 1: in-stock
       if (from < inCount) {
-        const inTo = Math.min(to, inCount - 1);
-        const r = await (applyCommon(supabase.from("synnex_products").select("*")).neq("stock_status", "สินค้าหมด").range(from, inTo) as unknown as Promise<Result>);
+        const t1To = Math.min(to, inCount - 1);
+        const r = await (applyCommon(table().select("*")).eq("stock_status", "พร้อมจัดส่ง").range(from, t1To) as unknown as Promise<Result>);
         if (r.error) throw r.error;
         rows.push(...(r.data ?? []));
       }
-      if (to >= inCount && outCount > 0) {
-        const outFrom = Math.max(0, from - inCount);
-        const outTo = to - inCount;
-        const r = await (applyCommon(supabase.from("synnex_products").select("*")).eq("stock_status", "สินค้าหมด").range(outFrom, outTo) as unknown as Promise<Result>);
+      // Tier 2: by_order
+      if (to >= inCount && byoCount > 0) {
+        const t2From = Math.max(0, from - inCount);
+        const t2To = Math.min(to - inCount, byoCount - 1);
+        if (t2From <= t2To) {
+          const r = await (applyCommon(table().select("*")).eq("fulfillment_type", "by_order").range(t2From, t2To) as unknown as Promise<Result>);
+          if (r.error) throw r.error;
+          rows.push(...(r.data ?? []));
+        }
+      }
+      // Tier 3: out-of-stock (stock items only; by_order already covered above)
+      if (to >= inCount + byoCount && outCount > 0) {
+        const t3From = Math.max(0, from - inCount - byoCount);
+        const t3To = to - inCount - byoCount;
+        const r = await (applyCommon(table().select("*")).eq("stock_status", "สินค้าหมด").eq("fulfillment_type", "stock").range(t3From, t3To) as unknown as Promise<Result>);
         if (r.error) throw r.error;
         rows.push(...(r.data ?? []));
       }
-      return { rows: rows as unknown as ProductRow[], count: inCount + outCount };
+      return { rows: rows as unknown as ProductRow[], count: inCount + byoCount + outCount };
     },
   });
 
