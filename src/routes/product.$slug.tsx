@@ -223,7 +223,7 @@ function ProductDetail() {
                     </div>
                   );
                 }
-                const _unused = 0; void _unused;
+                
                 return (
                   <div className="mt-5">
                     <div className="flex flex-wrap items-center gap-2">
