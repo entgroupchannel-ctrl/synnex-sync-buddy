@@ -1016,6 +1016,7 @@ function HomePage() {
                             <span className="text-[11px] text-slate-600">{p.stock_status ?? "—"}</span>
                           </div>
                         )}
+                        {priced && !byOrder && <DeliveryHint category={p.category} />}
                       </div>
                       {priced ? (
                         available ? (
