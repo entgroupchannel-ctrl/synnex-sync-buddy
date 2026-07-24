@@ -33,6 +33,8 @@ function CartPage() {
   const { t } = useLanguage();
   const [recent, setRecent] = useState<RecentItem[]>([]);
   const { user } = useSupabaseUser();
+  const [shipOpts, setShipOpts] = useState<ShippingOption[]>([]);
+  const totalWeight = items.reduce((s, i) => s + i.qty, 0) || 1;
 
   useEffect(() => {
     try {
@@ -41,6 +43,17 @@ function CartPage() {
       setRecent(arr.slice(0, 4));
     } catch { /* ignore */ }
   }, []);
+
+  useEffect(() => {
+    if (items.length === 0) { setShipOpts([]); return; }
+    let cancelled = false;
+    getShippingOptions(total, totalWeight).then((opts) => { if (!cancelled) setShipOpts(opts); });
+    return () => { cancelled = true; };
+  }, [total, totalWeight, items.length]);
+
+  const cheapest = shipOpts[0] ?? null;
+  const nextFree = shipOpts.find((o) => o.freeThreshold && total < o.freeThreshold) ?? null;
+
 
   // Persist cart snapshot for logged-in users so the reminder job can email them.
   useEffect(() => {
