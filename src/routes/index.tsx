@@ -620,7 +620,6 @@ function HomePage() {
                     const selling = getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier) ?? 0;
                     const orig = (p as { price?: number | null }).price ?? 0;
                     const pct = orig > 0 && selling > 0 && selling < orig ? Math.round((1 - selling / orig) * 100) : 0;
-                    const lowStock = p.stock_status === "พร้อมจัดส่ง" && (p.stock_qty ?? 999) < 10;
                     return (
                       <Link
                         key={p.id}
@@ -631,11 +630,9 @@ function HomePage() {
                         {pct > 0 && (
                           <div className="absolute left-1.5 top-1.5 z-10 rounded bg-red-600 px-1.5 py-0.5 text-[10px] font-black text-white shadow">-{pct}%</div>
                         )}
-                        {lowStock && (
-                          <div className="absolute right-1.5 top-1.5 z-10 rounded bg-orange-600 px-1.5 py-0.5 text-[10px] font-bold text-white shadow">
-                            เหลือ {p.stock_qty} ชิ้น
-                          </div>
-                        )}
+                        <div className="absolute right-1.5 top-1.5 z-10">
+                          <StockBadge stockQty={p.stock_qty} fulfillmentType={p.fulfillment_type} />
+                        </div>
                         <div className="grid aspect-square place-items-center bg-white p-2">
                           <ProductImage src={p.image_url} alt={p.name ?? p.sku} />
 
