@@ -20,6 +20,7 @@ import { useCart } from "@/lib/cart";
 import { useLanguage } from "@/lib/i18n";
 import { ProductImage } from "@/components/product-image";
 import { BrandLogo } from "@/components/brand-logo";
+import { StockBadge } from "@/components/stock-badge";
 
 
 /* ---------- Hero Carousel (compact, split layout) ---------- */
