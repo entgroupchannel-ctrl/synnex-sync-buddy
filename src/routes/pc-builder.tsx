@@ -18,9 +18,7 @@ import {
   X,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useCart, priceFmt } from "@/lib/cart";
-import { getSellingPrice } from "@/lib/pricing-helpers";
-import { useCustomerTier } from "@/hooks/use-customer-tier";
+import { useCart, priceFmt, getSellingPrice, useCustomerTier } from "@/lib/cart";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { ProductImage } from "@/components/product-image";
