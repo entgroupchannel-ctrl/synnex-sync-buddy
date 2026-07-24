@@ -38,7 +38,7 @@ const taxIdRe = /^\d{13}$/;
 
 function AuthPage() {
   const navigate = useNavigate();
-  const raw = useSearch({ strict: false }) as { tab?: "signin" | "b2c" | "b2b"; redirect?: string };
+  const raw = (useSearch({ strict: false, shouldThrow: false }) ?? {}) as { tab?: "signin" | "b2c" | "b2b"; redirect?: string };
   const search = { tab: raw.tab ?? "signin", redirect: raw.redirect ?? "/" };
   const [tab, setTab] = useState<"signin" | "b2c" | "b2b">(search.tab);
 
