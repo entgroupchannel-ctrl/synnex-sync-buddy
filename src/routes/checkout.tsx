@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { ArrowLeft, Banknote, Truck, Building2, User, Loader2, Tag, X, CheckCircle2 } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { CheckoutTrustBox } from "@/components/trust-signals";
+import { ShippingMethodSelector } from "@/components/shipping-method-selector";
 import { getItemWeightKg, priceFmt, useCart } from "@/lib/cart";
 import { useSupabaseUser } from "@/lib/auth-sheet";
 import {
@@ -21,6 +22,11 @@ import {
   type DiscountApplied,
   type UserType,
 } from "@/lib/shipping";
+import {
+  OFFICE_ADDRESS,
+  SHIPPING_METHOD_LABEL,
+  useShippingMethod,
+} from "@/lib/shipping-method";
 
 // Thai provinces excluding BKK metro (which are listed under "free shipping" optgroup)
 const THAI_PROVINCES: string[] = [
@@ -88,14 +94,18 @@ function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false);
   const [orderCreated, setOrderCreated] = useState(false);
 
+  const [shippingMethod, setShippingMethod] = useShippingMethod();
+  const isPickup = shippingMethod === "pickup";
+  const isExpress = shippingMethod === "express";
+
   // Shipping — weight-based Kerry rule (see @/lib/shipping)
   const shipCalc = useMemo(
     () =>
       getWeightBasedShippingFee(
         items.map((i) => ({ price: i.price, qty: i.qty, weight_kg: getItemWeightKg(i) })),
-        f.shipping_province,
+        isPickup ? OFFICE_ADDRESS.province : f.shipping_province,
       ),
-    [items, f.shipping_province],
+    [items, f.shipping_province, isPickup],
   );
   const totalWeight = shipCalc.totalWeight;
 
@@ -145,7 +155,7 @@ function CheckoutPage() {
   }, [user]);
 
   const codFee = payment === "cod" ? COD_FEE : 0;
-  const shippingFee = discount?.isFreeShipping ? 0 : shipCalc.fee;
+  const shippingFee = isPickup ? 0 : discount?.isFreeShipping ? 0 : shipCalc.fee;
   const discountAmount = discount?.discountAmount ?? 0;
   const grandTotal = Math.max(0, subtotal + shippingFee + codFee - discountAmount);
 
@@ -188,7 +198,20 @@ function CheckoutPage() {
     e.preventDefault();
     if (items.length === 0) { toast.error("ตะกร้าว่างเปล่า"); return; }
     setErrors({});
-    const base = shippingSchema.safeParse(f);
+
+    // For pickup, only validate contact info + recipient name/phone (fall back to customer).
+    const formToValidate: Fields = isPickup
+      ? {
+          ...f,
+          shipping_name: f.shipping_name || f.customer_name,
+          shipping_phone: f.shipping_phone || f.customer_phone,
+          shipping_address: OFFICE_ADDRESS.line1,
+          shipping_district: OFFICE_ADDRESS.district,
+          shipping_province: OFFICE_ADDRESS.province,
+          shipping_postcode: OFFICE_ADDRESS.postcode,
+        }
+      : f;
+    const base = shippingSchema.safeParse(formToValidate);
     if (!base.success) {
       const errs: Record<string, string> = {};
       for (const iss of base.error.issues) errs[iss.path.join(".")] = iss.message;
@@ -212,7 +235,13 @@ function CheckoutPage() {
     setSubmitting(true);
     try {
       const customerType = user ? (taxInvoice ? "b2b" : "b2c") : "guest";
-      const fullAddr = [f.shipping_address, f.shipping_district, f.shipping_province, f.shipping_postcode].filter(Boolean).join(" ");
+      const fullAddr = isPickup
+        ? `[รับที่สำนักงาน] ${OFFICE_ADDRESS.name} — ${OFFICE_ADDRESS.line1} ${OFFICE_ADDRESS.line2}`
+        : [f.shipping_address, f.shipping_district, f.shipping_province, f.shipping_postcode].filter(Boolean).join(" ");
+
+      const methodName = SHIPPING_METHOD_LABEL[shippingMethod];
+      const provider =
+        shippingMethod === "pickup" ? "pickup" : shippingMethod === "express" ? "express-manual" : "kerry";
 
       const { data: order, error: oErr } = await supabase
         .from("orders")
@@ -232,8 +261,8 @@ function CheckoutPage() {
           shipping_province: base.data.shipping_province,
           shipping_postcode: base.data.shipping_postcode,
           shipping_method_id: null,
-          shipping_method_name: "Kerry Express",
-          shipping_provider: "kerry",
+          shipping_method_name: methodName,
+          shipping_provider: provider,
           shipping_weight_kg: totalWeight,
           shipping_fee: shippingFee,
           discount_code: discount?.code ?? null,
@@ -375,7 +404,31 @@ function CheckoutPage() {
               </div>
             </section>
 
-            {/* Shipping */}
+            {/* Shipping method selector */}
+            <section className="space-y-3 rounded-lg border bg-white p-6">
+              <h2 className="font-bold text-[color:var(--brand-navy)]">🚚 วิธีรับสินค้า</h2>
+              <ShippingMethodSelector className="!mt-0" />
+            </section>
+
+            {isPickup && (
+              <section className="space-y-2 rounded-lg border-2 border-green-600 bg-green-50 p-6">
+                <h2 className="font-bold text-[color:var(--brand-navy)]">รับสินค้าที่สำนักงาน</h2>
+                <p className="text-sm text-gray-700">
+                  คุณเลือกรับสินค้าที่สำนักงาน — ไม่ต้องกรอกที่อยู่จัดส่ง
+                </p>
+                <div className="mt-2 rounded-md bg-white p-3 text-xs text-gray-700">
+                  <div className="font-semibold text-gray-900">{OFFICE_ADDRESS.name}</div>
+                  <div>{OFFICE_ADDRESS.line1}</div>
+                  <div>{OFFICE_ADDRESS.line2}</div>
+                  <div className="mt-1 text-gray-500">
+                    เวลาทำการ: {OFFICE_ADDRESS.hours} · โทรนัดหมาย: {OFFICE_ADDRESS.phone}
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {!isPickup && (
+            <>
             <section className="space-y-4 rounded-lg border bg-white p-6">
               <h2 className="font-bold text-[color:var(--brand-navy)]">ที่อยู่จัดส่ง</h2>
               <div className="grid gap-4 sm:grid-cols-2">
@@ -475,8 +528,8 @@ function CheckoutPage() {
                 </div>
               </div>
             </section>
-
-            {/* Discount code */}
+            </>
+            )}
             <section className="space-y-3 rounded-lg border bg-white p-6">
               <h2 className="flex items-center gap-2 font-bold text-[color:var(--brand-navy)]">
                 <Tag className="h-5 w-5" /> โค้ดส่วนลด / Discount Code
@@ -589,6 +642,10 @@ function CheckoutPage() {
 
           <aside className="h-fit space-y-3 rounded-lg border bg-white p-5 lg:sticky lg:top-32">
             <h2 className="font-bold text-[color:var(--brand-navy)]">รายการสั่งซื้อ</h2>
+            <div className="rounded-md bg-slate-50 px-3 py-2 text-xs text-slate-700">
+              <div className="text-[10px] uppercase tracking-wide text-slate-500">วิธีรับสินค้า</div>
+              <div className="font-semibold text-slate-800">{SHIPPING_METHOD_LABEL[shippingMethod]}</div>
+            </div>
             <div className="max-h-56 space-y-2 overflow-y-auto text-sm">
               {items.map((i) => (
                 <div key={i.id} className="flex justify-between gap-2">

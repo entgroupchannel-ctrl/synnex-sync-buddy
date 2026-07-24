@@ -18,6 +18,7 @@ import { computeProductPrice, useProductPrice } from "@/hooks/useProductPrice";
 import { triggerAuthPrompt, useSupabaseUser } from "@/lib/auth-sheet";
 import { usePurchaseHistoryForSku } from "@/lib/reorder";
 import { LineQrDialog } from "@/components/line-qr-dialog";
+import { ShippingMethodSelector } from "@/components/shipping-method-selector";
 
 export const Route = createFileRoute("/product/$slug")({
   ssr: false,
@@ -403,6 +404,8 @@ function ProductDetail() {
                       02-045-6104 · 095-739-1053 · 084-046-1315
                     </div>
                   </div>
+
+                  <ShippingMethodSelector />
 
                   <ProductTrustBar />
 
