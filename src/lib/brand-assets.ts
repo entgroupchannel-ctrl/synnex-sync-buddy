@@ -16,6 +16,7 @@ import WD from "@/assets/brands/WD.png.asset.json";
 
 export const BRAND_LOGO_URLS: Record<string, string> = {
   ACER: ACER.url,
+  APPLE: APPLE.url,
   ASUS: ASUS.url,
   CANON: CANON.url,
   DAHUA: DAHUA.url,
