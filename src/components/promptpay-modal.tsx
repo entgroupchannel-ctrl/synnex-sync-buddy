@@ -13,11 +13,20 @@ type Props = {
   onPaid: () => void;
 };
 
+type BankAccount = {
+  bank: string;
+  account: string;
+  name: string;
+  branch?: string;
+};
+
 type ChargeResp = {
   qr_code_url?: string;
   expires_at?: string;
   charge_id?: string;
   requires_manual_transfer?: boolean;
+  bank_accounts?: BankAccount[];
+  amount?: number;
 };
 
 const BANKS = ["KBank", "SCB", "กรุงไทย", "กรุงเทพ", "ทหารไทย"];
