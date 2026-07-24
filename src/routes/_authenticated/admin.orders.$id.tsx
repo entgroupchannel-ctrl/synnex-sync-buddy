@@ -355,6 +355,12 @@ function AdminOrderDetail() {
           </div>
         </div>
 
+        {hasByOrder && (
+          <div className="mb-4 rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-900">
+            <div className="font-semibold">📋 ออเดอร์นี้มีสินค้า By Order</div>
+            <div>ต้องสั่ง distributor ก่อน — ระยะเวลาจัดหา ~30 วัน</div>
+          </div>
+        )}
         <div className="grid gap-6 lg:grid-cols-[360px_1fr]">
           {/* LEFT */}
           <div className="space-y-4">
