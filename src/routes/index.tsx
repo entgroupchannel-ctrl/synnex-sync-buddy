@@ -522,91 +522,98 @@ function HomePage() {
     </div>
   );
 
+  const searchMode = !!search.q.trim();
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <SiteHeader />
 
-      {/* Quick category icons */}
-      <QuickCategoryGrid />
+      {!searchMode && (
+        <>
+          {/* Quick category icons */}
+          <QuickCategoryGrid />
 
-      {/* Hero Carousel */}
-      <HeroCarousel
-        onBrowse={() => document.getElementById("catalog")?.scrollIntoView({ behavior: "smooth" })}
-        onReady={() => update({ ready: true })}
-      />
+          {/* Hero Carousel */}
+          <HeroCarousel
+            onBrowse={() => document.getElementById("catalog")?.scrollIntoView({ behavior: "smooth" })}
+            onReady={() => update({ ready: true })}
+          />
 
-      {/* Flash Deals */}
-      {(flashQ.data?.length ?? 0) > 0 && (
-        <section className="border-b bg-gradient-to-r from-orange-50 to-red-50">
-          <div className="mx-auto max-w-7xl px-4 py-5">
-            <div className="mb-3 flex items-center gap-3">
-              <div className="inline-flex items-center gap-1.5 rounded-md bg-[color:var(--brand-orange)] px-2.5 py-1 text-xs font-bold text-white">
-                <Flame className="h-3.5 w-3.5" /> ดีลพิเศษ
-              </div>
-              <div className="font-mono text-sm font-bold text-[color:var(--brand-orange-dark)]">{countdown}</div>
-              <div className="ml-auto text-xs text-slate-500">รีเซ็ตทุก 24 ชม.</div>
-            </div>
-            <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
-              {flashQ.data!.map((p) => {
-                const selling = getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier) ?? 0;
-                const orig = (p as { price?: number | null }).price ?? 0;
-                const pct = orig > 0 && selling > 0 && selling < orig ? Math.round((1 - selling / orig) * 100) : 0;
-                const lowStock = p.stock_status === "พร้อมจัดส่ง" && (p.stock_qty ?? 999) < 10;
-                return (
-                  <Link
-                    key={p.id}
-                    to="/product/$slug"
-                    params={{ slug: p.slug || p.id }}
-                    className="group relative w-40 shrink-0 overflow-hidden rounded-lg border-2 border-orange-200 bg-white transition hover:border-[color:var(--brand-orange)] hover:shadow-md md:w-44"
-                  >
-                    {pct > 0 && (
-                      <div className="absolute left-1.5 top-1.5 z-10 rounded bg-red-600 px-1.5 py-0.5 text-[10px] font-black text-white shadow">-{pct}%</div>
-                    )}
-                    {lowStock && (
-                      <div className="absolute right-1.5 top-1.5 z-10 rounded bg-orange-600 px-1.5 py-0.5 text-[10px] font-bold text-white shadow">
-                        เหลือ {p.stock_qty} ชิ้น
-                      </div>
-                    )}
-                    <div className="grid aspect-square place-items-center bg-white p-2">
-                      <ProductImage src={p.image_url} alt={p.name ?? p.sku} />
+          {/* Flash Deals */}
+          {(flashQ.data?.length ?? 0) > 0 && (
+            <section className="border-b bg-gradient-to-r from-orange-50 to-red-50">
+              <div className="mx-auto max-w-7xl px-4 py-5">
+                <div className="mb-3 flex items-center gap-3">
+                  <div className="inline-flex items-center gap-1.5 rounded-md bg-[color:var(--brand-orange)] px-2.5 py-1 text-xs font-bold text-white">
+                    <Flame className="h-3.5 w-3.5" /> ดีลพิเศษ
+                  </div>
+                  <div className="font-mono text-sm font-bold text-[color:var(--brand-orange-dark)]">{countdown}</div>
+                  <div className="ml-auto text-xs text-slate-500">รีเซ็ตทุก 24 ชม.</div>
+                </div>
+                <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
+                  {flashQ.data!.map((p) => {
+                    const selling = getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier) ?? 0;
+                    const orig = (p as { price?: number | null }).price ?? 0;
+                    const pct = orig > 0 && selling > 0 && selling < orig ? Math.round((1 - selling / orig) * 100) : 0;
+                    const lowStock = p.stock_status === "พร้อมจัดส่ง" && (p.stock_qty ?? 999) < 10;
+                    return (
+                      <Link
+                        key={p.id}
+                        to="/product/$slug"
+                        params={{ slug: p.slug || p.id }}
+                        className="group relative w-40 shrink-0 overflow-hidden rounded-lg border-2 border-orange-200 bg-white transition hover:border-[color:var(--brand-orange)] hover:shadow-md md:w-44"
+                      >
+                        {pct > 0 && (
+                          <div className="absolute left-1.5 top-1.5 z-10 rounded bg-red-600 px-1.5 py-0.5 text-[10px] font-black text-white shadow">-{pct}%</div>
+                        )}
+                        {lowStock && (
+                          <div className="absolute right-1.5 top-1.5 z-10 rounded bg-orange-600 px-1.5 py-0.5 text-[10px] font-bold text-white shadow">
+                            เหลือ {p.stock_qty} ชิ้น
+                          </div>
+                        )}
+                        <div className="grid aspect-square place-items-center bg-white p-2">
+                          <ProductImage src={p.image_url} alt={p.name ?? p.sku} />
 
-                    </div>
-                    <div className="border-t p-2">
-                      <div className="line-clamp-2 min-h-9 text-xs font-medium">{p.name ?? p.sku}</div>
-                      <div className="mt-1 flex items-baseline gap-1.5">
-                        <div className="text-base font-black text-[color:var(--brand-orange)]">
-                          {displayPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier)}
                         </div>
-                        {pct > 0 && <div className="text-[10px] text-slate-400 line-through">฿{orig.toLocaleString()}</div>}
-                      </div>
-                      <div className="mt-1 font-mono text-[10px] font-bold text-red-600">⏱ {countdown}</div>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-        </section>
+                        <div className="border-t p-2">
+                          <div className="line-clamp-2 min-h-9 text-xs font-medium">{p.name ?? p.sku}</div>
+                          <div className="mt-1 flex items-baseline gap-1.5">
+                            <div className="text-base font-black text-[color:var(--brand-orange)]">
+                              {displayPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier)}
+                            </div>
+                            {pct > 0 && <div className="text-[10px] text-slate-400 line-through">฿{orig.toLocaleString()}</div>}
+                          </div>
+                          <div className="mt-1 font-mono text-[10px] font-bold text-red-600">⏱ {countdown}</div>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* Microsoft Software (featured) */}
+          <MicrosoftFeatured />
+
+          {/* Popular Notebooks */}
+          <PopularNotebooks />
+
+          {/* Today's Best Deals */}
+          <FrequentlyBought />
+          <TodaysBestDeals />
+
+          {/* Network & Security */}
+          <NetworkSecurity />
+
+          {/* Storage Deals */}
+          <StorageDeals />
+
+          {/* Shop by Brand */}
+          <ShopByBrand />
+        </>
       )}
 
-      {/* Microsoft Software (featured) */}
-      <MicrosoftFeatured />
-
-      {/* Popular Notebooks */}
-      <PopularNotebooks />
-
-      {/* Today's Best Deals */}
-      <FrequentlyBought />
-      <TodaysBestDeals />
-
-      {/* Network & Security */}
-      <NetworkSecurity />
-
-      {/* Storage Deals */}
-      <StorageDeals />
-
-      {/* Shop by Brand */}
-      <ShopByBrand />
 
       {/* Catalog */}
       <div id="product-grid" className="mx-auto flex max-w-7xl gap-6 px-4 py-6 scroll-mt-20">
