@@ -19,6 +19,7 @@ import { Route as TrackOrderNumberRouteImport } from './routes/track.$orderNumbe
 import { Route as ProductSlugRouteImport } from './routes/product.$slug'
 import { Route as OrderOrderNumberRouteImport } from './routes/order.$orderNumber'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
+import { Route as AuthenticatedMyOrdersRouteImport } from './routes/_authenticated/my-orders'
 import { Route as AuthenticatedMyAccountRouteImport } from './routes/_authenticated/my-account'
 import { Route as AuthenticatedMyAccountIndexRouteImport } from './routes/_authenticated/my-account.index'
 import { Route as AuthenticatedMyAccountProfileRouteImport } from './routes/_authenticated/my-account.profile'
@@ -83,6 +84,11 @@ const AuthCallbackRoute = AuthCallbackRouteImport.update({
   id: '/callback',
   path: '/callback',
   getParentRoute: () => AuthRoute,
+} as any)
+const AuthenticatedMyOrdersRoute = AuthenticatedMyOrdersRouteImport.update({
+  id: '/my-orders',
+  path: '/my-orders',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedMyAccountRoute = AuthenticatedMyAccountRouteImport.update({
   id: '/my-account',
@@ -180,6 +186,7 @@ export interface FileRoutesByFullPath {
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/my-account': typeof AuthenticatedMyAccountRouteWithChildren
+  '/my-orders': typeof AuthenticatedMyOrdersRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/order/$orderNumber': typeof OrderOrderNumberRoute
   '/product/$slug': typeof ProductSlugRoute
@@ -205,6 +212,7 @@ export interface FileRoutesByTo {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
+  '/my-orders': typeof AuthenticatedMyOrdersRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/order/$orderNumber': typeof OrderOrderNumberRoute
   '/product/$slug': typeof ProductSlugRoute
@@ -233,6 +241,7 @@ export interface FileRoutesById {
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/_authenticated/my-account': typeof AuthenticatedMyAccountRouteWithChildren
+  '/_authenticated/my-orders': typeof AuthenticatedMyOrdersRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/order/$orderNumber': typeof OrderOrderNumberRoute
   '/product/$slug': typeof ProductSlugRoute
@@ -261,6 +270,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/contact'
     | '/my-account'
+    | '/my-orders'
     | '/auth/callback'
     | '/order/$orderNumber'
     | '/product/$slug'
@@ -286,6 +296,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/contact'
+    | '/my-orders'
     | '/auth/callback'
     | '/order/$orderNumber'
     | '/product/$slug'
@@ -313,6 +324,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/contact'
     | '/_authenticated/my-account'
+    | '/_authenticated/my-orders'
     | '/auth/callback'
     | '/order/$orderNumber'
     | '/product/$slug'
@@ -416,6 +428,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/auth/callback'
       preLoaderRoute: typeof AuthCallbackRouteImport
       parentRoute: typeof AuthRoute
+    }
+    '/_authenticated/my-orders': {
+      id: '/_authenticated/my-orders'
+      path: '/my-orders'
+      fullPath: '/my-orders'
+      preLoaderRoute: typeof AuthenticatedMyOrdersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/my-account': {
       id: '/_authenticated/my-account'
@@ -594,6 +613,7 @@ const AuthenticatedAdminPricingRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedMyAccountRoute: typeof AuthenticatedMyAccountRouteWithChildren
+  AuthenticatedMyOrdersRoute: typeof AuthenticatedMyOrdersRoute
   AuthenticatedAdminCustomersRoute: typeof AuthenticatedAdminCustomersRouteWithChildren
   AuthenticatedAdminDiscountCodesRoute: typeof AuthenticatedAdminDiscountCodesRoute
   AuthenticatedAdminOrdersRoute: typeof AuthenticatedAdminOrdersRouteWithChildren
@@ -603,6 +623,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedMyAccountRoute: AuthenticatedMyAccountRouteWithChildren,
+  AuthenticatedMyOrdersRoute: AuthenticatedMyOrdersRoute,
   AuthenticatedAdminCustomersRoute:
     AuthenticatedAdminCustomersRouteWithChildren,
   AuthenticatedAdminDiscountCodesRoute: AuthenticatedAdminDiscountCodesRoute,
