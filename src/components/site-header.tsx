@@ -27,15 +27,74 @@ export function SiteHeader() {
   const { count } = useCart();
   const navigate = useNavigate();
   const [q, setQ] = useState("");
+  const [suggestOpen, setSuggestOpen] = useState(false);
+  const [debouncedQ, setDebouncedQ] = useState("");
+  const searchWrapRef = useRef<HTMLDivElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { user } = useSupabaseUser();
   const { lang, t, setLang } = useLanguage();
 
+  // Debounce for suggestion query
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedQ(q.trim()), 300);
+    return () => clearTimeout(t);
+  }, [q]);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      if (!searchWrapRef.current?.contains(e.target as Node)) setSuggestOpen(false);
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, []);
+
+  const suggestionsQ = useQuery({
+    queryKey: ["search-suggest", debouncedQ],
+    enabled: debouncedQ.length >= 2 && suggestOpen,
+    queryFn: async () => {
+      const s = debouncedQ.replace(/[%,]/g, "");
+      const { data: products } = await supabase
+        .from("synnex_products")
+        .select("id, sku, slug, name, brand, selling_price, image_url")
+        .eq("price_approved", true)
+        .gt("selling_price", 0)
+        .or(`name.ilike.%${s}%,sku.ilike.%${s}%,brand.ilike.%${s}%`)
+        .order("selling_price", { ascending: true })
+        .limit(5);
+      const { data: brandRows } = await supabase
+        .from("synnex_products")
+        .select("brand", { count: "exact", head: false })
+        .eq("price_approved", true)
+        .ilike("brand", `%${s}%`)
+        .limit(200);
+      const map = new Map<string, number>();
+      for (const r of brandRows ?? []) {
+        const b = (r as { brand: string | null }).brand;
+        if (b) map.set(b, (map.get(b) ?? 0) + 1);
+      }
+      const brands = Array.from(map.entries())
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3)
+        .map(([brand, count]) => ({ brand, count }));
+      return { products: products ?? [], brands };
+    },
+    staleTime: 30_000,
+  });
+
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    navigate({ to: "/", search: { q, category: "all" } as never });
+    setSuggestOpen(false);
+    navigate({ to: "/", search: { q: q.trim(), category: "all" } as never });
   };
+
+  const clearSearch = () => {
+    setQ("");
+    setSuggestOpen(false);
+    navigate({ to: "/", search: {} as never });
+  };
+
 
   const signOut = async () => {
     await supabase.auth.signOut();
