@@ -4,6 +4,22 @@ import { useQuery } from "@tanstack/react-query";
 import { Wrench, ClipboardList, CheckCircle2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { ProductImage } from "@/components/product-image";
+import cpuFallback from "@/assets/pc-parts/cpu.jpg";
+import mbFallback from "@/assets/pc-parts/mb.jpg";
+import ramFallback from "@/assets/pc-parts/ram.jpg";
+import gpuFallback from "@/assets/pc-parts/gpu.jpg";
+import ssdFallback from "@/assets/pc-parts/ssd.jpg";
+import osFallback from "@/assets/pc-parts/os.jpg";
+
+const PART_FALLBACK: Record<string, string> = {
+  CPU: cpuFallback,
+  MB: mbFallback,
+  RAM: ramFallback,
+  GPU: gpuFallback,
+  SSD: ssdFallback,
+  Storage: ssdFallback,
+  OS: osFallback,
+};
 
 type Part = {
   icon: string;
