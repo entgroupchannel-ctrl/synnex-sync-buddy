@@ -4,6 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { priceFmt } from "@/lib/cart";
 import { Package, FileText, Receipt } from "lucide-react";
 import { STATUS_META, PAYMENT_STATUS_META, isValidStatus } from "@/lib/order-helpers";
+import { ReorderButton } from "@/components/reorder-dialog";
+import { FrequentlyBought } from "@/components/frequently-bought";
 
 export const Route = createFileRoute("/_authenticated/my-account/orders")({
   head: () => ({
