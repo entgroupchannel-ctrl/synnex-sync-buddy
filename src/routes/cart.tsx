@@ -46,6 +46,21 @@ function CartPage() {
     } catch { /* ignore */ }
   }, []);
 
+  const skus = useMemo(() => items.map((i) => i.sku).filter(Boolean), [items]);
+  const fulfillQ = useQuery({
+    enabled: skus.length > 0,
+    queryKey: ["cart-fulfill", skus.join(",")],
+    queryFn: async () => {
+      const { data } = await supabase.from("synnex_products").select("sku,fulfillment_type").in("sku", skus);
+      const map: Record<string, string | null> = {};
+      for (const r of data ?? []) map[(r as { sku: string }).sku] = (r as { fulfillment_type: string | null }).fulfillment_type;
+      return map;
+    },
+    staleTime: 60_000,
+  });
+  const fulfillMap = fulfillQ.data ?? {};
+  const hasByOrder = items.some((i) => fulfillMap[i.sku] === "by_order");
+
   useEffect(() => {
     if (items.length === 0) { setShipOpts([]); return; }
     let cancelled = false;
