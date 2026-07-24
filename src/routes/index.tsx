@@ -149,6 +149,8 @@ function HomePage() {
         .from("synnex_products")
         .select("*")
         .eq("stock_status", "พร้อมจัดส่ง")
+        .eq("price_approved", true)
+        .gt("selling_price", 0)
         .not("image_url", "is", null)
         .not("price", "is", null)
         .order("price", { ascending: false })
