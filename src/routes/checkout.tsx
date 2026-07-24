@@ -91,7 +91,7 @@ function CheckoutPage() {
   const shipCalc = useMemo(
     () =>
       getWeightBasedShippingFee(
-        items.map((i) => ({ price: i.price, qty: i.qty, weight_kg: 1 })),
+        items.map((i) => ({ price: i.price, qty: i.qty, weight_kg: getItemWeightKg(i) })),
         f.shipping_province,
       ),
     [items, f.shipping_province],
