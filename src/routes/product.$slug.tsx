@@ -253,7 +253,7 @@ function ProductDetail() {
                       <Badge className={ready ? "bg-green-100 text-green-800 hover:bg-green-100" : "bg-red-100 text-red-700 hover:bg-red-100"}>
                         {p.stock_status ?? "—"}
                       </Badge>
-                      <StockBadge stockQty={(p as { stock_qty?: number | null }).stock_qty} fulfillmentType={(p as { fulfillment_type?: string | null }).fulfillment_type} />
+                      <StockBadge stockQty={(p as { stock_qty?: number | null }).stock_qty} fulfillmentType={(p as { fulfillment_type?: string | null }).fulfillment_type} stockStatus={(p as { stock_status?: string | null }).stock_status} distributor={(p as { distributor?: string | null }).distributor} />
                     </div>
                   );
                 }
@@ -270,7 +270,7 @@ function ProductDetail() {
                       <Badge className={ready ? "bg-green-100 text-green-800 hover:bg-green-100" : "bg-red-100 text-red-700 hover:bg-red-100"}>
                         {p.stock_status ?? "—"}
                       </Badge>
-                      <StockBadge stockQty={(p as { stock_qty?: number | null }).stock_qty} fulfillmentType={(p as { fulfillment_type?: string | null }).fulfillment_type} />
+                      <StockBadge stockQty={(p as { stock_qty?: number | null }).stock_qty} fulfillmentType={(p as { fulfillment_type?: string | null }).fulfillment_type} stockStatus={(p as { stock_status?: string | null }).stock_status} distributor={(p as { distributor?: string | null }).distributor} />
                     </div>
                     <div className="mt-1 flex flex-wrap items-baseline gap-3">
                       <div className="text-4xl font-black text-[color:var(--brand-orange)]">

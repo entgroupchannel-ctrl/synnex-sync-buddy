@@ -633,7 +633,7 @@ function HomePage() {
                           <div className="absolute left-1.5 top-1.5 z-10 rounded bg-red-600 px-1.5 py-0.5 text-[10px] font-black text-white shadow">-{pct}%</div>
                         )}
                         <div className="absolute right-1.5 top-1.5 z-10">
-                          <StockBadge stockQty={p.stock_qty} fulfillmentType={p.fulfillment_type} />
+                          <StockBadge stockQty={p.stock_qty} fulfillmentType={p.fulfillment_type} stockStatus={p.stock_status} distributor={p.distributor} />
                         </div>
                         <div className="grid aspect-square place-items-center bg-white p-2">
                           <ProductImage src={p.image_url} alt={p.name ?? p.sku} />
@@ -916,7 +916,7 @@ function HomePage() {
                       <div className="mt-auto flex items-center gap-2 pt-1">
                         <span className={`inline-block h-2 w-2 rounded-full ${ready || byOrder ? "bg-green-500" : "bg-red-500"}`} />
                         <span className="text-xs text-slate-600">{byOrder ? "By Order" : (p.stock_status ?? "—")}</span>
-                        <StockBadge stockQty={p.stock_qty} fulfillmentType={p.fulfillment_type} />
+                        <StockBadge stockQty={p.stock_qty} fulfillmentType={p.fulfillment_type} stockStatus={p.stock_status} distributor={p.distributor} />
                       </div>
                     </div>
                     <div className="flex w-40 shrink-0 flex-col items-end justify-between gap-1">
@@ -967,7 +967,7 @@ function HomePage() {
                   <div key={p.id} className="group relative flex flex-col overflow-hidden rounded-lg border bg-white transition hover:shadow-lg">
                     <BrandLogo brand={p.brand} />
                     <div className="absolute right-2 top-2 z-10">
-                      <StockBadge stockQty={p.stock_qty} fulfillmentType={p.fulfillment_type} />
+                      <StockBadge stockQty={p.stock_qty} fulfillmentType={p.fulfillment_type} stockStatus={p.stock_status} distributor={p.distributor} />
                     </div>
                     <Link to="/product/$slug" params={{ slug }} className="grid aspect-square place-items-center bg-white p-3">
                       <ProductImage

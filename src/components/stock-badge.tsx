@@ -3,6 +3,8 @@ import type { ReactElement } from "react";
 type Props = {
   stockQty?: number | null;
   fulfillmentType?: string | null;
+  stockStatus?: string | null;
+  distributor?: string | null;
   className?: string;
 };
 
@@ -15,13 +17,21 @@ const styles: Record<string, string> = {
   blue: "bg-[#dbeafe] text-[#1d4ed8]",
 };
 
-export function getStockBadge(stockQty?: number | null, fulfillmentType?: string | null):
+export function getStockBadge(
+  stockQty?: number | null,
+  fulfillmentType?: string | null,
+  stockStatus?: string | null,
+  distributor?: string | null,
+):
   | { label: string; tone: keyof typeof styles }
   | null {
   if (fulfillmentType === "by_order") return { label: "By Order ~30 วัน", tone: "blue" };
-  const q = stockQty ?? null;
-  if (q === null) return null;
-  if (q <= 0) return { label: "สินค้าหมด", tone: "gray" };
+  const q = stockQty ?? 0;
+  // Out of stock explicit
+  if (stockStatus === "สินค้าหมด") return { label: "สินค้าหมด", tone: "gray" };
+  // No reliable qty (ADVICE or qty=0 but ready): show nothing, ready state handled elsewhere
+  const unreliable = (distributor ?? "").toUpperCase() === "ADVICE";
+  if (unreliable || q <= 0) return null;
   if (q === 1) return { label: "เหลือ 1 ชิ้นสุดท้าย!", tone: "red" };
   if (q <= 4) return { label: `เหลือ ${q} ชิ้น`, tone: "red" };
   if (q <= 9) return { label: "เหลือน้อย", tone: "orange" };
@@ -30,8 +40,8 @@ export function getStockBadge(stockQty?: number | null, fulfillmentType?: string
   return null;
 }
 
-export function StockBadge({ stockQty, fulfillmentType, className = "" }: Props): ReactElement | null {
-  const b = getStockBadge(stockQty, fulfillmentType);
+export function StockBadge({ stockQty, fulfillmentType, stockStatus, distributor, className = "" }: Props): ReactElement | null {
+  const b = getStockBadge(stockQty, fulfillmentType, stockStatus, distributor);
   if (!b) return null;
   return (
     <span
