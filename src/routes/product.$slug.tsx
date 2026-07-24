@@ -223,7 +223,7 @@ function ProductDetail() {
                     </div>
                   );
                 }
-                const guestSaving = pr.userType === "guest" && p.member_price ? Number(p.selling_price ?? 0) - Number(p.member_price) : 0;
+                const _unused = 0; void _unused;
                 return (
                   <div className="mt-5">
                     <div className="flex flex-wrap items-center gap-2">
