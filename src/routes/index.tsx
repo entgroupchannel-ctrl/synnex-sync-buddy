@@ -27,6 +27,7 @@ import {
   QuickCategoryGrid,
   TodaysBestDeals,
   PopularNotebooks,
+  ComputerSets,
   ShopByBrand,
   TrustBadges,
   RecentlyViewed,
