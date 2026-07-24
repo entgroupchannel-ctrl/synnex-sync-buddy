@@ -137,6 +137,7 @@ function SyncPage() {
   const [importOpen, setImportOpen] = useState(false);
   const [importHtml, setImportHtml] = useState("");
   const [previewCount, setPreviewCount] = useState<number | null>(null);
+  const [tab, setTab] = useState<"products" | "logs">("products");
 
   useEffect(() => {
     const t = setTimeout(() => setDebounced(search), 300);
