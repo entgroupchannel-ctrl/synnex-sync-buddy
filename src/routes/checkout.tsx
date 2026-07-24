@@ -58,13 +58,7 @@ const taxSchema = z.object({
 type Fields = z.infer<typeof shippingSchema>;
 
 function CheckoutPage() {
-  const { items, total: subtotal, clear } = useCart();
-  const navigate = useNavigate();
-  const { user } = useSupabaseUser();
 
-  const [f, setF] = useState<Fields>({
-    customer_name: "", customer_phone: "", customer_email: "",
-function CheckoutPage() {
   const { items, total: subtotal, clear } = useCart();
   const navigate = useNavigate();
   const { user } = useSupabaseUser();
