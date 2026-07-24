@@ -120,6 +120,26 @@ function AboutPage() {
             </div>
           </div>
 
+          <div className="mt-6 overflow-hidden rounded-xl border border-gray-200 bg-white p-1">
+            <iframe
+              src="https://maps.google.com/maps?q=13.9320709,100.4819588&z=16&output=embed"
+              width="100%"
+              height={250}
+              style={{ border: 0, borderRadius: "12px" }}
+              allowFullScreen
+              loading="lazy"
+              title="ENT GROUP Office Location"
+            />
+          </div>
+          <a
+            href="https://www.google.com/maps/place/ENT+GROUP+Co.,Ltd./@13.9320709,100.4819588,17z"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--brand-green)] hover:underline"
+          >
+            <MapPin className="h-4 w-4" /> เปิดใน Google Maps →
+          </a>
+
           <div className="mt-6 flex flex-wrap gap-3">
             <Link to="/contact" className="rounded-md bg-[color:var(--brand-green)] px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90">ติดต่อฝ่ายขาย</Link>
             <Link to="/" className="rounded-md border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold hover:bg-slate-50">ดูสินค้าทั้งหมด</Link>
