@@ -7,10 +7,10 @@ export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
       { title: "เกี่ยวกับเรา — ENT Group Authorized Dealer ตั้งแต่ปี 2558" },
-      { name: "description", content: "บริษัท อี เอ็น ที กรุ๊ป จำกัด Authorized Dealer ของ Synnex Thailand และ VST ECS Thailand ตั้งแต่ปี 2558 จำหน่ายสินค้าไอทีราคา Dealer จริง B2B และ Consumer พร้อมใบกำกับภาษีและรับประกันศูนย์ไทย" },
+      { name: "description", content: "บริษัท อี เอ็น ที กรุ๊ป จำกัด ผู้ให้บริการโซลูชันไอทีครบวงจร สินค้าแท้ 100% ราคา Dealer จริง B2B และ Consumer พร้อมใบกำกับภาษีและรับประกันศูนย์ไทย" },
       { property: "og:type", content: "website" },
       { property: "og:title", content: "About ENT Group — Authorized IT Dealer Thailand" },
-      { property: "og:description", content: "Authorized Dealer ของ Synnex และ VST ECS ตั้งแต่ปี 2558 จำหน่ายสินค้าไอทีสำหรับองค์กรและผู้ใช้ทั่วไป" },
+      { property: "og:description", content: "ENT Group IT Shop สินค้าแท้ 100% ราคา Dealer จริง สำหรับองค์กรและผู้ใช้ทั่วไป" },
       { property: "og:url", content: "https://shop.entgroup.co.th/about" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "About ENT Group — Authorized IT Dealer Thailand" },
@@ -51,8 +51,8 @@ function AboutPage() {
           <h1 className="mt-4 text-3xl font-black md:text-5xl">เกี่ยวกับ ENT Group</h1>
           <p className="mt-3 max-w-3xl text-white/85 md:text-lg">
             บริษัท อี เอ็น ที กรุ๊ป จำกัด (ENT Group Co., Ltd.) ผู้ให้บริการโซลูชันไอทีครบวงจร
-            ตัวแทนจำหน่ายอย่างเป็นทางการของ <strong>Synnex Thailand</strong> และ <strong>VST ECS Thailand</strong>
-            ให้บริการทั้งลูกค้าองค์กร (B2B) และผู้ใช้ทั่วไป (Consumer) ด้วยราคา Dealer จริงและบริการหลังการขายที่ไว้วางใจได้
+            จำหน่ายสินค้าไอทีแท้ 100% ในราคา Dealer จริง
+            ให้บริการทั้งลูกค้าองค์กร (B2B) และผู้ใช้ทั่วไป (Consumer) พร้อมบริการหลังการขายที่ไว้วางใจได้
           </p>
         </div>
       </section>
@@ -63,7 +63,7 @@ function AboutPage() {
           {[
             { label: "ก่อตั้ง", value: "พ.ศ. 2558" },
             { label: "สินค้าในระบบ", value: "900+ รายการ" },
-            { label: "Authorized Dealer", value: "Synnex · VST ECS" },
+            { label: "ความมั่นใจ", value: "สินค้าแท้ 100%" },
             { label: "จัดส่ง", value: "ทั่วประเทศไทย" },
           ].map((s) => (
             <div key={s.label} className="rounded-lg border bg-white p-4 text-center">
@@ -80,7 +80,7 @@ function AboutPage() {
           <h2 className="text-2xl font-black text-[color:var(--brand-navy)] md:text-3xl">ทำไมต้องซื้อกับ ENT Group</h2>
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             {[
-              { icon: ShieldCheck, title: "Authorized Dealer อย่างเป็นทางการ", desc: "เราซื้อตรงจาก Synnex และ VST ECS Thailand ไม่ผ่านคนกลาง จึงมั่นใจได้ทั้งเรื่องราคาและความแท้" },
+              { icon: ShieldCheck, title: "สินค้าแท้ 100%", desc: "สินค้าทุกชิ้นจาก ENT Group IT Shop ได้รับการรับประกันศูนย์ไทย มั่นใจได้ทั้งเรื่องราคาและความแท้" },
               { icon: CheckCircle2, title: "รับประกันศูนย์ไทยทุกชิ้น", desc: "สินค้าทุกรายการรับประกันโดยศูนย์บริการอย่างเป็นทางการในประเทศไทย" },
               { icon: Truck, title: "จัดส่งทั่วประเทศ", desc: "Kerry Express, Flash Express, ไปรษณีย์ไทย, SCG, NIM, J&T ค่าจัดส่งเริ่ม ฿35" },
               { icon: Building2, title: "รองรับทั้ง B2B และ Consumer", desc: "ราคา Dealer สำหรับองค์กร ประหยัดสูงสุด 10% ออกใบเสนอราคาและใบกำกับภาษีเต็มรูปแบบ" },

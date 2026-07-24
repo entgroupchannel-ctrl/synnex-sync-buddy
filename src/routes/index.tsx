@@ -63,15 +63,15 @@ export const Route = createFileRoute("/")({
   validateSearch: zodValidator(searchSchema),
   head: () => ({
     meta: [
-      { title: "ENT Group IT Shop — ราคา Dealer จริง | Synnex & VST ECS" },
-      { name: "description", content: "ร้านไอทีราคา Dealer จาก Synnex และ VST ECS Authorized Dealer ตั้งแต่ปี 2558 สินค้ากว่า 900 รายการ ส่งทั่วไทย รับประกันศูนย์ไทย โทร 02-045-6104" },
-      { name: "keywords", content: "ราคา dealer, synnex, vst ecs, notebook, โน้ตบุ๊ก, คอมพิวเตอร์, IT B2B, ไอทีองค์กร, microsoft license, ENT Group" },
+      { title: "ENT Group IT Shop — ราคา Dealer จริง | สินค้าแท้ 100%" },
+      { name: "description", content: "ร้านไอทีราคา Dealer จริง สินค้าแท้ 100% จาก ENT Group IT Shop ตั้งแต่ปี 2558 สินค้ากว่า 900 รายการ ส่งทั่วไทย รับประกันศูนย์ไทย โทร 02-045-6104" },
+      { name: "keywords", content: "ราคา dealer, notebook, โน้ตบุ๊ก, คอมพิวเตอร์, IT B2B, ไอทีองค์กร, microsoft license, ENT Group, สินค้าแท้" },
       { property: "og:type", content: "website" },
-      { property: "og:title", content: "ENT Group IT Shop — ราคา Dealer จริง | Synnex & VST ECS" },
-      { property: "og:description", content: "Authorized Dealer ตั้งแต่ปี 2558 สินค้าไอทีสำหรับองค์กรและผู้ใช้ทั่วไป ราคา Dealer จริง พร้อมใบกำกับภาษี" },
+      { property: "og:title", content: "ENT Group IT Shop — ราคา Dealer จริง | สินค้าแท้ 100%" },
+      { property: "og:description", content: "ENT Group IT Shop สินค้าแท้ 100% สินค้าไอทีสำหรับองค์กรและผู้ใช้ทั่วไป ราคา Dealer จริง พร้อมใบกำกับภาษี" },
       { property: "og:url", content: "https://shop.entgroup.co.th/" },
       { name: "twitter:title", content: "ENT Group IT Shop — ราคา Dealer จริง" },
-      { name: "twitter:description", content: "Authorized Dealer ของ Synnex และ VST ECS สินค้ากว่า 900 รายการ ส่งทั่วไทย" },
+      { name: "twitter:description", content: "ENT Group IT Shop สินค้าแท้ 100% สินค้ากว่า 900 รายการ ส่งทั่วไทย" },
     ],
     links: [
       { rel: "canonical", href: "https://shop.entgroup.co.th/" },
@@ -91,7 +91,7 @@ export const Route = createFileRoute("/")({
               name: "ENT Group IT Shop คืออะไร?",
               acceptedAnswer: {
                 "@type": "Answer",
-                text: "ENT Group IT Shop คือร้านไอทีออนไลน์ในเครือบริษัท อี เอ็น ที กรุ๊ป จำกัด Authorized Dealer ของ Synnex Thailand และ VST ECS Thailand ตั้งแต่ปี 2558 จำหน่ายสินค้าไอทีราคา Dealer จริง",
+                text: "ENT Group IT Shop คือร้านไอทีออนไลน์ในเครือบริษัท อี เอ็น ที กรุ๊ป จำกัด จำหน่ายสินค้าไอทีแท้ 100% ในราคา Dealer จริง ตั้งแต่ปี 2558",
               },
             },
             {
@@ -99,7 +99,7 @@ export const Route = createFileRoute("/")({
               name: "สินค้ามีรับประกันไหม?",
               acceptedAnswer: {
                 "@type": "Answer",
-                text: "สินค้าทุกชิ้นรับประกันโดยศูนย์บริการอย่างเป็นทางการในประเทศไทย เนื่องจากเราเป็น Authorized Dealer ของ Synnex และ VST ECS โดยตรง",
+                text: "สินค้าทุกชิ้นรับประกันโดยศูนย์บริการอย่างเป็นทางการในประเทศไทย เนื่องจากเราจำหน่ายสินค้าแท้ 100% โดยตรงจาก ENT Group IT Shop",
               },
             },
             {

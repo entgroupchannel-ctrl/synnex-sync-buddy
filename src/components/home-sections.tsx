@@ -78,7 +78,7 @@ export function HeroCarousel({ onBrowse, onReady }: { onBrowse: () => void; onRe
   }, [paused, promos.length]);
 
   const trust: Trust[] = [
-    { icon: ShieldCheck, title: "สินค้าแท้ 100%", sub: "Synnex & VST ECS" },
+    { icon: ShieldCheck, title: "สินค้าแท้ 100%", sub: "ENT Group IT Shop" },
     { icon: Building2,   title: "8,000+ องค์กร", sub: "ไว้วางใจ ENT Group" },
     { icon: Truck,       title: "พร้อมส่งจากไทย", sub: "1-3 วันทั่วประเทศ" },
   ];
@@ -97,7 +97,7 @@ export function HeroCarousel({ onBrowse, onReady }: { onBrowse: () => void; onRe
         <div className="flex flex-col justify-center">
           <div className="mb-3 inline-flex w-fit items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-medium text-white backdrop-blur">
             <Flame className="h-3.5 w-3.5 text-[color:var(--brand-orange)]" />
-            Authorized Dealer • Synnex Thailand & VST ECS
+            สินค้าแท้ 100% • ENT Group IT Shop
           </div>
           <h1 className="text-2xl font-black leading-tight text-white md:text-4xl">
             ราคา Dealer จริง <span className="text-[color:var(--brand-orange)]">พร้อมส่งจากสต๊อกไทย</span>
@@ -707,8 +707,8 @@ export function ShopByBrand() {
 
 export function TrustBadges() {
   const items = [
-    { icon: Award,    title: "Authorized Dealer",    sub: "ตัวแทนจำหน่ายอย่างเป็นทางการ" },
-    { icon: Truck,    title: "ส่งตรงจาก Distributor", sub: "Synnex & VST ECS" },
+    { icon: Award,    title: "สินค้าแท้ 100%",    sub: "รับประกันศูนย์ไทย" },
+    { icon: Truck,    title: "จัดส่งทั่วประเทศ", sub: "Kerry / Flash / ไปรษณีย์" },
     { icon: FileText, title: "ใบกำกับภาษีได้",         sub: "รองรับนิติบุคคล VAT 7%" },
     { icon: Phone,    title: "ทีมงานพร้อมช่วยเหลือ",     sub: "โทร 02-045-6104" },
   ];
@@ -1007,7 +1007,7 @@ export function MicrosoftFeatured() {
             <span className="text-emerald-600">✓</span> ลิขสิทธิ์แท้ 100%
           </span>
           <span className="inline-flex items-center gap-1.5 rounded-full bg-white/70 px-3 py-1.5 shadow-sm">
-            <span className="text-emerald-600">✓</span> Authorized by Synnex Thailand
+            <span className="text-emerald-600">✓</span> รับประกันศูนย์ไทย
           </span>
           <span className="inline-flex items-center gap-1.5 rounded-full bg-white/70 px-3 py-1.5 shadow-sm">
             <span className="text-emerald-600">✓</span> รับประกันโดย Microsoft Thailand
