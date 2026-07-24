@@ -70,7 +70,8 @@ export const Route = createFileRoute("/product/$slug")({
     ];
 
     if (p && price > 0) {
-      const validUntil = new Date(Date.now() + 30 * 24 * 3600 * 1000).toISOString().split("T")[0];
+      // Use a stable date (end of current year) to avoid SSR/CSR hydration mismatch
+      const validUntil = `${new Date().getUTCFullYear()}-12-31`;
       scripts.push({
         type: "application/ld+json",
         children: JSON.stringify({
