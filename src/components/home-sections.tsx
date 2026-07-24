@@ -715,6 +715,23 @@ export const _ = useRef;
 
 /* ---------- Microsoft Software (featured) ---------- */
 
+const MS_DESCRIPTIONS: { match: RegExp; short: string; desc: string }[] = [
+  { match: /m365\s*family|365\s*family/i, short: "M365 Family", desc: "Microsoft 365 สำหรับครอบครัว สูงสุด 6 คน" },
+  { match: /home\s*(and|&)\s*business.*2024/i, short: "Office Home and Business 2024", desc: "Word, Excel, PowerPoint, Outlook สำหรับธุรกิจ" },
+  { match: /office\s*home.*2024/i, short: "Office Home 2024", desc: "Word, Excel, PowerPoint สำหรับบ้าน" },
+  { match: /windows\s*11\s*pro.*usb/i, short: "Windows 11 Pro USB", desc: "Windows 11 Pro แบบ USB" },
+  { match: /windows\s*11\s*pro/i, short: "Windows 11 Pro", desc: "ระบบปฏิบัติการ Windows 11 Pro" },
+  { match: /windows\s*11\s*home/i, short: "Windows 11 Home", desc: "ระบบปฏิบัติการ Windows 11 Home" },
+  { match: /windows\s*server\s*2022/i, short: "Windows Server 2022", desc: "Windows Server 2022 สำหรับองค์กร" },
+  { match: /m365|365\s*personal/i, short: "M365 Personal", desc: "Microsoft 365 สำหรับผู้ใช้ 1 คน" },
+];
+
+function msMeta(name: string | null | undefined) {
+  const n = name ?? "";
+  for (const m of MS_DESCRIPTIONS) if (m.match.test(n)) return { short: m.short, desc: m.desc };
+  return { short: n.length > 40 ? n.slice(0, 40) + "…" : n, desc: "ผลิตภัณฑ์ลิขสิทธิ์แท้จาก Microsoft" };
+}
+
 export function MicrosoftFeatured() {
   const tier = useCustomerTier();
   const addToCart = useAddToCart();
@@ -725,9 +742,10 @@ export function MicrosoftFeatured() {
         .select("*")
         .eq("brand", "MICROSOFT")
         .eq("price_approved", true)
+        .eq("stock_status", "พร้อมจัดส่ง")
         .gt("selling_price", 0)
         .order("selling_price", { ascending: true })
-        .limit(4);
+        .limit(8);
       return (data ?? []) as ProductRow[];
     },
     staleTime: 5 * 60_000,
@@ -738,25 +756,31 @@ export function MicrosoftFeatured() {
   return (
     <section
       className="border-b"
-      style={{ background: "linear-gradient(180deg, #f0f4ff 0%, #e8eeff 100%)" }}
+      style={{
+        background: "linear-gradient(135deg, #f0f7ff 0%, #e8f0fe 100%)",
+        borderTop: "3px solid #0078d4",
+      }}
     >
       <div className="mx-auto max-w-7xl px-4 py-8">
         <SectionHeader
-          title="Microsoft Software / ลิขสิทธิ์แท้"
+          title="🪟 Microsoft Software — ลิขสิทธิ์แท้"
           en="Microsoft Software — Genuine License"
-          sub="Authorized by Synnex & VST ECS Thailand"
-          link={{ to: "/", search: { brands: "MICROSOFT" }, label: "ดู Microsoft ทั้งหมด" }}
+          sub="Authorized Dealer จาก Synnex & VST ECS Thailand"
+          link={{ to: "/", search: { category: "Software", brands: "MICROSOFT" }, label: "ดู Microsoft Software ทั้งหมด" }}
         />
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+
+        <div className="flex gap-4 overflow-x-auto pb-3 no-scrollbar snap-x">
           {q.data!.map((p) => {
-            const ready = p.stock_status === "พร้อมจัดส่ง";
-            const byOrder = (p as { fulfillment_type?: string | null }).fulfillment_type === "by_order";
-            const available = ready || byOrder;
+            const meta = msMeta(p.name);
             const slug = p.slug || p.id;
+            const selling = getSellingPrice(p, tier) ?? 0;
+            const regular = p.selling_price ?? 0;
+            const savings = regular > selling && selling > 0 ? regular - selling : 0;
+
             return (
               <div
                 key={p.id}
-                className="group relative flex flex-col overflow-hidden rounded-xl bg-white shadow-sm transition hover:shadow-lg"
+                className="group relative flex w-64 shrink-0 snap-start flex-col overflow-hidden rounded-xl bg-white shadow-sm transition hover:shadow-lg"
                 style={{ border: "1px solid #bfdbfe" }}
               >
                 {/* Microsoft logo top-left */}
@@ -769,52 +793,66 @@ export function MicrosoftFeatured() {
                 </div>
                 {/* Genuine license pill */}
                 <div className="absolute right-2 top-2 z-10 rounded-full bg-emerald-500 px-2 py-0.5 text-[10px] font-bold text-white shadow-sm">
-                  ลิขสิทธิ์แท้
+                  ลิขสิทธิ์แท้ ✓
                 </div>
 
-                <Link to="/product/$slug" params={{ slug }} className="grid aspect-[4/3] place-items-center bg-white p-4">
+                <Link to="/product/$slug" params={{ slug }} className="grid place-items-center bg-white p-4 pt-10">
                   <ProductImage
                     src={p.image_url}
                     alt={p.name ?? p.sku}
-                    className="h-full w-full object-contain transition group-hover:scale-105"
+                    className="h-[120px] w-[120px] object-contain transition group-hover:scale-105"
                     iconClassName="h-16 w-16 text-blue-200"
                   />
                 </Link>
 
-                <div className="flex flex-1 flex-col gap-1.5 border-t border-blue-100 bg-white/70 p-4">
-                  <div className="text-[10px] uppercase tracking-wide text-blue-700/70">{p.sku}</div>
+                <div className="flex flex-1 flex-col gap-1 border-t border-blue-100 bg-white/70 p-3">
                   <Link
                     to="/product/$slug"
                     params={{ slug }}
-                    className="line-clamp-2 min-h-10 text-sm font-semibold text-slate-900 hover:text-[color:var(--brand-navy)]"
+                    className="text-sm font-bold text-slate-900 hover:text-[color:var(--brand-navy)]"
                   >
-                    {p.name ?? p.sku}
+                    {meta.short}
                   </Link>
-                  <ul className="mt-1 space-y-0.5 text-[11px] text-slate-600">
-                    <li>✓ ลิขสิทธิ์แท้ ใช้งานได้ถูกกฎหมาย</li>
-                    <li>✓ จาก Authorized Dealer</li>
-                  </ul>
-                  <div className="mt-2 text-xl font-black text-blue-800">
-                    {displayPrice(p, tier)}
-                  </div>
+                  <p className="line-clamp-2 min-h-8 text-[11px] text-slate-600">{meta.desc}</p>
+
+                  <div className="mt-2 text-lg font-black text-blue-800">฿{selling.toLocaleString()}</div>
+                  {savings > 0 && (
+                    <div className="text-[11px] text-emerald-700">
+                      สมาชิก ฿{selling.toLocaleString()} <span className="text-slate-500">(ประหยัด ฿{savings.toLocaleString()})</span>
+                    </div>
+                  )}
+
                   <Button
-                    disabled={!available}
                     onClick={() => addToCart(p)}
                     size="sm"
-                    className="mt-1 w-full bg-blue-700 font-semibold hover:bg-blue-800"
+                    className="mt-2 w-full bg-blue-700 font-semibold hover:bg-blue-800"
                   >
                     <ShoppingCart className="mr-1.5 h-4 w-4" />
-                    {byOrder ? "สั่งจอง" : available ? "ใส่ตะกร้า" : "สินค้าหมด"}
+                    ใส่ตะกร้า
                   </Button>
                 </div>
               </div>
             );
           })}
         </div>
+
+        {/* Trust badges */}
+        <div className="mt-5 flex flex-wrap items-center justify-center gap-3 text-xs font-semibold text-slate-700 md:gap-6 md:text-sm">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/70 px-3 py-1.5 shadow-sm">
+            <span className="text-emerald-600">✓</span> ลิขสิทธิ์แท้ 100%
+          </span>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/70 px-3 py-1.5 shadow-sm">
+            <span className="text-emerald-600">✓</span> Authorized by Synnex Thailand
+          </span>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/70 px-3 py-1.5 shadow-sm">
+            <span className="text-emerald-600">✓</span> รับประกันโดย Microsoft Thailand
+          </span>
+        </div>
       </div>
     </section>
   );
 }
+
 
 /* ---------- Reusable product grid card (Network / Storage) ---------- */
 
