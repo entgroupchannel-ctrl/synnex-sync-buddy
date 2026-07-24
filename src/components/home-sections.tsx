@@ -1058,6 +1058,7 @@ function CategoryGridCard({ p }: { p: ProductRow }) {
         >
           {p.name ?? p.sku}
         </Link>
+        <WarrantyBadge category={p.category as string | null | undefined} name={p.name as string | null | undefined} />
         <div className="mt-auto text-lg font-black text-[color:var(--brand-orange)]">
           {displayPrice(p, tier)}
         </div>
