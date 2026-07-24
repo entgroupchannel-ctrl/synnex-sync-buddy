@@ -56,12 +56,67 @@ export const Route = createFileRoute("/")({
   validateSearch: zodValidator(searchSchema),
   head: () => ({
     meta: [
-      { title: "ENT Group — ผู้จำหน่ายสินค้าไอทีครบวงจร สำหรับองค์กรและผู้ใช้ทั่วไป" },
-      { name: "description", content: "ENT Group จำหน่ายคอมพิวเตอร์ โน้ตบุ๊ก อุปกรณ์ไอที และโซลูชันสำหรับองค์กร (B2B) และผู้ใช้ทั่วไป (Consumer) ราคา Dealer จริง พร้อมใบกำกับภาษี รับประกันศูนย์ไทย" },
-      { property: "og:title", content: "ENT Group — Computer for all | B2B & Consumer IT Shop" },
-      { property: "og:description", content: "ตัวแทนจำหน่ายสินค้าไอทีอย่างเป็นทางการจาก Synnex และ VST ECS ให้บริการทั้งลูกค้าองค์กรและผู้ใช้ทั่วไป ราคาพิเศษ พร้อมบริการหลังการขาย" },
+      { title: "ENT Group IT Shop — ราคา Dealer จริง | Synnex & VST ECS" },
+      { name: "description", content: "ร้านไอทีราคา Dealer จาก Synnex และ VST ECS Authorized Dealer ตั้งแต่ปี 2558 สินค้ากว่า 900 รายการ ส่งทั่วไทย รับประกันศูนย์ไทย โทร 02-045-6104" },
+      { name: "keywords", content: "ราคา dealer, synnex, vst ecs, notebook, โน้ตบุ๊ก, คอมพิวเตอร์, IT B2B, ไอทีองค์กร, microsoft license, ENT Group" },
+      { property: "og:type", content: "website" },
+      { property: "og:title", content: "ENT Group IT Shop — ราคา Dealer จริง | Synnex & VST ECS" },
+      { property: "og:description", content: "Authorized Dealer ตั้งแต่ปี 2558 สินค้าไอทีสำหรับองค์กรและผู้ใช้ทั่วไป ราคา Dealer จริง พร้อมใบกำกับภาษี" },
+      { property: "og:url", content: "https://shop.entgroup.co.th/" },
+      { name: "twitter:title", content: "ENT Group IT Shop — ราคา Dealer จริง" },
+      { name: "twitter:description", content: "Authorized Dealer ของ Synnex และ VST ECS สินค้ากว่า 900 รายการ ส่งทั่วไทย" },
+    ],
+    links: [
+      { rel: "canonical", href: "https://shop.entgroup.co.th/" },
+      { rel: "alternate", hrefLang: "th", href: "https://shop.entgroup.co.th/" },
+      { rel: "alternate", hrefLang: "en", href: "https://shop.entgroup.co.th/?lang=en" },
+      { rel: "alternate", hrefLang: "x-default", href: "https://shop.entgroup.co.th/" },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: [
+            {
+              "@type": "Question",
+              name: "ENT Group IT Shop คืออะไร?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "ENT Group IT Shop คือร้านไอทีออนไลน์ในเครือบริษัท อี เอ็น ที กรุ๊ป จำกัด Authorized Dealer ของ Synnex Thailand และ VST ECS Thailand ตั้งแต่ปี 2558 จำหน่ายสินค้าไอทีราคา Dealer จริง",
+              },
+            },
+            {
+              "@type": "Question",
+              name: "สินค้ามีรับประกันไหม?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "สินค้าทุกชิ้นรับประกันโดยศูนย์บริการอย่างเป็นทางการในประเทศไทย เนื่องจากเราเป็น Authorized Dealer ของ Synnex และ VST ECS โดยตรง",
+              },
+            },
+            {
+              "@type": "Question",
+              name: "ส่งสินค้าทั่วไทยไหม?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "จัดส่งทั่วประเทศไทยผ่าน Kerry Express, Flash Express และไปรษณีย์ไทย ค่าจัดส่งเริ่มต้น ฿35",
+              },
+            },
+            {
+              "@type": "Question",
+              name: "มีราคาสำหรับองค์กร B2B ไหม?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "มีราคาพิเศษสำหรับลูกค้าองค์กร B2B ประหยัดสูงสุด 10% พร้อมออกใบกำกับภาษีเต็มรูปแบบและใบเสนอราคา สมัครบัญชีองค์กรได้ที่หน้าเว็บ",
+              },
+            },
+          ],
+        }),
+      },
     ],
   }),
+
   component: HomePage,
 });
 

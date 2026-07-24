@@ -1,0 +1,54 @@
+# ENT Group IT Shop
+
+> ร้านไอทีออนไลน์ Authorized Dealer ของ Synnex Thailand และ VST ECS Thailand จำหน่ายสินค้าไอทีราคา Dealer จริงสำหรับลูกค้าองค์กร (B2B) และผู้ใช้ทั่วไป (Consumer) พร้อมใบกำกับภาษีและรับประกันศูนย์ไทย
+
+ENT Group IT Shop is the online storefront of ENT Group Co., Ltd. (บริษัท อี เอ็น ที กรุ๊ป จำกัด), an Authorized Dealer of Synnex Thailand and VST ECS Thailand since 2015. We sell notebooks, monitors, printers, PCs, networking hardware, storage, software licenses, and IT accessories at real dealer prices to both business (B2B) and consumer (B2C) customers across Thailand.
+
+## About
+
+- Company: บริษัท อี เอ็น ที กรุ๊ป จำกัด / ENT Group Co., Ltd.
+- Founded: 2015 (พ.ศ. 2558)
+- Tax ID: 0135558013167
+- Authorized Dealer: Synnex Thailand, VST ECS Thailand
+- Address: 70/5 หมู่บ้านเมกาโฮม บิซทาวน์ ปากเกร็ด นนทบุรี 11120
+- Phone: +66-2-045-6104
+- Corporate site: https://www.entgroup.co.th
+- Shop: https://shop.entgroup.co.th
+
+## Product categories
+
+- Notebook / โน้ตบุ๊ก (ASUS, Acer, HP, Lenovo, Dell, MSI)
+- Monitor / จอมอนิเตอร์
+- Printer / เครื่องพิมพ์
+- PC / คอมพิวเตอร์ตั้งโต๊ะ
+- Software (Microsoft 365, Windows 11, Office 2024, Windows Server 2022)
+- Network & Security (Cisco, Hikvision, Dahua, D-Link)
+- Storage (SanDisk, Kingston, Seagate, WD)
+- Accessories และอื่นๆ กว่า 900 รายการ
+
+## Pricing & service
+
+- ราคา Dealer จริง ไม่ผ่านคนกลาง / Real dealer prices, no middlemen
+- ราคาสมาชิก (Member): ประหยัด 3–7%
+- ราคาองค์กร B2B: ประหยัดสูงสุด 10% (Silver/Gold tier)
+- Volume discount ตามจำนวน
+- จัดส่งทั่วประเทศไทย เริ่มต้น ฿35 (Kerry, Flash, ไปรษณีย์ไทย)
+- รับประกันศูนย์ไทยทุกชิ้น
+- ออกใบกำกับภาษีเต็มรูปแบบ และใบเสนอราคาสำหรับองค์กร
+- ชำระ: PromptPay, โอนเงิน (KBank / SCB), COD
+
+## Pages
+
+- [หน้าแรก / Home](https://shop.entgroup.co.th/): แคตตาล็อกสินค้าทั้งหมด, Flash Deals, ลิงก์หมวดหมู่
+- [About / เกี่ยวกับเรา](https://shop.entgroup.co.th/about): ประวัติบริษัท, Authorized Dealer, บริการหลังการขาย
+- [Contact / ติดต่อ](https://shop.entgroup.co.th/contact): โทร, อีเมล, LINE Official, ที่ตั้งสำนักงาน
+- [Notebook](https://shop.entgroup.co.th/?category=Notebook)
+- [Monitor](https://shop.entgroup.co.th/?category=Monitor)
+- [Printer](https://shop.entgroup.co.th/?category=Printer)
+- [Software](https://shop.entgroup.co.th/?category=Software)
+- [Network](https://shop.entgroup.co.th/?category=Network)
+- [Storage](https://shop.entgroup.co.th/?category=Storage)
+
+## Optional
+
+- [Sitemap](https://shop.entgroup.co.th/sitemap.xml)

@@ -77,9 +77,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { name: "author", content: "Synnex Sync" },
+      { name: "author", content: "ENT Group Co., Ltd." },
+      { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1" },
+      { name: "theme-color", content: "#0B2A4A" },
       { property: "og:type", content: "website" },
+      { property: "og:site_name", content: "ENT Group IT Shop" },
+      { property: "og:locale", content: "th_TH" },
+      { property: "og:locale:alternate", content: "en_US" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:site", content: "@entgroup" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -91,7 +97,83 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: "https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap",
       },
     ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Organization",
+              "@id": "https://shop.entgroup.co.th/#organization",
+              name: "ENT Group Co., Ltd.",
+              alternateName: "ENT Group IT Shop",
+              url: "https://shop.entgroup.co.th",
+              logo: "https://shop.entgroup.co.th/favicon.png",
+              description: "Authorized Dealer ของ Synnex Thailand และ VST ECS Thailand จำหน่ายสินค้าไอทีราคา Dealer",
+              foundingDate: "2015",
+              taxID: "0135558013167",
+              address: {
+                "@type": "PostalAddress",
+                streetAddress: "70/5 หมู่บ้านเมกาโฮม บิซทาวน์",
+                addressLocality: "ปากเกร็ด",
+                addressRegion: "นนทบุรี",
+                postalCode: "11120",
+                addressCountry: "TH",
+              },
+              contactPoint: {
+                "@type": "ContactPoint",
+                telephone: "+66-2-045-6104",
+                contactType: "customer service",
+                availableLanguage: ["Thai", "English"],
+              },
+              sameAs: ["https://www.entgroup.co.th"],
+            },
+            {
+              "@type": "LocalBusiness",
+              "@id": "https://shop.entgroup.co.th/#localbusiness",
+              name: "ENT Group IT Shop",
+              image: "https://shop.entgroup.co.th/favicon.png",
+              url: "https://shop.entgroup.co.th",
+              telephone: "+66-2-045-6104",
+              priceRange: "฿฿฿",
+              address: {
+                "@type": "PostalAddress",
+                streetAddress: "70/5 หมู่บ้านเมกาโฮม บิซทาวน์",
+                addressLocality: "ปากเกร็ด",
+                addressRegion: "นนทบุรี",
+                postalCode: "11120",
+                addressCountry: "TH",
+              },
+              openingHoursSpecification: [
+                {
+                  "@type": "OpeningHoursSpecification",
+                  dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+                  opens: "09:00",
+                  closes: "18:00",
+                },
+              ],
+              paymentAccepted: "Cash, Bank Transfer, PromptPay, COD",
+            },
+            {
+              "@type": "WebSite",
+              "@id": "https://shop.entgroup.co.th/#website",
+              url: "https://shop.entgroup.co.th",
+              name: "ENT Group IT Shop",
+              publisher: { "@id": "https://shop.entgroup.co.th/#organization" },
+              inLanguage: ["th-TH", "en"],
+              potentialAction: {
+                "@type": "SearchAction",
+                target: "https://shop.entgroup.co.th/?q={search_term_string}",
+                "query-input": "required name=search_term_string",
+              },
+            },
+          ],
+        }),
+      },
+    ],
   }),
+
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
@@ -100,7 +182,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="th">
       <head>
         <HeadContent />
       </head>
