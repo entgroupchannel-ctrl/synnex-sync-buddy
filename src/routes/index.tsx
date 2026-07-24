@@ -31,6 +31,7 @@ import {
   NewsletterSignup,
 } from "@/components/home-sections";
 import { FrequentlyBought } from "@/components/frequently-bought";
+import { BrandLogo } from "@/components/brand-logo";
 import entLogo from "@/assets/entgroup-logo.jpg.asset.json";
 
 const searchSchema = z.object({
@@ -445,11 +446,7 @@ function HomePage() {
                 const priced = getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier) != null && !!p.price_approved;
                 return (
                   <div key={p.id} className="group relative flex flex-col overflow-hidden rounded-lg border bg-white transition hover:shadow-lg">
-                    {p.brand && (
-                      <div className="absolute left-2 top-2 z-10 rounded bg-white/90 px-1.5 py-0.5 text-[10px] font-bold text-slate-700 shadow-sm backdrop-blur">
-                        {p.brand}
-                      </div>
-                    )}
+                    <BrandLogo brand={p.brand} />
                     {lowStock && (
                       <div className="absolute right-2 top-2 z-10 rounded bg-red-500 px-1.5 py-0.5 text-[10px] font-bold text-white shadow-sm">
                         เหลือน้อย

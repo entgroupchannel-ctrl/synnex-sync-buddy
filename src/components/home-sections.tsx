@@ -19,6 +19,7 @@ import { triggerAuthPrompt, useSupabaseUser } from "@/lib/auth-sheet";
 import { useCart } from "@/lib/cart";
 import { useLanguage } from "@/lib/i18n";
 import { ProductImage } from "@/components/product-image";
+import { BrandLogo } from "@/components/brand-logo";
 
 
 /* ---------- Hero Carousel (compact, split layout) ---------- */
@@ -374,10 +375,8 @@ export function PopularNotebooks() {
             const ready = p.stock_status === "พร้อมจัดส่ง";
             const slug = p.slug || p.id;
             return (
-              <div key={p.id} className="group flex flex-col overflow-hidden rounded-lg border bg-white transition hover:shadow-lg">
-                {p.brand && (
-                  <div className="absolute z-10 m-2 rounded bg-white/90 px-1.5 py-0.5 text-[10px] font-bold text-slate-700 shadow-sm">{p.brand}</div>
-                )}
+              <div key={p.id} className="group relative flex flex-col overflow-hidden rounded-lg border bg-white transition hover:shadow-lg">
+                <BrandLogo brand={p.brand} />
                 <Link to="/product/$slug" params={{ slug }} className="grid aspect-square place-items-center bg-white p-3">
                   <ProductImage src={p.image_url} alt={p.name ?? p.sku} className="h-full w-full object-contain transition group-hover:scale-105" iconClassName="h-16 w-16 text-slate-300" />
                 </Link>
