@@ -527,8 +527,7 @@ function CheckoutPage() {
                 </div>
               </div>
             </section>
-
-            {/* Discount code */}
+            )}
             <section className="space-y-3 rounded-lg border bg-white p-6">
               <h2 className="flex items-center gap-2 font-bold text-[color:var(--brand-navy)]">
                 <Tag className="h-5 w-5" /> โค้ดส่วนลด / Discount Code
