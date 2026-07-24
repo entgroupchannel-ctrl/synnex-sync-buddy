@@ -197,7 +197,20 @@ function CheckoutPage() {
     e.preventDefault();
     if (items.length === 0) { toast.error("ตะกร้าว่างเปล่า"); return; }
     setErrors({});
-    const base = shippingSchema.safeParse(f);
+
+    // For pickup, only validate contact info + recipient name/phone (fall back to customer).
+    const formToValidate: Fields = isPickup
+      ? {
+          ...f,
+          shipping_name: f.shipping_name || f.customer_name,
+          shipping_phone: f.shipping_phone || f.customer_phone,
+          shipping_address: OFFICE_ADDRESS.line1,
+          shipping_district: OFFICE_ADDRESS.district,
+          shipping_province: OFFICE_ADDRESS.province,
+          shipping_postcode: OFFICE_ADDRESS.postcode,
+        }
+      : f;
+    const base = shippingSchema.safeParse(formToValidate);
     if (!base.success) {
       const errs: Record<string, string> = {};
       for (const iss of base.error.issues) errs[iss.path.join(".")] = iss.message;
@@ -221,7 +234,13 @@ function CheckoutPage() {
     setSubmitting(true);
     try {
       const customerType = user ? (taxInvoice ? "b2b" : "b2c") : "guest";
-      const fullAddr = [f.shipping_address, f.shipping_district, f.shipping_province, f.shipping_postcode].filter(Boolean).join(" ");
+      const fullAddr = isPickup
+        ? `[รับที่สำนักงาน] ${OFFICE_ADDRESS.name} — ${OFFICE_ADDRESS.line1} ${OFFICE_ADDRESS.line2}`
+        : [f.shipping_address, f.shipping_district, f.shipping_province, f.shipping_postcode].filter(Boolean).join(" ");
+
+      const methodName = SHIPPING_METHOD_LABEL[shippingMethod];
+      const provider =
+        shippingMethod === "pickup" ? "pickup" : shippingMethod === "express" ? "express-manual" : "kerry";
 
       const { data: order, error: oErr } = await supabase
         .from("orders")
@@ -241,8 +260,8 @@ function CheckoutPage() {
           shipping_province: base.data.shipping_province,
           shipping_postcode: base.data.shipping_postcode,
           shipping_method_id: null,
-          shipping_method_name: "Kerry Express",
-          shipping_provider: "kerry",
+          shipping_method_name: methodName,
+          shipping_provider: provider,
           shipping_weight_kg: totalWeight,
           shipping_fee: shippingFee,
           discount_code: discount?.code ?? null,
