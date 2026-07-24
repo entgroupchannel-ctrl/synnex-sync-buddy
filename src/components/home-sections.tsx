@@ -1187,20 +1187,20 @@ export function ComponentsShowcase() {
   );
 }
 
-/* ---------- Apple MacBook (ADVICE) ---------- */
+/* ---------- Apple Products (ADVICE) ---------- */
 
 export function MacBookShowcase() {
   const q = useQuery({
-    queryKey: ["macbook-showcase"],
+    queryKey: ["apple-products"],
     queryFn: async () => {
       const { data } = await supabase.from("synnex_products")
         .select("*")
-        .eq("category", "Notebook")
         .eq("distributor", "ADVICE")
+        .in("category", ["Smart Phone & Tablet", "Notebook"])
         .eq("price_approved", true)
         .gt("selling_price", 0)
-        .or("name.ilike.%macbook%,name.ilike.%apple%")
-        .order("selling_price", { ascending: true })
+        .or("name.ilike.%Apple%,name.ilike.%iPhone%,name.ilike.%iPad%,name.ilike.%MacBook%,name.ilike.%AirPods%,name.ilike.%Apple Watch%")
+        .order("selling_price", { ascending: false })
         .limit(8);
       return (data ?? []) as ProductRow[];
     },
@@ -1213,10 +1213,10 @@ export function MacBookShowcase() {
     <section className="border-b bg-gradient-to-br from-slate-50 to-white">
       <div className="mx-auto max-w-7xl px-4 py-8">
         <SectionHeader
-          title="🍎 Apple MacBook / แมคบุ๊คทุกรุ่น"
-          en="Apple MacBook"
-          sub="MacBook Air M5, MacBook Pro M5 · ราคา Dealer จาก Authorized Reseller"
-          link={{ to: "/", search: { category: "Notebook", q: "MacBook" }, label: "ดู MacBook ทั้งหมด" }}
+          title="🍎 Apple Products / ผลิตภัณฑ์ Apple"
+          en="Apple Products"
+          sub="iPhone 17, MacBook Air M5, iPad · Authorized Reseller"
+          link={{ to: "/", search: { q: "Apple" }, label: "ดู Apple ทั้งหมด" }}
         />
         <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
           {q.data!.map((p) => <CategoryGridCard key={p.id} p={p} />)}
