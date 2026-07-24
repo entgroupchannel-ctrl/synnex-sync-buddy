@@ -97,7 +97,9 @@ function CartPage() {
             <div className="space-y-3">
               {hasByOrder && (
                 <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">
-                  <div className="font-bold">⚠️ สินค้า By Order ในตะกร้าของคุณ</div>
+                  <div className="flex items-center gap-2 font-bold">
+                    <AlertTriangle className="h-4 w-4" /> สินค้า By Order ในตะกร้าของคุณ
+                  </div>
                   <div className="mt-1">จะใช้เวลาจัดหาประมาณ 30 วันทำการ</div>
                   <div>ทีมงานจะติดต่อยืนยันก่อนจัดส่ง</div>
                 </div>
