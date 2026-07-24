@@ -340,13 +340,24 @@ export function PcBuilderLanding() {
             <Wrench className="h-5 w-5" />
             Config PC เองเลย →
           </button>
-          <a
-            href={`mailto:sales@entgroup.co.th?subject=${quoteSubject}&body=${quoteBody}`}
+          <button
+            type="button"
+            onClick={async () => {
+              await navigate({ to: "/pc-builder" });
+              setTimeout(() => {
+                const el = document.getElementById("pc-builder-quote");
+                if (el) {
+                  const headerOffset = window.innerWidth < 768 ? 60 : 80;
+                  const top = el.getBoundingClientRect().top + window.scrollY - headerOffset;
+                  window.scrollTo({ top, behavior: "smooth" });
+                }
+              }, 150);
+            }}
             className="inline-flex items-center gap-2 rounded-full border border-white/30 px-8 py-4 text-lg text-white transition-colors hover:bg-white/10"
           >
             <ClipboardList className="h-5 w-5" />
             ขอใบเสนอราคา Build นี้
-          </a>
+          </button>
         </div>
 
         {/* Trust bar */}
