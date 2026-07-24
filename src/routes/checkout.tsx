@@ -528,6 +528,7 @@ function CheckoutPage() {
                 </div>
               </div>
             </section>
+            </>
             )}
             <section className="space-y-3 rounded-lg border bg-white p-6">
               <h2 className="flex items-center gap-2 font-bold text-[color:var(--brand-navy)]">
