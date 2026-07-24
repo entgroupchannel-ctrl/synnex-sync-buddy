@@ -422,18 +422,65 @@ function ProductPicker({
     let cancelled = false;
     (async () => {
       setLoading(true);
-      const orFilter = step.matches.map((m) => `name.ilike.${m}`).join(",");
-      const { data, error } = await supabase
+
+      let q = supabase
         .from("synnex_products")
         .select(
           "id, sku, slug, name, brand, category, selling_price, member_price, b2b_price, price_approved, image_url, distributor",
         )
-        .eq("category", step.category)
         .eq("price_approved", true)
-        .gt("selling_price", 0)
-        .or(orFilter)
+        .gt("selling_price", 0);
+
+      switch (step.key) {
+        case "cpu":
+          q = q
+            .or("name.ilike.%CPU%,name.ilike.%Ryzen%,name.ilike.%Core i%,name.ilike.%Core Ultra%,name.ilike.%Athlon%,name.ilike.%Processor%")
+            .not("name", "ilike", "%Motherboard%")
+            .not("name", "ilike", "%Mainboard%")
+            .not("name", "ilike", "%MB%");
+          break;
+        case "mb":
+          q = q
+            .or("name.ilike.%Mainboard%,name.ilike.%Motherboard%,name.ilike.%MB%,name.ilike.%B650%,name.ilike.%B850%,name.ilike.%Z790%,name.ilike.%Z890%,name.ilike.%X670%,name.ilike.%A620%")
+            .not("name", "ilike", "%RAM%")
+            .not("name", "ilike", "%DDR%")
+            .not("name", "ilike", "%CPU%");
+          break;
+        case "ram":
+          q = q
+            .or("name.ilike.%RAM%,name.ilike.%DDR4%,name.ilike.%DDR5%,name.ilike.%Memory%,name.ilike.%SODIMM%")
+            .not("name", "ilike", "%Mainboard%")
+            .not("name", "ilike", "%Motherboard%")
+            .not("name", "ilike", "%SSD%");
+          break;
+        case "ssd":
+          q = q
+            .or("name.ilike.%SSD%,name.ilike.%NVMe%,name.ilike.%M.2%,name.ilike.%HDD%,name.ilike.%Harddisk%,name.ilike.%Hard Disk%")
+            .not("name", "ilike", "%RAM%")
+            .not("name", "ilike", "%Mainboard%");
+          break;
+        case "os":
+          q = q
+            .or("name.ilike.%Windows%,name.ilike.%Office%,name.ilike.%Ubuntu%")
+            .eq("category", "Software");
+          break;
+        case "gpu":
+          q = q
+            .or("name.ilike.%RTX%,name.ilike.%GTX%,name.ilike.%RX 6%,name.ilike.%RX 7%,name.ilike.%RX 9%,name.ilike.%Arc%,name.ilike.%VGA%,name.ilike.%Graphic%")
+            .not("name", "ilike", "%Mainboard%")
+            .not("name", "ilike", "%RAM%");
+          break;
+        case "psu":
+          q = q
+            .or("name.ilike.%PSU%,name.ilike.%Power Supply%,name.ilike.%Case%,name.ilike.%Chassis%,name.ilike.%ATX%,name.ilike.%Watt%")
+            .not("name", "ilike", "%Mainboard%");
+          break;
+      }
+
+      const { data, error } = await q
         .order("selling_price", { ascending: true })
-        .limit(200);
+        .limit(20);
+
       if (cancelled) return;
       if (error) {
         toast.error("โหลดสินค้าไม่สำเร็จ");
@@ -446,7 +493,7 @@ function ProductPicker({
     return () => {
       cancelled = true;
     };
-  }, [step.key, step.category, step.matches]);
+  }, [step.key]);
 
   const filtered = useMemo(() => {
     const s = q.trim().toLowerCase();
