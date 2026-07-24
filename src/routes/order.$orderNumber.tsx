@@ -191,7 +191,7 @@ function OrderConfirm() {
             {order.order_items.map((it) => (
               <div key={it.id} className="flex items-center gap-3 border-b pb-2 last:border-b-0 last:pb-0">
                 <div className="grid h-14 w-14 shrink-0 place-items-center rounded bg-slate-50">
-                  {it.product_image_url ? <img src={it.product_image_url} alt="" className="h-full w-full object-contain" /> : <Package className="h-6 w-6 text-slate-300" />}
+                  <ProductImage src={it.product_image_url} alt={it.product_name} iconClassName="h-6 w-6 text-slate-300" fallbackLabel="" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="line-clamp-1 text-sm font-medium">{it.product_name}</div>
