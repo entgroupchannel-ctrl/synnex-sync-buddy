@@ -586,9 +586,9 @@ function CheckoutPage() {
                 <span>ค่าเก็บปลายทาง (COD)</span><span>{priceFmt.format(codFee)}</span>
               </div>
             )}
-            <div className={`flex justify-between text-sm ${shippingFee === 0 && selectedShip ? "text-emerald-600" : "text-slate-700"}`}>
-              <span>ค่าจัดส่ง{selectedShip ? ` (${selectedShip.name})` : ""}</span>
-              <span>{selectedShip ? (shippingFee === 0 ? "ฟรี" : priceFmt.format(shippingFee)) : "-"}</span>
+            <div className={`flex justify-between text-sm ${shippingFee === 0 ? "text-emerald-600" : "text-slate-700"}`}>
+              <span>ค่าจัดส่ง (Kerry)</span>
+              <span>{shippingFee === 0 ? "ฟรี" : priceFmt.format(shippingFee)}</span>
             </div>
             {discount && discountAmount > 0 && (
               <div className="flex justify-between text-sm text-emerald-600">
