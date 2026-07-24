@@ -590,13 +590,14 @@ const BRAND_DOMAINS: Record<string, string> = {
 
 function BrandCardLogo({ brand }: { brand: string }) {
   const [idx, setIdx] = useState(0);
+  const local = getBrandLogoUrl(brand);
   const domain = BRAND_DOMAINS[brand];
-  const sources = domain
-    ? [
-        `https://unavatar.io/${domain}?fallback=false`,
-      ]
-    : [];
-  const failed = !domain || idx >= sources.length;
+  const sources = local
+    ? [local]
+    : domain
+      ? [`https://unavatar.io/${domain}?fallback=false`]
+      : [];
+  const failed = idx >= sources.length;
   return (
     <div className="mb-2 flex h-10 items-center justify-center">
       {!failed ? (
@@ -604,7 +605,7 @@ function BrandCardLogo({ brand }: { brand: string }) {
           src={sources[idx]}
           alt={brand}
           loading="lazy"
-          className="max-h-8 max-w-[72px] object-contain transition group-hover:scale-105"
+          className="max-h-8 max-w-[96px] object-contain transition group-hover:scale-105"
           onError={() => setIdx((i) => i + 1)}
         />
       ) : (
