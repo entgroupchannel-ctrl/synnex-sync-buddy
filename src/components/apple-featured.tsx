@@ -131,7 +131,7 @@ export function AppleFeatured() {
                   {orig != null && price != null && orig > price && (
                     <div className="text-xs text-slate-400 line-through">{priceFmt.format(orig)}</div>
                   )}
-                  <div className="mt-1 text-[11px] text-slate-500">ประกัน 1 ปี Apple Thailand</div>
+                  <div className="mt-1 text-[11px] text-slate-500">รับประกันศูนย์ไทย 1 ปี</div>
                 </Link>
               );
             })}
