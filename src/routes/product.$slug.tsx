@@ -238,7 +238,7 @@ function ProductDetail() {
         ) : (
           <div className="grid gap-8 rounded-lg border bg-white p-4 md:p-6 lg:grid-cols-2">
             <div className="grid aspect-square place-items-center rounded-lg bg-slate-50 p-6">
-              <ProductImage src={p.image_url} alt={p.name ?? p.sku} className="max-h-full max-w-full object-contain" iconClassName="h-24 w-24 text-slate-300"  category={p.category} />
+              <ProductImage src={p.image_url} alt={p.name ?? p.sku} className="max-h-full max-w-full object-contain" iconClassName="h-24 w-24 text-slate-300" />
             </div>
             <div className="flex flex-col">
               {p.brand && <div className="mb-1 inline-flex w-fit rounded bg-slate-100 px-2 py-0.5 text-xs font-bold text-slate-700">{p.brand}</div>}
@@ -594,7 +594,7 @@ function ProductDetail() {
               {relatedQ.data!.map((r) => (
                 <Link key={r.id} to="/product/$slug" params={{ slug: r.slug || r.id }} className="group flex flex-col overflow-hidden rounded-lg border bg-white transition hover:shadow-md">
                   <div className="grid aspect-square place-items-center bg-white p-2">
-                    <ProductImage src={r.image_url} alt={r.name ?? r.sku} iconClassName="h-16 w-16 text-slate-300"  category={r.category} />
+                    <ProductImage src={r.image_url} alt={r.name ?? r.sku} iconClassName="h-16 w-16 text-slate-300"  />
                   </div>
                   <div className="border-t p-3">
                     <div className="line-clamp-2 min-h-10 text-sm font-medium">{r.name ?? r.sku}</div>
