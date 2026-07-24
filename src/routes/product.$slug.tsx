@@ -9,6 +9,7 @@ import { ShoppingCart, Package, Zap, Minus, Plus, ChevronRight } from "lucide-re
 import { SiteHeader } from "@/components/site-header";
 import { displayPrice, getSellingPrice, priceFmt, useCart, useCustomerTier } from "@/lib/cart";
 import { triggerAuthPrompt, useSupabaseUser } from "@/lib/auth-sheet";
+import { usePurchaseHistoryForSku } from "@/lib/reorder";
 
 export const Route = createFileRoute("/product/$slug")({
   ssr: false,
