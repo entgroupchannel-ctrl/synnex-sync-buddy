@@ -550,14 +550,18 @@ function ProductPicker({
           limit = 30;
           break;
         }
-        case "psu":
+        case "psu": {
           q = q
             .eq("category", "Storage")
-            .or("name.ilike.%Case%,name.ilike.%Chassis%,name.ilike.%4000D%,name.ilike.%PSU%,name.ilike.%Power Supply%,name.ilike.%Watt%")
+            .or("name.ilike.%Case%,name.ilike.%FRAME%,name.ilike.%Chassis%,name.ilike.%Tower%,sku.ilike.%FRAME%")
             .not("name", "ilike", "%SSD%")
-            .not("name", "ilike", "%DDR%");
+            .not("name", "ilike", "%DDR%")
+            .not("name", "ilike", "%RAM%")
+            .eq("price_approved", true)
+            .gt("selling_price", 0);
           limit = 20;
           break;
+        }
       }
 
       const { data, error } = await q
