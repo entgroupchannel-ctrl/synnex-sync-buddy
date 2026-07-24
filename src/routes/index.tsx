@@ -181,6 +181,21 @@ function HomePage() {
 
   useEffect(() => { setSearchInput(search.q); }, [search.q]);
 
+  // Auto-scroll to product grid when filters/search change (skip initial mount)
+  const filterKey = `${search.q}|${search.category}|${search.brands}`;
+  const filterMounted = useMemo(() => ({ v: false }), []);
+  useEffect(() => {
+    if (!filterMounted.v) { filterMounted.v = true; return; }
+    const t = setTimeout(() => {
+      const el = document.getElementById("product-grid");
+      if (!el) return;
+      const headerHeight = window.innerWidth < 768 ? 60 : 120;
+      const top = el.getBoundingClientRect().top + window.scrollY - headerHeight;
+      window.scrollTo({ top, behavior: "smooth" });
+    }, 300);
+    return () => clearTimeout(t);
+  }, [filterKey]); // eslint-disable-line
+
   const selectedBrands = useMemo(
     () => search.brands ? search.brands.split(",").filter(Boolean) : [],
     [search.brands]
