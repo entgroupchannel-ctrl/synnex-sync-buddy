@@ -27,11 +27,13 @@ export const BANK_ACCOUNTS: BankAccount[] = [
 export const BANK_ACCOUNT = BANK_ACCOUNTS[0];
 
 export const COMPANY_INFO = {
-  name: "บริษัท อี เอ็น ที กรุ๊ป จำกัด",
+  name: "บริษัท อีเอ็นที กรุ๊ป จำกัด",
   tax_id: "0135558013167",
-  email: "accountant@entgroup.co.th",
+  email: "Sales@entgroup.co.th",
   phone: "02-045-6104",
-  purchase_phone: "082-249-7922",
+  phones: ["02-045-6104", "095-739-1053", "084-046-1315"],
+  fax: "02-045-6105",
+  address: "70/5 หมู่ 4 เมทโทร บิซทาวน์ แจ้งวัฒนะ 2 ตำบลคลองพระอุดม อำเภอปากเกร็ด นนทบุรี 11120",
 } as const;
 
 export const SUPPORT_PHONE = COMPANY_INFO.phone;

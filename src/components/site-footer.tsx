@@ -334,32 +334,40 @@ export function SiteFooter() {
               </a>
             </div>
 
-            <div className="mt-4 space-y-1.5 text-xs">
+            <div className="mt-4 space-y-2 text-xs">
+              <div className="font-semibold text-white">สำนักงานใหญ่ & สำนักงานขาย</div>
+              <div className="font-semibold text-[color:var(--brand-green)]">บริษัท อีเอ็นที กรุ๊ป จำกัด</div>
+
               <div className="flex items-start gap-2">
                 <Phone className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[color:var(--brand-green)]" />
-                <div>
-                  <a href="tel:020456104" className="hover:text-[color:var(--brand-green)]">02-045-6104</a>
-                  <div className="text-white/50">
-                    <a href="tel:0822497922" className="hover:text-[color:var(--brand-green)]">082-249-7922</a> (จัดซื้อ)
-                  </div>
+                <div className="space-y-0.5">
+                  <a href="tel:020456104" className="block hover:text-[color:var(--brand-green)]">02-045-6104</a>
+                  <a href="tel:0957391053" className="block hover:text-[color:var(--brand-green)]">095-739-1053</a>
+                  <a href="tel:0840461315" className="block hover:text-[color:var(--brand-green)]">084-046-1315</a>
                 </div>
               </div>
+
+              <div className="flex items-start gap-2">
+                <Printer className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[color:var(--brand-green)]" />
+                <span className="text-white/70">Fax: 02-045-6105</span>
+              </div>
+
               <div className="flex items-start gap-2">
                 <Mail className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[color:var(--brand-green)]" />
-                <div>
-                  <a href="mailto:info@entgroup.co.th" className="hover:text-[color:var(--brand-green)]">info@entgroup.co.th</a>
-                  <div className="text-white/50">
-                    <a href="mailto:accountant@entgroup.co.th" className="hover:text-[color:var(--brand-green)]">accountant@entgroup.co.th</a> (บัญชี)
-                  </div>
-                </div>
+                <a href="mailto:Sales@entgroup.co.th" className="hover:text-[color:var(--brand-green)]">Sales@entgroup.co.th</a>
               </div>
+
               <div className="flex items-start gap-2">
                 <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[color:var(--brand-green)]" />
                 <div className="leading-relaxed text-white/60">
-                  70/5 หมู่บ้านเมกาโฮม บิซทาวน์<br />
-                  แจ้งวัฒนะ 2 หมู่ 4 ต.คลองพระอุดม<br />
-                  อ.ปากเกร็ด นนทบุรี 11120
+                  70/5 หมู่ 4 เมทโทร บิซทาวน์ แจ้งวัฒนะ 2<br />
+                  ตำบลคลองพระอุดม อำเภอปากเกร็ด<br />
+                  นนทบุรี 11120
                 </div>
+              </div>
+
+              <div className="pt-1 text-[11px] text-white/50">
+                เลขประจำตัวผู้เสียภาษี: 0135558013167
               </div>
             </div>
           </Column>
