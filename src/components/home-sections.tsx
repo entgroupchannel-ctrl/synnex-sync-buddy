@@ -1050,7 +1050,7 @@ function CategoryGridCard({ p }: { p: ProductRow }) {
         />
       </Link>
       <div className="flex flex-1 flex-col gap-1 border-t p-3">
-        <div className="text-[10px] uppercase tracking-wide text-slate-500">{p.sku}</div>
+        {p.brand && <div className="text-[10px] uppercase tracking-wide text-slate-500">{p.brand}</div>}
         <Link
           to="/product/$slug"
           params={{ slug }}
