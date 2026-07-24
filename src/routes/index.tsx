@@ -37,6 +37,7 @@ import {
   StorageDeals,
   ComponentsShowcase,
   MacBookShowcase,
+  SolarEnergy,
 } from "@/components/home-sections";
 
 import { FrequentlyBought } from "@/components/frequently-bought";
@@ -656,6 +657,10 @@ function HomePage() {
 
           {/* Components (CPU & Memory) */}
           <ComponentsShowcase />
+
+          {/* Solar & Energy */}
+          <SolarEnergy />
+
 
           {/* Popular Notebooks */}
           <PopularNotebooks />

@@ -410,6 +410,22 @@ function ProductDetail() {
                 );
               })()}
 
+              {/* Solar & Energy — clean energy info box */}
+              {p.category === "Solar & Energy" && (
+                <div className="mt-6 rounded-lg border-2 border-amber-300 bg-gradient-to-br from-amber-50 to-yellow-50 p-4 text-sm leading-relaxed text-amber-900">
+                  <div className="mb-2 font-bold text-amber-950">☀️ สินค้าพลังงานสะอาด</div>
+                  <ul className="space-y-1">
+                    <li>✓ ประหยัดค่าไฟระยะยาว</li>
+                    <li>✓ เหมาะสำหรับบ้านและธุรกิจ</li>
+                    <li>✓ ติดตั้งโดยช่างผู้เชี่ยวชาญ</li>
+                  </ul>
+                  <div className="mt-3 border-t border-amber-200 pt-2 font-semibold">
+                    📞 ปรึกษาฟรี <a href="tel:020456104" className="underline">02-045-6104</a>
+                  </div>
+                </div>
+              )}
+
+
               {/* AEO — Answer-Ready Summary (for AI answer engines & voice search) */}
               {(() => {
                 const priceNum = Number(p.selling_price ?? 0);
