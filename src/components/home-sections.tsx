@@ -21,6 +21,7 @@ import { useCart } from "@/lib/cart";
 import { useLanguage } from "@/lib/i18n";
 import { ProductImage } from "@/components/product-image";
 import { BrandLogo } from "@/components/brand-logo";
+import { getBrandLogoUrl } from "@/lib/brand-assets";
 import { StockBadge } from "@/components/stock-badge";
 import { WarrantyBadge } from "@/components/warranty-badge";
 
