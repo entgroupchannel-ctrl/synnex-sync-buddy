@@ -310,8 +310,22 @@ function HomePage() {
   const toggleBrand = (b: string) => {
     const set = new Set(selectedBrands);
     if (set.has(b)) set.delete(b); else set.add(b);
-    update({ brands: [...set].join(",") });
+    // Selecting/deselecting a brand auto-clears category to prevent 0-result conflicts.
+    update({ brands: [...set].join(","), category: "all" });
   };
+
+  const setCategory = (c: string) => {
+    // Changing category auto-clears brand filter to prevent 0-result conflicts.
+    update({ category: c, brands: "" });
+  };
+
+  const clearAllFilters = () => {
+    navigate({ to: "/", search: {} as never });
+  };
+
+  const activeCategory = search.category !== "all" ? search.category : null;
+  const hasActiveFilters = !!activeCategory || selectedBrands.length > 0 || !!search.q;
+
 
   const addToCart = (p: Record<string, unknown>) => {
     const name = (p.name as string) ?? (p.sku as string);
