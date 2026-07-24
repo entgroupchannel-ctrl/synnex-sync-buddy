@@ -151,12 +151,15 @@ type ProductRow = {
 };
 
 function useCountdown() {
-  const [now, setNow] = useState(() => Date.now());
+  // Start at null on SSR to avoid Date.now() hydration mismatch; hydrate on client.
+  const [now, setNow] = useState<number | null>(null);
   useEffect(() => {
+    setNow(Date.now());
     const t = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(t);
   }, []);
-  const end = new Date(); end.setHours(24, 0, 0, 0);
+  if (now === null) return "--:--:--";
+  const end = new Date(now); end.setHours(24, 0, 0, 0);
   const ms = Math.max(0, end.getTime() - now);
   const h = Math.floor(ms / 3600000);
   const m = Math.floor((ms % 3600000) / 60000);
