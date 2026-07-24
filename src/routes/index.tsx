@@ -145,52 +145,50 @@ function HomePage() {
       const from = (search.page - 1) * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
       const s = search.q.trim().replace(/[%,]/g, "");
-      type Builder = ReturnType<typeof supabase.from<"synnex_products">> extends { select: (...a: never[]) => infer R } ? R : never;
-      const applyCommon = <T extends Builder>(qi: T): T => {
-        let q = qi;
-        // Only approved products with a real selling price
-        q = (q as unknown as Builder).eq("price_approved", true).gt("selling_price", 0) as T;
-        if (s) q = (q as unknown as Builder).or(`name.ilike.%${s}%,sku.ilike.%${s}%`) as T;
-        if (search.category !== "all") q = (q as unknown as Builder).eq("category", search.category) as T;
-        if (selectedBrands.length > 0) q = (q as unknown as Builder).in("brand", selectedBrands) as T;
-        if (search.min > 0) q = (q as unknown as Builder).gte("price", search.min) as T;
-        if (search.max < PRICE_MAX) q = (q as unknown as Builder).lte("price", search.max) as T;
-        if (search.sort === "price-asc") q = (q as unknown as Builder).order("price", { ascending: true, nullsFirst: false }) as T;
-        else if (search.sort === "price-desc") q = (q as unknown as Builder).order("price", { ascending: false, nullsFirst: false }) as T;
-        else if (search.sort === "popular") q = (q as unknown as Builder).order("name", { ascending: true }) as T;
-        else q = (q as unknown as Builder).order("synced_at", { ascending: false }) as T;
+      type AnyQ = { eq: (...a: unknown[]) => AnyQ; neq: (...a: unknown[]) => AnyQ; gt: (...a: unknown[]) => AnyQ; gte: (...a: unknown[]) => AnyQ; lte: (...a: unknown[]) => AnyQ; in: (...a: unknown[]) => AnyQ; or: (...a: unknown[]) => AnyQ; order: (...a: unknown[]) => AnyQ; range: (...a: unknown[]) => AnyQ };
+      const applyCommon = (qi: unknown): AnyQ => {
+        let q = qi as AnyQ;
+        q = q.eq("price_approved", true).gt("selling_price", 0);
+        if (s) q = q.or(`name.ilike.%${s}%,sku.ilike.%${s}%`);
+        if (search.category !== "all") q = q.eq("category", search.category);
+        if (selectedBrands.length > 0) q = q.in("brand", selectedBrands);
+        if (search.min > 0) q = q.gte("price", search.min);
+        if (search.max < PRICE_MAX) q = q.lte("price", search.max);
+        if (search.sort === "price-asc") q = q.order("price", { ascending: true, nullsFirst: false });
+        else if (search.sort === "price-desc") q = q.order("price", { ascending: false, nullsFirst: false });
+        else if (search.sort === "popular") q = q.order("name", { ascending: true });
+        else q = q.order("synced_at", { ascending: false });
         return q;
       };
+      type Result = { data: Record<string, unknown>[] | null; error: unknown; count: number | null };
 
-      // ready toggle ON → in-stock only
       if (search.ready) {
         const base = supabase.from("synnex_products").select("*", { count: "exact" });
         const q = applyCommon(base).eq("stock_status", "พร้อมจัดส่ง").range(from, to);
-        const { data, error, count } = await q;
+        const { data, error, count } = await (q as unknown as Promise<Result>);
         if (error) throw error;
         return { rows: data ?? [], count: count ?? 0 };
       }
 
-      // ready OFF → in-stock first, out-of-stock at the end
-      const inCountRes = await applyCommon(supabase.from("synnex_products").select("*", { count: "exact", head: true })).neq("stock_status", "สินค้าหมด");
-      const outCountRes = await applyCommon(supabase.from("synnex_products").select("*", { count: "exact", head: true })).eq("stock_status", "สินค้าหมด");
+      const inCountRes = await (applyCommon(supabase.from("synnex_products").select("*", { count: "exact", head: true })).neq("stock_status", "สินค้าหมด") as unknown as Promise<Result>);
+      const outCountRes = await (applyCommon(supabase.from("synnex_products").select("*", { count: "exact", head: true })).eq("stock_status", "สินค้าหมด") as unknown as Promise<Result>);
       const inCount = inCountRes.count ?? 0;
       const outCount = outCountRes.count ?? 0;
       const rows: Record<string, unknown>[] = [];
       if (from < inCount) {
         const inTo = Math.min(to, inCount - 1);
-        const r = await applyCommon(supabase.from("synnex_products").select("*")).neq("stock_status", "สินค้าหมด").range(from, inTo);
+        const r = await (applyCommon(supabase.from("synnex_products").select("*")).neq("stock_status", "สินค้าหมด").range(from, inTo) as unknown as Promise<Result>);
         if (r.error) throw r.error;
-        rows.push(...((r.data as Record<string, unknown>[]) ?? []));
+        rows.push(...(r.data ?? []));
       }
       if (to >= inCount && outCount > 0) {
         const outFrom = Math.max(0, from - inCount);
         const outTo = to - inCount;
-        const r = await applyCommon(supabase.from("synnex_products").select("*")).eq("stock_status", "สินค้าหมด").range(outFrom, outTo);
+        const r = await (applyCommon(supabase.from("synnex_products").select("*")).eq("stock_status", "สินค้าหมด").range(outFrom, outTo) as unknown as Promise<Result>);
         if (r.error) throw r.error;
-        rows.push(...((r.data as Record<string, unknown>[]) ?? []));
+        rows.push(...(r.data ?? []));
       }
-      return { rows: rows as never[], count: inCount + outCount };
+      return { rows, count: inCount + outCount };
     },
   });
 
