@@ -14,10 +14,10 @@ import { SiteHeader } from "@/components/site-header";
 import { priceFmt, useCart } from "@/lib/cart";
 import { useSupabaseUser } from "@/lib/auth-sheet";
 import {
-  getShippingOptions,
+  getWeightBasedShippingFee,
+  BKK_METRO_PROVINCES,
   applyDiscountCode,
   recordDiscountUsage,
-  type ShippingOption,
   type DiscountApplied,
   type UserType,
 } from "@/lib/shipping";
