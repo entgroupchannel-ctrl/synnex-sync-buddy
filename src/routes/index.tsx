@@ -986,6 +986,7 @@ function HomePage() {
                       <Link to="/product/$slug" params={{ slug }} className="line-clamp-2 min-h-10 text-sm font-medium hover:text-[color:var(--brand-navy)]">
                         {p.name ?? p.sku}
                       </Link>
+                      <WarrantyBadge category={p.category} name={p.name} />
                       <div className="mt-auto pt-1">
                         {priced ? (
                           <div className="text-xl font-black text-[color:var(--brand-orange)]">
