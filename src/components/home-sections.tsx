@@ -264,6 +264,7 @@ function useAddToCart() {
       id: p.id, sku: p.sku, slug: p.slug, name,
       price: getSellingPrice(p, tier) ?? 0,
       image_url: p.image_url, distributor: p.distributor,
+      category: (p as { category?: string | null }).category ?? null,
     });
     if (!user) triggerAuthPrompt({ name, sku: p.sku, image_url: p.image_url });
     else toast.success(`เพิ่ม ${p.sku} ลงตะกร้าแล้ว`);
