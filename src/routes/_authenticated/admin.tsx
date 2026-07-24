@@ -114,9 +114,11 @@ const NAV: NavGroup[] = [
       { label: "ธนาคาร/ชำระเงิน", href: "/admin/settings?tab=payment", icon: CreditCard },
       { label: "การจัดส่ง", href: "/admin/settings?tab=shipping", icon: Truck },
       { label: "Email Templates", href: "/admin/settings?tab=email", icon: Mail },
+      { label: "SEO Health Check", to: "/admin/seo", icon: Search },
     ],
   },
 ];
+
 
 function SidebarContent({ pathname, onNavigate }: { pathname: string; onNavigate?: () => void }) {
   const navigate = useNavigate();
