@@ -113,7 +113,7 @@ export function AppleFeatured() {
                   className="group relative overflow-hidden rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100 transition hover:shadow-md"
                 >
                   <div className="absolute right-2 top-2 rounded-full bg-[#1d1d1f] px-2 py-0.5 text-[10px] font-semibold text-white">
-                    🍎 Apple Authorized
+                    🍎 ของแท้ 100%
                   </div>
                   <div className="mb-3 grid aspect-square place-items-center">
                     <ProductImage
