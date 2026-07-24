@@ -5,7 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { ShoppingCart, Package, Zap, Minus, Plus, ChevronRight, FileText, Phone, MessageCircle, Facebook, Link as LinkIcon, Check, Heart, Twitter } from "lucide-react";
+import { ShoppingCart, Package, Zap, Minus, Plus, ChevronRight, FileText, Phone, MessageCircle, Facebook, Link as LinkIcon, Check, Heart, Twitter, QrCode } from "lucide-react";
+import { ProductQrDialog } from "@/components/product-qr-dialog";
 import { toggleWishlist, isWishlisted } from "@/lib/wishlist";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
@@ -321,6 +322,15 @@ function ProductDetail() {
                 <Heart className={`h-4 w-4 transition-colors ${wishlisted ? "fill-red-500 text-red-500" : "text-slate-400 hover:text-red-400"}`} />
                 <span className="text-xs">{wishlisted ? "บันทึกแล้ว" : "บันทึก"}</span>
               </button>
+              <ProductQrDialog url={typeof window !== "undefined" ? window.location.href : `https://shop.entgroup.co.th/product/${slug}`} productName={p.name ?? ""}>
+                <button
+                  type="button"
+                  className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white hover:bg-slate-50"
+                  aria-label="สแกน QR Code เปิดในมือถือ"
+                >
+                  <QrCode className="h-4 w-4 text-slate-600" />
+                </button>
+              </ProductQrDialog>
             </div>
 
             <div className="flex flex-col">
