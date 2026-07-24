@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import entLogo from "@/assets/entgroup-logo.jpg.asset.json";
+import entLogo from "@/assets/entgroup-logo.jpg.asset.json";
 
 /* -------------------------------------------------------------- */
 /* Small helpers                                                  */
