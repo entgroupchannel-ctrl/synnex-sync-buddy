@@ -456,14 +456,9 @@ function ProductDetail() {
                     {[
                       ["รุ่น / Model", p.sku],
                       ["แบรนด์", p.brand ?? "—"],
-                      ["ราคาปกติ", `฿${Number(p.selling_price ?? 0).toLocaleString("th-TH")}`],
-                      p.member_price ? ["ราคาสมาชิก", `฿${Number(p.member_price).toLocaleString("th-TH")} (ประหยัด ~5%)`] : null,
-                      (p as { b2b_price?: number | null }).b2b_price
-                        ? ["ราคาองค์กร B2B", `฿${Number((p as { b2b_price?: number }).b2b_price).toLocaleString("th-TH")} (ประหยัด ~10%)`]
-                        : null,
+                      ["ราคา", `฿${Number(p.selling_price ?? 0).toLocaleString("th-TH")}`],
                       ["สถานะ", `${p.stock_status ?? "—"}${byOrder ? " (By Order ~30 วัน)" : ""}`],
                       ["หมวดหมู่", p.category ?? "—"],
-                      ["แหล่งที่มา", `${(p as { distributor?: string | null }).distributor ?? "Synnex"} Thailand (Authorized Dealer)`],
                       ["รับประกัน", "รับประกันศูนย์ไทย"],
                     ].filter(Boolean).map((row, i) => {
                       const [k, v] = row as [string, string];
