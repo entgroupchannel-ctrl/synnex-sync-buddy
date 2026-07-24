@@ -1,5 +1,6 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { ShoppingCart, Search, Menu, Home, Grid3x3, User, X, LogOut, Package, MapPin, Building2 } from "lucide-react";
+import { ShoppingCart, Search, Menu, Home, Grid3x3, User, X, LogOut, Package, MapPin, Building2, Heart } from "lucide-react";
+import { useWishlistCount } from "@/lib/wishlist";
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -26,6 +27,7 @@ const NAV_CATS = ["ทั้งหมด", ...CATEGORIES] as const;
 
 export function SiteHeader() {
   const { count } = useCart();
+  const wishlistCount = useWishlistCount();
   const navigate = useNavigate();
   const [q, setQ] = useState("");
   const [suggestOpen, setSuggestOpen] = useState(false);
@@ -272,6 +274,18 @@ export function SiteHeader() {
           )}
 
           <CartReminderBell />
+          <Link
+            to="/wishlist"
+            className="relative hidden h-10 w-10 shrink-0 place-items-center rounded-md hover:bg-white/10 sm:grid"
+            aria-label="รายการที่บันทึกไว้"
+          >
+            <Heart className="h-5 w-5" />
+            {wishlistCount > 0 && (
+              <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
+                {wishlistCount}
+              </span>
+            )}
+          </Link>
           <Link
             to="/cart"
             className="relative grid h-10 w-10 shrink-0 place-items-center rounded-md hover:bg-white/10"
