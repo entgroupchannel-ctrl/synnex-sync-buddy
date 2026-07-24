@@ -75,13 +75,13 @@ function formatTHB(n: number) {
   return "฿" + n.toLocaleString("th-TH");
 }
 
-async function fetchSampleForPart(part: Part): Promise<SampleRow | null> {
+async function fetchSamplesForPart(part: Part): Promise<SampleRow[]> {
   let query: any = supabase
     .from("synnex_products")
     .select("image_url,name")
     .eq("price_approved", true)
     .not("image_url", "is", null)
-    .limit(1);
+    .limit(10);
 
   switch (part.type) {
     case "CPU":
@@ -127,8 +127,43 @@ async function fetchSampleForPart(part: Part): Promise<SampleRow | null> {
   }
 
   const { data, error } = await query;
-  if (error || !data || data.length === 0) return null;
-  return data[0] as SampleRow;
+  if (error || !data || data.length === 0) return [];
+  return data as SampleRow[];
+}
+
+function pickBestSample(samples: SampleRow[], type: string): SampleRow | null {
+  if (!samples || samples.length === 0) return null;
+  const avoidAdvice = samples.filter(
+    (s) => s.image_url && !s.image_url.includes("img.advice.co.th"),
+  );
+  const pool = avoidAdvice.length > 0 ? avoidAdvice : samples;
+
+  const scored = pool.map((s) => {
+    const n = s.name?.toLowerCase() ?? "";
+    let score = 0;
+    if (s.image_url?.includes("dealerapi.synnex.co.th")) score += 2;
+    if (type === "GPU") {
+      if (/rtx\s?(4|5|6|7|8|9)/.test(n)) score += 5;
+      if (/radeon\s?rx\s?(5|6|7|8|9)/.test(n)) score += 4;
+      if (/gt\s?730|gt\s?710|gt\s?1030/.test(n)) score -= 3;
+    } else if (type === "CPU") {
+      if (/ryzen\s?(5|7|9)|core\s?i(5|7|9)|core\s?ultra/.test(n)) score += 4;
+      if (/athlon|threadripper/.test(n)) score -= 2;
+    } else if (type === "RAM") {
+      if (/ddr5/.test(n)) score += 3;
+      if (/32gb|64gb/.test(n)) score += 2;
+    } else if (type === "MB") {
+      if (/b850m|b760m|x670|tuf\s?gaming/.test(n)) score += 3;
+    } else if (type === "SSD" || type === "Storage") {
+      if (/nvme|m\.2/.test(n)) score += 3;
+    } else if (type === "OS") {
+      if (/windows\s?11/.test(n)) score += 3;
+    }
+    return { sample: s, score };
+  });
+
+  scored.sort((a, b) => b.score - a.score);
+  return scored[0].sample;
 }
 
 export function PcBuilderLanding() {
