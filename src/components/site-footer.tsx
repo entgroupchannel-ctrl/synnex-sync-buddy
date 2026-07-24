@@ -129,21 +129,60 @@ function TrustBar() {
 function NewsletterStrip() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const [done, setDone] = useState(false);
+  const [count, setCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const { supabase } = await import("@/integrations/supabase/client");
+        const { count } = await supabase
+          .from("newsletter_subscribers")
+          .select("*", { count: "exact", head: true })
+          .eq("is_active", true);
+        if (alive) setCount(count ?? null);
+      } catch {
+        /* ignore */
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
+    const value = email.toLowerCase().trim();
+    if (!value || !value.includes("@")) {
+      toast.error("กรุณากรอกอีเมลที่ถูกต้อง");
+      return;
+    }
     setLoading(true);
     try {
       const { supabase } = await import("@/integrations/supabase/client");
-      const { error } = await supabase
-        .from("newsletter_subscribers")
-        .insert({ email });
-      if (error && !String(error.message).includes("duplicate")) throw error;
-      toast.success("สมัครรับข่าวสารสำเร็จ ขอบคุณค่ะ 💚");
+      const { error } = await supabase.from("newsletter_subscribers").upsert(
+        {
+          email: value,
+          subscribed_at: new Date().toISOString(),
+          source: "footer",
+          is_active: true,
+        },
+        { onConflict: "email" },
+      );
+      if (error) throw error;
+
+      await supabase.functions.invoke("send-newsletter-welcome", {
+        body: { email: value },
+      });
+
+      toast.success("สมัครรับข่าวสารสำเร็จ! ตรวจสอบอีเมลของคุณ");
       setEmail("");
-    } catch (err: any) {
-      toast.error(err?.message ?? "ไม่สามารถสมัครได้");
+      setDone(true);
+      setCount((c) => (c === null ? c : c + 1));
+      setTimeout(() => setDone(false), 5000);
+    } catch {
+      toast.error("เกิดข้อผิดพลาด กรุณาลองใหม่");
     } finally {
       setLoading(false);
     }
@@ -159,35 +198,45 @@ function NewsletterStrip() {
               รับข่าวสารและโปรโมชั่นก่อนใคร
             </div>
             <div className="text-xs text-white/70">
-              Get exclusive IT deals & news · สมัครแล้ว 1,247 คน · ไม่มีสแปม
-              ยกเลิกได้ทุกเมื่อ
+              Get exclusive IT deals &amp; news
+              {count !== null ? ` · สมัครแล้ว ${count.toLocaleString()} คน` : ""}{" "}
+              · ไม่มีสแปม ยกเลิกได้ทุกเมื่อ
             </div>
           </div>
         </div>
-        <form
-          onSubmit={submit}
-          className="flex w-full max-w-md items-center gap-2"
-        >
-          <input
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="กรอกอีเมลของคุณ"
-            className="h-10 flex-1 rounded-md border border-white/20 bg-white/5 px-3 text-sm text-white placeholder:text-white/40 focus:border-[color:var(--brand-green)] focus:outline-none"
-          />
-          <button
-            type="submit"
-            disabled={loading}
-            className="h-10 shrink-0 rounded-md bg-[color:var(--brand-green)] px-4 text-sm font-semibold text-white hover:brightness-110 disabled:opacity-60"
+        {done ? (
+          <div className="flex w-full max-w-md items-center gap-2 rounded-md border border-[color:var(--brand-green)]/40 bg-[color:var(--brand-green)]/10 px-3 py-2.5 text-sm font-semibold text-[color:var(--brand-green)]">
+            <CheckCircle2 className="h-5 w-5 shrink-0" />
+            สมัครแล้ว! ตรวจสอบอีเมลของคุณ
+          </div>
+        ) : (
+          <form
+            onSubmit={submit}
+            className="flex w-full max-w-md items-center gap-2"
           >
-            {loading ? "..." : "สมัครรับข่าวสาร"}
-          </button>
-        </form>
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="กรอกอีเมลของคุณ"
+              className="h-10 flex-1 rounded-md border border-white/20 bg-white/5 px-3 text-sm text-white placeholder:text-white/40 focus:border-[color:var(--brand-green)] focus:outline-none"
+            />
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex h-10 shrink-0 items-center gap-2 rounded-md bg-[color:var(--brand-green)] px-4 text-sm font-semibold text-white hover:brightness-110 disabled:opacity-60"
+            >
+              {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+              {loading ? "กำลังสมัคร..." : "สมัครรับข่าวสาร"}
+            </button>
+          </form>
+        )}
       </div>
     </div>
   );
 }
+
 
 /* -------------------------------------------------------------- */
 /* Column with mobile accordion                                    */
