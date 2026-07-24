@@ -455,8 +455,9 @@ function ProductPicker({
   const [q, setQ] = useState("");
   const [cpuBrand, setCpuBrand] = useState<"all" | "intel" | "amd">("all");
   const [mbBrand, setMbBrand] = useState<"all" | "asus" | "gigabyte" | "msi" | "asrock">("all");
-  const [mbSocket, setMbSocket] = useState<"all" | "am5" | "lga1851" | "lga1700">("all");
+  const [mbSocket, setMbSocket] = useState<"all" | "am5" | "am4" | "lga1851" | "lga1700">("all");
   const [gpuBrand, setGpuBrand] = useState<"all" | "nvidia" | "amd">("all");
+  const [ssdType, setSsdType] = useState<"all" | "sata" | "nvme">("all");
 
   useEffect(() => {
     let cancelled = false;
