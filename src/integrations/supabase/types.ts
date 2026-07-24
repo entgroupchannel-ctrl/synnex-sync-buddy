@@ -816,6 +816,7 @@ export type Database = {
         }
         Returns: number
       }
+      psych_price: { Args: { p: number }; Returns: number }
       recompute_user_order_stats: { Args: { _uid: string }; Returns: undefined }
     }
     Enums: {
