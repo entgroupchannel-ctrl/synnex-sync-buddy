@@ -648,7 +648,8 @@ function HomePage() {
                             </div>
                             {pct > 0 && <div className="text-[10px] text-slate-400 line-through">฿{orig.toLocaleString()}</div>}
                           </div>
-                          <div className="mt-1 font-mono text-[10px] font-bold text-red-600">⏱ {countdown}</div>
+                          <DeliveryHint category={p.category} />
+                          <div className="mt-1 font-mono to-[10px] font-bold text-red-600">⏱ {countdown}</div>
                         </div>
                       </Link>
                     );
