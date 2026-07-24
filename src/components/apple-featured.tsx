@@ -61,7 +61,7 @@ export function AppleFeatured() {
               🍎 Apple Products / ผลิตภัณฑ์ Apple
             </h2>
             <p className="mt-1 text-sm text-slate-600">
-              iPhone 17, MacBook Air M5, iPad Pro · <span className="font-medium">Authorized Reseller</span> — รับประกัน Apple Thailand
+              iPhone 17, MacBook Air M5, iPad Pro · <span className="font-medium">สินค้าของแท้ 100%</span> — รับประกันศูนย์ไทย 1 ปี
             </p>
           </div>
           <Link
