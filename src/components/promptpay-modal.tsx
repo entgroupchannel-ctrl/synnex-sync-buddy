@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { CheckCircle2, CreditCard, Loader2, Timer, X } from "lucide-react";
+import { CheckCircle2, Copy, CreditCard, Loader2, Timer, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -14,9 +14,10 @@ type Props = {
 };
 
 type ChargeResp = {
-  qr_code_url: string;
-  expires_at: string;
-  charge_id: string;
+  qr_code_url?: string;
+  expires_at?: string;
+  charge_id?: string;
+  requires_manual_transfer_protocol?: boolean;
 };
 
 const BANKS = ["KBank", "SCB", "กรุงไทย", "กรุงเทพ", "ทหารไทย"];
