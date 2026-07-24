@@ -127,9 +127,11 @@ export type Database = {
           category: string | null
           cost_price: number | null
           created_at: string | null
+          discount_applied: number | null
           distributor: string
           id: string
           order_id: string
+          price_tier: string | null
           product_image_url: string | null
           product_name: string
           product_sku: string
@@ -142,9 +144,11 @@ export type Database = {
           category?: string | null
           cost_price?: number | null
           created_at?: string | null
+          discount_applied?: number | null
           distributor: string
           id?: string
           order_id: string
+          price_tier?: string | null
           product_image_url?: string | null
           product_name: string
           product_sku: string
@@ -157,9 +161,11 @@ export type Database = {
           category?: string | null
           cost_price?: number | null
           created_at?: string | null
+          discount_applied?: number | null
           distributor?: string
           id?: string
           order_id?: string
+          price_tier?: string | null
           product_image_url?: string | null
           product_name?: string
           product_sku?: string
