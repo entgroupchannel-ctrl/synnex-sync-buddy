@@ -901,7 +901,7 @@ function HomePage() {
                       <ProductImage src={p.image_url} alt={p.name ?? p.sku} />
                     </Link>
                     <div className="flex min-w-0 flex-1 flex-col">
-                      <div className="text-[11px] uppercase tracking-wide text-slate-500">{p.brand ?? (p.category || detectCategory(p.name))} · {p.sku}</div>
+                      <div className="text-[11px] uppercase tracking-wide text-slate-500">{p.brand ?? (p.category || detectCategory(p.name))}</div>
                       <Link to="/product/$slug" params={{ slug }} className="line-clamp-2 text-sm font-semibold hover:text-[color:var(--brand-navy)]">{p.name ?? p.sku}</Link>
                       {p.description && <div className="mt-1 line-clamp-2 text-xs text-slate-500">{p.description}</div>}
                       <div className="mt-auto flex items-center gap-2 pt-1">
