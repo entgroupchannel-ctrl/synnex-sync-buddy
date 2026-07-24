@@ -249,9 +249,14 @@ function ProductDetail() {
             <Link to="/" className="inline-flex items-center rounded-md bg-[color:var(--brand-green)] px-4 py-2 text-sm font-semibold text-white hover:opacity-90">กลับหน้าแรก</Link>
           </div>
         ) : (
-          <div className="grid gap-8 rounded-lg border bg-white p-4 md:p-6 lg:grid-cols-2">
-            <div className="grid w-full min-h-[400px] place-items-center rounded-lg bg-slate-50 p-6">
-              <ProductImage src={p.image_url} alt={p.name ?? decodedSku} className="h-full w-full object-contain" iconClassName="h-24 w-24 text-slate-300" />
+          <div className="grid gap-6 rounded-lg border bg-white p-4 md:p-6 lg:grid-cols-2 lg:items-start">
+            <div className="sticky top-4 grid w-full place-items-center rounded-lg bg-slate-50 p-4" style={{ maxHeight: "420px" }}>
+              <ProductImage
+                src={p.image_url}
+                alt={p.name ?? decodedSku}
+                className="max-h-[280px] w-full object-contain lg:max-h-[380px]"
+                iconClassName="h-20 w-20 text-slate-300"
+              />
             </div>
 
             <div className="flex flex-col">
