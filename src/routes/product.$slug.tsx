@@ -328,65 +328,6 @@ function ProductDetail() {
               <h1 className="text-2xl font-bold text-slate-900 md:text-3xl">{p.name ?? decodedSku}</h1>
               {showSku && <div className="mt-1 text-sm text-slate-500">SKU / Model: {decodedSku}</div>}
 
-              {/* Share + Wishlist */}
-              <div className="mt-3 flex flex-wrap items-center gap-3">
-                <div className="flex items-center gap-2">
-                  <span className="mr-1 text-xs text-slate-500">แชร์:</span>
-                  <button
-                    type="button"
-                    onClick={() => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, "_blank", "width=600,height=400")}
-                    className="grid h-8 w-8 place-items-center rounded-full border border-slate-200 bg-white hover:bg-slate-50"
-                    aria-label="แชร์ไปยัง Facebook"
-                  >
-                    <Facebook className="h-4 w-4" style={{ color: "#1877F2" }} />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => window.open(`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(window.location.href)}`, "_blank")}
-                    className="grid h-8 w-8 place-items-center rounded-full border border-slate-200 bg-white hover:bg-slate-50"
-                    aria-label="แชร์ไปยัง LINE"
-                  >
-                    <MessageCircle className="h-4 w-4" style={{ color: "#06C755" }} />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => window.open(`https://x.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(p.name ?? "")}`, "_blank")}
-                    className="grid h-8 w-8 place-items-center rounded-full border border-slate-200 bg-white hover:bg-slate-50"
-                    aria-label="แชร์ไปยัง X"
-                  >
-                    <Twitter className="h-4 w-4 text-slate-900" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={async () => {
-                      try {
-                        await navigator.clipboard.writeText(window.location.href);
-                        toast.success("คัดลอกลิงก์แล้ว!");
-                        setCopied(true);
-                        setTimeout(() => setCopied(false), 2000);
-                      } catch {
-                        toast.error("ไม่สามารถคัดลอกลิงก์");
-                      }
-                    }}
-                    className="grid h-8 w-8 place-items-center rounded-full border border-slate-200 bg-white hover:bg-slate-50"
-                    aria-label="คัดลอกลิงก์"
-                  >
-                    {copied ? <Check className="h-4 w-4 text-emerald-600" /> : <LinkIcon className="h-4 w-4 text-slate-600" />}
-                  </button>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    const added = toggleWishlist(p.id);
-                    setWishlisted(added);
-                    toast.success(added ? "❤️ บันทึกไว้ดูทีหลังแล้ว" : "นำออกจากรายการแล้ว");
-                  }}
-                  className="flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 transition-all hover:border-red-200"
-                >
-                  <Heart className={`h-5 w-5 transition-colors ${wishlisted ? "fill-red-500 text-red-500" : "text-slate-400 hover:text-red-400"}`} />
-                  <span className="text-xs">{wishlisted ? "บันทึกแล้ว" : "บันทึก"}</span>
-                </button>
-              </div>
 
 
 
