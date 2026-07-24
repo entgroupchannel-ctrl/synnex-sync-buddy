@@ -30,6 +30,20 @@ export const Route = createFileRoute("/cart")({
 
 type RecentItem = { sku: string; name: string; image?: string | null; price?: number | null; slug?: string | null };
 
+const safeDisplaySku = (sku: string | null | undefined): string | null => {
+  if (!sku) return null;
+  try {
+    const decoded = decodeURIComponent(sku);
+    if (decoded.includes("%")) return null;
+    if (decoded.length > 80) return null;
+    if (/^(Computer Set|CPU |MAINBOARD |Advice |ADVICE )/i.test(decoded)) return null;
+    return decoded;
+  } catch {
+    return null;
+  }
+};
+
+
 function CartPage() {
   const { items, setQty, remove, total } = useCart();
   const navigate = useNavigate();
