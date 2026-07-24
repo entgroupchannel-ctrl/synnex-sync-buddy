@@ -101,15 +101,24 @@ function AdminOrderDetail() {
   const [saving, setSaving] = useState(false);
   const [slipUrl, setSlipUrl] = useState<string | null>(null);
   const [tracking, setTracking] = useState<string>("");
+  const [shipProvider, setShipProvider] = useState<string>("kerry");
+  const [estDelivery, setEstDelivery] = useState<string>("");
+  const [shippedAt, setShippedAt] = useState<string>("");
+  const [events, setEvents] = useState<ShippingEvent[]>([]);
+  const [savingShip, setSavingShip] = useState(false);
+  const [newEvent, setNewEvent] = useState<{ time: string; status: string; location: string }>({
+    time: "", status: "in_transit", location: "",
+  });
   const [emailLogs, setEmailLogs] = useState<EmailLog[]>([]);
   const [emailBusy, setEmailBusy] = useState<string | null>(null);
 
   const load = async () => {
     setLoading(true);
-    const [{ data: o }, { data: h }, { data: logs }] = await Promise.all([
+    const [{ data: o }, { data: h }, { data: logs }, { data: evs }] = await Promise.all([
       supabase.from("orders").select("*, order_items(*)").eq("id", id).maybeSingle(),
       supabase.from("order_status_history").select("*").eq("order_id", id).order("created_at", { ascending: true }),
       supabase.from("email_logs").select("*").eq("order_id", id).order("created_at", { ascending: false }).limit(50),
+      supabase.from("shipping_events").select("*").eq("order_id", id).order("event_time", { ascending: true }),
     ]);
     if (o) {
       const merged = { ...(o as Record<string, unknown>), history: (h ?? []) as HistoryRow[] } as unknown as Order;
@@ -118,6 +127,9 @@ function AdminOrderDetail() {
       setPaymentStatus(merged.payment_status ?? "pending");
       setNotes(merged.notes ?? "");
       setTracking(merged.tracking_number ?? "");
+      setShipProvider(merged.shipping_provider ?? "kerry");
+      setEstDelivery(merged.estimated_delivery ?? "");
+      setShippedAt(merged.shipped_at ? merged.shipped_at.slice(0, 10) : "");
       if (merged.payment_slip_url) {
         const { data } = await supabase.storage.from("payment-slips").createSignedUrl(merged.payment_slip_url, 60 * 60);
         setSlipUrl(data?.signedUrl ?? null);
@@ -125,6 +137,7 @@ function AdminOrderDetail() {
         setSlipUrl(null);
       }
     }
+    setEvents((evs ?? []) as ShippingEvent[]);
     setEmailLogs((logs ?? []) as EmailLog[]);
     setLoading(false);
   };
