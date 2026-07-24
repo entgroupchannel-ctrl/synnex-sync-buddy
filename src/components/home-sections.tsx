@@ -455,7 +455,7 @@ export function ComputerSets() {
         <SectionHeader
           title="🖥 Computer Set / คอมพิวเตอร์ชุดประกอบ"
           en="Computer Sets"
-          sub="ชุดคอมพิวเตอร์ Gaming และ Professional พร้อมใช้งาน · ส่งฟรีใน กทม เมื่อซื้อครบ ฿5,000"
+          sub="Gaming PC และ Workstation พร้อมใช้งาน · ส่งฟรีใน กทม เมื่อซื้อครบ ฿5,000"
           link={{ to: "/", search: { category: "Computer Set" }, label: "ดูทั้งหมด" }}
         />
         <div className="-mx-4 overflow-x-auto px-4 pb-2 [scrollbar-width:thin]">
@@ -1177,9 +1177,9 @@ export function ComponentsShowcase() {
     <section className="border-b bg-white">
       <div className="mx-auto max-w-7xl px-4 py-8">
         <SectionHeader
-          title="⚙️ CPU & RAM / ชิ้นส่วนคอมพิวเตอร์"
+          title="⚙️ CPU & Components / ชิ้นส่วนคอมพิวเตอร์"
           en="Components — CPU & Memory"
-          sub="AMD Ryzen, Intel Core Ultra, DDR4/DDR5 Memory"
+          sub="AMD Ryzen, Intel Core Ultra, Mainboard, RAM DDR4/DDR5"
           link={{ to: "/", search: { category: "Components" }, label: "ดู Components ทั้งหมด" }}
         />
         <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
