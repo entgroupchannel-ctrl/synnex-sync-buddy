@@ -11,6 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { ArrowLeft, Banknote, Truck, Building2, User, Loader2, Tag, X, CheckCircle2 } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
+import { CheckoutTrustBox } from "@/components/trust-signals";
 import { getItemWeightKg, priceFmt, useCart } from "@/lib/cart";
 import { useSupabaseUser } from "@/lib/auth-sheet";
 import {
@@ -615,6 +616,7 @@ function CheckoutPage() {
             <Button type="submit" disabled={submitting || items.length === 0} className="w-full bg-[color:var(--brand-orange)] font-bold hover:bg-[color:var(--brand-orange-dark)]" size="lg">
               {submitting ? (<><Loader2 className="mr-2 h-4 w-4 animate-spin" /> กำลังส่ง...</>) : "ยืนยันคำสั่งซื้อ"}
             </Button>
+            <CheckoutTrustBox />
           </aside>
         </form>
       </div>

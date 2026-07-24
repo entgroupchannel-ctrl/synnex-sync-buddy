@@ -20,6 +20,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { useDynamicSeo, getRobotsForCategory } from "@/lib/dynamic-seo";
 import { DeliveryHint } from "@/components/delivery-info";
 import { StockBadge } from "@/components/stock-badge";
+import { WarrantyBadge } from "@/components/warranty-badge";
 
 
 import { CATEGORIES, detectCategory, displayPrice, getSellingPrice, useCart, useCustomerTier } from "@/lib/cart";
@@ -641,6 +642,7 @@ function HomePage() {
                         </div>
                         <div className="border-t p-2">
                           <div className="line-clamp-2 min-h-9 text-xs font-medium">{p.name ?? p.sku}</div>
+                          <WarrantyBadge category={p.category} name={p.name} className="mt-0.5" />
                           <div className="mt-1 flex items-baseline gap-1.5">
                             <div className="text-base font-black text-[color:var(--brand-orange)]">
                               {displayPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier)}
@@ -912,6 +914,7 @@ function HomePage() {
                     <div className="flex min-w-0 flex-1 flex-col">
                       <div className="text-[11px] uppercase tracking-wide text-slate-500">{p.brand ?? (p.category || detectCategory(p.name))}</div>
                       <Link to="/product/$slug" params={{ slug }} className="line-clamp-2 text-sm font-semibold hover:text-[color:var(--brand-navy)]">{p.name ?? p.sku}</Link>
+                      <WarrantyBadge category={p.category} name={p.name} />
                       {p.description && <div className="mt-1 line-clamp-2 text-xs text-slate-500">{p.description}</div>}
                       <div className="mt-auto flex items-center gap-2 pt-1">
                         <span className={`inline-block h-2 w-2 rounded-full ${ready || byOrder ? "bg-green-500" : "bg-red-500"}`} />
@@ -983,6 +986,7 @@ function HomePage() {
                       <Link to="/product/$slug" params={{ slug }} className="line-clamp-2 min-h-10 text-sm font-medium hover:text-[color:var(--brand-navy)]">
                         {p.name ?? p.sku}
                       </Link>
+                      <WarrantyBadge category={p.category} name={p.name} />
                       <div className="mt-auto pt-1">
                         {priced ? (
                           <div className="text-xl font-black text-[color:var(--brand-orange)]">

@@ -21,6 +21,7 @@ import { useLanguage } from "@/lib/i18n";
 import { ProductImage } from "@/components/product-image";
 import { BrandLogo } from "@/components/brand-logo";
 import { StockBadge } from "@/components/stock-badge";
+import { WarrantyBadge } from "@/components/warranty-badge";
 
 
 /* ---------- Hero Carousel (compact, split layout) ---------- */
@@ -315,6 +316,7 @@ export function TodaysBestDeals() {
                     
                   </div>
                   <Link to="/product/$slug" params={{ slug }} className="line-clamp-2 text-sm font-semibold hover:text-[color:var(--brand-navy)]">{p.name ?? p.sku}</Link>
+                  <WarrantyBadge category={p.category as string | null | undefined} name={p.name as string | null | undefined} />
                   <div className="flex flex-wrap items-center gap-1">
                     {freeShip && <Badge className="bg-green-100 text-[10px] text-green-700 hover:bg-green-100">🚚 ฟรีจัดส่ง</Badge>}
                     <StockBadge stockQty={p.stock_qty as number | null | undefined} fulfillmentType={p.fulfillment_type as string | null | undefined} stockStatus={p.stock_status as string | null | undefined} distributor={(p as { distributor?: string | null }).distributor} />
@@ -1056,6 +1058,7 @@ function CategoryGridCard({ p }: { p: ProductRow }) {
         >
           {p.name ?? p.sku}
         </Link>
+        <WarrantyBadge category={p.category as string | null | undefined} name={p.name as string | null | undefined} />
         <div className="mt-auto text-lg font-black text-[color:var(--brand-orange)]">
           {displayPrice(p, tier)}
         </div>

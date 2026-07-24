@@ -9,6 +9,8 @@ import { ShoppingCart, Package, Zap, Minus, Plus, ChevronRight } from "lucide-re
 import { SiteHeader } from "@/components/site-header";
 import { ProductImage } from "@/components/product-image";
 import { DeliveryInfoBox } from "@/components/delivery-info";
+import { ProductTrustBar, ReturnPolicyAccordion } from "@/components/trust-signals";
+import { WarrantyBadge } from "@/components/warranty-badge";
 import { StockBadge } from "@/components/stock-badge";
 
 import { displayPrice, getSellingPrice, priceFmt, useCart, useCustomerTier, type PricingProduct } from "@/lib/cart";
@@ -360,7 +362,11 @@ function ProductDetail() {
                     )}
                   </div>
 
+                  <ProductTrustBar />
+
                   <DeliveryInfoBox category={p.category} name={p.name} price={(p as { selling_price?: number | null }).selling_price ?? undefined} />
+
+                  <ReturnPolicyAccordion />
 
                   {(() => {
                     const isB2B = tier.startsWith("b2b");
