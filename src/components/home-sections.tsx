@@ -215,6 +215,7 @@ const QUICK_CATS = [
   { icon: Wifi,       label: "Network",      sub: "Network",        cat: "Network" },
   { icon: HardDrive,  label: "Storage",      sub: "Storage",        cat: "Storage" },
   { icon: Smartphone, label: "สมาร์ตโฟน",     sub: "Smart Phone",    cat: "Smart Phone & Tablet" },
+  { icon: Sun,        label: "โซลาร์และพลังงาน", sub: "Solar & Energy", cat: "Solar & Energy" },
   { icon: LayoutGrid, label: "ดูทั้งหมด",     sub: "View All",       cat: "all" },
 ];
 
