@@ -127,18 +127,62 @@ function ProductDetail() {
               <h1 className="text-2xl font-bold text-slate-900 md:text-3xl">{p.name ?? p.sku}</h1>
               <div className="mt-1 text-sm text-slate-500">SKU / Model: {p.sku}</div>
 
-              <div className="mt-5 flex items-center gap-3">
-                {getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier) != null && !!p.price_approved ? (
-                  <div className="text-4xl font-black text-[color:var(--brand-orange)]">
-                    {displayPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier)}
+              {(() => {
+                const pr = useProductPrice(p as PricingProduct, qty);
+                const hasPrice = getSellingPrice(p as PricingProduct, tier) != null && !!p.price_approved;
+                if (!hasPrice) {
+                  return (
+                    <div className="mt-5 flex items-center gap-3">
+                      <div className="text-lg text-gray-400">ติดต่อสอบถาม</div>
+                      <Badge className={ready ? "bg-green-100 text-green-800 hover:bg-green-100" : "bg-red-100 text-red-700 hover:bg-red-100"}>
+                        {p.stock_status ?? "—"}
+                      </Badge>
+                    </div>
+                  );
+                }
+                const guestSaving = pr.userType === "guest" && p.member_price ? Number(p.selling_price ?? 0) - Number(p.member_price) : 0;
+                return (
+                  <div className="mt-5">
+                    <div className="flex flex-wrap items-center gap-2">
+                      {pr.tierBadge && (
+                        <span className="rounded-md bg-[color:var(--brand-navy)] px-2 py-0.5 text-xs font-bold text-white">
+                          {pr.tierBadge} Price
+                        </span>
+                      )}
+                      <span className="text-xs font-medium text-slate-500">{pr.priceLabel}</span>
+                      <Badge className={ready ? "bg-green-100 text-green-800 hover:bg-green-100" : "bg-red-100 text-red-700 hover:bg-red-100"}>
+                        {p.stock_status ?? "—"}
+                      </Badge>
+                    </div>
+                    <div className="mt-1 flex flex-wrap items-baseline gap-3">
+                      <div className="text-4xl font-black text-[color:var(--brand-orange)]">
+                        ฿{pr.displayPrice.toLocaleString("th-TH")}
+                      </div>
+                      {pr.savings > 0 && (
+                        <>
+                          <span className="text-lg text-slate-400 line-through">
+                            ฿{pr.originalPrice.toLocaleString("th-TH")}
+                          </span>
+                          <span className="rounded-md bg-red-100 px-2 py-0.5 text-xs font-bold text-red-700">
+                            ประหยัด {pr.savingsPct}%
+                          </span>
+                        </>
+                      )}
+                    </div>
+                    {pr.volumeDiscount > 0 && (
+                      <div className="mt-1 text-xs font-medium text-emerald-700">
+                        รวมส่วนลดตามจำนวน −{Math.round(pr.volumeDiscount * 100)}% (×{qty})
+                      </div>
+                    )}
+                    {guestSaving > 0 && (
+                      <p className="mt-2 rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-900">
+                        <Link to="/auth" className="font-bold underline">เข้าสู่ระบบ</Link>{" "}
+                        เพื่อรับราคาสมาชิก ประหยัดได้ ฿{guestSaving.toLocaleString("th-TH")}
+                      </p>
+                    )}
                   </div>
-                ) : (
-                  <div className="text-lg text-gray-400">ติดต่อสอบถาม</div>
-                )}
-                <Badge className={ready ? "bg-green-100 text-green-800 hover:bg-green-100" : "bg-red-100 text-red-700 hover:bg-red-100"}>
-                  {p.stock_status ?? "—"}
-                </Badge>
-              </div>
+                );
+              })()}
 
               {getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier) != null && !!p.price_approved ? (
                 <>
