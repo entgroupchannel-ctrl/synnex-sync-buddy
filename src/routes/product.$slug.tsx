@@ -68,6 +68,7 @@ function ProductDetail() {
   });
 
   const p = productQ.data;
+  const historyQ = usePurchaseHistoryForSku(p?.sku);
   const ready = p?.stock_status === "พร้อมจัดส่ง";
   const specs = parseSpecs(p?.description);
 
