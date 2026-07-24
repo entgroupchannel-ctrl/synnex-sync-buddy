@@ -9,8 +9,11 @@ import { toast } from "sonner";
 import {
   Laptop, Monitor, Printer, Cpu, Smartphone, Wifi, HardDrive, Package,
   Cable, LayoutGrid, ShoppingCart, Truck, Award, FileText, Phone, ArrowRight,
-  ChevronLeft, ChevronRight, Mail, Flame,
+  ChevronLeft, ChevronRight, Mail, Flame, ShieldCheck, Building2, Warehouse,
 } from "lucide-react";
+import heroWarehouse from "@/assets/hero-warehouse.jpg";
+import heroEnterprise from "@/assets/hero-enterprise.jpg";
+import heroDelivery from "@/assets/hero-delivery.jpg";
 import { displayPrice, getSellingPrice, useCustomerTier } from "@/lib/cart";
 import { triggerAuthPrompt, useSupabaseUser } from "@/lib/auth-sheet";
 import { useCart } from "@/lib/cart";
@@ -19,11 +22,14 @@ import { useLanguage } from "@/lib/i18n";
 /* ---------- Hero Carousel ---------- */
 
 type Slide = {
-  bg: string;
-  badge: string;
+  image: string;
+  align: "left" | "right";
+  eyebrowIcon: typeof Flame;
+  eyebrow: string;
   title: string;
   titleAccent: string;
   sub: string;
+  stats?: { value: string; label: string }[];
   cta: string;
   ctaAction: () => void;
 };
@@ -35,83 +41,145 @@ export function HeroCarousel({ onBrowse, onReady }: { onBrowse: () => void; onRe
 
   const slides: Slide[] = useMemo(() => [
     {
-      bg: "from-[color:var(--brand-navy)] via-[color:var(--brand-navy-2)] to-[color:var(--brand-navy)]",
-      badge: "ENT Group — Authorized Dealer ตั้งแต่ปี 2558",
-      title: "ราคา Dealer จริง",
-      titleAccent: "Real Dealer Prices",
-      sub: "Mini PC • Panel PC • IT Products จาก Synnex & VST ECS",
-      cta: "ดูสินค้าทั้งหมด / Browse All",
-      ctaAction: onBrowse,
-    },
-    {
-      bg: "from-emerald-900 via-[color:var(--brand-navy)] to-emerald-900",
-      badge: "Authorized Dealer",
-      title: "Synnex & VST ECS",
-      titleAccent: "Authorized Dealer",
-      sub: "สินค้าพร้อมส่ง รับประกัน 100% / In-stock & fully warrantied",
-      cta: "ดูสินค้าแนะนำ / Featured",
+      image: heroWarehouse,
+      align: "left",
+      eyebrowIcon: Warehouse,
+      eyebrow: "Authorized Dealer • Synnex Thailand & VST ECS",
+      title: "สินค้าแท้ 100%",
+      titleAccent: "จากผู้จัดจำหน่ายไทยโดยตรง",
+      sub: "เราเปิดเผยที่มาชัดเจน — นำเข้าและจัดจำหน่ายผ่าน Synnex (Thailand) และ VST ECS ผู้จัดจำหน่ายไอทีรายใหญ่ที่สุดของไทย พร้อมสต๊อกในประเทศ ส่งไว รับประกันศูนย์ไทยเต็มรูปแบบ",
+      stats: [
+        { value: "10+", label: "ปีในวงการ IT" },
+        { value: "100%", label: "สินค้าแท้ประกันศูนย์" },
+        { value: "2 แบรนด์", label: "Distributor หลัก" },
+      ],
+      cta: "ดูสินค้าพร้อมส่ง / Shop In-Stock",
       ctaAction: onReady,
     },
     {
-      bg: "from-orange-900 via-[color:var(--brand-navy)] to-orange-900",
-      badge: "B2B / Corporate",
-      title: "B2B องค์กร",
-      titleAccent: "ขอใบเสนอราคาได้ทันที",
-      sub: "ราคาพิเศษ + ใบกำกับภาษี + NET terms",
-      cta: "สมัคร B2B / Register",
+      image: heroEnterprise,
+      align: "right",
+      eyebrowIcon: Building2,
+      eyebrow: "ENT Group — ผู้ให้บริการไอทีองค์กร",
+      title: "8,000+ องค์กร",
+      titleAccent: "ไว้วางใจเรา",
+      sub: "ต่อยอดจาก ENTerprise.co.th เว็บไซต์หลักของเรา ที่ให้บริการลูกค้าองค์กรกว่า 8,000 รายทั่วประเทศ วันนี้เราเปิดร้านค้าออนไลน์นี้ให้ลูกค้า ทั่วไป / สมาชิก / องค์กร เข้าถึงราคา Dealer จริงได้โดยตรง",
+      stats: [
+        { value: "8,000+", label: "ลูกค้าองค์กร" },
+        { value: "B2C · B2B", label: "ครบทุกกลุ่ม" },
+        { value: "VAT", label: "ออกใบกำกับภาษีได้" },
+      ],
+      cta: "สมัครสมาชิก / Join Now",
       ctaAction: () => navigate({ to: "/auth" }),
+    },
+    {
+      image: heroDelivery,
+      align: "left",
+      eyebrowIcon: ShieldCheck,
+      eyebrow: "พร้อมส่งจากสต๊อกไทย • ประกันครบวงจร",
+      title: "ส่งไว มั่นใจ",
+      titleAccent: "ก่อน · ระหว่าง · หลังการขาย",
+      sub: "สินค้าพร้อมส่งจากคลังในประเทศไทย — จัดส่งเร็ว ตรวจสอบสถานะได้ พร้อมทีมงานผู้เชี่ยวชาญให้คำปรึกษาก่อนซื้อ ดูแลระหว่างใช้งาน และบริการหลังการขายผ่านศูนย์บริการทั่วประเทศ",
+      stats: [
+        { value: "1-3 วัน", label: "จัดส่งทั่วไทย" },
+        { value: "24/7", label: "ทีมซัพพอร์ต" },
+        { value: "ศูนย์ไทย", label: "รับประกันเต็มรูปแบบ" },
+      ],
+      cta: "เริ่มช้อปเลย / Browse All",
+      ctaAction: onBrowse,
     },
   ], [onBrowse, onReady, navigate]);
 
   useEffect(() => {
     if (paused) return;
-    const t = setInterval(() => setI((v) => (v + 1) % slides.length), 5000);
+    const t = setInterval(() => setI((v) => (v + 1) % slides.length), 6000);
     return () => clearInterval(t);
   }, [paused, slides.length]);
 
   const s = slides[i];
+  const EyebrowIcon = s.eyebrowIcon;
+  const isRight = s.align === "right";
+
   return (
     <section
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
-      className={`relative overflow-hidden bg-gradient-to-br ${s.bg} transition-colors duration-700`}
+      className="relative overflow-hidden bg-[color:var(--brand-navy)]"
     >
-      <div className="absolute inset-0 opacity-20" style={{ backgroundImage: "radial-gradient(circle at 20% 30%, #f97316 0, transparent 45%), radial-gradient(circle at 80% 70%, #1565c0 0, transparent 45%)" }} />
-      <div className="relative mx-auto max-w-7xl px-4 py-12 md:py-20">
-        <div className="max-w-2xl animate-fade-in" key={i}>
-          <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs text-white/90 backdrop-blur">
-            <Flame className="h-3.5 w-3.5 text-[color:var(--brand-orange)]" />
-            {s.badge}
-          </div>
-          <h1 className="text-3xl font-black leading-tight text-white md:text-5xl">
-            {s.title}<br />
-            <span className="text-[color:var(--brand-orange)]">{s.titleAccent}</span>
-          </h1>
-          <p className="mt-3 text-base text-white/80 md:text-lg">{s.sub}</p>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Button size="lg" className="bg-[color:var(--brand-orange)] font-bold hover:bg-[color:var(--brand-orange-dark)]" onClick={s.ctaAction}>
-              {s.cta}
-            </Button>
+      {/* Background image + gradient scrim */}
+      <div className="absolute inset-0">
+        <img
+          key={s.image}
+          src={s.image}
+          alt=""
+          className="h-full w-full object-cover animate-fade-in"
+          loading="eager"
+          width={1920}
+          height={1088}
+        />
+        <div
+          className={`absolute inset-0 ${
+            isRight
+              ? "bg-gradient-to-l from-[color:var(--brand-navy)]/95 via-[color:var(--brand-navy)]/70 to-transparent"
+              : "bg-gradient-to-r from-[color:var(--brand-navy)]/95 via-[color:var(--brand-navy)]/70 to-transparent"
+          }`}
+        />
+        <div className="absolute inset-0 bg-[color:var(--brand-navy)]/30" />
+      </div>
+
+      <div className="relative mx-auto max-w-7xl px-4 py-14 md:py-24">
+        <div className={`flex ${isRight ? "justify-end" : "justify-start"}`}>
+          <div className="max-w-xl animate-fade-in" key={i}>
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-md">
+              <EyebrowIcon className="h-3.5 w-3.5 text-[color:var(--brand-orange)]" />
+              {s.eyebrow}
+            </div>
+            <h1 className="text-4xl font-black leading-[1.05] text-white md:text-6xl">
+              {s.title}<br />
+              <span className="text-[color:var(--brand-orange)]">{s.titleAccent}</span>
+            </h1>
+            <p className="mt-4 max-w-lg text-base leading-relaxed text-white/85 md:text-lg">{s.sub}</p>
+
+            {s.stats && (
+              <div className="mt-6 grid max-w-md grid-cols-3 gap-3">
+                {s.stats.map((st) => (
+                  <div key={st.label} className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 backdrop-blur">
+                    <div className="text-lg font-black text-[color:var(--brand-orange)] md:text-xl">{st.value}</div>
+                    <div className="text-[10px] leading-tight text-white/70 md:text-[11px]">{st.label}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="mt-7 flex flex-wrap gap-3">
+              <Button size="lg" className="bg-[color:var(--brand-orange)] font-bold text-white shadow-lg shadow-orange-500/20 hover:bg-[color:var(--brand-orange-dark)]" onClick={s.ctaAction}>
+                {s.cta}
+              </Button>
+              <Button size="lg" variant="outline" className="border-white/30 bg-white/5 font-semibold text-white backdrop-blur hover:bg-white/15 hover:text-white" onClick={() => navigate({ to: "/contact" })}>
+                ติดต่อเรา / Contact
+              </Button>
+            </div>
           </div>
         </div>
-        {/* dots */}
-        <div className="mt-8 flex items-center gap-2">
+
+        {/* controls */}
+        <div className={`mt-10 flex items-center gap-2 ${isRight ? "justify-end" : "justify-start"}`}>
           <button
             onClick={() => setI((v) => (v - 1 + slides.length) % slides.length)}
-            className="grid h-8 w-8 place-items-center rounded-full bg-white/10 text-white hover:bg-white/20"
+            className="grid h-9 w-9 place-items-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur hover:bg-white/20"
             aria-label="Previous slide"
           ><ChevronLeft className="h-4 w-4" /></button>
           {slides.map((_, idx) => (
             <button
               key={idx}
               onClick={() => setI(idx)}
-              className={`h-2 rounded-full transition-all ${idx === i ? "w-8 bg-[color:var(--brand-orange)]" : "w-2 bg-white/40 hover:bg-white/70"}`}
+              className={`h-2 rounded-full transition-all ${idx === i ? "w-10 bg-[color:var(--brand-orange)]" : "w-2 bg-white/40 hover:bg-white/70"}`}
               aria-label={`Slide ${idx + 1}`}
             />
           ))}
           <button
             onClick={() => setI((v) => (v + 1) % slides.length)}
-            className="grid h-8 w-8 place-items-center rounded-full bg-white/10 text-white hover:bg-white/20"
+            className="grid h-9 w-9 place-items-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur hover:bg-white/20"
             aria-label="Next slide"
           ><ChevronRight className="h-4 w-4" /></button>
         </div>
