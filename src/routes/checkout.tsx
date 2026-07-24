@@ -390,7 +390,26 @@ function CheckoutPage() {
                 </div>
                 <div>
                   <Label htmlFor="sprov">จังหวัด *</Label>
-                  <Input id="sprov" value={f.shipping_province} onChange={(e) => setField("shipping_province", e.target.value)} maxLength={100} aria-invalid={!!fieldError("shipping_province")} />
+                  <select
+                    id="sprov"
+                    value={f.shipping_province}
+                    onChange={(e) => setField("shipping_province", e.target.value)}
+                    aria-invalid={!!fieldError("shipping_province")}
+                    className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                  >
+                    <option value="">— เลือกจังหวัด —</option>
+                    <optgroup label="กรุงเทพฯ และปริมณฑล (ส่งฟรี ≥ ฿5,000)">
+                      <option value="กรุงเทพมหานคร">กรุงเทพมหานคร</option>
+                      <option value="นนทบุรี">นนทบุรี</option>
+                      <option value="ปทุมธานี">ปทุมธานี</option>
+                      <option value="สมุทรปราการ">สมุทรปราการ</option>
+                    </optgroup>
+                    <optgroup label="ต่างจังหวัด (คิดตามน้ำหนัก)">
+                      {THAI_PROVINCES.map((p) => (
+                        <option key={p} value={p}>{p}</option>
+                      ))}
+                    </optgroup>
+                  </select>
                   {fieldError("shipping_province") && <p className="mt-1 text-xs text-red-600">{fieldError("shipping_province")}</p>}
                 </div>
                 <div>
