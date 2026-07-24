@@ -84,7 +84,7 @@ function CheckoutPage() {
   const { user } = useSupabaseUser();
 
   const [f, setF] = useState<Fields>({
-    customer_name: "", customer_phone: "", customer_email: "",
+    customer_name: "", customer_phone: "", customer_email: "", lineId: "",
     shipping_name: "", shipping_phone: "",
     shipping_address: "", shipping_district: "", shipping_province: "", shipping_postcode: "",
   });
