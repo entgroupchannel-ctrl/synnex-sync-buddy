@@ -622,11 +622,25 @@ function ProductPicker({
             options={[
               { value: "all", label: "ทั้งหมด" },
               { value: "am5", label: "AM5 (AMD)" },
+              { value: "am4", label: "AM4 (AMD)" },
               { value: "lga1851", label: "LGA1851 (Intel)" },
               { value: "lga1700", label: "LGA1700 (Intel)" },
             ]}
           />
         </>
+      )}
+
+      {step.key === "ssd" && (
+        <FilterTabs
+          className="mb-2"
+          value={ssdType}
+          onChange={(v) => setSsdType(v as typeof ssdType)}
+          options={[
+            { value: "all", label: "ทั้งหมด" },
+            { value: "sata", label: "SATA" },
+            { value: "nvme", label: "NVMe / M.2" },
+          ]}
+        />
       )}
 
       {step.key === "gpu" && (
