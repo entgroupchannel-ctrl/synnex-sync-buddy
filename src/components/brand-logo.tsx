@@ -18,20 +18,26 @@ const BRAND_DOMAINS: Record<string, string | null> = {
 };
 
 export function BrandLogo({ brand, className = "" }: { brand: string | null | undefined; className?: string }) {
-  const [failed, setFailed] = useState(false);
+  const [idx, setIdx] = useState(0);
   if (!brand) return null;
   const key = brand.trim().toUpperCase();
   const domain = key in BRAND_DOMAINS ? BRAND_DOMAINS[key] : null;
-  const showImg = domain && !failed;
+  const sources = domain
+    ? [
+        `https://icon.horse/icon/${domain}`,
+        `https://www.google.com/s2/favicons?sz=64&domain=${domain}`,
+      ]
+    : [];
+  const showImg = domain && idx < sources.length;
   return (
     <div
       className={`absolute left-2 top-2 z-10 inline-flex items-center rounded-md bg-white px-2 py-1 shadow-[0_1px_3px_rgba(0,0,0,0.1)] ${className}`}
     >
       {showImg ? (
         <img
-          src={`https://logo.clearbit.com/${domain}`}
+          src={sources[idx]}
           alt={brand}
-          onError={() => setFailed(true)}
+          onError={() => setIdx((i) => i + 1)}
           style={{ height: 16, maxWidth: 48, objectFit: "contain" }}
         />
       ) : (
