@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { CheckCircle2, Copy, CreditCard, Loader2, Timer, X } from "lucide-react";
+import { CheckCircle2, Copy, CreditCard, Landmark, Loader2, Timer, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
