@@ -495,11 +495,15 @@ function ProductDetail() {
                   "รับประกันศูนย์ไทย",
                 ].filter(Boolean).join(" · ");
                 return (
-                  <section className="mt-6 rounded-lg border border-slate-200 bg-slate-50 p-4" aria-label="สรุปสินค้าโดยย่อ">
-                    <div className="mb-1 text-[11px] font-bold uppercase tracking-wide text-slate-500">สรุปโดยย่อ / Quick Summary</div>
+                  <section className="mt-6 rounded-lg border border-slate-200 bg-slate-50 p-4" aria-label="สรุปรายละเอียดสินค้า">
+                    <div className="mb-1 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-slate-500">
+                      <FileText className="h-4 w-4" />
+                      สรุปรายละเอียดสินค้า
+                    </div>
                     <p className="text-sm leading-relaxed text-slate-800">{summary}</p>
                   </section>
                 );
+
               })()}
 
               {/* AEO — Spec table (structured facts) */}
