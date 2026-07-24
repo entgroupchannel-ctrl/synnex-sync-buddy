@@ -61,7 +61,7 @@ export function AppleFeatured() {
               🍎 Apple Products / ผลิตภัณฑ์ Apple
             </h2>
             <p className="mt-1 text-sm text-slate-600">
-              iPhone 17, MacBook Air M5, iPad Pro · <span className="font-medium">Authorized Reseller</span> — รับประกัน Apple Thailand
+              iPhone 17, MacBook Air M5, iPad Pro · <span className="font-medium">สินค้าของแท้ 100%</span> — รับประกันศูนย์ไทย 1 ปี
             </p>
           </div>
           <Link
@@ -113,7 +113,7 @@ export function AppleFeatured() {
                   className="group relative overflow-hidden rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100 transition hover:shadow-md"
                 >
                   <div className="absolute right-2 top-2 rounded-full bg-[#1d1d1f] px-2 py-0.5 text-[10px] font-semibold text-white">
-                    🍎 Apple Authorized
+                    🍎 ของแท้ 100%
                   </div>
                   <div className="mb-3 grid aspect-square place-items-center">
                     <ProductImage
@@ -131,7 +131,7 @@ export function AppleFeatured() {
                   {orig != null && price != null && orig > price && (
                     <div className="text-xs text-slate-400 line-through">{priceFmt.format(orig)}</div>
                   )}
-                  <div className="mt-1 text-[11px] text-slate-500">ประกัน 1 ปี Apple Thailand</div>
+                  <div className="mt-1 text-[11px] text-slate-500">รับประกันศูนย์ไทย 1 ปี</div>
                 </Link>
               );
             })}
