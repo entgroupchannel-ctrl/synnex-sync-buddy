@@ -26,9 +26,9 @@ export function IndustrialPromoBanner({ className, compact }: Props) {
           src={bannerAsset.url}
           alt="ENT Group Mid Year Sale 2026 ลดสูงสุด 12% สินค้า Industrial Computer แถมฟรี Windows 10/11 Pro OEM"
           loading="lazy"
-          className={`w-full object-cover object-center transition duration-500 group-hover:scale-[1.02] ${
-            compact ? "h-28 sm:h-36 md:h-44" : "h-36 sm:h-48 md:h-64 lg:h-auto"
-          }`}
+          width={1584}
+          height={648}
+          className="block h-auto w-full object-contain transition duration-500 group-hover:scale-[1.01]"
         />
         <span className="pointer-events-none absolute bottom-3 right-3 inline-flex items-center gap-1.5 rounded-full bg-amber-400/95 px-3 py-1.5 text-xs font-bold text-slate-900 shadow-lg sm:text-sm">
           ดูสินค้า Industrial Computer
