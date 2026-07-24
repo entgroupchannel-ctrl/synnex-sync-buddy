@@ -50,7 +50,8 @@ export function AppleMegaMenu() {
           className="absolute left-0 top-full z-50 w-[560px] rounded-xl bg-white p-5 text-slate-900 shadow-2xl ring-1 ring-slate-200"
           style={{ borderTop: "3px solid #1d1d1f" }}
         >
-          <div className="mb-3 text-sm font-bold text-[#1d1d1f]">🍎 Apple Products</div>
+          <AppleLogo className="mb-3 h-4 w-4 text-[#1d1d1f]" />
+          <div className="mb-3 -mt-5 pl-6 text-sm font-bold text-[#1d1d1f]">Apple Products</div>
           <div className="grid grid-cols-2 gap-2">
             {ITEMS.map((it) => (
               <Link
