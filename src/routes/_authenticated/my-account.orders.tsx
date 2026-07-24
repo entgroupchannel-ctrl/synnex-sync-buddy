@@ -30,7 +30,10 @@ type Row = {
   total: number | null;
   quotation_url: string | null;
   tax_invoice_url: string | null;
+  tracking_number: string | null;
+  shipping_provider: string | null;
   order_items: { product_name: string; quantity: number }[];
+  shipping_events: { status: string | null; event_time: string | null }[];
 };
 
 function MyOrders() {
@@ -39,7 +42,7 @@ function MyOrders() {
     queryFn: async () => {
       const { data } = await supabase
         .from("orders")
-        .select("id,order_number,created_at,status,payment_status,payment_method,total,quotation_url,tax_invoice_url,order_items(product_name,quantity)")
+        .select("id,order_number,created_at,status,payment_status,payment_method,total,quotation_url,tax_invoice_url,tracking_number,shipping_provider,order_items(product_name,quantity),shipping_events(status,event_time)")
         .order("created_at", { ascending: false });
       return (data ?? []) as unknown as Row[];
     },
