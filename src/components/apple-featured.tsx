@@ -57,8 +57,9 @@ export function AppleFeatured() {
       <div className="mx-auto max-w-7xl px-4 py-10">
         <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-bold tracking-tight text-[#1d1d1f] sm:text-3xl">
-              🍎 Apple Products / ผลิตภัณฑ์ Apple
+            <h2 className="flex items-center gap-2 text-2xl font-bold tracking-tight text-[#1d1d1f] sm:text-3xl">
+              <AppleLogo className="h-6 w-6 sm:h-7 sm:w-7" />
+              <span>Apple Products / ผลิตภัณฑ์ Apple</span>
             </h2>
             <p className="mt-1 text-sm text-slate-600">
               iPhone 17, MacBook Air M5, iPad Pro · <span className="font-medium">สินค้าของแท้ 100%</span> — รับประกันศูนย์ไทย 1 ปี
