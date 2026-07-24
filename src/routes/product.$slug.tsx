@@ -34,7 +34,7 @@ export const Route = createFileRoute("/product/$slug")({
       ? `${name} ราคา ฿${Number(price).toLocaleString("th-TH")} | ENT Group IT Shop`.slice(0, 70)
       : `${name} | ENT Group IT Shop`;
     const desc = p
-      ? `${name} ราคา ฿${Number(price).toLocaleString("th-TH")} ${p.stock_status === "พร้อมจัดส่ง" ? "พร้อมจัดส่ง" : "สั่งจอง"} รับประกันศูนย์ไทย จาก ENT Group Authorized Dealer ของ Synnex และ VST ECS`.slice(0, 160)
+      ? `${name} ราคา ฿${Number(price).toLocaleString("th-TH")} ${p.stock_status === "พร้อมจัดส่ง" ? "พร้อมจัดส่ง" : "สั่งจอง"} รับประกันศูนย์ไทย จาก ENT Group IT Shop`.slice(0, 160)
       : `รายละเอียดสินค้า ${params.slug} จาก ENT Group IT Shop`;
 
     const meta = [
@@ -223,7 +223,7 @@ function ProductDetail() {
                     </div>
                   );
                 }
-                const guestSaving = pr.userType === "guest" && p.member_price ? Number(p.selling_price ?? 0) - Number(p.member_price) : 0;
+                
                 return (
                   <div className="mt-5">
                     <div className="flex flex-wrap items-center gap-2">
@@ -257,11 +257,13 @@ function ProductDetail() {
                         รวมส่วนลดตามจำนวน −{Math.round(pr.volumeDiscount * 100)}% (×{qty})
                       </div>
                     )}
-                    {guestSaving > 0 && (
-                      <p className="mt-2 rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-900">
-                        <Link to="/auth" className="font-bold underline">เข้าสู่ระบบ</Link>{" "}
-                        เพื่อรับราคาสมาชิก ประหยัดได้ ฿{guestSaving.toLocaleString("th-TH")}
-                      </p>
+                    {pr.userType === "guest" && (
+                      <div className="mt-2 rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-900">
+                        <div>สมาชิกประหยัด 5% · องค์กร B2B ประหยัด 10%</div>
+                        <Link to="/auth" className="mt-1 inline-block font-bold text-[color:var(--brand-navy)] underline">
+                          สมัครสมาชิกฟรี เพื่อรับราคาพิเศษ →
+                        </Link>
+                      </div>
                     )}
                   </div>
                 );
@@ -431,13 +433,12 @@ function ProductDetail() {
               {(() => {
                 const priceNum = Number(p.selling_price ?? 0);
                 const stockLabel = ready ? "พร้อมจัดส่ง" : byOrder ? "By Order 30 วัน" : (p.stock_status ?? "สินค้าหมด");
-                const distributor = (p as { distributor?: string | null }).distributor;
                 const summary = [
                   `${p.name ?? p.sku} ราคา ฿${priceNum.toLocaleString("th-TH")}`,
                   stockLabel,
                   p.brand ? `แบรนด์ ${p.brand}` : "",
                   `รหัสสินค้า ${p.sku}`,
-                  `จำหน่ายโดย ENT Group Authorized Dealer${distributor ? ` ของ ${distributor} Thailand` : ""}`,
+                  `จำหน่ายโดย ENT Group IT Shop`,
                   "รับประกันศูนย์ไทย",
                 ].filter(Boolean).join(" · ");
                 return (
@@ -455,14 +456,9 @@ function ProductDetail() {
                     {[
                       ["รุ่น / Model", p.sku],
                       ["แบรนด์", p.brand ?? "—"],
-                      ["ราคาปกติ", `฿${Number(p.selling_price ?? 0).toLocaleString("th-TH")}`],
-                      p.member_price ? ["ราคาสมาชิก", `฿${Number(p.member_price).toLocaleString("th-TH")} (ประหยัด ~5%)`] : null,
-                      (p as { b2b_price?: number | null }).b2b_price
-                        ? ["ราคาองค์กร B2B", `฿${Number((p as { b2b_price?: number }).b2b_price).toLocaleString("th-TH")} (ประหยัด ~10%)`]
-                        : null,
+                      ["ราคา", `฿${Number(p.selling_price ?? 0).toLocaleString("th-TH")}`],
                       ["สถานะ", `${p.stock_status ?? "—"}${byOrder ? " (By Order ~30 วัน)" : ""}`],
                       ["หมวดหมู่", p.category ?? "—"],
-                      ["แหล่งที่มา", `${(p as { distributor?: string | null }).distributor ?? "Synnex"} Thailand (Authorized Dealer)`],
                       ["รับประกัน", "รับประกันศูนย์ไทย"],
                     ].filter(Boolean).map((row, i) => {
                       const [k, v] = row as [string, string];
@@ -480,11 +476,9 @@ function ProductDetail() {
               {/* AEO — Visible FAQ for voice search / AI answers */}
               {(() => {
                 const priceNum = Number(p.selling_price ?? 0);
-                const memberNum = Number(p.member_price ?? 0);
-                const b2bNum = Number((p as { b2b_price?: number | null }).b2b_price ?? 0);
                 const name = p.name ?? p.sku;
                 const q1 = `${name} ราคาเท่าไหร่?`;
-                const a1 = `${name} ราคา ฿${priceNum.toLocaleString("th-TH")} สำหรับลูกค้าทั่วไป${memberNum ? `, ฿${memberNum.toLocaleString("th-TH")} สำหรับสมาชิก` : ""}${b2bNum ? `, และ ฿${b2bNum.toLocaleString("th-TH")} สำหรับลูกค้าองค์กร B2B` : ""} จาก ENT Group IT Shop`;
+                const a1 = `${name} ราคา ฿${priceNum.toLocaleString("th-TH")} จาก ENT Group IT Shop`;
                 const q2 = `${name} มีสินค้าพร้อมส่งไหม?`;
                 const a2 = ready
                   ? `${name} มีสินค้าพร้อมจัดส่งทันที จัดส่งทั่วไทยผ่าน Kerry, Flash, ไปรษณีย์ไทย`
