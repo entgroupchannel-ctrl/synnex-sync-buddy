@@ -219,6 +219,7 @@ export function SiteHeader() {
                           setSuggestOpen(false);
                           setQ("");
                           navigate({ to: "/", search: { brands: b.brand } as never });
+                          scrollToGrid();
                         }}
                         className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-slate-50"
                       >
