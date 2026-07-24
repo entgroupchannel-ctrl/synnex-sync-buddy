@@ -42,7 +42,6 @@ function ProductDetail() {
   const { user } = useSupabaseUser();
   const [qty, setQty] = useState(1);
   const tier = useCustomerTier();
-  const historyQ = usePurchaseHistoryForSku(productQ.data?.sku);
 
   const productQ = useQuery({
     queryKey: ["product", slug],
