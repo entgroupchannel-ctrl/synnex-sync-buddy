@@ -109,37 +109,39 @@ export function IndustrialComputer() {
             </a>
           </div>
 
-          {/* Bento grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 auto-rows-[140px] md:auto-rows-[180px] gap-3">
+          {/* Card grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {TILES.map((t) => (
               <a
                 key={t.title}
                 href={t.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`group relative overflow-hidden rounded-xl bg-white/5 border border-white/10 hover:border-white/30 transition ${t.className}`}
+                className="group relative flex flex-col overflow-hidden rounded-xl bg-white/5 border border-white/10 hover:border-white/30 transition"
               >
-                <img
-                  src={t.src}
-                  alt={t.title}
-                  loading="lazy"
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#04122B]/95 via-[#04122B]/30 to-transparent" />
-                <div className="absolute inset-0 p-3 md:p-4 flex flex-col justify-end">
-                  <div className="text-white font-semibold text-sm md:text-base leading-tight drop-shadow">
-                    {t.title}
-                  </div>
-                  <div className="text-white/80 text-[11px] md:text-xs mt-0.5 line-clamp-2">
-                    {t.subtitle}
+                <div className="relative w-full aspect-[16/10] overflow-hidden bg-[#04122B]">
+                  <img
+                    src={t.src}
+                    alt={t.title}
+                    loading="lazy"
+                    className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-white/95 text-[#0B1E3F] flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                    <ArrowUpRight className="w-4 h-4" />
                   </div>
                 </div>
-                <div className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-white/95 text-[#0B1E3F] flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
-                  <ArrowUpRight className="w-4 h-4" />
+                <div className="p-3 md:p-4">
+                  <div className="text-white font-semibold text-sm md:text-base leading-tight">
+                    {t.title}
+                  </div>
+                  <div className="text-white/70 text-[11px] md:text-xs mt-1 line-clamp-2">
+                    {t.subtitle}
+                  </div>
                 </div>
               </a>
             ))}
           </div>
+
 
           {/* Feature strip */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
