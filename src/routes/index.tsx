@@ -27,6 +27,7 @@ import {
   RecentlyViewed,
   NewsletterSignup,
 } from "@/components/home-sections";
+import entLogo from "@/assets/entgroup-logo.jpg.asset.json";
 
 const searchSchema = z.object({
   q: fallback(z.string(), "").default(""),
