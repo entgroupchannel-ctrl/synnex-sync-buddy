@@ -525,13 +525,14 @@ function ProductDetail() {
                 <table className="w-full text-sm">
                   <tbody>
                     {[
-                      ["รุ่น / Model", p.sku],
+                      ...(showSku ? [["รุ่น / Model", decodedSku]] : []),
                       ["แบรนด์", p.brand ?? "—"],
                       ["ราคา", `฿${Number(p.selling_price ?? 0).toLocaleString("th-TH")}`],
                       ["สถานะ", `${p.stock_status ?? "—"}${byOrder ? " (By Order ~30 วัน)" : ""}`],
                       ["หมวดหมู่", p.category ?? "—"],
                       ["รับประกัน", "รับประกันศูนย์ไทย"],
                     ].filter(Boolean).map((row, i) => {
+
                       const [k, v] = row as [string, string];
                       return (
                         <tr key={k}>
