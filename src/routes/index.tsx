@@ -35,6 +35,7 @@ import {
   MicrosoftFeatured,
   NetworkSecurity,
   StorageDeals,
+  ComponentsShowcase,
 } from "@/components/home-sections";
 
 import { FrequentlyBought } from "@/components/frequently-bought";
