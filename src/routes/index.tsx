@@ -63,6 +63,25 @@ export const Route = createFileRoute("/")({
 const PAGE_SIZE = 24;
 const PRICE_MAX = 100000;
 
+type ProductRow = {
+  id: string;
+  sku: string;
+  slug: string | null;
+  name: string | null;
+  brand: string | null;
+  category: string | null;
+  description: string | null;
+  image_url: string | null;
+  price: number | null;
+  selling_price: number | null;
+  member_price: number | null;
+  b2b_price: number | null;
+  price_approved: boolean | null;
+  stock_status: string | null;
+  stock_qty: number | null;
+  distributor: string | null;
+};
+
 function useCountdown() {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
