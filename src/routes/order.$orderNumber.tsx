@@ -307,10 +307,8 @@ function OrderConfirm() {
         </section>
 
         {/* Support */}
-        <div className="mt-6 rounded-2xl bg-[color:var(--brand-navy)] p-6 text-center text-white">
-          <div className="text-sm">ทีมงานจะติดต่อกลับภายใน 1 วันทำการ</div>
-          <div className="mt-1 text-xl font-black">โทร {SUPPORT_PHONE}</div>
-        </div>
+        <SupportContact />
+
 
         <div className="mt-6 flex justify-center gap-3">
           <Button asChild variant="outline">
