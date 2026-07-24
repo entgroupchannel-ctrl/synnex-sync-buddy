@@ -40,6 +40,7 @@ export const Route = createFileRoute("/product/$slug")({
     const meta = [
       { title },
       { name: "description", content: desc },
+      { name: "robots", content: "index, follow, max-image-preview:large" },
       { property: "og:type", content: "product" },
       { property: "og:title", content: title },
       { property: "og:description", content: desc },
@@ -51,6 +52,7 @@ export const Route = createFileRoute("/product/$slug")({
       meta.push({ property: "og:image", content: p.image_url });
       meta.push({ name: "twitter:image", content: p.image_url });
     }
+
 
     const scripts: Array<{ type: string; children: string }> = [
       {
