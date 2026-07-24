@@ -533,6 +533,7 @@ export type Database = {
       pc_builder_quotes: {
         Row: {
           admin_note: string | null
+          available_time: string | null
           cpu_id: string | null
           cpu_name: string | null
           cpu_price: number | null
@@ -544,6 +545,7 @@ export type Database = {
           gpu_name: string | null
           gpu_price: number | null
           id: string
+          line_id: string | null
           mb_id: string | null
           mb_name: string | null
           mb_price: number | null
@@ -569,6 +571,7 @@ export type Database = {
         }
         Insert: {
           admin_note?: string | null
+          available_time?: string | null
           cpu_id?: string | null
           cpu_name?: string | null
           cpu_price?: number | null
@@ -580,6 +583,7 @@ export type Database = {
           gpu_name?: string | null
           gpu_price?: number | null
           id?: string
+          line_id?: string | null
           mb_id?: string | null
           mb_name?: string | null
           mb_price?: number | null
@@ -605,6 +609,7 @@ export type Database = {
         }
         Update: {
           admin_note?: string | null
+          available_time?: string | null
           cpu_id?: string | null
           cpu_name?: string | null
           cpu_price?: number | null
@@ -616,6 +621,7 @@ export type Database = {
           gpu_name?: string | null
           gpu_price?: number | null
           id?: string
+          line_id?: string | null
           mb_id?: string | null
           mb_name?: string | null
           mb_price?: number | null
