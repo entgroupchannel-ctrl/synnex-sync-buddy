@@ -436,7 +436,7 @@ function ProductDetail() {
                     </Button>
                     {byOrder ? (
                       <Button asChild variant="outline" size="lg" className="border-blue-300 text-blue-800 hover:bg-blue-50">
-                        <a href="mailto:Sales@entgroup.co.th?subject=ขอใบเสนอราคา">📄 ขอใบเสนอราคา</a>
+                        <a href="mailto:sales@entgroup.co.th?subject=ขอใบเสนอราคา">📄 ขอใบเสนอราคา</a>
                       </Button>
                     ) : (
                       <Button
@@ -468,13 +468,13 @@ function ProductDetail() {
                         variant="outline"
                         className="w-full gap-1.5 rounded-xl border-gray-200 bg-white px-4 py-3 font-semibold text-gray-700 hover:bg-gray-50"
                       >
-                        <a href="tel:02-045-6104">
+                        <a href="tel:020456104">
                           <Phone className="h-4 w-4" /> 02-045-6104
                         </a>
                       </Button>
                     </div>
                     <div className="mt-2 text-center text-xs text-gray-400">
-                      02-045-6104 · 095-739-1053 · 084-046-1315
+                      <a href="tel:020456104" className="hover:text-gray-600">02-045-6104</a> · <a href="tel:0957391053" className="hover:text-gray-600">095-739-1053</a>
                     </div>
                   </div>
 

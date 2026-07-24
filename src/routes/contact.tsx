@@ -13,9 +13,16 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { LineQrDialog } from "@/components/line-qr-dialog";
 
-const PHONES = ["02-045-6104", "095-739-1053", "084-046-1315"];
+const PHONES: { num: string; label: string }[] = [
+  { num: "02-045-6104", label: "สำนักงานหลัก" },
+  { num: "095-739-1053", label: "แอดมิน" },
+  { num: "084-046-1315", label: "แอดมิน" },
+  { num: "062-647-1447", label: "Admin" },
+  { num: "088-962-4471", label: "Admin" },
+  { num: "082-249-7922", label: "บัญชี" },
+];
 const FAX = "02-045-6105";
-const SALES_EMAIL = "Sales@entgroup.co.th";
+const SALES_EMAIL = "sales@entgroup.co.th";
 
 export const Route = createFileRoute("/contact")({
   ssr: false,
@@ -144,7 +151,9 @@ function ContactPage() {
                   <div className="font-semibold text-[color:var(--brand-navy)]">โทรศัพท์</div>
                   <div className="flex flex-col gap-0.5">
                     {PHONES.map((p) => (
-                      <a key={p} href={`tel:${p.replace(/-/g, "")}`} className="text-slate-600 hover:text-[color:var(--brand-green)]">{p}</a>
+                      <a key={p.num} href={`tel:${p.num.replace(/-/g, "")}`} className="text-slate-600 hover:text-[color:var(--brand-green)]">
+                        <span className="font-mono">{p.num}</span> <span className="text-xs text-slate-400">— {p.label}</span>
+                      </a>
                     ))}
                   </div>
                   <div className="mt-1 flex items-center gap-1.5 text-xs text-slate-500">
