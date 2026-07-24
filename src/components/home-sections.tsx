@@ -189,6 +189,7 @@ function useAddToCart() {
 }
 
 export function TodaysBestDeals() {
+  const tier = useCustomerTier();
   const addToCart = useAddToCart();
   const q = useQuery({
     queryKey: ["todays-best"],
@@ -215,7 +216,7 @@ export function TodaysBestDeals() {
           {q.data!.map((p) => {
             const ready = p.stock_status === "พร้อมจัดส่ง";
             const slug = p.slug || p.id;
-            const selling = getSellingPrice(p) ?? 0;
+            const selling = getSellingPrice(p, tier) ?? 0;
             const freeShip = selling > 5000;
             const lowStock = ready && (p.stock_qty ?? 999) < 10;
             return (
@@ -233,7 +234,7 @@ export function TodaysBestDeals() {
                     {freeShip && <Badge className="bg-green-100 text-[10px] text-green-700 hover:bg-green-100">🚚 ฟรีจัดส่ง</Badge>}
                     {lowStock && <Badge className="bg-red-100 text-[10px] text-red-700 hover:bg-red-100">เหลือน้อย</Badge>}
                   </div>
-                  <div className="mt-1 text-xl font-black text-[color:var(--brand-orange)]">{displayPrice(p)}</div>
+                  <div className="mt-1 text-xl font-black text-[color:var(--brand-orange)]">{displayPrice(p, tier)}</div>
                   <div className="flex items-center gap-1.5 text-[11px] text-slate-600">
                     <span className={`inline-block h-2 w-2 rounded-full ${ready ? "bg-green-500" : "bg-red-500"}`} />
                     {p.stock_status ?? "—"}
@@ -259,6 +260,7 @@ export function TodaysBestDeals() {
 /* ---------- Popular Notebooks ---------- */
 
 export function PopularNotebooks() {
+  const tier = useCustomerTier();
   const addToCart = useAddToCart();
   const q = useQuery({
     queryKey: ["popular-notebooks"],
@@ -302,7 +304,7 @@ export function PopularNotebooks() {
                 <div className="flex flex-1 flex-col gap-1 border-t p-3">
                   <div className="text-[10px] uppercase tracking-wide text-slate-500">{p.sku}</div>
                   <Link to="/product/$slug" params={{ slug }} className="line-clamp-2 min-h-10 text-sm font-medium hover:text-[color:var(--brand-navy)]">{p.name ?? p.sku}</Link>
-                  <div className="mt-auto text-lg font-black text-[color:var(--brand-orange)]">{displayPrice(p)}</div>
+                  <div className="mt-auto text-lg font-black text-[color:var(--brand-orange)]">{displayPrice(p, tier)}</div>
                   <Button
                     disabled={!ready}
                     onClick={() => addToCart(p)}
