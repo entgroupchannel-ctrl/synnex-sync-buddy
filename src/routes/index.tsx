@@ -42,6 +42,7 @@ import {
   SolarEnergy,
 } from "@/components/home-sections";
 import { AppleFeatured } from "@/components/apple-featured";
+import { PcBuilderLanding } from "@/components/pc-builder-landing";
 
 import { FrequentlyBought } from "@/components/frequently-bought";
 import { BrandLogo } from "@/components/brand-logo";
@@ -672,7 +673,8 @@ function HomePage() {
           {/* Computer Sets */}
           <ComputerSets />
 
-
+          {/* PC Builder landing */}
+          <PcBuilderLanding />
 
           {/* Components (CPU & Memory) */}
           <ComponentsShowcase />
