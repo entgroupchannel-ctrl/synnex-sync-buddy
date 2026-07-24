@@ -96,7 +96,16 @@ function CartPage() {
         ) : (
           <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
             <div className="space-y-3">
-              {items.map((it) => (
+              {hasByOrder && (
+                <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">
+                  <div className="font-bold">⚠️ สินค้า By Order ในตะกร้าของคุณ</div>
+                  <div className="mt-1">จะใช้เวลาจัดหาประมาณ 30 วันทำการ</div>
+                  <div>ทีมงานจะติดต่อยืนยันก่อนจัดส่ง</div>
+                </div>
+              )}
+              {items.map((it) => {
+                const itemByOrder = fulfillMap[it.sku] === "by_order";
+                return (
                 <div key={it.id} className="flex gap-4 rounded-lg border bg-white p-4">
                   <div className="grid h-24 w-24 shrink-0 place-items-center rounded-md bg-slate-50">
                     <ProductImage src={it.image_url} alt={it.name} className="h-full w-full object-contain p-1" iconClassName="h-8 w-8 text-slate-300" />
@@ -111,6 +120,11 @@ function CartPage() {
                     >
                       {it.name}
                     </Link>
+                    {itemByOrder && (
+                      <div className="mt-1 inline-flex items-center gap-1 rounded bg-blue-100 px-2 py-0.5 text-[11px] font-medium text-blue-800">
+                        📋 สินค้านี้ใช้เวลา 30 วัน
+                      </div>
+                    )}
                     <div className="mt-2 flex items-center gap-3">
                       <div className="inline-flex items-center rounded-md border">
                         <button onClick={() => setQty(it.id, it.qty - 1)} className="px-2 py-1 hover:bg-slate-100">
@@ -131,7 +145,7 @@ function CartPage() {
                     <div className="text-xs text-slate-500">{priceFmt.format(it.price)} / ชิ้น</div>
                   </div>
                 </div>
-              ))}
+              );})}
             </div>
 
             <aside className="h-fit rounded-lg border bg-white p-5">
