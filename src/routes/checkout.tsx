@@ -428,7 +428,7 @@ function CheckoutPage() {
             )}
 
             {!isPickup && (
-
+            <>
             <section className="space-y-4 rounded-lg border bg-white p-6">
               <h2 className="font-bold text-[color:var(--brand-navy)]">ที่อยู่จัดส่ง</h2>
               <div className="grid gap-4 sm:grid-cols-2">
