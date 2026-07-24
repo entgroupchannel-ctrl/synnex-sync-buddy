@@ -401,6 +401,42 @@ function StepCard({
   );
 }
 
+/* ---------- Filter Tabs ---------- */
+
+function FilterTabs({
+  value,
+  onChange,
+  options,
+  className = "",
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  options: { value: string; label: string }[];
+  className?: string;
+}) {
+  return (
+    <div className={`flex flex-wrap gap-2 ${className}`}>
+      {options.map((opt) => {
+        const active = value === opt.value;
+        return (
+          <button
+            key={opt.value}
+            type="button"
+            onClick={() => onChange(opt.value)}
+            className={
+              active
+                ? "rounded-full bg-[color:var(--brand-navy)] px-4 py-1.5 text-sm font-medium text-white"
+                : "rounded-full bg-white px-4 py-1.5 text-sm text-slate-700 ring-1 ring-slate-200 hover:ring-slate-400"
+            }
+          >
+            {opt.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 /* ---------- Product Picker (inline grid) ---------- */
 
 function ProductPicker({
@@ -417,6 +453,10 @@ function ProductPicker({
   const [items, setItems] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
+  const [cpuBrand, setCpuBrand] = useState<"all" | "intel" | "amd">("all");
+  const [mbBrand, setMbBrand] = useState<"all" | "asus" | "gigabyte" | "msi" | "asrock">("all");
+  const [mbSocket, setMbSocket] = useState<"all" | "am5" | "lga1851" | "lga1700">("all");
+  const [gpuBrand, setGpuBrand] = useState<"all" | "nvidia" | "amd">("all");
 
   useEffect(() => {
     let cancelled = false;
@@ -432,19 +472,33 @@ function ProductPicker({
         .gt("selling_price", 0);
 
       switch (step.key) {
-        case "cpu":
+        case "cpu": {
+          const orExpr =
+            cpuBrand === "intel"
+              ? "name.ilike.%Core i3%,name.ilike.%Core i5%,name.ilike.%Core i7%,name.ilike.%Core i9%,name.ilike.%Core Ultra%,name.ilike.%Intel%"
+              : cpuBrand === "amd"
+                ? "name.ilike.%Ryzen 3%,name.ilike.%Ryzen 5%,name.ilike.%Ryzen 7%,name.ilike.%Ryzen 9%,name.ilike.%Athlon%,name.ilike.%AMD%"
+                : "name.ilike.%CPU%,name.ilike.%Ryzen%,name.ilike.%Core i%,name.ilike.%Core Ultra%,name.ilike.%Athlon%,name.ilike.%Processor%";
           q = q
-            .or("name.ilike.%CPU%,name.ilike.%Ryzen%,name.ilike.%Core i%,name.ilike.%Core Ultra%,name.ilike.%Athlon%,name.ilike.%Processor%")
+            .or(orExpr)
             .not("name", "ilike", "%Motherboard%")
             .not("name", "ilike", "%Mainboard%")
             .not("name", "ilike", "%MB%");
           break;
+        }
         case "mb":
           q = q
             .or("name.ilike.%Mainboard%,name.ilike.%Motherboard%,name.ilike.%MB%,name.ilike.%B650%,name.ilike.%B850%,name.ilike.%Z790%,name.ilike.%Z890%,name.ilike.%X670%,name.ilike.%A620%")
             .not("name", "ilike", "%RAM%")
             .not("name", "ilike", "%DDR%")
             .not("name", "ilike", "%CPU%");
+          if (mbBrand === "asus") q = q.ilike("brand", "%ASUS%");
+          else if (mbBrand === "gigabyte") q = q.ilike("brand", "%GIGABYTE%");
+          else if (mbBrand === "msi") q = q.ilike("brand", "%MSI%");
+          else if (mbBrand === "asrock") q = q.ilike("brand", "%ASRock%");
+          if (mbSocket === "am5") q = q.ilike("name", "%AM5%");
+          else if (mbSocket === "lga1851") q = q.ilike("name", "%LGA1851%");
+          else if (mbSocket === "lga1700") q = q.ilike("name", "%LGA1700%");
           break;
         case "ram":
           q = q
@@ -464,12 +518,19 @@ function ProductPicker({
             .or("name.ilike.%Windows%,name.ilike.%Office%,name.ilike.%Ubuntu%")
             .eq("category", "Software");
           break;
-        case "gpu":
+        case "gpu": {
+          const orExpr =
+            gpuBrand === "nvidia"
+              ? "name.ilike.%RTX%,name.ilike.%GTX%"
+              : gpuBrand === "amd"
+                ? "name.ilike.%RX 6%,name.ilike.%RX 7%,name.ilike.%RX 9%"
+                : "name.ilike.%RTX%,name.ilike.%GTX%,name.ilike.%RX 6%,name.ilike.%RX 7%,name.ilike.%RX 9%,name.ilike.%Arc%,name.ilike.%VGA%,name.ilike.%Graphic%";
           q = q
-            .or("name.ilike.%RTX%,name.ilike.%GTX%,name.ilike.%RX 6%,name.ilike.%RX 7%,name.ilike.%RX 9%,name.ilike.%Arc%,name.ilike.%VGA%,name.ilike.%Graphic%")
+            .or(orExpr)
             .not("name", "ilike", "%Mainboard%")
             .not("name", "ilike", "%RAM%");
           break;
+        }
         case "psu":
           q = q
             .or("name.ilike.%PSU%,name.ilike.%Power Supply%,name.ilike.%Case%,name.ilike.%Chassis%,name.ilike.%ATX%,name.ilike.%Watt%")
@@ -493,7 +554,7 @@ function ProductPicker({
     return () => {
       cancelled = true;
     };
-  }, [step.key]);
+  }, [step.key, cpuBrand, mbBrand, mbSocket, gpuBrand]);
 
   const filtered = useMemo(() => {
     const s = q.trim().toLowerCase();
@@ -517,6 +578,60 @@ function ProductPicker({
           className="pl-9"
         />
       </div>
+
+      {step.key === "cpu" && (
+        <FilterTabs
+          className="mb-2"
+          value={cpuBrand}
+          onChange={(v) => setCpuBrand(v as typeof cpuBrand)}
+          options={[
+            { value: "all", label: "ทั้งหมด" },
+            { value: "intel", label: "🔵 Intel" },
+            { value: "amd", label: "🔴 AMD" },
+          ]}
+        />
+      )}
+
+      {step.key === "mb" && (
+        <>
+          <FilterTabs
+            className="mb-2"
+            value={mbBrand}
+            onChange={(v) => setMbBrand(v as typeof mbBrand)}
+            options={[
+              { value: "all", label: "ทั้งหมด" },
+              { value: "asus", label: "ASUS" },
+              { value: "gigabyte", label: "GIGABYTE" },
+              { value: "msi", label: "MSI" },
+              { value: "asrock", label: "ASRock" },
+            ]}
+          />
+          <FilterTabs
+            className="mb-2"
+            value={mbSocket}
+            onChange={(v) => setMbSocket(v as typeof mbSocket)}
+            options={[
+              { value: "all", label: "ทั้งหมด" },
+              { value: "am5", label: "AM5 (AMD)" },
+              { value: "lga1851", label: "LGA1851 (Intel)" },
+              { value: "lga1700", label: "LGA1700 (Intel)" },
+            ]}
+          />
+        </>
+      )}
+
+      {step.key === "gpu" && (
+        <FilterTabs
+          className="mb-2"
+          value={gpuBrand}
+          onChange={(v) => setGpuBrand(v as typeof gpuBrand)}
+          options={[
+            { value: "all", label: "ทั้งหมด" },
+            { value: "nvidia", label: "🟢 NVIDIA RTX" },
+            { value: "amd", label: "🔴 AMD RX" },
+          ]}
+        />
+      )}
 
       {loading ? (
         <div className="py-10 text-center text-sm text-slate-500">กำลังโหลด...</div>
