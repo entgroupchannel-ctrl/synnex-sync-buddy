@@ -327,6 +327,7 @@ export function SiteHeader() {
                   <Link
                     key="pc-builder-nav"
                     to="/pc-builder"
+                    preload="intent"
                     className={`whitespace-nowrap px-3 py-2.5 text-sm font-medium transition hover:text-[color:var(--brand-orange)] ${
                       pathname === "/pc-builder" ? "text-[color:var(--brand-orange)]" : "text-white/85"
                     }`}
