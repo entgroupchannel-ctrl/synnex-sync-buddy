@@ -35,8 +35,11 @@ function CartPage() {
   const { t } = useLanguage();
   const [recent, setRecent] = useState<RecentItem[]>([]);
   const { user } = useSupabaseUser();
-  const [shipOpts, setShipOpts] = useState<ShippingOption[]>([]);
-  const totalWeight = items.reduce((s, i) => s + i.qty, 0) || 1;
+  // Preview shipping under both zones (BKK metro vs. upcountry)
+  const weightedItems = items.map((i) => ({ price: i.price, qty: i.qty, weight_kg: 1 }));
+  const shipBkk = getWeightBasedShippingFee(weightedItems, "กรุงเทพมหานคร");
+  const shipOther = getWeightBasedShippingFee(weightedItems, "เชียงใหม่");
+  const totalWeight = shipBkk.totalWeight;
 
   useEffect(() => {
     try {
