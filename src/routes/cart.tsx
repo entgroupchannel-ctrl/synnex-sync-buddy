@@ -264,7 +264,7 @@ function EmptyCart({ recent, onBrowse }: { recent: RecentItem[]; onBrowse: () =>
         {recent.length > 0 && (
           <div className="mt-10 text-left">
             <div className="mb-3 flex items-center gap-2">
-              <span className="text-lg">💡</span>
+              <Lightbulb className="h-5 w-5 text-[color:var(--brand-orange)]" />
               <div>
                 <div className="font-bold text-[color:var(--brand-navy)]">{t("cart.recently_viewed")}</div>
               </div>
