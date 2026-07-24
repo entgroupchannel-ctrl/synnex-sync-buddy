@@ -185,6 +185,17 @@ function ProductDetail() {
   const ready = p?.stock_status === "พร้อมจัดส่ง";
   const available = ready || byOrder;
   const specs = parseSpecs(p?.description);
+  const decodedSku = p?.sku
+    ? (() => {
+        try {
+          return decodeURIComponent(p.sku);
+        } catch {
+          return p.sku;
+        }
+      })()
+    : "";
+  const showSku = decodedSku && !decodedSku.includes("%");
+
 
   useEffect(() => {
     if (!p) return;
@@ -237,13 +248,15 @@ function ProductDetail() {
           </div>
         ) : (
           <div className="grid gap-8 rounded-lg border bg-white p-4 md:p-6 lg:grid-cols-2">
-            <div className="grid aspect-square place-items-center rounded-lg bg-slate-50 p-6">
-              <ProductImage src={p.image_url} alt={p.name ?? p.sku} className="max-h-full max-w-full object-contain" iconClassName="h-24 w-24 text-slate-300" />
+            <div className="grid w-full min-h-[400px] place-items-center rounded-lg bg-slate-50 p-6">
+              <ProductImage src={p.image_url} alt={p.name ?? decodedSku} className="h-full w-full object-contain" iconClassName="h-24 w-24 text-slate-300" />
             </div>
+
             <div className="flex flex-col">
               {p.brand && <div className="mb-1 inline-flex w-fit rounded bg-slate-100 px-2 py-0.5 text-xs font-bold text-slate-700">{p.brand}</div>}
-              <h1 className="text-2xl font-bold text-slate-900 md:text-3xl">{p.name ?? p.sku}</h1>
-              <div className="mt-1 text-sm text-slate-500">SKU / Model: {p.sku}</div>
+              <h1 className="text-2xl font-bold text-slate-900 md:text-3xl">{p.name ?? decodedSku}</h1>
+              {showSku && <div className="mt-1 text-sm text-slate-500">SKU / Model: {decodedSku}</div>}
+
 
               {(() => {
                 const pr = computeProductPrice(p as PricingProduct, tier, qty);
@@ -487,13 +500,14 @@ function ProductDetail() {
                 const priceNum = Number(p.selling_price ?? 0);
                 const stockLabel = ready ? "พร้อมจัดส่ง" : byOrder ? "By Order 30 วัน" : (p.stock_status ?? "สินค้าหมด");
                 const summary = [
-                  `${p.name ?? p.sku} ราคา ฿${priceNum.toLocaleString("th-TH")}`,
+                  `${p.name ?? decodedSku} ราคา ฿${priceNum.toLocaleString("th-TH")}`,
                   stockLabel,
                   p.brand ? `แบรนด์ ${p.brand}` : "",
-                  `รหัสสินค้า ${p.sku}`,
+                  showSku ? `รหัสสินค้า ${decodedSku}` : "",
                   `จำหน่ายโดย ENT Group IT Shop`,
                   "รับประกันศูนย์ไทย",
                 ].filter(Boolean).join(" · ");
+
                 return (
                   <section className="mt-6 rounded-lg border border-slate-200 bg-slate-50 p-4" aria-label="สรุปรายละเอียดสินค้า">
                     <div className="mb-1 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-slate-500">
@@ -511,13 +525,14 @@ function ProductDetail() {
                 <table className="w-full text-sm">
                   <tbody>
                     {[
-                      ["รุ่น / Model", p.sku],
+                      ...(showSku ? [["รุ่น / Model", decodedSku]] : []),
                       ["แบรนด์", p.brand ?? "—"],
                       ["ราคา", `฿${Number(p.selling_price ?? 0).toLocaleString("th-TH")}`],
                       ["สถานะ", `${p.stock_status ?? "—"}${byOrder ? " (By Order ~30 วัน)" : ""}`],
                       ["หมวดหมู่", p.category ?? "—"],
                       ["รับประกัน", "รับประกันศูนย์ไทย"],
                     ].filter(Boolean).map((row, i) => {
+
                       const [k, v] = row as [string, string];
                       return (
                         <tr key={k}>
