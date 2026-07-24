@@ -42,13 +42,21 @@ serve(async (req) => {
     const itemsHtml = (order.order_items ?? []).map((it: { product_name: string; quantity: number }) =>
       `<li>${escapeHtml(it.product_name)} × ${it.quantity}</li>`).join('');
 
+    const trackUrl = `https://shop.entgroup.co.th/track/${encodeURIComponent(order.order_number)}`;
+    const carrierUrl = order.tracking_url ?? null;
+
     const subject = `📦 จัดส่งแล้ว! — ${order.order_number}`;
     const html = `<div style="font-family:Sarabun,Arial,sans-serif;max-width:640px;margin:0 auto;background:#fff;color:#0f172a;">
       <div style="background:#0b1e3f;padding:20px;color:#fff;text-align:center;"><h1 style="margin:0;font-size:18px;">ENT Group IT Shop</h1></div>
       <div style="padding:24px;">
         <h2>📦 สินค้าของคุณถูกจัดส่งแล้ว</h2>
         <p>เรียน คุณ${escapeHtml(order.customer_name ?? '')},</p>
+        ${order.shipping_provider ? `<p><b>ขนส่ง:</b> ${escapeHtml(order.shipping_provider)}</p>` : ''}
         ${tracking ? `<p><b>เลขพัสดุ:</b> <span style="font-family:monospace;">${escapeHtml(tracking)}</span></p>` : ''}
+        <div style="margin:18px 0;text-align:center;">
+          <a href="${trackUrl}" style="display:inline-block;background:#10B981;color:#fff;padding:12px 20px;border-radius:6px;text-decoration:none;font-weight:bold;">ติดตามพัสดุ / Track Package →</a>
+          ${carrierUrl ? `<div style="margin-top:8px;font-size:12px;"><a href="${carrierUrl}" style="color:#0b1e3f;">ตรวจสอบที่บริษัทขนส่ง →</a></div>` : ''}
+        </div>
         <p><b>รายการสินค้าที่จัดส่ง:</b></p>
         <ul>${itemsHtml}</ul>
         <p><b>ที่อยู่จัดส่ง:</b><br/>${escapeHtml([order.shipping_address, order.shipping_district, order.shipping_province, order.shipping_postcode].filter(Boolean).join(' '))}</p>
