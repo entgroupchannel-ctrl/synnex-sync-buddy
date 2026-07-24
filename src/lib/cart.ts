@@ -10,7 +10,16 @@ export type CartItem = {
   image_url: string | null;
   distributor: string | null;
   qty: number;
+  category?: string | null;
 };
+
+/** Heavy pre-built PC bundles ship at a flat 15 kg — used by the Kerry weight tariff. */
+export const COMPUTER_SET_WEIGHT_KG = 15;
+
+/** Kerry weight-per-item for shipping calculators. Defaults to 1 kg per unit. */
+export function getItemWeightKg(item: { category?: string | null }): number {
+  return item.category === "Computer Set" ? COMPUTER_SET_WEIGHT_KG : 1;
+}
 
 const KEY = "cart-v1";
 const EVT = "cart-changed";

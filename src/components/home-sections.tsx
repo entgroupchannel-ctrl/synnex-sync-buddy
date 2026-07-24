@@ -14,7 +14,7 @@ import {
 import heroWarehouse from "@/assets/hero-warehouse.jpg";
 import heroEnterprise from "@/assets/hero-enterprise.jpg";
 import heroDelivery from "@/assets/hero-delivery.jpg";
-import { displayPrice, getSellingPrice, useCustomerTier } from "@/lib/cart";
+import { displayPrice, getSellingPrice, priceFmt, useCustomerTier } from "@/lib/cart";
 import { triggerAuthPrompt, useSupabaseUser } from "@/lib/auth-sheet";
 import { useCart } from "@/lib/cart";
 import { useLanguage } from "@/lib/i18n";
@@ -264,6 +264,7 @@ function useAddToCart() {
       id: p.id, sku: p.sku, slug: p.slug, name,
       price: getSellingPrice(p, tier) ?? 0,
       image_url: p.image_url, distributor: p.distributor,
+      category: (p as { category?: string | null }).category ?? null,
     });
     if (!user) triggerAuthPrompt({ name, sku: p.sku, image_url: p.image_url });
     else toast.success(`เพิ่ม ${p.sku} ลงตะกร้าแล้ว`);
@@ -405,6 +406,29 @@ export function PopularNotebooks() {
 
 /* ---------- Computer Sets ---------- */
 
+export function extractComputerSetSpec(name: string): {
+  gpu: string | null;
+  cpu: string | null;
+  ram: string | null;
+} {
+  const src = name || "";
+  const gpuMatch = src.match(/RTX\s*\d{3,4}\w*/i) ?? src.match(/GTX\s*\d{3,4}/i) ?? src.match(/RX\s*\d{3,4}\w*/i);
+  const gpu = gpuMatch ? gpuMatch[0].toUpperCase().replace(/\s+/g, " ") : null;
+
+  let cpu: string | null = null;
+  const ultra = src.match(/(?:Intel\s*Core\s*)?ULTRA\s*(\d)\w*/i);
+  const iSeries = src.match(/\b[iI]([3579])[-\s]?\d{3,5}\w*/);
+  const ryzen = src.match(/Ryzen\s*[3579]\s*\d{3,4}\w*/i);
+  if (ultra) cpu = `Intel ULTRA ${ultra[1]}`;
+  else if (iSeries) cpu = `Intel i${iSeries[1]}`;
+  else if (ryzen) cpu = ryzen[0].replace(/\s+/g, " ").toUpperCase();
+
+  const ramMatch = src.match(/(\d{1,3})\s*GB\s*(?:DDR\d)?/i);
+  const ram = ramMatch ? `${ramMatch[1]}GB` : null;
+
+  return { gpu, cpu, ram };
+}
+
 export function ComputerSets() {
   const tier = useCustomerTier();
   const addToCart = useAddToCart();
@@ -424,65 +448,95 @@ export function ComputerSets() {
 
   if ((q.data?.length ?? 0) === 0) return null;
 
-  const extractSpec = (p: ProductRow & { description: string | null }): string | null => {
-    const src = `${p.name ?? ""} ${p.description ?? ""}`;
-    const parts: string[] = [];
-    const cpu = src.match(/(Intel[^,/|\n]*?(?:Core\s*(?:Ultra\s*)?[i]?\d[\w-]*|Xeon[\w-]*)|Ryzen\s*\d[\w\s-]*|Apple\s*M\d[\w\s-]*)/i);
-    if (cpu) parts.push(cpu[0].trim().replace(/\s+/g, " "));
-    const ram = src.match(/(\d{1,3})\s*GB\s*(?:DDR\d|RAM)?/i);
-    if (ram) parts.push(`${ram[1]}GB RAM`);
-    const ssd = src.match(/(\d+(?:\.\d+)?)\s*(TB|GB)\s*(?:M\.2\s*)?(?:NVMe\s*)?SSD/i);
-    if (ssd) parts.push(`${ssd[1]}${ssd[2]} SSD`);
-    const gpu = src.match(/(RTX\s*\d{3,4}[\w\s]{0,10}|GTX\s*\d{3,4}|Radeon\s*RX\s*\d{3,4}[\w\s]{0,10}|Arc\s*[AB]\d{3,4})/i);
-    if (gpu) parts.push(gpu[0].trim().replace(/\s+/g, " "));
-    return parts.length ? parts.join(" / ") : null;
-  };
-
   return (
-    <section className="border-b bg-white">
+    <section className="border-b bg-gradient-to-br from-slate-50 to-white">
       <div className="mx-auto max-w-7xl px-4 py-8">
         <SectionHeader
-          title="🖥 Computer Sets / คอมพิวเตอร์ชุดประกอบ"
+          title="🖥 Computer Set / คอมพิวเตอร์ชุดประกอบ"
           en="Computer Sets"
-          sub="ชุดคอมพิวเตอร์ประกอบพร้อมใช้จาก Advice"
+          sub="ชุดคอมพิวเตอร์ Gaming และ Professional พร้อมใช้งาน · ส่งฟรีใน กทม เมื่อซื้อครบ ฿5,000"
           link={{ to: "/", search: { category: "Computer Set" }, label: "ดูทั้งหมด" }}
         />
-        <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
-          {q.data!.map((p) => {
-            const ready = p.stock_status === "พร้อมจัดส่ง";
-            const slug = p.slug || p.id;
-            const spec = extractSpec(p);
-            return (
-              <div key={p.id} className="group relative flex flex-col overflow-hidden rounded-lg border bg-white transition hover:shadow-lg">
-                <BrandLogo brand={p.brand} />
-                <Link to="/product/$slug" params={{ slug }} className="grid aspect-square place-items-center bg-white p-3">
-                  <ProductImage src={p.image_url} alt={p.name ?? p.sku} className="h-full w-full object-contain transition group-hover:scale-105" iconClassName="h-16 w-16 text-slate-300" />
-                </Link>
-                <div className="flex flex-1 flex-col gap-1 border-t p-3">
-                  <div className="text-[10px] uppercase tracking-wide text-slate-500">{p.sku}</div>
-                  <Link to="/product/$slug" params={{ slug }} className="line-clamp-2 min-h-10 text-sm font-medium hover:text-[color:var(--brand-navy)]">{p.name ?? p.sku}</Link>
-                  {spec ? (
-                    <div className="line-clamp-2 min-h-8 rounded bg-slate-50 px-2 py-1 text-[11px] leading-snug text-slate-600">
-                      {spec}
-                    </div>
-                  ) : (
-                    <div className="line-clamp-2 min-h-8 text-[11px] leading-snug text-slate-500">
-                      {p.description ?? ""}
-                    </div>
+        <div className="-mx-4 overflow-x-auto px-4 pb-2 [scrollbar-width:thin]">
+          <div className="flex snap-x gap-4">
+            {q.data!.map((p) => {
+              const ready = p.stock_status === "พร้อมจัดส่ง";
+              const slug = p.slug || p.id;
+              const { gpu, cpu, ram } = extractComputerSetSpec(p.name ?? p.sku);
+              const priceNum = getSellingPrice(p, tier) ?? 0;
+              const memberNum = Number(p.member_price ?? 0);
+              const freeShip = priceNum >= 5000;
+              return (
+                <div
+                  key={p.id}
+                  className="group relative flex w-[280px] shrink-0 snap-start flex-col overflow-hidden rounded-xl border-2 border-slate-200 bg-white transition hover:border-[color:var(--brand-orange)] hover:shadow-xl"
+                >
+                  {gpu && (
+                    <span className="absolute right-2 top-2 z-10 rounded-md bg-gradient-to-r from-emerald-600 to-emerald-500 px-2 py-1 text-[11px] font-black text-white shadow">
+                      🎮 {gpu}
+                    </span>
                   )}
-                  <div className="mt-auto text-lg font-black text-[color:var(--brand-orange)]">{displayPrice(p, tier)}</div>
-                  <Button
-                    disabled={!ready}
-                    onClick={() => addToCart(p)}
-                    size="sm"
-                    className="mt-2 w-full bg-[color:var(--brand-navy)] font-semibold hover:bg-[color:var(--brand-navy-2)]"
+                  <Link
+                    to="/product/$slug"
+                    params={{ slug }}
+                    className="grid aspect-[4/3] place-items-center bg-slate-50 p-4"
                   >
-                    <ShoppingCart className="mr-1.5 h-4 w-4" /> ใส่ตะกร้า
-                  </Button>
+                    <ProductImage
+                      src={p.image_url}
+                      alt={p.name ?? p.sku}
+                      className="h-full w-full object-contain transition group-hover:scale-105"
+                      iconClassName="h-20 w-20 text-slate-300"
+                    />
+                  </Link>
+                  <div className="flex flex-1 flex-col gap-1.5 border-t p-3">
+                    <div className="text-[10px] uppercase tracking-wide text-slate-500">{p.sku}</div>
+                    <Link
+                      to="/product/$slug"
+                      params={{ slug }}
+                      className="line-clamp-2 min-h-10 text-sm font-semibold text-slate-900 hover:text-[color:var(--brand-navy)]"
+                    >
+                      {p.name ?? p.sku}
+                    </Link>
+                    <div className="flex flex-wrap gap-1">
+                      {cpu && (
+                        <span className="rounded bg-blue-50 px-1.5 py-0.5 text-[10px] font-bold text-blue-700 ring-1 ring-blue-200">
+                          {cpu}
+                        </span>
+                      )}
+                      {ram && (
+                        <span className="rounded bg-purple-50 px-1.5 py-0.5 text-[10px] font-bold text-purple-700 ring-1 ring-purple-200">
+                          {ram} RAM
+                        </span>
+                      )}
+                    </div>
+                    {freeShip && (
+                      <div className="rounded bg-emerald-50 px-2 py-1 text-[10px] font-semibold text-emerald-700 ring-1 ring-emerald-200">
+                        🚚 ส่งฟรี กทม./ปริมณฑล
+                      </div>
+                    )}
+                    <div className="mt-auto pt-1">
+                      <div className="text-2xl font-black text-[color:var(--brand-orange)]">
+                        {priceNum > 0 ? priceFmt.format(priceNum) : "ติดต่อสอบถาม"}
+                      </div>
+                      {memberNum > 0 && memberNum < priceNum && (
+                        <div className="text-xs font-semibold text-emerald-700">
+                          สมาชิก {priceFmt.format(memberNum)}
+                        </div>
+                      )}
+                    </div>
+                    <Button
+                      disabled={!ready}
+                      onClick={() => addToCart(p)}
+                      size="sm"
+                      className="mt-1 w-full bg-[color:var(--brand-navy)] font-semibold hover:bg-[color:var(--brand-navy-2)]"
+                    >
+                      <ShoppingCart className="mr-1.5 h-4 w-4" /> ใส่ตะกร้า
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>

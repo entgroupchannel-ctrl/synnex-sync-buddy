@@ -11,7 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { ArrowLeft, Banknote, Truck, Building2, User, Loader2, Tag, X, CheckCircle2 } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
-import { priceFmt, useCart } from "@/lib/cart";
+import { getItemWeightKg, priceFmt, useCart } from "@/lib/cart";
 import { useSupabaseUser } from "@/lib/auth-sheet";
 import {
   getWeightBasedShippingFee,
@@ -91,7 +91,7 @@ function CheckoutPage() {
   const shipCalc = useMemo(
     () =>
       getWeightBasedShippingFee(
-        items.map((i) => ({ price: i.price, qty: i.qty, weight_kg: 1 })),
+        items.map((i) => ({ price: i.price, qty: i.qty, weight_kg: getItemWeightKg(i) })),
         f.shipping_province,
       ),
     [items, f.shipping_province],

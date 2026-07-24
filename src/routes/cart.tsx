@@ -7,7 +7,7 @@ import { SiteHeader } from "@/components/site-header";
 import { ProductImage } from "@/components/product-image";
 import { supabase } from "@/integrations/supabase/client";
 
-import { CATEGORIES, priceFmt, useCart } from "@/lib/cart";
+import { CATEGORIES, getItemWeightKg, priceFmt, useCart } from "@/lib/cart";
 import { useLanguage } from "@/lib/i18n";
 import { useSupabaseUser } from "@/lib/auth-sheet";
 import { saveCartReminder, deleteCartReminder } from "@/lib/cart-reminder";
@@ -36,7 +36,7 @@ function CartPage() {
   const [recent, setRecent] = useState<RecentItem[]>([]);
   const { user } = useSupabaseUser();
   // Preview shipping under both zones (BKK metro vs. upcountry)
-  const weightedItems = items.map((i) => ({ price: i.price, qty: i.qty, weight_kg: 1 }));
+  const weightedItems = items.map((i) => ({ price: i.price, qty: i.qty, weight_kg: getItemWeightKg(i) }));
   const shipBkk = getWeightBasedShippingFee(weightedItems, "กรุงเทพมหานคร");
   const shipOther = getWeightBasedShippingFee(weightedItems, "เชียงใหม่");
   const totalWeight = shipBkk.totalWeight;
