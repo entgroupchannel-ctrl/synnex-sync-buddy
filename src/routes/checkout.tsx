@@ -75,7 +75,7 @@ const taxSchema = z.object({
   tax_id: z.string().trim().regex(/^\d{13}$/, "เลขประจำตัวผู้เสียภาษีต้อง 13 หลัก"),
   company_address: z.string().trim().min(5, "กรอกที่อยู่ออกใบกำกับ").max(500),
 });
-type Fields = z.infer<typeof shippingSchema>;
+type Fields = z.infer<typeof shippingSchema> & { lineId?: string };
 
 function CheckoutPage() {
 
@@ -84,7 +84,7 @@ function CheckoutPage() {
   const { user } = useSupabaseUser();
 
   const [f, setF] = useState<Fields>({
-    customer_name: "", customer_phone: "", customer_email: "",
+    customer_name: "", customer_phone: "", customer_email: "", lineId: "",
     shipping_name: "", shipping_phone: "",
     shipping_address: "", shipping_district: "", shipping_province: "", shipping_postcode: "",
   });
@@ -254,6 +254,7 @@ function CheckoutPage() {
           customer_name: base.data.customer_name,
           customer_phone: base.data.customer_phone,
           customer_email: base.data.customer_email,
+          line_id: f.lineId || null,
           customer_address: fullAddr,
           shipping_name: base.data.shipping_name,
           shipping_phone: base.data.shipping_phone,
@@ -398,10 +399,27 @@ function CheckoutPage() {
                   {fieldError("customer_phone") && <p className="mt-1 text-xs text-red-600">{fieldError("customer_phone")}</p>}
                 </div>
                 <div>
-                  <Label htmlFor="cemail">อีเมล *</Label>
-                  <Input id="cemail" type="email" value={f.customer_email} onChange={(e) => setField("customer_email", e.target.value)} maxLength={255} aria-invalid={!!fieldError("customer_email")} />
-                  {fieldError("customer_email") && <p className="mt-1 text-xs text-red-600">{fieldError("customer_email")}</p>}
+                  <Label htmlFor="clineid">LINE ID <span className="text-slate-400">(ไม่บังคับ)</span></Label>
+                  <div className="relative mt-1">
+                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                      <span className="text-xs font-semibold text-green-600">LINE</span>
+                    </div>
+                    <Input
+                      id="clineid"
+                      value={f.lineId ?? ''}
+                      onChange={(e) => setF((prev) => ({ ...prev, lineId: e.target.value }))}
+                      placeholder="@username หรือ entgroup"
+                      maxLength={60}
+                      className="w-full rounded-lg border border-slate-200 py-2.5 pl-14 pr-4 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                    />
+                  </div>
+                  <p className="mt-1 text-xs text-slate-500">ทีมงานจะติดต่อผ่าน LINE เพื่อแจ้งสถานะคำสั่งซื้อ</p>
                 </div>
+              </div>
+              <div>
+                <Label htmlFor="cemail">อีเมล *</Label>
+                <Input id="cemail" type="email" value={f.customer_email} onChange={(e) => setField("customer_email", e.target.value)} maxLength={255} aria-invalid={!!fieldError("customer_email")} />
+                {fieldError("customer_email") && <p className="mt-1 text-xs text-red-600">{fieldError("customer_email")}</p>}
               </div>
             </section>
 

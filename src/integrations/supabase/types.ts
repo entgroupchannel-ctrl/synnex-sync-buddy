@@ -371,6 +371,7 @@ export type Database = {
           id: string
           is_guest: boolean | null
           items: Json | null
+          line_id: string | null
           need_tax_invoice: boolean
           notes: string | null
           order_number: string
@@ -426,6 +427,7 @@ export type Database = {
           id?: string
           is_guest?: boolean | null
           items?: Json | null
+          line_id?: string | null
           need_tax_invoice?: boolean
           notes?: string | null
           order_number: string
@@ -481,6 +483,7 @@ export type Database = {
           id?: string
           is_guest?: boolean | null
           items?: Json | null
+          line_id?: string | null
           need_tax_invoice?: boolean
           notes?: string | null
           order_number?: string

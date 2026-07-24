@@ -88,6 +88,7 @@ serve(async (req) => {
           <div style="margin-top:24px;padding:16px;background:#f8fafc;border-radius:12px;">
             <div style="font-weight:bold;margin-bottom:6px;">📦 ที่อยู่จัดส่ง</div>
             <div>${escapeHtml(order.shipping_name ?? order.customer_name ?? '')} · ${escapeHtml(order.shipping_phone ?? order.customer_phone ?? '')}</div>
+            ${order.line_id ? `<div style="margin-top:4px;color:#06c755;font-weight:600;">LINE ID: ${escapeHtml(order.line_id)}</div>` : ''}
             <div style="color:#475569;">${escapeHtml([order.shipping_address, order.shipping_district, order.shipping_province, order.shipping_postcode].filter(Boolean).join(' '))}</div>
           </div>
           <div style="text-align:center;margin-top:24px;">
