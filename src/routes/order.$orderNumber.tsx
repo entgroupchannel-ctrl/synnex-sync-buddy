@@ -1,14 +1,16 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { CheckCircle2, Copy, Package, Upload, FileCheck2, Loader2 } from "lucide-react";
+import { CheckCircle2, Copy, Package, Upload, FileCheck2, Loader2, Phone, Smartphone, MessageCircle, ExternalLink } from "lucide-react";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteHeader } from "@/components/site-header";
 import { ProductImage } from "@/components/product-image";
 
 import { Button } from "@/components/ui/button";
-import { BANK_ACCOUNTS, SUPPORT_PHONE, STATUS_META, VAT_NOTES, isValidStatus, bahtFmt } from "@/lib/order-helpers";
+import { BANK_ACCOUNTS, STATUS_META, VAT_NOTES, isValidStatus, bahtFmt } from "@/lib/order-helpers";
 import { GuestSignupPrompt } from "@/components/guest-signup-prompt";
 import { PromptPayPaymentModal } from "@/components/promptpay-modal";
 
@@ -307,10 +309,8 @@ function OrderConfirm() {
         </section>
 
         {/* Support */}
-        <div className="mt-6 rounded-2xl bg-[color:var(--brand-navy)] p-6 text-center text-white">
-          <div className="text-sm">ทีมงานจะติดต่อกลับภายใน 1 วันทำการ</div>
-          <div className="mt-1 text-xl font-black">โทร {SUPPORT_PHONE}</div>
-        </div>
+        <SupportContact />
+
 
         <div className="mt-6 flex justify-center gap-3">
           <Button asChild variant="outline">
@@ -321,6 +321,54 @@ function OrderConfirm() {
           </Button>
         </div>
       </div>
+    </div>
+  );
+}
+
+const LINE_ID = "@entgroup";
+const LINE_ADD_URL = "https://line.me/R/ti/p/%40entgroup";
+const LINE_QR_URL = `https://api.qrserver.com/v1/create-qr-code/?size=360x360&margin=8&data=${encodeURIComponent(LINE_ADD_URL)}`;
+
+function SupportContact() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="mt-6 rounded-2xl bg-green-800 text-white p-6">
+      <div className="text-center text-sm">ทีมงานจะติดต่อกลับภายใน 1 วันทำการ</div>
+      <div className="mt-4 flex flex-wrap justify-center gap-3">
+        <a href="tel:02-045-6104" className="inline-flex items-center gap-2 rounded-full bg-white/20 hover:bg-white/30 px-4 py-2 text-sm font-medium">
+          <Phone className="h-4 w-4" /> 02-045-6104
+        </a>
+        <a href="tel:095-739-1053" className="inline-flex items-center gap-2 rounded-full bg-white/20 hover:bg-white/30 px-4 py-2 text-sm font-medium">
+          <Smartphone className="h-4 w-4" /> 095-739-1053
+        </a>
+        <button type="button" onClick={() => setOpen(true)} className="inline-flex items-center gap-2 rounded-full bg-white/20 hover:bg-white/30 px-4 py-2 text-sm font-medium">
+          <MessageCircle className="h-4 w-4 text-green-300" /> Line: @entgroup
+        </button>
+      </div>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-xs rounded-2xl bg-white p-6 shadow-2xl text-slate-900">
+          <DialogTitle className="sr-only">เพิ่มเพื่อนใน Line</DialogTitle>
+          <div className="flex flex-col items-center text-center">
+            <MessageCircle className="h-10 w-10 text-green-500" />
+            <div className="mt-2 text-lg font-bold">เพิ่มเพื่อนใน Line</div>
+            <div className="mt-4 rounded-xl border border-slate-200 p-3">
+              <img src={LINE_QR_URL} alt={`LINE QR Code ${LINE_ID}`} className="h-48 w-48" />
+              <div className="mt-2 text-sm font-mono font-semibold text-green-700">{LINE_ID}</div>
+            </div>
+            <a
+              href={LINE_ADD_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 inline-flex items-center gap-2 rounded-full bg-green-500 hover:bg-green-600 px-5 py-2 text-sm font-semibold text-white"
+            >
+              <MessageCircle className="h-4 w-4" /> เปิด Line แอป
+              <ExternalLink className="h-3.5 w-3.5" />
+            </a>
+            <div className="mt-3 text-xs text-slate-500">สแกน QR หรือกดปุ่มเพื่อเพิ่มเพื่อน</div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
