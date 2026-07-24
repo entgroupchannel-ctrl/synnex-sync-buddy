@@ -127,11 +127,18 @@ function ProductDetail() {
   const productQ = useQuery({
     queryKey: ["product", slug],
     queryFn: async () => {
-      const { data, error } = await supabase.from("synnex_products").select("*").or(`slug.eq.${slug},id.eq.${slug}`).maybeSingle();
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug);
+      let q = supabase.from("synnex_products").select("*").eq("slug", slug).maybeSingle();
+      let { data, error } = await q;
+      if (!data && isUuid) {
+        const r = await supabase.from("synnex_products").select("*").eq("id", slug).maybeSingle();
+        data = r.data; error = r.error;
+      }
       if (error) throw error;
       return data;
     },
   });
+
 
   const relatedQ = useQuery({
     enabled: !!productQ.data?.category,
