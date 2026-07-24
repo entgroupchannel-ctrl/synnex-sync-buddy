@@ -393,43 +393,9 @@ export function SiteFooter() {
       </div>
 
       {/* Bottom bar */}
-      <div className="bg-[#0a1628] text-white/70">
-        <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-4 text-[11px] md:flex-row md:items-center md:justify-between">
-          <div className="space-y-1">
-            <div>
-              © {foundingBeYear}–{beYear} บริษัท อี เอ็น ที กรุ๊ป จำกัด · เลขประจำตัวผู้เสียภาษี: 0135558013167
-            </div>
-
-            <div className="text-emerald-300/90">
-              ✓ จดทะเบียนถูกต้อง เลขทะเบียน 0135558013167
-            </div>
-            <div>
-              ✓ ตรวจสอบได้ที่{" "}
-              <a
-                href="https://www.dbd.go.th"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline hover:text-[color:var(--brand-green)]"
-              >
-                กรมพัฒนาธุรกิจการค้า
-              </a>
-            </div>
-          </div>
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-            <Link to="/privacy" className="hover:text-[color:var(--brand-green)]">นโยบายความเป็นส่วนตัว</Link>
-            <Link to="/terms" className="hover:text-[color:var(--brand-green)]">เงื่อนไขการใช้งาน</Link>
-            <Link to="/returns" className="hover:text-[color:var(--brand-green)]">นโยบายการคืนสินค้า</Link>
-            <Link to="/sitemap" className="hover:text-[color:var(--brand-green)]">แผนผังเว็บไซต์</Link>
-          </div>
-          <a
-            href="https://shop.entgroup.co.th"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 hover:text-[color:var(--brand-green)]"
-          >
-            <Globe className="h-3.5 w-3.5" />
-            shop.entgroup.co.th
-          </a>
+      <div className="bg-[#0a1628]">
+        <div className="mx-auto max-w-7xl px-4 py-4 text-center text-xs text-slate-400">
+          © {foundingBeYear}–{beYear} บริษัท อีเอ็นที กรุ๊ป จำกัด · เลขประจำตัวผู้เสียภาษี: 0135558013167
         </div>
       </div>
     </footer>
