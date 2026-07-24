@@ -283,11 +283,40 @@ function SyncPage() {
 
         <PricingSummaryCard />
 
-        <SyncLogsSection />
+        {/* Tab bar */}
+        <div className="mt-6 border-b border-slate-200">
+          <div className="flex gap-6">
+            <button
+              type="button"
+              onClick={() => setTab("products")}
+              className={
+                "relative -mb-px px-1 py-3 text-sm transition " +
+                (tab === "products"
+                  ? "font-bold text-[color:var(--brand-green,#10b981)] border-b-2 border-[color:var(--brand-green,#10b981)]"
+                  : "font-medium text-slate-500 hover:text-slate-700 border-b-2 border-transparent")
+              }
+            >
+              📦 รายการสินค้า ({total.toLocaleString()})
+            </button>
+            <button
+              type="button"
+              onClick={() => setTab("logs")}
+              className={
+                "relative -mb-px px-1 py-3 text-sm transition " +
+                (tab === "logs"
+                  ? "font-bold text-[color:var(--brand-green,#10b981)] border-b-2 border-[color:var(--brand-green,#10b981)]"
+                  : "font-medium text-slate-500 hover:text-slate-700 border-b-2 border-transparent")
+              }
+            >
+              📋 Sync Logs
+            </button>
+          </div>
+        </div>
 
+        {tab === "logs" ? <SyncLogsSection /> : null}
 
-
-
+        {tab === "products" ? (
+        <>
         {/* Filters */}
         <section className="mt-6 flex flex-col gap-3 md:flex-row md:items-center">
           <div className="relative flex-1">
