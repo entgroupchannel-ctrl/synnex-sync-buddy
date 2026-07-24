@@ -154,7 +154,7 @@ function CheckoutPage() {
   }, [user]);
 
   const codFee = payment === "cod" ? COD_FEE : 0;
-  const shippingFee = discount?.isFreeShipping ? 0 : shipCalc.fee;
+  const shippingFee = isPickup ? 0 : discount?.isFreeShipping ? 0 : shipCalc.fee;
   const discountAmount = discount?.discountAmount ?? 0;
   const grandTotal = Math.max(0, subtotal + shippingFee + codFee - discountAmount);
 
