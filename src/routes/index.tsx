@@ -642,7 +642,7 @@ function HomePage() {
                           <StockBadge stockQty={p.stock_qty} fulfillmentType={p.fulfillment_type} stockStatus={p.stock_status} distributor={p.distributor} />
                         </div>
                         <div className="grid aspect-square place-items-center bg-white p-2">
-                          <ProductImage src={p.image_url} alt={p.name ?? p.sku}  category={p.category} />
+                          <ProductImage src={p.image_url} alt={p.name ?? p.sku} />
 
                         </div>
                         <div className="border-t p-2">
@@ -913,7 +913,7 @@ function HomePage() {
                 return (
                   <div key={p.id} className="flex gap-4 rounded-lg border bg-white p-3 transition hover:shadow-md">
                     <Link to="/product/$slug" params={{ slug }} className="grid h-28 w-28 shrink-0 place-items-center rounded-md bg-white">
-                      <ProductImage src={p.image_url} alt={p.name ?? p.sku}  category={p.category} />
+                      <ProductImage src={p.image_url} alt={p.name ?? p.sku} />
                     </Link>
                     <div className="flex min-w-0 flex-1 flex-col">
                       <div className="text-[11px] uppercase tracking-wide text-slate-500">{p.brand ?? (p.category || detectCategory(p.name))}</div>
@@ -982,7 +982,7 @@ function HomePage() {
                         alt={p.name ?? p.sku}
                         className="h-full w-full object-contain transition group-hover:scale-105"
                         iconClassName="h-16 w-16 text-slate-300"
-                       category={p.category} />
+                      />
 
                     </Link>
                     <div className="flex flex-1 flex-col gap-1 border-t p-3">
