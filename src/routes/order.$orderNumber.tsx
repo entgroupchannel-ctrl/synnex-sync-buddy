@@ -10,7 +10,7 @@ import { SiteHeader } from "@/components/site-header";
 import { ProductImage } from "@/components/product-image";
 
 import { Button } from "@/components/ui/button";
-import { BANK_ACCOUNTS, SUPPORT_PHONE, STATUS_META, VAT_NOTES, isValidStatus, bahtFmt } from "@/lib/order-helpers";
+import { BANK_ACCOUNTS, STATUS_META, VAT_NOTES, isValidStatus, bahtFmt } from "@/lib/order-helpers";
 import { GuestSignupPrompt } from "@/components/guest-signup-prompt";
 import { PromptPayPaymentModal } from "@/components/promptpay-modal";
 
