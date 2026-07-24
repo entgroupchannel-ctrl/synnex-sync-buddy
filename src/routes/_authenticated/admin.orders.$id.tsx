@@ -346,6 +346,7 @@ function AdminOrderDetail() {
               <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${payMeta.badge}`}>{payMeta.label}</span>
               {order.customer_type === "b2b" && <span className="inline-flex items-center rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-semibold text-indigo-700 ring-1 ring-indigo-200">B2B</span>}
               {order.need_tax_invoice && <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-700 ring-1 ring-blue-200"><FileText className="h-3 w-3" />ใบกำกับภาษี</span>}
+              {hasByOrder && <span className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-800 ring-1 ring-blue-300" title="ต้องสั่ง distributor ก่อน 30 วัน">📋 มีสินค้า By Order</span>}
             </div>
           </div>
           <div className="text-right">
