@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { BANK_ACCOUNTS, STATUS_META, VAT_NOTES, isValidStatus, bahtFmt } from "@/lib/order-helpers";
 import { GuestSignupPrompt } from "@/components/guest-signup-prompt";
 import { PromptPayPaymentModal } from "@/components/promptpay-modal";
+import { LineQrDialog } from "@/components/line-qr-dialog";
 
 export const Route = createFileRoute("/order/$orderNumber")({
   ssr: false,
