@@ -379,7 +379,7 @@ export function SiteFooter() {
         <div className="mx-auto max-w-7xl border-t border-white/10 px-4 py-4">
           <div className="flex items-center gap-3">
             <img
-              src="/favicon.png"
+              src={entLogo.url}
               alt="ENT Group IT Shop"
               className="h-10 w-10 rounded-lg object-contain bg-white p-0.5"
             />
