@@ -960,7 +960,7 @@ function HomePage() {
                 const ready = p.stock_status === "พร้อมจัดส่ง";
                 const available = ready || byOrder;
                 const slug = p.slug || p.id;
-                const lowStock = ready && (p.stock_qty ?? 999) < 10;
+                
                 const priced = getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier) != null && !!p.price_approved;
                 return (
                   <div key={p.id} className="group relative flex flex-col overflow-hidden rounded-lg border bg-white transition hover:shadow-lg">
