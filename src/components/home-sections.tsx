@@ -877,7 +877,7 @@ export function NewsletterSignup() {
 function SectionHeader({
   title, en, sub, link,
 }: {
-  title: string; en: string; sub?: string;
+  title: React.ReactNode; en: React.ReactNode; sub?: string;
   link?: { to: string; search?: Record<string, unknown>; label: string };
 }) {
   const { lang } = useLanguage();
