@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { CheckCircle2, Copy, CreditCard, Loader2, Timer, X } from "lucide-react";
+import { CheckCircle2, Copy, CreditCard, Landmark, Loader2, Timer, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -13,11 +13,20 @@ type Props = {
   onPaid: () => void;
 };
 
+type BankAccount = {
+  bank: string;
+  account: string;
+  name: string;
+  branch?: string;
+};
+
 type ChargeResp = {
   qr_code_url?: string;
   expires_at?: string;
   charge_id?: string;
   requires_manual_transfer?: boolean;
+  bank_accounts?: BankAccount[];
+  amount?: number;
 };
 
 const BANKS = ["KBank", "SCB", "กรุงไทย", "กรุงเทพ", "ทหารไทย"];
@@ -53,7 +62,7 @@ export function PromptPayPaymentModal({ orderId, orderNumber, amount, onPaid }: 
         if (error) throw error;
         const { qr_code_url, charge_id, expires_at, requires_manual_transfer } = data as ChargeResp;
         if (requires_manual_transfer) {
-          setCharge({ requires_manual_transfer: true });
+          setCharge({ requires_manual_transfer: true, bank_accounts: (data as ChargeResp).bank_accounts || [] });
         } else {
           if (!qr_code_url) throw new Error("ไม่ได้รับข้อมูล QR");
           setCharge({ qr_code_url, charge_id, expires_at });
@@ -170,40 +179,53 @@ export function PromptPayPaymentModal({ orderId, orderNumber, amount, onPaid }: 
 
                   {charge?.requires_manual_transfer ? (
                     <>
-                      {/* Bank transfer card */}
-                      <div className="mt-4 overflow-hidden rounded-xl border-2 border-amber-100 bg-amber-50 text-left">
-                        <div className="bg-gradient-to-b from-amber-500 to-amber-600 px-3 py-2 text-center text-[10px] font-bold uppercase tracking-wider text-white">
-                          💳 โอนเงินผ่านธนาคาร
+                      {/* Bank transfer UI */}
+                      <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-left">
+                        <div className="flex items-center gap-2 text-amber-800">
+                          <Landmark className="h-5 w-5" />
+                          <div className="font-bold">โอนเงินผ่านธนาคาร</div>
                         </div>
-                        <div className="space-y-3 p-4 text-sm">
-                          <div>
-                            <div className="font-bold text-slate-800">ธนาคารกสิกรไทย (KBank)</div>
-                            <div className="text-slate-600">เลขที่: 841-2-05851-9</div>
-                            <div className="text-slate-600">ชื่อ: บริษัท อีเอ็นที กรุ๊ป จำกัด</div>
-                          </div>
-                          <div className="h-px bg-amber-200" />
-                          <div>
-                            <div className="font-bold text-slate-800">ธนาคารไทยพาณิชย์ (SCB)</div>
-                            <div className="text-slate-600">เลขที่: 406-817747-1</div>
-                            <div className="text-slate-600">ชื่อ: บริษัท อีเอ็นที กรุ๊ป จำกัด</div>
-                          </div>
+                        <div className="mt-1 text-xs text-amber-700">
+                          ยอด ฿{amount.toLocaleString()} เกินวงเงิน PromptPay
+                        </div>
+
+                        <div className="mt-3 space-y-3">
+                          {charge.bank_accounts?.map((acc) => (
+                            <div key={acc.account} className="rounded-lg border border-amber-100 bg-white p-3">
+                              <div className="font-semibold text-slate-800">{acc.bank}</div>
+                              <div className="font-mono text-sm text-slate-700">{acc.account}</div>
+                              <div className="text-xs text-slate-500">{acc.name}</div>
+                              {acc.branch && <div className="text-xs text-slate-400">{acc.branch}</div>}
+                              <button
+                                onClick={() => copyAccount(acc.account.replace(/-/g, ""))}
+                                className="mt-2 inline-flex items-center gap-1 text-xs text-blue-600 underline"
+                              >
+                                📋 คัดลอกเลขบัญชี
+                              </button>
+                            </div>
+                          ))}
                         </div>
                       </div>
 
-                      <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-3 text-left text-sm text-slate-600">
-                        <div className="font-semibold text-slate-800">📸 แนบสลิปหลังโอน</div>
-                        <div>Line: @entgroup</div>
-                        <div>Email: sales@entgroup.co.th</div>
+                      <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-3 text-left text-sm">
+                        <div className="mb-2 font-semibold text-slate-800">📸 หลังโอนเงินแล้ว แจ้งสลิปได้ที่</div>
+                        <div className="flex flex-wrap gap-2">
+                          <a
+                            href="https://line.me/R/ti/p/@entgroup"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="flex items-center gap-1.5 rounded-full bg-[#06C755] px-4 py-2 text-sm font-medium text-white"
+                          >
+                            💚 Line: @entgroup
+                          </a>
+                          <a
+                            href="mailto:sales@entgroup.co.th"
+                            className="flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm"
+                          >
+                            ✉️ Email
+                          </a>
+                        </div>
                       </div>
-
-                      <Button
-                        onClick={() => copyAccount("841-2-05851-9")}
-                        variant="outline"
-                        className="mt-3 w-full rounded-full border-amber-300 text-amber-700 hover:bg-amber-50"
-                        size="lg"
-                      >
-                        <Copy className="mr-2 h-4 w-4" /> คัดลอกเลขบัญชี KBank
-                      </Button>
 
                       <Button
                         onClick={checkNow}
