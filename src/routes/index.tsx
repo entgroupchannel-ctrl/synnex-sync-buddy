@@ -913,15 +913,9 @@ function HomePage() {
                       <Link to="/product/$slug" params={{ slug }} className="line-clamp-2 text-sm font-semibold hover:text-[color:var(--brand-navy)]">{p.name ?? p.sku}</Link>
                       {p.description && <div className="mt-1 line-clamp-2 text-xs text-slate-500">{p.description}</div>}
                       <div className="mt-auto flex items-center gap-2 pt-1">
-                        {byOrder ? (
-                          <Badge className="bg-blue-100 text-[10px] text-blue-700 hover:bg-blue-100">📋 By Order</Badge>
-                        ) : (
-                          <>
-                            <span className={`inline-block h-2 w-2 rounded-full ${ready ? "bg-green-500" : "bg-red-500"}`} />
-                            <span className="text-xs text-slate-600">{p.stock_status ?? "—"}</span>
-                            {lowStock && <Badge className="bg-red-100 text-[10px] text-red-700 hover:bg-red-100">เหลือน้อย</Badge>}
-                          </>
-                        )}
+                        <span className={`inline-block h-2 w-2 rounded-full ${ready || byOrder ? "bg-green-500" : "bg-red-500"}`} />
+                        <span className="text-xs text-slate-600">{byOrder ? "By Order" : (p.stock_status ?? "—")}</span>
+                        <StockBadge stockQty={p.stock_qty} fulfillmentType={p.fulfillment_type} />
                       </div>
                     </div>
                     <div className="flex w-40 shrink-0 flex-col items-end justify-between gap-1">
