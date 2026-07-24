@@ -162,14 +162,14 @@ function CartPage() {
 
               <div className="mt-3 space-y-2 rounded-lg border border-slate-200 bg-slate-50 p-3 text-xs text-slate-700">
                 <div className="flex items-start gap-2">
-                  <span>🚚</span>
+                  <Truck className="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--brand-navy)]" />
                   <div>
                     <div className="font-semibold text-[color:var(--brand-navy)]">กรุงเทพฯ &amp; ปริมณฑล</div>
                     <div className="text-slate-600">ส่งฟรีเมื่อซื้อครบ ฿5,000 (กทม./นนทบุรี/ปทุมธานี/สมุทรปราการ)</div>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
-                  <span>📦</span>
+                  <Package className="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--brand-navy)]" />
                   <div>
                     <div className="font-semibold text-[color:var(--brand-navy)]">ต่างจังหวัด · Kerry Express</div>
                     <div className="text-slate-600">฿50–฿400 ตามน้ำหนัก (น้ำหนักตะกร้าตอนนี้ {totalWeight.toFixed(1)} กก. ≈ ฿{shipOther.fee})</div>
