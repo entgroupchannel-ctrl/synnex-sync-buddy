@@ -131,11 +131,8 @@ function CheckoutPage() {
     })();
   }, [user]);
 
-  const selectedShip = shipOptions.find((o) => o.id === shipId) ?? null;
   const codFee = payment === "cod" ? COD_FEE : 0;
-  const shippingFee = selectedShip
-    ? (discount?.isFreeShipping ? 0 : selectedShip.fee)
-    : 0;
+  const shippingFee = discount?.isFreeShipping ? 0 : shipCalc.fee;
   const discountAmount = discount?.discountAmount ?? 0;
   const grandTotal = Math.max(0, subtotal + shippingFee + codFee - discountAmount);
 
