@@ -10,6 +10,7 @@ import { ProductImage } from "@/components/product-image";
 import { Button } from "@/components/ui/button";
 import { BANK_ACCOUNTS, SUPPORT_PHONE, STATUS_META, VAT_NOTES, isValidStatus, bahtFmt } from "@/lib/order-helpers";
 import { GuestSignupPrompt } from "@/components/guest-signup-prompt";
+import { PromptPayQr } from "@/components/promptpay-qr";
 
 export const Route = createFileRoute("/order/$orderNumber")({
   ssr: false,
