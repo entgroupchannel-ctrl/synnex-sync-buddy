@@ -319,7 +319,7 @@ export function TodaysBestDeals() {
             return (
               <div key={p.id} className="group flex overflow-hidden rounded-lg border bg-white transition hover:shadow-lg lg:flex-col">
                 <Link to="/product/$slug" params={{ slug }} className="grid h-32 w-36 shrink-0 place-items-center bg-white p-2 lg:h-40 lg:w-full">
-                  <ProductImage src={p.image_url} alt={p.name ?? p.sku} className="h-full w-full object-contain transition group-hover:scale-105" iconClassName="h-12 w-12 text-slate-300" />
+                  <ProductImage src={p.image_url} alt={p.name ?? p.sku} className="h-full w-full object-contain transition group-hover:scale-105" iconClassName="h-12 w-12 text-slate-300"  category={p.category} />
                 </Link>
                 <div className="flex min-w-0 flex-1 flex-col gap-1 border-l p-3 lg:border-l-0 lg:border-t">
                   <div className="flex items-center gap-1 text-[10px] uppercase tracking-wide text-slate-500">
@@ -395,7 +395,7 @@ export function PopularNotebooks() {
               <div key={p.id} className="group relative flex flex-col overflow-hidden rounded-lg border bg-white transition hover:shadow-lg">
                 <BrandLogo brand={p.brand} />
                 <Link to="/product/$slug" params={{ slug }} className="grid aspect-square place-items-center bg-white p-3">
-                  <ProductImage src={p.image_url} alt={p.name ?? p.sku} className="h-full w-full object-contain transition group-hover:scale-105" iconClassName="h-16 w-16 text-slate-300" />
+                  <ProductImage src={p.image_url} alt={p.name ?? p.sku} className="h-full w-full object-contain transition group-hover:scale-105" iconClassName="h-16 w-16 text-slate-300"  category={p.category} />
                 </Link>
                 <div className="flex flex-1 flex-col gap-1 border-t p-3">
                   {p.brand && <div className="text-[10px] uppercase tracking-wide text-slate-500">{p.brand}</div>}
@@ -500,7 +500,7 @@ export function ComputerSets() {
                       alt={p.name ?? p.sku}
                       className="h-full w-full object-contain transition group-hover:scale-105"
                       iconClassName="h-20 w-20 text-slate-300"
-                    />
+                     category={p.category} />
                   </Link>
                   <div className="flex flex-1 flex-col gap-1.5 border-t p-3">
                     {p.brand && <div className="text-[10px] uppercase tracking-wide text-slate-500">{p.brand}</div>}
@@ -980,7 +980,7 @@ export function MicrosoftFeatured() {
                     alt={p.name ?? p.sku}
                     className="h-[120px] w-[120px] object-contain transition group-hover:scale-105"
                     iconClassName="h-16 w-16 text-blue-200"
-                  />
+                   category={p.category} />
                 </Link>
 
                 <div className="flex flex-1 flex-col gap-1 border-t border-blue-100 bg-white/70 p-3">
@@ -1058,7 +1058,7 @@ function CategoryGridCard({ p }: { p: ProductRow }) {
           alt={p.name ?? p.sku}
           className="h-full w-full object-contain transition group-hover:scale-105"
           iconClassName="h-14 w-14 text-slate-300"
-        />
+         category={p.category} />
       </Link>
       <div className="flex flex-1 flex-col gap-1 border-t p-3">
         {p.brand && <div className="text-[10px] uppercase tracking-wide text-slate-500">{p.brand}</div>}
