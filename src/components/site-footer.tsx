@@ -395,12 +395,41 @@ export function SiteFooter() {
         </div>
       </div>
 
+      {/* Network sites */}
+      <div className="border-t border-white/10 bg-[#0a1628]">
+        <div className="mx-auto max-w-7xl px-4 py-3 flex flex-wrap items-center gap-x-2 gap-y-1">
+          <span className="text-xs font-semibold text-white mr-2">เว็บไซต์ในเครือ:</span>
+          {[
+            { label: "VIMOSA", href: "https://www.vimosa.co.th/" },
+            { label: "VICHAKAN", href: "https://www.vichakarn.co/" },
+            { label: "CRM", href: "https://crm.entgroup.co.th" },
+            { label: "Order", href: "https://order.entgroup.co.th" },
+            { label: "Diary", href: "https://diary.entgroup.co.th" },
+            { label: "Price Management", href: "https://price.entgroup.co.th" },
+            { label: "Predictive", href: "https://predictive.entgroup.co.th/" },
+          ].map((site, i, arr) => (
+            <span key={site.label} className="inline-flex items-center gap-1">
+              <a
+                href={site.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-slate-300 hover:text-green-300 transition-colors"
+              >
+                {site.label}
+              </a>
+              {i < arr.length - 1 && <span className="text-slate-600 mx-1">|</span>}
+            </span>
+          ))}
+        </div>
+      </div>
+
       {/* Bottom bar */}
-      <div className="bg-[#0a1628]">
+      <div className="bg-[#0a1628] border-t border-white/10">
         <div className="mx-auto max-w-7xl px-4 py-4 text-center text-xs text-slate-400">
           © {foundingBeYear}–{beYear} บริษัท อีเอ็นที กรุ๊ป จำกัด · เลขประจำตัวผู้เสียภาษี: 0135558013167
         </div>
       </div>
+
     </footer>
   );
 }
