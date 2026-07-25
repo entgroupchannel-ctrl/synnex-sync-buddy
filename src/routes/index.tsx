@@ -38,6 +38,7 @@ import {
   ComputerSets,
   ShopByBrand,
   TrustBadges,
+  TrustAndB2BBar,
   RecentlyViewed,
   MicrosoftFeatured,
   NetworkSecurity,
@@ -837,6 +838,7 @@ function HomePage() {
         <>
           {/* Quick category icons */}
           <QuickCategoryGrid />
+          <TrustAndB2BBar />
 
           {/* Hero Carousel */}
           <HeroCarousel
@@ -1360,8 +1362,6 @@ function HomePage() {
         </main>
       </div>
 
-      {/* Trust badges */}
-      <TrustBadges />
 
       {/* Recently viewed */}
       <RecentlyViewed />
