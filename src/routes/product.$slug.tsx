@@ -748,6 +748,12 @@ function ProductDetail() {
                   </div>
                   <div className="mt-2 flex flex-col">
                     <div className="text-xs line-clamp-2 min-h-8 font-medium">{r.name ?? r.sku}</div>
+                    <DiscountBadgeRow
+                      sellingPrice={(r as { selling_price?: number | null }).selling_price}
+                      b2bPrice={(r as { b2b_price?: number | null }).b2b_price}
+                      memberPrice={(r as { member_price?: number | null }).member_price}
+                      className="mt-1"
+                    />
                     <div className="mt-1 text-sm font-bold text-[color:var(--brand-orange)]">{displayPrice(r as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier)}</div>
                   </div>
                 </Link>
