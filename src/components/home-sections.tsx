@@ -1533,7 +1533,7 @@ export function CorporateITSolutions() {
                     <ProductImage
                       src={p.image_url as string | null}
                       alt={(p.name as string | null) ?? ""}
-                      brand={p.brand as string | null}
+                      productName={p.name as string | null}
                       category={p.category as string | null}
                       className="max-h-[120px] object-contain"
                     />
