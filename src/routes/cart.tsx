@@ -85,6 +85,26 @@ function CartPage() {
   });
   const fulfillMap = fulfillQ.data ?? {};
   const hasByOrder = items.some((i) => fulfillMap[i.sku]?.fulfillment_type === "by_order");
+  const readyItems = items.filter((i) => fulfillMap[i.sku]?.fulfillment_type !== "by_order");
+  const byOrderItems = items.filter((i) => fulfillMap[i.sku]?.fulfillment_type === "by_order");
+  const hasMixedCart = hasByOrder && readyItems.length > 0;
+
+  const checkoutReadyOnly = () => {
+    try {
+      localStorage.setItem(
+        "ent_pending_quote_items",
+        JSON.stringify(byOrderItems.map((i) => ({ sku: i.sku, name: i.name, qty: i.qty })))
+      );
+    } catch { /* ignore */ }
+    byOrderItems.forEach((i) => remove(i.id));
+    navigate({ to: "/checkout" });
+  };
+
+  const byOrderQuoteMailto = () => {
+    const lines = byOrderItems.map((i) => `- ${i.name} (${i.sku}) x${i.qty}`).join("\n");
+    const body = `รบกวนขอใบเสนอราคาสินค้า By Order รายการดังนี้ครับ/ค่ะ:\n\n${lines}`;
+    return `mailto:sales@entgroup.co.th?subject=${encodeURIComponent("ขอใบเสนอราคาสินค้า By Order")}&body=${encodeURIComponent(body)}`;
+  };
 
   // Volume discount (grouped by brand, falling back to category)
   const { data: volumeRules } = useVolumeRules();
