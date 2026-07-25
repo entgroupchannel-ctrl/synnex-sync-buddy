@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { SiteHeader } from "@/components/site-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -89,7 +88,6 @@ function AdminDiscountCodesPage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <SiteHeader />
       <div className="mx-auto max-w-6xl px-4 py-6">
         <Link to="/admin/orders" className="mb-3 inline-flex items-center gap-1 text-sm text-slate-600 hover:text-[color:var(--brand-navy)]">
           <ArrowLeft className="h-4 w-4" /> กลับ Admin

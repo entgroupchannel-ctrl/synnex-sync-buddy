@@ -3,7 +3,6 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { ArrowLeft, ExternalLink, Save, FileText, Truck, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { SiteHeader } from "@/components/site-header";
 import { ProductImage } from "@/components/product-image";
 
 import { Button } from "@/components/ui/button";
@@ -311,7 +310,6 @@ function AdminOrderDetail() {
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50">
-        <SiteHeader />
         <div className="mx-auto max-w-7xl px-4 py-10 text-sm text-slate-500">กำลังโหลด...</div>
       </div>
     );
@@ -319,7 +317,6 @@ function AdminOrderDetail() {
   if (!order) {
     return (
       <div className="min-h-screen bg-slate-50">
-        <SiteHeader />
         <div className="mx-auto max-w-7xl px-4 py-10 text-sm text-slate-500">ไม่พบออเดอร์</div>
       </div>
     );
@@ -330,7 +327,6 @@ function AdminOrderDetail() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <SiteHeader />
       <div className="mx-auto max-w-7xl px-4 py-6">
         <Link to="/admin/orders" className="mb-4 inline-flex items-center gap-1 text-sm text-slate-600 hover:text-[color:var(--brand-navy)]">
           <ArrowLeft className="h-4 w-4" /> กลับไปรายการออเดอร์

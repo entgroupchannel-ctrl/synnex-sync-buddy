@@ -2,7 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { SiteHeader } from "@/components/site-header";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { STATUS_META, PAYMENT_STATUS_META, ORDER_STATUSES, distMeta, bahtFmt, isValidStatus } from "@/lib/order-helpers";
@@ -64,7 +63,6 @@ function AdminOrdersPage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <SiteHeader />
       <div className="mx-auto max-w-7xl px-4 py-6">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <div>

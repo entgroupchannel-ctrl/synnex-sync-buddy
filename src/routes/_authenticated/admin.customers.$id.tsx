@@ -2,7 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { SiteHeader } from "@/components/site-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -92,7 +91,6 @@ function CustomerDetail() {
   if (profileQ.isLoading) return <div className="p-8 text-center">กำลังโหลด...</div>;
   if (!p) return (
     <div className="min-h-screen bg-slate-50">
-      <SiteHeader />
       <div className="mx-auto max-w-3xl px-4 py-16 text-center">
         <p className="text-slate-500">ไม่พบลูกค้า</p>
         <Link to="/admin/customers" className="mt-3 inline-block text-sm text-[color:var(--brand-navy)] underline">← กลับ</Link>
@@ -105,7 +103,6 @@ function CustomerDetail() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <SiteHeader />
       <div className="mx-auto max-w-7xl px-4 py-6">
         <Link to="/admin/customers" className="mb-4 inline-flex items-center gap-1 text-sm text-slate-600 hover:text-[color:var(--brand-navy)]">
           <ArrowLeft className="h-4 w-4" /> กลับไปหน้ารายชื่อ
