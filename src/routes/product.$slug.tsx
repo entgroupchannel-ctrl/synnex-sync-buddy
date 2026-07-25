@@ -75,8 +75,8 @@ export const Route = createFileRoute("/product/$slug")({
       { name: "twitter:description", content: desc },
     ];
     if (p?.image_url) {
-      meta.push({ property: "og:image", content: p.image_url });
-      meta.push({ name: "twitter:image", content: p.image_url });
+      meta.push({ property: "og:image", content: p?.image_url });
+      meta.push({ name: "twitter:image", content: p?.image_url });
     }
 
 
@@ -108,7 +108,7 @@ export const Route = createFileRoute("/product/$slug")({
           sku: p.sku,
           mpn: p.sku,
           brand: p.brand ? { "@type": "Brand", name: p.brand } : undefined,
-          image: p.image_url || undefined,
+          image: p?.image_url || undefined,
           offers: {
             "@type": "Offer",
             priceCurrency: "THB",
@@ -227,7 +227,7 @@ function ProductDetail() {
       const raw = localStorage.getItem("ent_recently_viewed");
       const arr: Array<{ sku: string; name: string; image?: string | null; price?: number | null; slug?: string | null }> = raw ? JSON.parse(raw) : [];
       const price = getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier) ?? null;
-      const entry = { sku: p.sku, name: p.name ?? p.sku, image: p.image_url ?? null, price, slug: p.slug ?? null };
+      const entry = { sku: p.sku, name: p.name ?? p.sku, image: p?.image_url ?? null, price, slug: p.slug ?? null };
       const next = [entry, ...arr.filter((x) => x.sku !== entry.sku)].slice(0, 8);
       localStorage.setItem("ent_recently_viewed", JSON.stringify(next));
     } catch { /* ignore */ }
@@ -241,9 +241,9 @@ function ProductDetail() {
     if (!p) return;
     const name = p.name ?? p.sku;
     const unit = computeProductPrice(p as PricingProduct, tier, n).displayPrice || getSellingPrice(p as PricingProduct, tier) || 0;
-    add({ id: p.id, sku: p.sku, slug: p.slug, name, price: unit, image_url: p.image_url, distributor: (p as { distributor?: string | null }).distributor ?? null, category: p.category ?? null }, n);
+    add({ id: p.id, sku: p.sku, slug: p.slug, name, price: unit, image_url: p?.image_url, distributor: (p as { distributor?: string | null }).distributor ?? null, category: p.category ?? null }, n);
     if (!user) {
-      triggerAuthPrompt({ name, sku: p.sku, image_url: p.image_url });
+      triggerAuthPrompt({ name, sku: p.sku, image_url: p?.image_url });
     } else {
       toast.success(`เพิ่ม ${p.sku} จำนวน ${n} ลงตะกร้าแล้ว`);
     }
