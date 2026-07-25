@@ -1118,6 +1118,12 @@ function HomePage() {
                           </div>
                         )}
                         {priced && !byOrder && <DeliveryHint category={p.category} name={p.name} price={getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier)} />}
+                        {search.category === "Smart Life" && hasVolumeDiscount(volumeRules, { brand: p.brand, category: p.category }) && (
+                          <div className="mt-1.5 inline-flex items-center rounded-md border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[10px] font-semibold text-amber-800">
+                            🏷️ ส่วนลดเมื่อซื้อเพิ่ม
+                          </div>
+                        )}
+
                       </div>
                       {priced ? (
                         available ? (
