@@ -64,6 +64,26 @@ const searchSchema = z.object({
   page: fallback(z.number().int(), 1).default(1),
 });
 
+const SMART_LIFE_SUBCATS: { label: string; brands: string[] }[] = [
+  { label: "📹 กล้องวงจรปิด (CCTV)", brands: ["DAHUA", "HIKVISION"] },
+  { label: "⌚ Smartwatch & Fitness", brands: ["SAMSUNG", "GARMIN", "HUAWEI", "AMAZFIT"] },
+  { label: "🏠 Smart Home / Xiaomi", brands: ["XIAOMI"] },
+  { label: "💨 เครื่องฟอกอากาศ", brands: ["HONEYWELL", "XIAOMI"] },
+  { label: "🌀 Gadget & Accessories", brands: ["SOTHING"] },
+  { label: "📡 Smart Devices / HUAWEI", brands: ["HUAWEI"] },
+];
+
+const SMART_LIFE_BRANDS = ["DAHUA", "HIKVISION", "SAMSUNG", "GARMIN", "HUAWEI", "XIAOMI", "HONEYWELL", "SOTHING", "AMAZFIT"];
+
+const SMART_LIFE_PRICE_PRESETS: { label: string; min: number; max: number }[] = [
+  { label: "ต่ำกว่า ฿1,000", min: 0, max: 1000 },
+  { label: "฿1,000-5,000", min: 1000, max: 5000 },
+  { label: "฿5,000-20,000", min: 5000, max: 20000 },
+  { label: "มากกว่า ฿20,000", min: 20000, max: PRICE_MAX },
+];
+
+
+
 export const Route = createFileRoute("/")({
   ssr: false,
   validateSearch: zodValidator(searchSchema),
