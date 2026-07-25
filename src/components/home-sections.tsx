@@ -234,6 +234,7 @@ const QUICK_CATS: QuickCat[] = [
   { icon: HardDrive,  label: "Storage",      sub: "Storage",        cat: "Storage" },
   { icon: Smartphone, label: "สมาร์ตโฟน",     sub: "Smart Phone",    cat: "Smart Phone & Tablet" },
   { icon: Sun,        label: "โซลาร์และพลังงาน", sub: "Solar & Energy", cat: "Solar & Energy" },
+  { icon: Home,       label: "Smart Life",   sub: "IoT & Security", cat: "Smart Life" },
   { icon: LayoutGrid, label: "ดูทั้งหมด",     sub: "View All",       cat: "all" },
 ];
 
