@@ -21,6 +21,7 @@ import { StockBadge } from "@/components/stock-badge";
 
 import { displayPrice, getSellingPrice, priceFmt, useCart, useCustomerTier, type PricingProduct } from "@/lib/cart";
 import { B2BBadgeLarge, MemberBadge, DiscountBadgeRow } from "@/components/discount-badge";
+import { PriceOrQuote, isQuoteOnly } from "@/components/QuoteRequest";
 import { computeProductPrice, useProductPrice } from "@/hooks/useProductPrice";
 import { triggerAuthPrompt, useSupabaseUser } from "@/lib/auth-sheet";
 import { usePurchaseHistoryForSku } from "@/lib/reorder";
