@@ -40,6 +40,7 @@ import {
   ComponentsShowcase,
   SolarEnergy,
   SmartLife,
+  CorporateITSolutions,
 } from "@/components/home-sections";
 import { AppleFeatured } from "@/components/apple-featured";
 import { PcBuilderLanding } from "@/components/pc-builder-landing";
