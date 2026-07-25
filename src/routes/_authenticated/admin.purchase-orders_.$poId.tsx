@@ -31,7 +31,7 @@ type PoItem = {
   quantity: number; cost_price: number; subtotal: number;
   ship_to_name: string; ship_to_phone: string; ship_to_address: string;
   ship_to_district: string | null; ship_to_province: string | null; ship_to_postcode: string | null;
-  order_number: string; fulfillment_status: string;
+  order_number: string; fulfillment_status: string; ship_to_office: boolean;
 };
 type Po = {
   id: string; po_number: string; distributor: string; status: string;
@@ -73,6 +73,21 @@ function PurchaseOrderDetailPage() {
     },
     onError: (e: Error) => toast.error(e.message || "สร้าง PDF ไม่สำเร็จ"),
     onSettled: () => setGenerating(false),
+  });
+
+  const toggleShipTo = useMutation({
+    mutationFn: async ({ itemId, shipToOffice }: { itemId: string; shipToOffice: boolean }) => {
+      const { error } = await supabase
+        .from("purchase_order_items")
+        .update({ ship_to_office: shipToOffice })
+        .eq("id", itemId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["purchase-order", poId] });
+      toast.success('อัปเดตปลายทางแล้ว — กด "สร้าง PDF ใหม่" เพื่อให้เอกสารตรงกับที่เลือก');
+    },
+    onError: (e: Error) => toast.error(e.message),
   });
 
   const po = poQ.data;
@@ -236,6 +251,7 @@ function PurchaseOrderDetailPage() {
             <TableHead className="text-right">ทุน/หน่วย</TableHead>
             <TableHead className="text-right">รวม</TableHead>
             <TableHead>จัดส่งถึง</TableHead>
+            <TableHead>ปลายทาง</TableHead>
             <TableHead>เลขออเดอร์</TableHead>
             <TableHead>สถานะจัดส่ง</TableHead>
           </TableRow>
@@ -253,6 +269,16 @@ function PurchaseOrderDetailPage() {
                   {[it.ship_to_address, it.ship_to_district, it.ship_to_province, it.ship_to_postcode].filter(Boolean).join(" ")}
                 </div>
                 <div className="text-xs text-slate-500">โทร {it.ship_to_phone}</div>
+              </TableCell>
+              <TableCell>
+                <select
+                  value={it.ship_to_office ? "office" : "customer"}
+                  onChange={(e) => toggleShipTo.mutate({ itemId: it.id, shipToOffice: e.target.value === "office" })}
+                  className="rounded-md border border-slate-200 bg-white px-2 py-1 text-xs"
+                >
+                  <option value="customer">ส่งตรงลูกค้า (default)</option>
+                  <option value="office">ส่งมาที่ Office ก่อน</option>
+                </select>
               </TableCell>
               <TableCell>{it.order_number}</TableCell>
               <TableCell>{it.fulfillment_status}</TableCell>
