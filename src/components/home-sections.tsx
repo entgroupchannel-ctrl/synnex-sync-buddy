@@ -1410,12 +1410,17 @@ export function SmartLife() {
           {q.data!.map((p) => <CategoryGridCard key={p.id} p={p} />)}
         </div>
 
+        <div className="mt-5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-center text-xs font-semibold text-amber-800 sm:text-sm">
+          🏷️ ส่วนลดพิเศษเมื่อซื้อจำนวนมาก | 💼 ราคาพิเศษสำหรับองค์กร ติดต่อ 02-045-6104
+        </div>
+
         <div className="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs text-slate-500">
           <span className="inline-flex items-center gap-1.5"><Shield className="h-3.5 w-3.5 text-[color:var(--brand-green)]" /> ระบบรักษาความปลอดภัย</span>
           <span className="inline-flex items-center gap-1.5"><Camera className="h-3.5 w-3.5 text-[color:var(--brand-green)]" /> กล้อง HD/4K/8MP</span>
           <span className="inline-flex items-center gap-1.5"><Home className="h-3.5 w-3.5 text-[color:var(--brand-green)]" /> Smart Home ครบวงจร</span>
           <span className="inline-flex items-center gap-1.5"><Wrench className="h-3.5 w-3.5 text-[color:var(--brand-green)]" /> ติดตั้งโดยช่างผู้เชี่ยวชาญ</span>
         </div>
+
       </div>
     </section>
   );
