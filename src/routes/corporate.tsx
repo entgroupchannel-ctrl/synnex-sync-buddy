@@ -72,23 +72,29 @@ function ProductCard({ p }: { p: Row }) {
     <Link
       to="/product/$slug"
       params={{ slug }}
-      className="group cursor-pointer rounded-2xl border border-slate-200 bg-white p-4 transition-all duration-200 hover:border-blue-300 hover:shadow-lg"
+      className="group cursor-pointer rounded-2xl border border-slate-200 bg-white p-3 transition-all duration-200 hover:border-blue-300 hover:shadow-lg"
     >
-      <div className="mb-3 grid aspect-square place-items-center overflow-hidden rounded-xl border border-slate-100 bg-slate-50">
-        <ProductImage
-          src={p.image_url}
-          alt={p.name ?? ""}
-          productName={p.name}
-          category={p.category}
-          className="max-h-[110px] w-full object-contain transition-transform duration-300 group-hover:scale-105"
-        />
+      <div
+        className="relative mb-3 w-full overflow-hidden rounded-xl border border-slate-100 bg-slate-50"
+        style={{ paddingBottom: "75%" }}
+      >
+        <div className="absolute inset-0 flex items-center justify-center p-2">
+          <ProductImage
+            src={p.image_url}
+            alt={p.name ?? ""}
+            productName={p.name}
+            category={p.category}
+            className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
+            iconClassName="h-16 w-16 text-slate-300"
+          />
+        </div>
       </div>
-      <div className="mb-1.5 inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5">
+      <div className="mb-1 inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5">
         <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600">
           {p.brand ?? ""}
         </span>
       </div>
-      <div className="mb-2 line-clamp-2 min-h-[32px] text-xs font-medium leading-tight text-slate-700">
+      <div className="mb-1.5 line-clamp-2 min-h-[28px] text-xs font-medium leading-tight text-slate-700">
         {p.name ?? ""}
       </div>
       <DiscountBadgeRow
@@ -98,7 +104,7 @@ function ProductCard({ p }: { p: Row }) {
         className="mb-1.5"
       />
       <div className="flex items-end justify-between">
-        <div className="text-base font-black text-slate-900">
+        <div className="text-sm font-black text-slate-900">
           ฿{Number(p.selling_price).toLocaleString("th-TH")}
         </div>
         <div className="cursor-pointer rounded-lg bg-slate-900 p-2 transition-colors group-hover:bg-blue-600">
