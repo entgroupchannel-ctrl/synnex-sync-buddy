@@ -470,21 +470,27 @@ function ProductDetail() {
                       </Badge>
                       <StockBadge stockQty={(p as { stock_qty?: number | null }).stock_qty} fulfillmentType={(p as { fulfillment_type?: string | null }).fulfillment_type} stockStatus={(p as { stock_status?: string | null }).stock_status} distributor={(p as { distributor?: string | null }).distributor} />
                     </div>
-                    <div className="mt-1 flex flex-wrap items-baseline gap-3">
-                      <div className="text-4xl font-black text-[color:var(--brand-orange)]">
-                        ฿{pr.displayPrice.toLocaleString("th-TH")}
+                    {isQuoteOnly(p.selling_price as number | null) ? (
+                      <div className="mt-1">
+                        <PriceOrQuote product={{ id: String(p.id), sku: (p.sku as string) ?? "", name: (p.name as string) ?? (p.sku as string) ?? "", selling_price: (p.selling_price as number | null) ?? 0 }} />
                       </div>
-                      {pr.savings > 0 && (
-                        <>
-                          <span className="text-lg text-slate-400 line-through">
-                            ฿{pr.originalPrice.toLocaleString("th-TH")}
-                          </span>
-                          <span className="rounded-md bg-red-100 px-2 py-0.5 text-xs font-bold text-red-700">
-                            ประหยัด {pr.savingsPct}%
-                          </span>
-                        </>
-                      )}
-                    </div>
+                    ) : (
+                      <div className="mt-1 flex flex-wrap items-baseline gap-3">
+                        <div className="text-4xl font-black text-[color:var(--brand-orange)]">
+                          ฿{pr.displayPrice.toLocaleString("th-TH")}
+                        </div>
+                        {pr.savings > 0 && (
+                          <>
+                            <span className="text-lg text-slate-400 line-through">
+                              ฿{pr.originalPrice.toLocaleString("th-TH")}
+                            </span>
+                            <span className="rounded-md bg-red-100 px-2 py-0.5 text-xs font-bold text-red-700">
+                              ประหยัด {pr.savingsPct}%
+                            </span>
+                          </>
+                        )}
+                      </div>
+                    )}
                     <div className="mt-2 flex flex-wrap gap-2">
                       <B2BBadgeLarge
                         sellingPrice={p.selling_price as number | null}
