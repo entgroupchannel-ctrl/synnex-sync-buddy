@@ -1202,7 +1202,7 @@ function HomePage() {
                         )}
 
                       </div>
-                      {priced ? (
+                      {!isQuoteOnly(p.selling_price) && (priced ? (
                         available ? (
                           <Button
                             onClick={() => addToCart(p as Record<string, unknown>)}
@@ -1225,7 +1225,7 @@ function HomePage() {
                         <Button asChild className="mt-2 w-full bg-[color:var(--brand-green)] font-semibold hover:opacity-90" size="sm">
                           <a href="tel:020456104">📞 สอบถามราคา</a>
                         </Button>
-                      )}
+                      ))}
                     </div>
                   </div>
                 );
