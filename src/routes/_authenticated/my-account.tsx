@@ -66,6 +66,7 @@ function MyAccountLayout() {
           <main><Outlet /></main>
         </div>
       </div>
+      <WorkFooter />
     </div>
   );
 }
