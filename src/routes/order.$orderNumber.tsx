@@ -111,6 +111,29 @@ function OrderConfirm() {
 
   const [uploading, setUploading] = useState(false);
   const [slipUrl, setSlipUrl] = useState<string | null>(null);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [pendingPreview, setPendingPreview] = useState<string | null>(null);
+
+  const selectFile = (file: File) => {
+    if (file.size > MAX_SIZE) { toast.error("ไฟล์ใหญ่เกิน 5MB"); return; }
+    setPendingFile(file);
+    setPendingPreview(file.type.startsWith("image/") ? URL.createObjectURL(file) : null);
+  };
+
+  const cancelPending = () => {
+    if (pendingPreview) URL.revokeObjectURL(pendingPreview);
+    setPendingFile(null);
+    setPendingPreview(null);
+  };
+
+  const confirmUpload = async () => {
+    if (!pendingFile) return;
+    await uploadSlip(pendingFile);
+    if (pendingPreview) URL.revokeObjectURL(pendingPreview);
+    setPendingFile(null);
+    setPendingPreview(null);
+  };
+
 
   useEffect(() => {
     if (!order?.payment_slip_url) { setSlipUrl(null); return; }
