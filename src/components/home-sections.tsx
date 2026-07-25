@@ -239,14 +239,14 @@ const QUICK_CATS: QuickCat[] = [
   { icon: Smartphone, label: "สมาร์ตโฟน",     sub: "Smart Phone",    cat: "Smart Phone & Tablet" },
   { icon: Sun,        label: "โซลาร์และพลังงาน", sub: "Solar & Energy", cat: "Solar & Energy" },
   { icon: Home,       label: "Smart Life",   sub: "IoT & Security", cat: "Smart Life" },
-  { icon: LayoutGrid, label: "ดูทั้งหมด",     sub: "View All",       cat: "all" },
 ];
 
 export function QuickCategoryGrid() {
+  const navigate = useNavigate();
   return (
     <section className="border-b bg-white">
       <div className="mx-auto max-w-7xl px-4 py-6">
-        <div className="grid grid-cols-3 gap-3 sm:grid-cols-5 md:gap-4 lg:grid-cols-10">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5 md:gap-4">
           {QUICK_CATS.map((c) => {
             const isBrand = "brand" in c && c.brand;
             const search = isBrand ? { brands: c.brand } : { category: c.cat };
@@ -255,6 +255,13 @@ export function QuickCategoryGrid() {
                 key={c.label}
                 to="/"
                 search={search as never}
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate({ to: "/", search: search as never });
+                  setTimeout(() => {
+                    document.getElementById("product-grid")?.scrollIntoView({ behavior: "smooth" });
+                  }, 300);
+                }}
                 className="group flex flex-col items-center gap-2 rounded-lg border bg-white p-3 text-center transition hover:-translate-y-0.5 hover:border-[color:var(--brand-green)] hover:shadow-md"
               >
                 <div
