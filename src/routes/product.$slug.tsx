@@ -210,6 +210,8 @@ function ProductDetail() {
     : "";
   const showSku = decodedSku && !decodedSku.includes("%");
 
+  const gallery = ((p as { image_gallery?: string[] | null }).image_gallery as string[]) ?? [];
+  const images = [p?.image_url, ...gallery].filter(Boolean) as string[];
 
   useEffect(() => {
     if (p?.id) setWishlisted(isWishlisted(p.id));
