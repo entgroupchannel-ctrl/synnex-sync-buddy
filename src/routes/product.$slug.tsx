@@ -210,12 +210,20 @@ function ProductDetail() {
     : "";
   const showSku = decodedSku && !decodedSku.includes("%");
 
+  const hideSpecShots =
+    p?.category === "Smart Phone & Tablet" ||
+    (p?.brand ?? "").toUpperCase() === "APPLE";
+
   const images = p
-    ? [
+    ? ([
         p?.image_url,
         ...(Array.isArray(p?.image_gallery) ? p?.image_gallery : []),
-      ].filter(Boolean) as string[]
+      ].filter(Boolean) as string[]).filter(
+        (src, i) =>
+          i === 0 || !(hideSpecShots && /\/[5-8]\.jpg(?:\?.*)?$/i.test(src)),
+      )
     : [];
+
 
   useEffect(() => {
     if (p?.id) setWishlisted(isWishlisted(p.id));
