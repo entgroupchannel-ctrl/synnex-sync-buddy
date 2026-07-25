@@ -1324,3 +1324,76 @@ export function SolarEnergy() {
     </section>
   );
 }
+
+/* ---------- Smart Life (CCTV / Smart Home / IoT) ---------- */
+
+export function SmartLife() {
+  const q = useQuery({
+    queryKey: ["smart-life"],
+    queryFn: async () => {
+      const { data } = await supabase.from("synnex_products")
+        .select("*")
+        .eq("category", "Smart Life")
+        .eq("price_approved", true)
+        .gt("selling_price", 0)
+        .order("selling_price", { ascending: true })
+        .limit(10);
+      return (data ?? []) as ProductRow[];
+    },
+    staleTime: 5 * 60_000,
+  });
+
+  if ((q.data?.length ?? 0) === 0) return null;
+
+  return (
+    <section className="py-10 bg-white">
+      <div className="mx-auto max-w-7xl px-4">
+        <div className="mb-6 flex items-end justify-between">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-2xl">🏠</span>
+              <h2 className="text-2xl font-black text-slate-900">
+                Smart Life / สมาร์ทไลฟ์
+              </h2>
+              <span className="text-sm text-slate-400 ml-2">
+                / กล้องวงจรปิด · Smart Home · IoT
+              </span>
+            </div>
+            <p className="text-sm text-slate-500">
+              CCTV, Dahua, Hikvision, Xiaomi Smart Home — ระบบรักษาความปลอดภัยและบ้านอัจฉริยะ
+            </p>
+          </div>
+          <Link
+            to="/"
+            search={{ category: "Smart Life" } as never}
+            className="text-sm font-medium text-green-600 hover:text-green-700 whitespace-nowrap"
+          >
+            ดู Smart Life ทั้งหมด →
+          </Link>
+        </div>
+
+        <div className="flex gap-2 mb-4 overflow-x-auto pb-1 no-scrollbar">
+          {["ทั้งหมด", "กล้องวงจรปิด", "Smart Home", "Xiaomi", "HUAWEI"].map((tab) => (
+            <button
+              key={tab}
+              className="shrink-0 rounded-full border px-4 py-1.5 text-xs font-medium whitespace-nowrap hover:border-green-500 hover:text-green-600 transition-colors"
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-5 lg:gap-3">
+          {q.data!.map((p) => <CategoryGridCard key={p.id} p={p} />)}
+        </div>
+
+        <div className="mt-6 flex flex-wrap gap-4 justify-center text-xs text-slate-500">
+          <span className="inline-flex items-center gap-1"><Shield className="h-3.5 w-3.5" /> ระบบรักษาความปลอดภัย</span>
+          <span className="inline-flex items-center gap-1"><Camera className="h-3.5 w-3.5" /> กล้อง HD/4K/8MP</span>
+          <span className="inline-flex items-center gap-1"><Home className="h-3.5 w-3.5" /> Smart Home ครบวงจร</span>
+          <span className="inline-flex items-center gap-1"><Phone className="h-3.5 w-3.5" /> ติดตั้งโดยช่างผู้เชี่ยวชาญ</span>
+        </div>
+      </div>
+    </section>
+  );
+}
