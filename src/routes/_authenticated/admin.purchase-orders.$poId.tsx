@@ -176,6 +176,9 @@ function PurchaseOrderDetailPage() {
               <Download className="mr-1.5 h-4 w-4" /> เปิด PDF ล่าสุด
             </Button>
           )}
+          <Button variant="outline" onClick={openEmailDialog}>
+            <Mail className="mr-1.5 h-4 w-4" /> ส่งอีเมลถึง Supplier
+          </Button>
         </div>
       </div>
 
