@@ -349,11 +349,6 @@ function ProductDetail() {
               <h1 className="text-2xl font-bold text-slate-900 md:text-3xl">{p.name ?? decodedSku}</h1>
               {showSku && <div className="mt-1 text-sm text-slate-500">SKU / Model: {decodedSku}</div>}
 
-
-
-
-
-
               {(() => {
                 const pr = computeProductPrice(p as PricingProduct, tier, qty);
                 const hasPrice = getSellingPrice(p as PricingProduct, tier) != null && !!p.price_approved;
