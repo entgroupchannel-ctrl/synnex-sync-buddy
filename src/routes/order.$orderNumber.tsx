@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { BANK_ACCOUNTS, STATUS_META, VAT_NOTES, isValidStatus, bahtFmt } from "@/lib/order-helpers";
 import { OrderProgressStepper } from "@/components/order-progress-stepper";
 import { OrderStatusTimeline } from "@/components/order-status-timeline";
+import { CustomerSlipStatus } from "@/components/customer-slip-status";
 import { GuestSignupPrompt } from "@/components/guest-signup-prompt";
 import { PromptPayPaymentModal } from "@/components/promptpay-modal";
 import { LineQrDialog } from "@/components/line-qr-dialog";
@@ -89,6 +90,7 @@ type OrderRow = {
 
 const MAX_SIZE = 5 * 1024 * 1024;
 const ACCEPT = "image/jpeg,image/png,image/webp,application/pdf";
+const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
 
 function OrderConfirm() {
   const { orderNumber } = Route.useParams();
@@ -113,9 +115,14 @@ function OrderConfirm() {
   const [slipUrl, setSlipUrl] = useState<string | null>(null);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [pendingPreview, setPendingPreview] = useState<string | null>(null);
+  const [replacingSlip, setReplacingSlip] = useState(false);
 
   const selectFile = (file: File) => {
-    if (file.size > MAX_SIZE) { toast.error("ไฟล์ใหญ่เกิน 5MB"); return; }
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      toast.error("รองรับเฉพาะไฟล์รูปภาพ (JPG, PNG, WebP) หรือ PDF เท่านั้น กรุณาเลือกไฟล์ใหม่");
+      return;
+    }
+    if (file.size > MAX_SIZE) { toast.error("ไฟล์ใหญ่เกิน 5MB กรุณาเลือกไฟล์ที่เล็กลง"); return; }
     setPendingFile(file);
     setPendingPreview(file.type.startsWith("image/") ? URL.createObjectURL(file) : null);
   };
@@ -132,7 +139,9 @@ function OrderConfirm() {
     if (pendingPreview) URL.revokeObjectURL(pendingPreview);
     setPendingFile(null);
     setPendingPreview(null);
+    setReplacingSlip(false);
   };
+
 
 
   useEffect(() => {
@@ -319,11 +328,31 @@ function OrderConfirm() {
               </ul>
 
               <div className="mt-4">
-                {slipUrl ? (
-                  <div className="flex items-center gap-3 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">
-                    <FileCheck2 className="h-5 w-5" />
-                    <span>อัปโหลดสลิปสำเร็จ ✓</span>
-                    <a href={slipUrl} target="_blank" rel="noreferrer" className="ml-auto underline">ดูสลิป</a>
+                {slipUrl && !replacingSlip ? (
+                  <div>
+                    <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">
+                      <div className="flex items-center gap-3">
+                        <FileCheck2 className="h-5 w-5" />
+                        <span>อัปโหลดสลิปสำเร็จ ✓</span>
+                        <div className="ml-auto flex items-center gap-2">
+                          <a href={slipUrl} target="_blank" rel="noreferrer" className="underline">ดูสลิป</a>
+                          <button
+                            type="button"
+                            onClick={() => setReplacingSlip(true)}
+                            className="rounded-md border border-emerald-300 bg-white px-2.5 py-1 text-xs font-semibold text-emerald-700 hover:bg-emerald-100"
+                          >
+                            แทนที่สลิป
+                          </button>
+                        </div>
+                      </div>
+                      <img
+                        src={slipUrl}
+                        alt="สลิปที่อัปโหลด"
+                        className="mt-3 max-h-64 w-full rounded-md border bg-white object-contain"
+                        onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+                      />
+                    </div>
+                    {order && <CustomerSlipStatus orderId={order.id} />}
                   </div>
                 ) : pendingFile ? (
                   <div className="rounded-lg border-2 border-slate-200 bg-white p-4">
@@ -354,6 +383,15 @@ function OrderConfirm() {
                         {uploading ? "กำลังส่ง..." : "ยืนยันส่งสลิป"}
                       </button>
                     </div>
+                    {uploading && (
+                      <div className="mt-3">
+                        <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-200">
+                          <div className="h-full w-1/3 rounded-full bg-[color:var(--brand-green)]" style={{ animation: "slide 1.2s ease-in-out infinite" }} />
+                        </div>
+                        <p className="mt-1.5 text-xs text-slate-500">กำลังอัปโหลดและส่งข้อมูล กรุณาอย่าปิดหน้านี้...</p>
+                        <style>{`@keyframes slide { 0% { transform: translateX(-100%); } 100% { transform: translateX(300%); } }`}</style>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <label className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-dashed border-slate-300 bg-white px-4 py-6 text-sm font-semibold text-[color:var(--brand-navy)] hover:bg-slate-50">
@@ -364,6 +402,7 @@ function OrderConfirm() {
                   </label>
                 )}
                 <p className="mt-2 text-xs text-slate-500">รองรับ JPG, PNG, WebP, PDF ไม่เกิน 5MB</p>
+
               </div>
             </>
           )}
