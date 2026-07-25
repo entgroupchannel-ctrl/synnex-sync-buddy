@@ -1168,17 +1168,21 @@ function HomePage() {
                       {hasSpecTags(p.category) && <SpecTagsCompact description={p.description} />}
                       <div className="mt-auto pt-1">
                         {priced ? (
-                          <>
-                            <DiscountBadgeRow
-                              sellingPrice={p.selling_price}
-                              b2bPrice={p.b2b_price}
-                              memberPrice={p.member_price}
-                              className="mb-0.5"
-                            />
-                            <div className="text-xl font-black text-[color:var(--brand-orange)]">
-                              {displayPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier)}
-                            </div>
-                          </>
+                          isQuoteOnly(p.selling_price) ? (
+                            <PriceOrQuote product={{ id: String(p.id), sku: p.sku ?? "", name: p.name ?? p.sku ?? "", selling_price: p.selling_price ?? 0 }} />
+                          ) : (
+                            <>
+                              <DiscountBadgeRow
+                                sellingPrice={p.selling_price}
+                                b2bPrice={p.b2b_price}
+                                memberPrice={p.member_price}
+                                className="mb-0.5"
+                              />
+                              <div className="text-xl font-black text-[color:var(--brand-orange)]">
+                                {displayPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier)}
+                              </div>
+                            </>
+                          )
                         ) : (
                           <div className="text-sm text-gray-400">ติดต่อสอบถาม</div>
                         )}
