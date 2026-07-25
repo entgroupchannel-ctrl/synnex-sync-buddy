@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { STATUS_META, PAYMENT_STATUS_META, ORDER_STATUSES, distMeta, bahtFmt, isValidStatus } from "@/lib/order-helpers";
+import { AdminOrderSlipCell } from "@/components/admin-order-slip-cell";
 
 export const Route = createFileRoute("/_authenticated/admin/orders")({
   ssr: false,
