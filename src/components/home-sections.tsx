@@ -564,8 +564,8 @@ export function ComputerSets() {
                       )}
                     </div>
                     {freeShip && (
-                      <div className="rounded bg-emerald-50 px-2 py-1 text-[10px] font-semibold text-emerald-700 ring-1 ring-emerald-200">
-                        🚚 ส่งฟรี กทม./ปริมณฑล
+                      <div className="inline-flex items-center gap-1 rounded bg-emerald-50 px-2 py-1 text-[10px] font-semibold text-emerald-700 ring-1 ring-emerald-200">
+                        <Truck className="h-3 w-3" /> ส่งฟรี กทม./ปริมณฑล
                       </div>
                     )}
                     <div className="mt-auto pt-1">
