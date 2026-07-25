@@ -210,8 +210,12 @@ function ProductDetail() {
     : "";
   const showSku = decodedSku && !decodedSku.includes("%");
 
-  const gallery = ((p as { image_gallery?: string[] | null }).image_gallery as string[]) ?? [];
-  const images = [p?.image_url, ...gallery].filter(Boolean) as string[];
+  const images = p
+    ? [
+        p?.image_url,
+        ...(Array.isArray(p?.image_gallery) ? p?.image_gallery : []),
+      ].filter(Boolean) as string[]
+    : [];
 
   useEffect(() => {
     if (p?.id) setWishlisted(isWishlisted(p.id));
@@ -228,6 +232,10 @@ function ProductDetail() {
       localStorage.setItem("ent_recently_viewed", JSON.stringify(next));
     } catch { /* ignore */ }
   }, [p]);
+
+  useEffect(() => {
+    setActiveImg(0);
+  }, [p?.id]);
 
   const addToCart = (n = qty) => {
     if (!p) return;
