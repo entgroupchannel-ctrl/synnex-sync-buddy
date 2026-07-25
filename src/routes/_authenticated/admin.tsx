@@ -122,6 +122,7 @@ const NAV: NavGroup[] = [
       { label: "รอยืนยัน", href: "/admin/orders?status=pending", icon: ClipboardList },
       { label: "รอจัดส่ง", href: "/admin/orders?status=confirmed", icon: Truck },
       { label: "ใบสั่งซื้อ Distributor", to: "/admin/purchase-orders", icon: FileOutput },
+      { label: "ข้อมูล Distributor", to: "/admin/distributor-contacts", icon: Building2 },
     ],
   },
   {
