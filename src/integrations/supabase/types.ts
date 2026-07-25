@@ -1138,6 +1138,7 @@ export type Database = {
           distributor: string
           id: string
           notes: string | null
+          pdf_url: string | null
           po_number: string
           sent_at: string | null
           status: string
@@ -1152,6 +1153,7 @@ export type Database = {
           distributor: string
           id?: string
           notes?: string | null
+          pdf_url?: string | null
           po_number: string
           sent_at?: string | null
           status?: string
@@ -1166,6 +1168,7 @@ export type Database = {
           distributor?: string
           id?: string
           notes?: string | null
+          pdf_url?: string | null
           po_number?: string
           sent_at?: string | null
           status?: string

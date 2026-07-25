@@ -39,7 +39,7 @@ export const getPendingItemsByDistributor = createServerFn({ method: "GET" })
       product_sku: string;
       product_name: string | null;
       quantity: number;
-      cost_price: number | null;
+      cost_price: number;
     };
     const rows = (data ?? []) as unknown as Row[];
 
@@ -54,14 +54,14 @@ export const getPendingItemsByDistributor = createServerFn({ method: "GET" })
       const existing = list.find((x) => x.sku === r.product_sku);
       if (existing) {
         existing.qty += r.quantity;
-        existing.subtotal += r.quantity * Number(r.cost_price ?? 0);
+        existing.subtotal += r.quantity * r.cost_price;
       } else {
         list.push({
           sku: r.product_sku,
           name: r.product_name,
           qty: r.quantity,
-          costPrice: Number(r.cost_price ?? 0),
-          subtotal: r.quantity * Number(r.cost_price ?? 0),
+          costPrice: r.cost_price,
+          subtotal: r.quantity * r.cost_price,
         });
       }
       byDistributor.set(dist, list);
@@ -81,7 +81,7 @@ export const getPendingItemsByDistributor = createServerFn({ method: "GET" })
 // ---------------------------------------------------------------------------
 export const generatePurchaseOrder = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: { distributor: string; orderItemIds: string[]; notes?: string }) => d)
+  .validator((d: { distributor: string; orderItemIds: string[]; notes?: string }) => d)
   .handler(async ({ context, data }) => {
     const { supabase } = context;
     const { distributor, orderItemIds, notes } = data;
@@ -106,7 +106,7 @@ export const generatePurchaseOrder = createServerFn({ method: "POST" })
       if (it.distributor !== distributor) throw new Error(`รายการ ${it.product_sku} ไม่ใช่ของ distributor นี้`);
     }
 
-    const totalCost = (items as any[]).reduce((s, i) => s + i.quantity * Number(i.cost_price ?? 0), 0);
+    const totalCost = (items as any[]).reduce((s, i) => s + i.quantity * i.cost_price, 0);
     const poNumber = `PO-${new Date().toISOString().slice(0, 10).replace(/-/g, "")}-${distributor
       .toUpperCase()
       .replace(/[^A-Z0-9]/g, "")
@@ -135,8 +135,8 @@ export const generatePurchaseOrder = createServerFn({ method: "POST" })
       product_sku: it.product_sku,
       product_name: it.product_name,
       quantity: it.quantity,
-      cost_price: Number(it.cost_price ?? 0),
-      subtotal: it.quantity * Number(it.cost_price ?? 0),
+      cost_price: it.cost_price,
+      subtotal: it.quantity * it.cost_price,
       ship_to_name: it.orders.shipping_name,
       ship_to_phone: it.orders.shipping_phone,
       ship_to_address: it.orders.shipping_address,
@@ -168,7 +168,7 @@ export const generatePurchaseOrder = createServerFn({ method: "POST" })
 // ---------------------------------------------------------------------------
 export const getPurchaseOrderDetail = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: { poId: string }) => d)
+  .validator((d: { poId: string }) => d)
   .handler(async ({ context, data }) => {
     const { supabase } = context;
     const { data: po, error } = await supabase
