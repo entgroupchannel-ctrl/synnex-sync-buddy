@@ -20,7 +20,7 @@ import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { distMeta, PO_STATUS_META, vatBreakdown, type PoStatus } from "@/lib/order-helpers";
 
-export const Route = createFileRoute("/_authenticated/admin/purchase-orders/$poId")({
+export const Route = createFileRoute("/_authenticated/admin/purchase-orders_/$poId")({
   ssr: false,
   head: () => ({ meta: [{ title: "รายละเอียด PO — ENT Admin" }] }),
   component: PurchaseOrderDetailPage,
