@@ -248,7 +248,7 @@ const QUICK_CATS: QuickCat[] = [
 export function QuickCategoryGrid() {
   const navigate = useNavigate();
   return (
-    <section className="border-b bg-white">
+    <section className="border-b bg-white lg:hidden">
       <div className="mx-auto max-w-7xl px-4 py-4">
         <div className="grid grid-cols-5 gap-2 sm:grid-cols-6 sm:gap-2 lg:grid-cols-10 lg:gap-2">
           {QUICK_CATS.map((c) => {
@@ -808,6 +808,49 @@ export function TrustBadges() {
               </div>
             );
           })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---------- Trust badges + B2B CTA bar (desktop top) ---------- */
+
+export function TrustAndB2BBar() {
+  const items = [
+    { icon: Award,    title: "สินค้าแท้ 100%",       sub: "รับประกันศูนย์ไทย" },
+    { icon: Truck,    title: "จัดส่งทั่วประเทศ",     sub: "Kerry / Flash / ไปรษณีย์" },
+    { icon: FileText, title: "ใบกำกับภาษีได้",       sub: "รองรับนิติบุคคล VAT 7%" },
+    { icon: Phone,    title: "ทีมงานพร้อมช่วยเหลือ", sub: "โทร 02-045-6104" },
+  ];
+  return (
+    <section className="hidden border-b bg-white lg:block">
+      <div className="mx-auto max-w-7xl px-4 py-5">
+        <div className="grid grid-cols-5 gap-3">
+          {items.map((it) => {
+            const Icon = it.icon;
+            return (
+              <div key={it.title} className="flex items-center gap-3 rounded-lg border bg-slate-50 p-4">
+                <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[color:var(--brand-green)]/10 text-[color:var(--brand-green)]">
+                  <Icon className="h-5 w-5" />
+                </div>
+                <div className="min-w-0">
+                  <div className="truncate text-sm font-bold text-[color:var(--brand-navy)]">{it.title}</div>
+                  <div className="truncate text-[11px] text-slate-500">{it.sub}</div>
+                </div>
+              </div>
+            );
+          })}
+          <Link
+            to="/corporate"
+            className="flex flex-col justify-center gap-1.5 rounded-lg bg-[color:var(--brand-navy)] p-4 text-white transition hover:bg-[color:var(--brand-navy-2)]"
+          >
+            <div className="text-sm font-bold">🏢 ลูกค้าองค์กร / B2B</div>
+            <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] text-white/80">
+              <Link to="/credit-application" className="underline hover:text-white">วงเงินเครดิต B2B</Link>
+              <Link to="/pc-builder" className="underline hover:text-white">Config PC</Link>
+            </div>
+          </Link>
         </div>
       </div>
     </section>
