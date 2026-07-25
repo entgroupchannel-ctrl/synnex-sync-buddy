@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Building2, Wifi, Printer, BatteryCharging, HardDrive, ShoppingCart, CreditCard } from "lucide-react";
+import { Building2, Wifi, Printer, BatteryCharging, HardDrive, ShoppingCart, CreditCard, Laptop, Monitor } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
