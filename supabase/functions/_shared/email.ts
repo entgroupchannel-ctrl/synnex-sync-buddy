@@ -257,3 +257,123 @@ export function u8ToBase64(bytes: Uint8Array): string {
   }
   return btoa(s);
 }
+
+/**
+ * เพิ่มเข้าไปที่ท้ายไฟล์ supabase/functions/_shared/email.ts (APPEND เท่านั้น — ห้ามแก้โค้ดเดิม)
+ * ใช้ SELLER, sarabunTtf, PDFDocument, StandardFonts, fontkit, rgb ที่ import ไว้อยู่แล้วบนสุดไฟล์
+ */
+
+export type PoPdfItem = {
+  product_sku: string;
+  product_name: string | null;
+  quantity: number;
+  cost_price: number;
+  subtotal: number;
+  ship_to_name: string;
+  order_number: string;
+};
+
+export type PoPdfDoc = {
+  poNumber: string;
+  dateLabel: string;
+  distributor: string;
+  buyer: { name: string; address: string; phone: string; email: string; tax_id: string };
+  items: PoPdfItem[];
+  notes?: string;
+};
+
+/** ใบสั่งซื้อ (PO) สำหรับส่งให้ distributor — คนละ layout จาก buildPdf() เพราะเรา (ENT Group) เป็นฝั่ง "ผู้ซื้อ"
+ *  และแต่ละบรรทัดสินค้ามีปลายทางจัดส่ง (drop-ship) เป็นของตัวเอง ไม่ใช่ที่อยู่เดียวทั้งใบ */
+export async function buildPurchaseOrderPdf(doc: PoPdfDoc): Promise<Uint8Array> {
+  const pdf = await PDFDocument.create();
+  pdf.registerFontkit(fontkit);
+  const font = await pdf.embedFont(await sarabunTtf(), { subset: true });
+
+  const PAGE = [595.28, 841.89] as [number, number]; // A4
+  const marginX = 40;
+  const marginBottom = 60;
+  let page = pdf.addPage(PAGE);
+  let { width } = page.getSize();
+  let y = 800;
+
+  const drawText = (t: string, x: number, yy: number, size = 11, color = rgb(0.1, 0.1, 0.2)) => {
+    page.drawText(t, { x, y: yy, size, font, color });
+  };
+
+  const newPageIfNeeded = (needed = 20) => {
+    if (y - needed < marginBottom) {
+      page = pdf.addPage(PAGE);
+      width = page.getSize().width;
+      y = 800;
+      drawTableHeader();
+    }
+  };
+
+  const colX = { idx: marginX, sku: marginX + 30, qty: marginX + 230, cost: marginX + 270, total: marginX + 330, shipTo: marginX + 400 };
+
+  function drawTableHeader() {
+    page.drawRectangle({ x: marginX, y: y - 4, width: width - marginX * 2, height: 20, color: rgb(0.94, 0.96, 1) });
+    drawText('ลำดับ', colX.idx + 2, y + 4, 9, rgb(0.15, 0.2, 0.4));
+    drawText('SKU / สินค้า', colX.sku, y + 4, 9, rgb(0.15, 0.2, 0.4));
+    drawText('จำนวน', colX.qty, y + 4, 9, rgb(0.15, 0.2, 0.4));
+    drawText('ทุน/หน่วย', colX.cost, y + 4, 9, rgb(0.15, 0.2, 0.4));
+    drawText('รวม', colX.total, y + 4, 9, rgb(0.15, 0.2, 0.4));
+    drawText('จัดส่งถึง (Drop-ship)', colX.shipTo, y + 4, 9, rgb(0.15, 0.2, 0.4));
+    y -= 20;
+  }
+
+  // ---- Header ----
+  drawText(doc.buyer.name, marginX, y, 13);
+  drawText(doc.buyer.address, marginX, y - 15, 8, rgb(0.35, 0.35, 0.45));
+  drawText(`โทร ${doc.buyer.phone}  ·  ${doc.buyer.email}`, marginX, y - 27, 8, rgb(0.35, 0.35, 0.45));
+  drawText(`เลขผู้เสียภาษี: ${doc.buyer.tax_id}`, marginX, y - 39, 8, rgb(0.35, 0.35, 0.45));
+
+  drawText('ใบสั่งซื้อ / PURCHASE ORDER', width - 250, y, 15);
+  drawText(`เลขที่: ${doc.poNumber}`, width - 250, y - 18, 10);
+  drawText(doc.dateLabel, width - 250, y - 32, 10);
+  drawText(`ผู้ขาย (Distributor): ${doc.distributor}`, width - 250, y - 46, 10, rgb(0.1, 0.3, 0.15));
+
+  y -= 75;
+  page.drawLine({ start: { x: marginX, y }, end: { x: width - marginX, y }, thickness: 1, color: rgb(0.8, 0.8, 0.85) });
+  y -= 20;
+
+  drawText('กรุณาจัดส่งสินค้าแต่ละรายการตรงถึงปลายทางที่ระบุในตาราง (Drop-ship ตรงถึงลูกค้า)', marginX, y, 9, rgb(0.6, 0.2, 0.2));
+  y -= 20;
+
+  drawTableHeader();
+
+  let grandTotal = 0;
+  doc.items.forEach((it, i) => {
+    newPageIfNeeded(18);
+    drawText(String(i + 1), colX.idx + 2, y, 9);
+    const skuLine = (it.product_sku || it.product_name || '').slice(0, 32);
+    drawText(skuLine, colX.sku, y, 9);
+    drawText(String(it.quantity), colX.qty, y, 9);
+    drawText(Number(it.cost_price).toLocaleString('en-US', { minimumFractionDigits: 2 }), colX.cost, y, 9);
+    drawText(Number(it.subtotal).toLocaleString('en-US', { minimumFractionDigits: 2 }), colX.total, y, 9);
+    const shipLine = `${it.ship_to_name} (${it.order_number})`.slice(0, 28);
+    drawText(shipLine, colX.shipTo, y, 9);
+    grandTotal += Number(it.subtotal);
+    y -= 16;
+  });
+
+  newPageIfNeeded(60);
+  y -= 10;
+  page.drawLine({ start: { x: marginX, y }, end: { x: width - marginX, y }, thickness: 0.5, color: rgb(0.8, 0.8, 0.85) });
+  y -= 20;
+  drawText('ยอดรวมต้นทุนทั้งหมด', width - 250, y, 11, rgb(0.35, 0.35, 0.45));
+  drawText(`฿ ${grandTotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, width - 120, y, 13, rgb(0.1, 0.15, 0.35));
+  y -= 30;
+
+  if (doc.notes) {
+    newPageIfNeeded(20);
+    drawText(`หมายเหตุ: ${doc.notes}`, marginX, y, 9, rgb(0.4, 0.4, 0.5));
+    y -= 20;
+  }
+
+  newPageIfNeeded(40);
+  drawText('_______________________________', width - 250, y, 10, rgb(0.5, 0.5, 0.6));
+  drawText('ผู้มีอำนาจลงนาม / Authorized Signature (ENT Group)', width - 250, y - 14, 8, rgb(0.5, 0.5, 0.6));
+
+  return await pdf.save();
+}
