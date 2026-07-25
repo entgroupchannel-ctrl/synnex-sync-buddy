@@ -76,7 +76,7 @@ const SMART_LIFE_SUBCATS: { label: string; brands: string[] }[] = [
   { label: "Smart Security", brands: ["EZVIZ", "TPLINK"] },
 ];
 
-const SMART_LIFE_BRANDS = ["DAHUA", "HIKVISION", "SAMSUNG", "GARMIN", "HUAWEI", "XIAOMI", "HONEYWELL", "SOTHING", "AMAZFIT"];
+const SMART_LIFE_BRANDS = ["DAHUA", "HIKVISION", "SAMSUNG", "GARMIN", "HUAWEI", "XIAOMI", "HONEYWELL", "SOTHING", "AMAZFIT", "LAMPTAN", "EZVIZ", "TPLINK"];
 
 const SMART_LIFE_PRICE_PRESETS: { label: string; min: number; max: number }[] = [
   { label: "ต่ำกว่า ฿1,000", min: 0, max: 1000 },
