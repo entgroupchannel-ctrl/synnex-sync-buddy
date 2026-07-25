@@ -1,8 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
+import { WorkHeader } from "@/components/work-header";
+import { WorkFooter } from "@/components/work-footer";
 import { ProductImage } from "@/components/product-image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -228,7 +228,7 @@ function MyOrdersPage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <SiteHeader />
+      <WorkHeader title="คำสั่งซื้อของฉัน" />
 
       {/* Sticky tabs */}
       <div className="sticky top-16 z-30 border-b bg-white shadow-sm">
@@ -351,7 +351,7 @@ function MyOrdersPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      <SiteFooter />
+      <WorkFooter />
     </div>
   );
 }
