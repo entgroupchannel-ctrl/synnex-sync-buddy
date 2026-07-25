@@ -152,8 +152,8 @@ function OrderConfirm() {
 
   const uploadSlip = async (file: File) => {
     if (!order) return;
-    if (file.size > MAX_SIZE) { toast.error("ไฟล์ใหญ่เกิน 5MB"); return; }
     setUploading(true);
+
     try {
       const ext = file.name.split(".").pop() || "bin";
       const path = `${order.order_number}/${Date.now()}.${ext}`;
