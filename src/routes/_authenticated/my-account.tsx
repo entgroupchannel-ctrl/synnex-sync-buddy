@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { WorkHeader } from "@/components/work-header";
 import { WorkFooter } from "@/components/work-footer";
-import { User, MapPin, Package, Building2, CreditCard } from "lucide-react";
+import { User, MapPin, Package, Building2, CreditCard, Wallet } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/my-account")({
   head: () => ({
