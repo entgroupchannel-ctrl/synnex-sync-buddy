@@ -42,6 +42,7 @@ export const CATEGORY_ICONS: Record<string, ReactNode> = {
   "Computer Set": <Server className={ic} />,
   Components: <Cpu className={ic} />,
   RAM: <MemoryStick className={ic} />,
+  "Edge AI Box": <Bot className={ic} />,
   Software: <Package className={ic} />,
   Accessories: <Plug className={ic} />,
   Network: <Wifi className={ic} />,
