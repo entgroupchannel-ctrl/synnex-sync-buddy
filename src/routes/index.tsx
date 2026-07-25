@@ -668,6 +668,39 @@ function HomePage() {
         </div>
       )}
 
+      {isJetson && (
+        <div>
+          <h3 className="mb-3 text-sm font-bold text-[color:var(--brand-navy)]">ประเภทสินค้า Jetson</h3>
+          <div className="space-y-1.5">
+            {JETSON_SUBCATS.map((sub) => {
+              const isSelected = search.jetsonType === sub.key;
+              return (
+                <button
+                  key={sub.key}
+                  onClick={() => update({ jetsonType: isSelected ? "" : sub.key })}
+                  className={`w-full flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors ${
+                    isSelected
+                      ? "bg-[color:var(--brand-green)] text-white font-medium"
+                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                  }`}
+                >
+                  <span className="flex-1 text-left">{sub.label}</span>
+                  <ChevronRight className={`h-3.5 w-3.5 opacity-40 ${isSelected ? "text-white" : "text-slate-400"}`} />
+                </button>
+              );
+            })}
+            {search.jetsonType && (
+              <button
+                onClick={() => update({ jetsonType: "" })}
+                className="w-full rounded-lg px-3 py-2 text-left text-xs text-slate-400 hover:text-slate-600"
+              >
+                ล้างตัวกรอง
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
       {isSmartLife && (
         <div>
           <h3 className="mb-3 text-sm font-bold text-[color:var(--brand-navy)]">ประเภทสินค้า</h3>
