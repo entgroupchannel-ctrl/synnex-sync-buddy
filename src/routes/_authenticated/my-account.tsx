@@ -42,9 +42,9 @@ function MyAccountLayout() {
   ] as const;
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <SiteHeader />
-      <div className="mx-auto max-w-6xl px-4 py-6">
+    <div className="min-h-screen bg-slate-50 flex flex-col">
+      <WorkHeader title="บัญชีของฉัน" />
+      <div className="mx-auto max-w-6xl px-4 py-6 flex-1 w-full">
         <h1 className="mb-6 text-2xl font-black text-[color:var(--brand-navy)]">บัญชีของฉัน</h1>
         <div className="grid gap-6 lg:grid-cols-[240px_1fr]">
           <aside className="h-fit rounded-lg border bg-white p-2">
