@@ -66,11 +66,10 @@ const searchSchema = z.object({
 
 const SMART_LIFE_SUBCATS: { label: string; brands: string[] }[] = [
   { label: "📹 กล้องวงจรปิด (CCTV)", brands: ["DAHUA", "HIKVISION"] },
-  { label: "⌚ Smartwatch & Fitness", brands: ["SAMSUNG", "GARMIN", "HUAWEI", "AMAZFIT"] },
+  { label: "⌚ Smartwatch & Fitness", brands: ["SAMSUNG", "GARMIN", "HUAWEI"] },
   { label: "🏠 Smart Home / Xiaomi", brands: ["XIAOMI"] },
-  { label: "💨 เครื่องฟอกอากาศ", brands: ["HONEYWELL", "XIAOMI"] },
-  { label: "🌀 Gadget & Accessories", brands: ["SOTHING"] },
-  { label: "📡 Smart Devices / HUAWEI", brands: ["HUAWEI"] },
+  { label: "💨 เครื่องฟอกอากาศ", brands: ["HONEYWELL"] },
+  { label: "🌀 Gadget", brands: ["SOTHING"] },
 ];
 
 const SMART_LIFE_BRANDS = ["DAHUA", "HIKVISION", "SAMSUNG", "GARMIN", "HUAWEI", "XIAOMI", "HONEYWELL", "SOTHING", "AMAZFIT"];
