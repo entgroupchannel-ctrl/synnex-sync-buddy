@@ -927,10 +927,34 @@ const MS_DESCRIPTIONS: { match: RegExp; short: string; desc: string }[] = [
   { match: /m365|365\s*personal/i, short: "M365 Personal", desc: "Microsoft 365 สำหรับผู้ใช้ 1 คน" },
 ];
 
-function msMeta(name: string | null | undefined) {
+function getSoftwareDescription(brand: string | null | undefined, name: string | null | undefined): string {
+  const b = (brand ?? "").toUpperCase();
+  const n = (name ?? "").toUpperCase();
+  if (b.includes("KASPERSKY")) return "โปรแกรมป้องกันไวรัส ลิขสิทธิ์แท้จาก Kaspersky Lab";
+  if (b.includes("ESET")) return "โปรแกรมป้องกันไวรัส ลิขสิทธิ์แท้จาก ESET";
+  if (b.includes("MCAFEE")) return "โปรแกรมความปลอดภัย ลิขสิทธิ์แท้จาก McAfee";
+  if (b.includes("MICROSOFT")) {
+    if (n.includes("WINDOWS")) return "ระบบปฏิบัติการ Windows ลิขสิทธิ์แท้จาก Microsoft";
+    if (n.includes("365") || n.includes("M365")) return "Microsoft 365 สำหรับผู้ใช้ 1 คน หรือครอบครัว";
+    if (n.includes("OFFICE")) return "Microsoft Office ลิขสิทธิ์แท้ ใช้งานได้ตลอดชีพ";
+    return "ซอฟต์แวร์ลิขสิทธิ์แท้จาก Microsoft";
+  }
+  return "ซอฟต์แวร์ลิขสิทธิ์แท้ 100%";
+}
+
+function getSoftwareBrandIcon(brand: string | null | undefined): string {
+  const b = (brand ?? "").toUpperCase();
+  if (b.includes("KASPERSKY")) return "🛡️";
+  if (b.includes("ESET")) return "🔒";
+  if (b.includes("MCAFEE")) return "🔐";
+  if (b.includes("MICROSOFT")) return "🪟";
+  return "💿";
+}
+
+function msMeta(name: string | null | undefined, brand?: string | null) {
   const n = name ?? "";
   for (const m of MS_DESCRIPTIONS) if (m.match.test(n)) return { short: m.short, desc: m.desc };
-  return { short: n.length > 40 ? n.slice(0, 40) + "…" : n, desc: "ผลิตภัณฑ์ลิขสิทธิ์แท้จาก Microsoft" };
+  return { short: n.length > 40 ? n.slice(0, 40) + "…" : n, desc: getSoftwareDescription(brand, n) };
 }
 
 export function MicrosoftFeatured() {
