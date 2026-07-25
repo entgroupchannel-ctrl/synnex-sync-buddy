@@ -355,7 +355,7 @@ function HomePage() {
         }
         if (search.category === "RAM" && search.ramSpec) {
           const spec = RAM_SUBCATS.find((s) => s.key === search.ramSpec);
-          if (spec) q = q.or(spec.patterns.map((p) => `name.ilike.%${p}%`).join(","));
+          if (spec) q = q.or(spec.patterns.map((p) => `name.ilike."%${p}%"`).join(","));
         }
         if (selectedBrands.length > 0) q = q.in("brand", selectedBrands);
         if (search.min > 0) q = q.gte("selling_price", search.min);
