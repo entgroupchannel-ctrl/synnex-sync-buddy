@@ -133,7 +133,17 @@ function CartPage() {
         ) : (
           <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
             <div className="space-y-3">
+              {volume.groups.map((g) => (
+                <div key={g.key} className="rounded-lg border border-green-200 bg-green-50 p-3 text-sm font-semibold text-green-800">
+                  🎉 คุณได้รับส่วนลด{" "}
+                  {g.rule.discount_type === "percent"
+                    ? `${Number(g.rule.discount_value)}%`
+                    : priceFmt.format(Number(g.rule.discount_value))}{" "}
+                  สำหรับการซื้อ {g.key} {g.qty} ชิ้น!
+                </div>
+              ))}
               {hasByOrder && (
+
                 <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">
                   <div className="flex items-center gap-2 font-bold">
                     <AlertTriangle className="h-4 w-4" /> สินค้า By Order ในตะกร้าของคุณ
