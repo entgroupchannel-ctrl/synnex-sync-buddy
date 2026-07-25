@@ -161,6 +161,14 @@ function CheckoutPage() {
   const discountAmount = discount?.discountAmount ?? 0;
   const grandTotal = Math.max(0, subtotal + shippingFee + codFee - discountAmount);
 
+  // B2B credit line
+  const { account: creditAccount } = useCreditAccount(user?.id);
+  const creditUsable = creditIsUsable(creditAccount);
+  const creditEnough = !!creditAccount && creditAccount.credit_available >= grandTotal;
+  useEffect(() => {
+    if (payment === "credit" && !(creditUsable && creditEnough)) setPayment("promptpay");
+  }, [payment, creditUsable, creditEnough]);
+
   const userType: UserType = user
     ? (wantsTaxInvoice ? "b2b" : "b2c")
     : "guest";
