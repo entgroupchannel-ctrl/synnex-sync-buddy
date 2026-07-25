@@ -112,6 +112,7 @@ function round(n: number): number {
 export function getSellingPrice(p: PricingProduct, tier: CustomerTier = "guest"): number | null {
   const selling = Number(p.selling_price ?? 0);
   if (!selling || selling <= 0) return null;
+  if (selling > 70000) return null; // ราคาเกิน 70,000 → ให้ระบบขึ้น "ติดต่อสอบถาม" แทนราคา
 
   const memberBase = Number(p.member_price ?? 0) > 0 ? Number(p.member_price) : selling * 0.95;
   const b2bBase = Number(p.b2b_price ?? 0) > 0 ? Number(p.b2b_price) : null;
