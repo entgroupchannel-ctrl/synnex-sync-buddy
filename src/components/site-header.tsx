@@ -13,6 +13,8 @@ import { AddToCartSheet } from "@/components/add-to-cart-sheet";
 import { CartReminderBell } from "@/components/cart-reminder-bell";
 import { DeliveryZoneDialog, DeliveryZoneBadge } from "@/components/delivery-zone-dialog";
 import { AppleMegaMenu } from "@/components/apple-mega-menu";
+import { FlashSaleCountdown } from "@/components/flash-sale-countdown";
+import { ScrollingTicker } from "@/components/scrolling-ticker";
 import { useLanguage } from "@/lib/i18n";
 import entLogo from "@/assets/entgroup-logo.jpg.asset.json";
 import {
@@ -152,7 +154,10 @@ export function SiteHeader() {
           <a href="https://entgroup.co.th" target="_blank" rel="noopener noreferrer" className="hover:text-[color:var(--brand-green)] lg:hidden">🔗 entgroup.co.th</a>
         </div>
       </div>
+      <FlashSaleCountdown />
+      <ScrollingTicker />
       <header className="sticky top-0 z-40 bg-[color:var(--brand-navy)] text-white shadow-lg">
+
         <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3">
           <button
             className="grid h-9 w-9 shrink-0 place-items-center rounded-md hover:bg-white/10 lg:hidden"

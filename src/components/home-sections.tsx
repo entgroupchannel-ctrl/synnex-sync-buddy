@@ -30,6 +30,8 @@ import { triggerAuthPrompt, useSupabaseUser } from "@/lib/auth-sheet";
 import { useCart } from "@/lib/cart";
 import { useLanguage } from "@/lib/i18n";
 import { ProductImage } from "@/components/product-image";
+import { SaleBadge, UrgencyIndicator } from "@/components/sale-badge";
+import { getProductBadge } from "@/lib/product-badge";
 import { BrandLogo } from "@/components/brand-logo";
 import { getBrandLogoUrl } from "@/lib/brand-assets";
 import { StockBadge } from "@/components/stock-badge";
@@ -331,16 +333,23 @@ export function TodaysBestDeals() {
       <div className="mx-auto max-w-7xl px-4 py-8">
         <SectionHeader title="ดีลวันนี้" en="Today's Best Deals" />
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-5">
-          {q.data!.map((p) => {
+          {q.data!.map((p, idx) => {
             const ready = p.stock_status === "พร้อมจัดส่ง";
             const slug = p.slug || p.id;
             const selling = getSellingPrice(p, tier) ?? 0;
             const freeShip = selling > 5000;
+            const badge = getProductBadge(p, idx);
             return (
-              <div key={p.id} className="group flex overflow-hidden rounded-lg border bg-white transition hover:shadow-lg lg:flex-col">
+              <div key={p.id} className="group relative flex overflow-hidden rounded-lg border bg-white transition hover:shadow-lg lg:flex-col">
+                {badge && (
+                  <div className="absolute left-2 top-2 z-10">
+                    <SaleBadge type={badge} />
+                  </div>
+                )}
                 <Link to="/product/$slug" params={{ slug }} className="grid h-32 w-36 shrink-0 place-items-center bg-white p-2 lg:h-40 lg:w-full">
                   <ProductImage src={p.image_url} alt={p.name ?? p.sku} className="h-full w-full object-contain transition group-hover:scale-105" iconClassName="h-12 w-12 text-slate-300" />
                 </Link>
+
                 <div className="flex min-w-0 flex-1 flex-col gap-1 border-l p-3 lg:border-l-0 lg:border-t">
                   <div className="flex items-center gap-1 text-[10px] uppercase tracking-wide text-slate-500">
                     {p.brand && <span className="rounded bg-slate-100 px-1.5 py-0.5 font-bold">{p.brand}</span>}
@@ -408,12 +417,18 @@ export function PopularNotebooks() {
           link={{ to: "/", search: { category: "Notebook" }, label: "ดูทั้งหมด" }}
         />
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-5 lg:gap-3">
-          {q.data!.map((p) => {
+          {q.data!.map((p, idx) => {
             const ready = p.stock_status === "พร้อมจัดส่ง";
             const slug = p.slug || p.id;
+            const badge = getProductBadge(p, idx);
             return (
               <div key={p.id} className="group relative flex flex-col overflow-hidden rounded-lg border bg-white transition hover:shadow-lg">
                 <BrandLogo brand={p.brand} />
+                {badge && (
+                  <div className="absolute left-2 top-2 z-10">
+                    <SaleBadge type={badge} />
+                  </div>
+                )}
                 <Link to="/product/$slug" params={{ slug }} className="grid aspect-square place-items-center bg-white p-3">
                   <ProductImage src={p.image_url} alt={p.name ?? p.sku} className="h-full w-full object-contain transition group-hover:scale-105" iconClassName="h-16 w-16 text-slate-300" />
                 </Link>
@@ -421,6 +436,8 @@ export function PopularNotebooks() {
                   {p.brand && <div className="text-[10px] uppercase tracking-wide text-slate-500">{p.brand}</div>}
                   <Link to="/product/$slug" params={{ slug }} className="line-clamp-2 min-h-10 text-sm font-medium hover:text-[color:var(--brand-navy)]">{p.name ?? p.sku}</Link>
                   <div className="mt-auto text-lg font-black text-[color:var(--brand-orange)]">{displayPrice(p, tier)}</div>
+                  <UrgencyIndicator index={idx} />
+
                   <Button
                     disabled={!ready}
                     onClick={() => addToCart(p)}
