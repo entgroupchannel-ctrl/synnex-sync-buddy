@@ -316,8 +316,8 @@ export function TodaysBestDeals() {
         .eq("price_approved", true).gt("selling_price", 0)
         .gt("selling_price", 0)
         .not("image_url", "is", null)
-        .order("created_at", { ascending: false })
-        .limit(5);
+        .order("selling_price", { ascending: true })
+        .limit(10);
       return (data ?? []) as ProductRow[];
     },
     staleTime: 5 * 60_000,
@@ -388,7 +388,7 @@ export function PopularNotebooks() {
         .eq("price_approved", true).gt("selling_price", 0)
         .gt("selling_price", 0)
         .not("image_url", "is", null)
-        .order("selling_price", { ascending: false })
+        .order("selling_price", { ascending: true })
         .limit(10);
       return (data ?? []) as ProductRow[];
     },
@@ -1147,7 +1147,7 @@ export function NetworkSecurity() {
         .eq("price_approved", true)
         .eq("stock_status", "พร้อมจัดส่ง")
         .gt("selling_price", 0)
-        .order("selling_price", { ascending: false })
+        .order("selling_price", { ascending: true })
         .limit(10);
       return (data ?? []) as ProductRow[];
     },
@@ -1222,7 +1222,7 @@ export function ComponentsShowcase() {
         .eq("category", "Components")
         .eq("price_approved", true)
         .gt("selling_price", 0)
-        .order("selling_price", { ascending: false })
+        .order("selling_price", { ascending: true })
         .limit(10);
       return (data ?? []) as ProductRow[];
     },
@@ -1300,7 +1300,8 @@ export function SolarEnergy() {
         .eq("category", "Solar & Energy")
         .eq("price_approved", true)
         .gt("selling_price", 0)
-        .order("selling_price", { ascending: false });
+        .order("selling_price", { ascending: true })
+        .limit(10);
       return (data ?? []) as ProductRow[];
     },
     staleTime: 5 * 60_000,
