@@ -3,7 +3,7 @@
  * หน้า Admin: ดูสินค้าที่รอสั่งจาก distributor (จัดกลุ่มอัตโนมัติ) + กดสร้าง PO
  */
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, FileText, FileDown } from "lucide-react";
 import { distMeta, PO_STATUS_META, type PoStatus } from "@/lib/order-helpers";
 
 import { useServerFn } from "@tanstack/react-start";
@@ -85,6 +85,25 @@ function PurchaseOrdersPage() {
   const pending = pendingQ.data ?? [];
   const poList = poListQ.data ?? [];
 
+  const [pdfBusy, setPdfBusy] = useState<string | null>(null);
+  const makePdf = async (poId: string) => {
+    setPdfBusy(poId);
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-purchase-order", {
+        body: { po_id: poId },
+      });
+      if (error) throw error;
+      toast.success("สร้างเอกสาร PDF สำเร็จ");
+      qc.invalidateQueries({ queryKey: ["purchase-orders"] });
+      const url = (data as { pdf_url?: string })?.pdf_url;
+      if (url) window.open(url, "_blank");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "สร้าง PDF ไม่สำเร็จ");
+    } finally {
+      setPdfBusy(null);
+    }
+  };
+
   const statusLabel: Record<string, string> = {
     draft: "ร่าง", sent: "ส่งแล้ว", confirmed: "ยืนยันแล้ว",
     shipped: "จัดส่งแล้ว", partially_shipped: "จัดส่งบางส่วน",
@@ -164,6 +183,7 @@ function PurchaseOrdersPage() {
               <TableHead className="text-right">รายการ</TableHead>
               <TableHead className="text-right">ยอดรวม (ก่อน VAT)</TableHead>
               <TableHead>วันที่</TableHead>
+              <TableHead>เอกสาร</TableHead>
               <TableHead></TableHead>
             </TableRow>
           </TableHeader>
@@ -193,6 +213,27 @@ function PurchaseOrdersPage() {
                   <TableCell className="text-right">{po.total_items}</TableCell>
                   <TableCell className="text-right">฿{Number(po.total_cost).toLocaleString("th-TH")}</TableCell>
                   <TableCell>{new Date(po.created_at).toLocaleDateString("th-TH")}</TableCell>
+                  <TableCell onClick={(e) => e.stopPropagation()}>
+                    {po.pdf_url ? (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => window.open(po.pdf_url!, "_blank")}
+                      >
+                        <FileDown className="mr-1.5 h-4 w-4" /> เปิด PDF
+                      </Button>
+                    ) : (
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        disabled={pdfBusy === po.id}
+                        onClick={() => makePdf(po.id)}
+                      >
+                        <FileText className="mr-1.5 h-4 w-4" />
+                        {pdfBusy === po.id ? "กำลังสร้าง..." : "สร้าง PDF"}
+                      </Button>
+                    )}
+                  </TableCell>
                   <TableCell className="text-right">
                     <ChevronRight className="h-4 w-4 text-slate-400" />
                   </TableCell>
