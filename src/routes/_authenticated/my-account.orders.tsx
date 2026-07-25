@@ -79,6 +79,9 @@ function MyOrders() {
                   <div className="text-lg font-black text-[color:var(--brand-orange)]">{priceFmt.format(Number(o.total ?? 0))}</div>
                 </div>
               </div>
+              <div className="mt-3">
+                <OrderProgressStepper status={o.status} compact />
+              </div>
               <div className="mt-3 border-t pt-3 text-sm text-slate-700">
                 {items.slice(0, 3).map((i, idx) => (
                   <div key={idx} className="truncate">• {i.product_name} × {i.quantity}</div>
