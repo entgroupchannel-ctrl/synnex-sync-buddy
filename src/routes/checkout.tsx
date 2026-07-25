@@ -94,7 +94,31 @@ function CheckoutPage() {
   const [errors, setErrors] = useState<Partial<Record<keyof Fields | keyof z.infer<typeof taxSchema>, string>>>({});
   const [wantsTaxInvoice, setWantsTaxInvoice] = useState(false);
   const [tax, setTax] = useState({ company_name: "", tax_id: "", company_address: "" });
-  const [payment, setPayment] = useState<"transfer" | "cod" | "promptpay" | "credit">("promptpay");
+  const [payment, setPayment] = useState<"transfer" | "cod" | "promptpay" | "credit" | "credit_card">("promptpay");
+  const [cardToken, setCardToken] = useState<string | null>(null);
+  const [saveNewCard, setSaveNewCard] = useState(true);
+  const [selectedSavedCardId, setSelectedSavedCardId] = useState<string | null>(null);
+  const [useNewCard, setUseNewCard] = useState(false);
+
+  const savedCardsQ = useQuery({
+    queryKey: ["saved-cards-checkout"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("saved_cards")
+        .select("id, brand, last_digits, is_default")
+        .order("is_default", { ascending: false });
+      if (error) throw error;
+      return (data ?? []) as { id: string; brand: string; last_digits: string; is_default: boolean }[];
+    },
+  });
+
+  useEffect(() => {
+    if (savedCardsQ.data && savedCardsQ.data.length > 0 && !selectedSavedCardId) {
+      setSelectedSavedCardId(savedCardsQ.data.find((c) => c.is_default)?.id ?? savedCardsQ.data[0].id);
+    } else if (savedCardsQ.data && savedCardsQ.data.length === 0) {
+      setUseNewCard(true);
+    }
+  }, [savedCardsQ.data]);
   const [submitting, setSubmitting] = useState(false);
   const [orderCreated, setOrderCreated] = useState(false);
 
