@@ -153,8 +153,20 @@ function Section({ icon, title, subtitle, products, loading, viewAllCategory }: 
 }
 
 function CorporatePage() {
-  const network = useCorpQuery("network", "Network", ["CISCO", "DLINK", "TPLINK", "UBIQUITI"], 1000);
-  const printer = useCorpQuery("printer", "Printer", ["BROTHER", "HP", "RICOH", "PANTUM", "FUJIFILM"], 1000);
+  const notebook = useCorpQuery(
+    "notebook",
+    "Notebook",
+    ["LENOVO", "HP", "DELL", "ACER", "ASUS", "MSI", "MICROSOFT"],
+    { distributor: "ADVICE" },
+  );
+  const desktop = useCorpQuery(
+    "desktop",
+    "PC",
+    ["LENOVO", "HP", "ACER", "MSI", "SVOA", "MINIX"],
+    { distributor: "ADVICE", minPrice: 15000 },
+  );
+  const network = useCorpQuery("network", "Network", ["CISCO", "DLINK", "TPLINK", "UBIQUITI"], { minPrice: 1000 });
+  const printer = useCorpQuery("printer", "Printer", ["BROTHER", "HP", "RICOH", "PANTUM", "FUJIFILM"], { minPrice: 1000 });
   const ups = useCorpQuery("ups", "PC", ["APC", "SYNDOME", "SUN", "ETECH", "VERTIV", "CKT"]);
   const nas = useCorpQuery("nas", "Storage", ["QNAP", "SYNOLOGY"]);
 
