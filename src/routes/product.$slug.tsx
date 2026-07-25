@@ -416,6 +416,10 @@ function ProductDetail() {
                 );
               })()}
 
+              <VolumeDiscountTable brand={p.brand} category={p.category} />
+
+
+
               {byOrder && (
                 <div className="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm">
                   <div className="mb-2 flex items-center gap-2 font-bold text-blue-900">
