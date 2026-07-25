@@ -67,7 +67,7 @@ function useCorpQuery(
 
 function ProductCard({ p }: { p: Row }) {
   const slug = p.slug || p.id;
-  const b2b = p.b2b_price ?? null;
+  
   return (
     <Link
       to="/product/$slug"
