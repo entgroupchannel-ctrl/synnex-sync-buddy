@@ -41,7 +41,7 @@ export function WorkHeader({ title }: { title?: string }) {
         <div className="flex items-center gap-3 text-sm">
           {isAdmin && (
             <Link
-              to="/admin"
+              to="/admin" preload="intent"
               className="inline-flex items-center gap-1 rounded-md bg-[color:var(--brand-green)] px-2.5 py-1.5 font-medium text-[color:var(--brand-navy)] hover:bg-[color:var(--brand-green)]/90"
             >
               <LayoutDashboard className="h-3.5 w-3.5" /> กลับไป Admin
