@@ -360,8 +360,11 @@ function CartPage() {
                     <Button onClick={checkoutReadyOnly} className="w-full bg-[color:var(--brand-orange)] hover:bg-[color:var(--brand-orange-dark)]" size="lg">
                       สั่งซื้อเฉพาะสินค้าพร้อมส่ง ({readyItems.length} ชิ้น)
                     </Button>
-                    <Button asChild variant="outline" className="w-full border-[color:var(--brand-navy)] text-[color:var(--brand-navy)] hover:bg-[color:var(--brand-navy)]/5" size="lg">
-                      <a href={byOrderQuoteMailto()}><FileText className="mr-2 h-4 w-4" /> ขอใบเสนอราคาสินค้า By Order แยก ({byOrderItems.length} ชิ้น)</a>
+                    <Button asChild variant="outline" className="h-auto w-full whitespace-normal border-blue-300 py-2.5 text-sm leading-snug text-blue-800 hover:bg-blue-50">
+                      <a href={byOrderQuoteMailto()} className="flex items-center justify-center gap-2">
+                        <FileText className="h-4 w-4 shrink-0" />
+                        <span>ขอใบเสนอราคา By Order แยก ({byOrderItems.length} ชิ้น)</span>
+                      </a>
                     </Button>
                     <Button asChild variant="ghost" className="w-full text-[color:var(--brand-navy)] hover:bg-slate-100" size="lg">
                       <Link to="/checkout">หรือสั่งซื้อรวมกันทั้งหมดทีเดียว →</Link>
