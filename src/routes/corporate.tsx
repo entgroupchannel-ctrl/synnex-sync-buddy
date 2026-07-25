@@ -42,7 +42,7 @@ function useCorpQuery(
   key: string,
   category: string,
   brands: string[],
-  minPrice = 0,
+  opts: { minPrice?: number; distributor?: string } = {},
 ) {
   return useQuery({
     queryKey: ["corporate-page", key],
@@ -55,7 +55,8 @@ function useCorpQuery(
         .eq("price_approved", true)
         .order("selling_price", { ascending: true })
         .limit(5);
-      if (minPrice > 0) q = q.gte("selling_price", minPrice);
+      if (opts.distributor) q = q.eq("distributor", opts.distributor);
+      if (opts.minPrice && opts.minPrice > 0) q = q.gt("selling_price", opts.minPrice);
       const { data } = await q;
       return (data ?? []) as Row[];
     },
