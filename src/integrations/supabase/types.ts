@@ -402,6 +402,8 @@ export type Database = {
       }
       distributor_contacts: {
         Row: {
+          address: string | null
+          company_name: string | null
           contact_email: string | null
           contact_name: string | null
           contact_phone: string | null
@@ -409,9 +411,12 @@ export type Database = {
           distributor: string
           id: string
           notes: string | null
+          tax_id: string | null
           updated_at: string
         }
         Insert: {
+          address?: string | null
+          company_name?: string | null
           contact_email?: string | null
           contact_name?: string | null
           contact_phone?: string | null
@@ -419,9 +424,12 @@ export type Database = {
           distributor: string
           id?: string
           notes?: string | null
+          tax_id?: string | null
           updated_at?: string
         }
         Update: {
+          address?: string | null
+          company_name?: string | null
           contact_email?: string | null
           contact_name?: string | null
           contact_phone?: string | null
@@ -429,6 +437,7 @@ export type Database = {
           distributor?: string
           id?: string
           notes?: string | null
+          tax_id?: string | null
           updated_at?: string
         }
         Relationships: []
