@@ -23,6 +23,7 @@ import { triggerAuthPrompt, useSupabaseUser } from "@/lib/auth-sheet";
 import { usePurchaseHistoryForSku } from "@/lib/reorder";
 import { LineQrDialog } from "@/components/line-qr-dialog";
 import { ShippingMethodSelector } from "@/components/shipping-method-selector";
+import { useVolumeRules, rulesForProduct, tierQtyLabel, tierDiscountLabel } from "@/lib/volume-discount";
 import { DeliveryZoneInfoBox } from "@/components/delivery-zone-dialog";
 
 export const Route = createFileRoute("/product/$slug")({
@@ -745,6 +746,27 @@ function ProductDetail() {
       </div>
       <IndustrialPromoBanner compact />
       <SiteFooter />
+    </div>
+  );
+}
+
+function VolumeDiscountTable({ brand, category }: { brand?: string | null; category?: string | null }) {
+  const { data: rules } = useVolumeRules();
+  const applicable = rulesForProduct(rules, { brand, category });
+  if (applicable.length === 0) return null;
+  return (
+    <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4">
+      <div className="text-sm font-bold text-amber-800">🏷️ ส่วนลดพิเศษเมื่อซื้อจำนวนมาก</div>
+      <div className="mt-3 space-y-1.5">
+        {applicable.map((r) => (
+          <div key={r.id} className="flex justify-between text-sm">
+            <span className="text-slate-600">{tierQtyLabel(r)}</span>
+            <span className="font-bold text-green-600">{tierDiscountLabel(r)}</span>
+          </div>
+        ))}
+      </div>
+      <div className="mt-2 text-xs text-slate-400">💼 เหมาะสำหรับ B2B / องค์กร</div>
+      <div className="text-xs text-slate-400">📞 สั่งจำนวนมาก ติดต่อ 02-045-6104</div>
     </div>
   );
 }
