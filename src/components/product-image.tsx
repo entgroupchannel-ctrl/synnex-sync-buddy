@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Package } from "lucide-react";
+import { Cpu, MemoryStick, HardDrive, CircuitBoard, Fan, Package } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 type Props = {
   src?: string | null;
@@ -12,21 +13,21 @@ type Props = {
   productName?: string | null;
 };
 
-function pickEmoji(category?: string | null, name?: string | null): string {
+function pickIcon(category?: string | null, name?: string | null): { Icon: LucideIcon; color: string } {
   const hay = `${category ?? ""} ${name ?? ""}`.toLowerCase();
-  if (/gpu|graphic|geforce|radeon|rtx|gtx|\brx ?\d/.test(hay)) return "🟪";
-  if (/\bcpu\b|processor|ryzen|core i\d|threadripper/.test(hay)) return "🔲";
-  if (/\bram\b|ddr\d|memory/.test(hay)) return "💾";
-  if (/ssd|nvme|hdd|hard disk|storage/.test(hay)) return "💿";
-  if (/motherboard|mainboard|mobo/.test(hay)) return "🟩";
-  return "📦";
+  if (/gpu|graphic|geforce|radeon|rtx|gtx|\brx ?\d/.test(hay)) return { Icon: Fan, color: "text-purple-400" };
+  if (/\bcpu\b|processor|ryzen|core i\d|threadripper/.test(hay)) return { Icon: Cpu, color: "text-blue-400" };
+  if (/\bram\b|ddr\d|memory/.test(hay)) return { Icon: MemoryStick, color: "text-emerald-400" };
+  if (/ssd|nvme|hdd|hard disk|storage/.test(hay)) return { Icon: HardDrive, color: "text-slate-400" };
+  if (/motherboard|mainboard|mobo/.test(hay)) return { Icon: CircuitBoard, color: "text-green-400" };
+  return { Icon: Package, color: "text-slate-300" };
 }
 
 export function ProductImage({
   src,
   alt = "",
   className = "h-full w-full object-contain",
-  iconClassName = "h-10 w-10 text-slate-300",
+  iconClassName = "h-10 w-10",
   fallbackLabel = "ไม่มีรูปสินค้า",
   loading = "lazy",
   category,
@@ -39,14 +40,10 @@ export function ProductImage({
   }, [src]);
 
   if (error || !src) {
-    const emoji = pickEmoji(category, productName ?? alt);
+    const { Icon, color } = pickIcon(category, productName ?? alt);
     return (
       <div className="relative flex h-full w-full flex-col items-center justify-center gap-1 rounded-md bg-gradient-to-br from-slate-50 to-slate-100">
-        {category || productName ? (
-          <span className="text-4xl leading-none" aria-hidden>{emoji}</span>
-        ) : (
-          <Package className={iconClassName} strokeWidth={1.5} />
-        )}
+        <Icon className={`${iconClassName} ${color}`} strokeWidth={1.5} />
         <span className="text-[11px] text-slate-400">{fallbackLabel}</span>
       </div>
     );
