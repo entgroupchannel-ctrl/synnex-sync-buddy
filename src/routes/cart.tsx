@@ -162,69 +162,129 @@ function CartPage() {
                   สำหรับการซื้อ {g.key} {g.qty} ชิ้น!
                 </div>
               ))}
-              {hasByOrder && (
+              {readyItems.length > 0 && (
+                <div className="space-y-3">
+                  {hasMixedCart && <h2 className="text-sm font-bold text-slate-500">📦 สินค้าพร้อมส่ง</h2>}
+                  {readyItems.map((it) => {
+                    const displaySku = safeDisplaySku(it.sku);
+                    const itemByOrder = false;
+                    return (
+                      <div key={it.id} className="flex max-w-full gap-4 rounded-lg border bg-white p-4">
+                        <div className="grid h-24 w-24 shrink-0 place-items-center rounded-md bg-slate-50">
+                          <ProductImage src={it.image_url} alt={it.name} category={it.category} productName={it.name} className="h-full w-full object-contain p-1" iconClassName="h-8 w-8" />
+                        </div>
+                        <div className="min-w-0 flex-1 max-w-full">
+                          {displaySku && (
+                            <p className="text-xs text-slate-400 truncate">{displaySku}</p>
+                          )}
+                          <Link
+                            to="/product/$slug"
+                            params={{ slug: it.slug || it.id }}
+                            className="text-sm font-semibold break-words max-w-full hover:text-[color:var(--brand-navy)]"
+                          >
+                            {it.name}
+                          </Link>
 
-                <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">
-                  <div className="flex items-center gap-2 font-bold">
-                    <AlertTriangle className="h-4 w-4" /> สินค้า By Order ในตะกร้าของคุณ
-                  </div>
-                  <div className="mt-1">จะใช้เวลาจัดหาประมาณ 30 วันทำการ</div>
-                  <div>ทีมงานจะติดต่อยืนยันก่อนจัดส่ง</div>
+                          {itemByOrder && (
+                            <div className="mt-1 inline-flex items-center gap-1 rounded bg-blue-100 px-2 py-0.5 text-[11px] font-medium text-blue-800">
+                              <ClipboardList className="h-3 w-3" /> สินค้านี้ใช้เวลา 30 วัน
+                            </div>
+                          )}
+                          <div className="mt-2 flex items-center gap-3">
+                            <div className="inline-flex items-center rounded-md border">
+                              <button onClick={() => setQty(it.id, it.qty - 1)} className="px-2 py-1 hover:bg-slate-100">
+                                <Minus className="h-3 w-3" />
+                              </button>
+                              <div className="w-8 text-center text-sm">{it.qty}</div>
+                              <button onClick={() => setQty(it.id, it.qty + 1)} className="px-2 py-1 hover:bg-slate-100">
+                                <Plus className="h-3 w-3" />
+                              </button>
+                            </div>
+                            <button onClick={() => remove(it.id)} className="text-slate-400 hover:text-red-600">
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          {it.price === 0 ? (
+                            <div className="text-sm font-bold text-orange-600">ติดต่อสอบถาม</div>
+                          ) : (
+                            <>
+                              <div className="text-sm font-bold text-[color:var(--brand-navy)]">{priceFmt.format(it.price * it.qty)}</div>
+                              <div className="text-xs text-slate-500">{priceFmt.format(it.price)} / ชิ้น</div>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
-              {items.map((it) => {
-                const itemByOrder = fulfillMap[it.sku]?.fulfillment_type === "by_order";
-                const displaySku = safeDisplaySku(it.sku);
-                return (
-                <div key={it.id} className="flex max-w-full gap-4 rounded-lg border bg-white p-4">
-                  <div className="grid h-24 w-24 shrink-0 place-items-center rounded-md bg-slate-50">
-                    <ProductImage src={it.image_url} alt={it.name} category={it.category} productName={it.name} className="h-full w-full object-contain p-1" iconClassName="h-8 w-8 text-slate-300" />
 
-                  </div>
-                  <div className="min-w-0 flex-1 max-w-full">
-                    {displaySku && (
-                      <p className="text-xs text-slate-400 truncate">{displaySku}</p>
-                    )}
-                    <Link
-                      to="/product/$slug"
-                      params={{ slug: it.slug || it.id }}
-                      className="text-sm font-semibold break-words max-w-full hover:text-[color:var(--brand-navy)]"
-                    >
-                      {it.name}
-                    </Link>
-
-                    {itemByOrder && (
-                      <div className="mt-1 inline-flex items-center gap-1 rounded bg-blue-100 px-2 py-0.5 text-[11px] font-medium text-blue-800">
-                        <ClipboardList className="h-3 w-3" /> สินค้านี้ใช้เวลา 30 วัน
-                      </div>
-                    )}
-                    <div className="mt-2 flex items-center gap-3">
-                      <div className="inline-flex items-center rounded-md border">
-                        <button onClick={() => setQty(it.id, it.qty - 1)} className="px-2 py-1 hover:bg-slate-100">
-                          <Minus className="h-3 w-3" />
-                        </button>
-                        <div className="w-8 text-center text-sm">{it.qty}</div>
-                        <button onClick={() => setQty(it.id, it.qty + 1)} className="px-2 py-1 hover:bg-slate-100">
-                          <Plus className="h-3 w-3" />
-                        </button>
-                      </div>
-                      <button onClick={() => remove(it.id)} className="text-slate-400 hover:text-red-600">
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+              {byOrderItems.length > 0 && (
+                <div className="space-y-3">
+                  <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-xs text-slate-600">
+                    <div className="flex items-center gap-2 font-semibold text-slate-700">
+                      <ClipboardList className="h-4 w-4 text-[color:var(--brand-green)]" />
+                      สินค้าที่ต้องจัดหาเพิ่ม (By Order)
                     </div>
+                    <div className="mt-1">ใช้เวลาประมาณ 30 วันทำการ ทีมงานจะติดต่อยืนยันรายละเอียดกับคุณก่อนดำเนินการทุกครั้ง — ไม่กระทบสินค้าพร้อมส่งรายการอื่นในตะกร้า</div>
                   </div>
-                  <div className="text-right">
-                    {it.price === 0 ? (
-                      <div className="text-sm font-bold text-orange-600">ติดต่อสอบถาม</div>
-                    ) : (
-                      <>
-                        <div className="text-sm font-bold text-[color:var(--brand-navy)]">{priceFmt.format(it.price * it.qty)}</div>
-                        <div className="text-xs text-slate-500">{priceFmt.format(it.price)} / ชิ้น</div>
-                      </>
-                    )}
-                  </div>
+                  {byOrderItems.map((it) => {
+                    const displaySku = safeDisplaySku(it.sku);
+                    const itemByOrder = true;
+                    return (
+                      <div key={it.id} className="flex max-w-full gap-4 rounded-lg border bg-white p-4">
+                        <div className="grid h-24 w-24 shrink-0 place-items-center rounded-md bg-slate-50">
+                          <ProductImage src={it.image_url} alt={it.name} category={it.category} productName={it.name} className="h-full w-full object-contain p-1" iconClassName="h-8 w-8" />
+                        </div>
+                        <div className="min-w-0 flex-1 max-w-full">
+                          {displaySku && (
+                            <p className="text-xs text-slate-400 truncate">{displaySku}</p>
+                          )}
+                          <Link
+                            to="/product/$slug"
+                            params={{ slug: it.slug || it.id }}
+                            className="text-sm font-semibold break-words max-w-full hover:text-[color:var(--brand-navy)]"
+                          >
+                            {it.name}
+                          </Link>
+
+                          {itemByOrder && (
+                            <div className="mt-1 inline-flex items-center gap-1 rounded bg-blue-100 px-2 py-0.5 text-[11px] font-medium text-blue-800">
+                              <ClipboardList className="h-3 w-3" /> สินค้านี้ใช้เวลา 30 วัน
+                            </div>
+                          )}
+                          <div className="mt-2 flex items-center gap-3">
+                            <div className="inline-flex items-center rounded-md border">
+                              <button onClick={() => setQty(it.id, it.qty - 1)} className="px-2 py-1 hover:bg-slate-100">
+                                <Minus className="h-3 w-3" />
+                              </button>
+                              <div className="w-8 text-center text-sm">{it.qty}</div>
+                              <button onClick={() => setQty(it.id, it.qty + 1)} className="px-2 py-1 hover:bg-slate-100">
+                                <Plus className="h-3 w-3" />
+                              </button>
+                            </div>
+                            <button onClick={() => remove(it.id)} className="text-slate-400 hover:text-red-600">
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          {it.price === 0 ? (
+                            <div className="text-sm font-bold text-orange-600">ติดต่อสอบถาม</div>
+                          ) : (
+                            <>
+                              <div className="text-sm font-bold text-[color:var(--brand-navy)]">{priceFmt.format(it.price * it.qty)}</div>
+                              <div className="text-xs text-slate-500">{priceFmt.format(it.price)} / ชิ้น</div>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              );})}
+              )}
             </div>
 
             <aside className="h-fit rounded-lg border bg-white p-5">
