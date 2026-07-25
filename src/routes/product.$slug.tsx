@@ -265,7 +265,7 @@ function ProductDetail() {
           </div>
         ) : (
           <div className="grid gap-8 rounded-lg border bg-white p-4 md:p-6 lg:grid-cols-2">
-            <div>
+            <div className="flex flex-col gap-3">
               <div className="lg:sticky lg:top-4 grid w-full place-items-center rounded-lg bg-slate-50 p-4" style={{ maxHeight: "420px" }}>
                 <ProductImage
                   src={p.image_url}
@@ -274,15 +274,9 @@ function ProductDetail() {
                   iconClassName="h-20 w-20 text-slate-300"
                 />
               </div>
-            </div>
 
-            <div className="flex flex-col">
-              {p.brand && <div className="mb-1 inline-flex w-fit rounded bg-slate-100 px-2 py-0.5 text-xs font-bold text-slate-700">{p.brand}</div>}
-              <h1 className="text-2xl font-bold text-slate-900 md:text-3xl">{p.name ?? decodedSku}</h1>
-              {showSku && <div className="mt-1 text-sm text-slate-500">SKU / Model: {decodedSku}</div>}
-
-              <div className="flex items-center gap-2 py-2 border-y border-slate-100 my-2">
-                <span className="text-xs text-slate-400">แชร์:</span>
+              <div className="flex items-center justify-center gap-2 rounded-lg border bg-white p-2.5">
+                <span className="text-xs text-slate-400 mr-1">แชร์:</span>
                 <button
                   type="button"
                   onClick={() => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, "_blank", "width=600,height=400")}
@@ -348,10 +342,12 @@ function ProductDetail() {
                   </button>
                 </div>
               </div>
+            </div>
 
-
-
-
+            <div className="flex flex-col">
+              {p.brand && <div className="mb-1 inline-flex w-fit rounded bg-slate-100 px-2 py-0.5 text-xs font-bold text-slate-700">{p.brand}</div>}
+              <h1 className="text-2xl font-bold text-slate-900 md:text-3xl">{p.name ?? decodedSku}</h1>
+              {showSku && <div className="mt-1 text-sm text-slate-500">SKU / Model: {decodedSku}</div>}
 
               {(() => {
                 const pr = computeProductPrice(p as PricingProduct, tier, qty);
