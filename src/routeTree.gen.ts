@@ -39,6 +39,7 @@ import { Route as AuthenticatedMyAccountIndexRouteImport } from './routes/_authe
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedMyAccountProfileRouteImport } from './routes/_authenticated/my-account.profile'
 import { Route as AuthenticatedMyAccountOrdersRouteImport } from './routes/_authenticated/my-account.orders'
+import { Route as AuthenticatedMyAccountCreditRouteImport } from './routes/_authenticated/my-account.credit'
 import { Route as AuthenticatedMyAccountCompanyRouteImport } from './routes/_authenticated/my-account.company'
 import { Route as AuthenticatedMyAccountAddressesRouteImport } from './routes/_authenticated/my-account.addresses'
 import { Route as AuthenticatedAdminSyncRouteImport } from './routes/_authenticated/admin.sync'
@@ -209,6 +210,12 @@ const AuthenticatedMyAccountOrdersRoute =
     path: '/orders',
     getParentRoute: () => AuthenticatedMyAccountRoute,
   } as any)
+const AuthenticatedMyAccountCreditRoute =
+  AuthenticatedMyAccountCreditRouteImport.update({
+    id: '/credit',
+    path: '/credit',
+    getParentRoute: () => AuthenticatedMyAccountRoute,
+  } as any)
 const AuthenticatedMyAccountCompanyRoute =
   AuthenticatedMyAccountCompanyRouteImport.update({
     id: '/company',
@@ -342,6 +349,7 @@ export interface FileRoutesByFullPath {
   '/admin/sync': typeof AuthenticatedAdminSyncRoute
   '/my-account/addresses': typeof AuthenticatedMyAccountAddressesRoute
   '/my-account/company': typeof AuthenticatedMyAccountCompanyRoute
+  '/my-account/credit': typeof AuthenticatedMyAccountCreditRoute
   '/my-account/orders': typeof AuthenticatedMyAccountOrdersRoute
   '/my-account/profile': typeof AuthenticatedMyAccountProfileRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
@@ -387,6 +395,7 @@ export interface FileRoutesByTo {
   '/admin/sync': typeof AuthenticatedAdminSyncRoute
   '/my-account/addresses': typeof AuthenticatedMyAccountAddressesRoute
   '/my-account/company': typeof AuthenticatedMyAccountCompanyRoute
+  '/my-account/credit': typeof AuthenticatedMyAccountCreditRoute
   '/my-account/orders': typeof AuthenticatedMyAccountOrdersRoute
   '/my-account/profile': typeof AuthenticatedMyAccountProfileRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
@@ -436,6 +445,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/sync': typeof AuthenticatedAdminSyncRoute
   '/_authenticated/my-account/addresses': typeof AuthenticatedMyAccountAddressesRoute
   '/_authenticated/my-account/company': typeof AuthenticatedMyAccountCompanyRoute
+  '/_authenticated/my-account/credit': typeof AuthenticatedMyAccountCreditRoute
   '/_authenticated/my-account/orders': typeof AuthenticatedMyAccountOrdersRoute
   '/_authenticated/my-account/profile': typeof AuthenticatedMyAccountProfileRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
@@ -485,6 +495,7 @@ export interface FileRouteTypes {
     | '/admin/sync'
     | '/my-account/addresses'
     | '/my-account/company'
+    | '/my-account/credit'
     | '/my-account/orders'
     | '/my-account/profile'
     | '/admin/'
@@ -530,6 +541,7 @@ export interface FileRouteTypes {
     | '/admin/sync'
     | '/my-account/addresses'
     | '/my-account/company'
+    | '/my-account/credit'
     | '/my-account/orders'
     | '/my-account/profile'
     | '/admin'
@@ -578,6 +590,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/sync'
     | '/_authenticated/my-account/addresses'
     | '/_authenticated/my-account/company'
+    | '/_authenticated/my-account/credit'
     | '/_authenticated/my-account/orders'
     | '/_authenticated/my-account/profile'
     | '/_authenticated/admin/'
@@ -825,6 +838,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMyAccountOrdersRouteImport
       parentRoute: typeof AuthenticatedMyAccountRoute
     }
+    '/_authenticated/my-account/credit': {
+      id: '/_authenticated/my-account/credit'
+      path: '/credit'
+      fullPath: '/my-account/credit'
+      preLoaderRoute: typeof AuthenticatedMyAccountCreditRouteImport
+      parentRoute: typeof AuthenticatedMyAccountRoute
+    }
     '/_authenticated/my-account/company': {
       id: '/_authenticated/my-account/company'
       path: '/company'
@@ -1020,6 +1040,7 @@ const AuthenticatedAdminRouteWithChildren =
 interface AuthenticatedMyAccountRouteChildren {
   AuthenticatedMyAccountAddressesRoute: typeof AuthenticatedMyAccountAddressesRoute
   AuthenticatedMyAccountCompanyRoute: typeof AuthenticatedMyAccountCompanyRoute
+  AuthenticatedMyAccountCreditRoute: typeof AuthenticatedMyAccountCreditRoute
   AuthenticatedMyAccountOrdersRoute: typeof AuthenticatedMyAccountOrdersRoute
   AuthenticatedMyAccountProfileRoute: typeof AuthenticatedMyAccountProfileRoute
   AuthenticatedMyAccountIndexRoute: typeof AuthenticatedMyAccountIndexRoute
@@ -1029,6 +1050,7 @@ const AuthenticatedMyAccountRouteChildren: AuthenticatedMyAccountRouteChildren =
   {
     AuthenticatedMyAccountAddressesRoute: AuthenticatedMyAccountAddressesRoute,
     AuthenticatedMyAccountCompanyRoute: AuthenticatedMyAccountCompanyRoute,
+    AuthenticatedMyAccountCreditRoute: AuthenticatedMyAccountCreditRoute,
     AuthenticatedMyAccountOrdersRoute: AuthenticatedMyAccountOrdersRoute,
     AuthenticatedMyAccountProfileRoute: AuthenticatedMyAccountProfileRoute,
     AuthenticatedMyAccountIndexRoute: AuthenticatedMyAccountIndexRoute,
