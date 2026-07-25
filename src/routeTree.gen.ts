@@ -18,6 +18,7 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PcBuilderRouteImport } from './routes/pc-builder'
 import { Route as PaymentMethodsRouteImport } from './routes/payment-methods'
 import { Route as HowToOrderRouteImport } from './routes/how-to-order'
+import { Route as CorporateRouteImport } from './routes/corporate'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CartRouteImport } from './routes/cart'
@@ -102,6 +103,11 @@ const PaymentMethodsRoute = PaymentMethodsRouteImport.update({
 const HowToOrderRoute = HowToOrderRouteImport.update({
   id: '/how-to-order',
   path: '/how-to-order',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CorporateRoute = CorporateRouteImport.update({
+  id: '/corporate',
+  path: '/corporate',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -333,6 +339,7 @@ export interface FileRoutesByFullPath {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
+  '/corporate': typeof CorporateRoute
   '/how-to-order': typeof HowToOrderRoute
   '/payment-methods': typeof PaymentMethodsRoute
   '/pc-builder': typeof PcBuilderRoute
@@ -383,6 +390,7 @@ export interface FileRoutesByTo {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
+  '/corporate': typeof CorporateRoute
   '/how-to-order': typeof HowToOrderRoute
   '/payment-methods': typeof PaymentMethodsRoute
   '/pc-builder': typeof PcBuilderRoute
@@ -433,6 +441,7 @@ export interface FileRoutesById {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
+  '/corporate': typeof CorporateRoute
   '/how-to-order': typeof HowToOrderRoute
   '/payment-methods': typeof PaymentMethodsRoute
   '/pc-builder': typeof PcBuilderRoute
@@ -485,6 +494,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/contact'
+    | '/corporate'
     | '/how-to-order'
     | '/payment-methods'
     | '/pc-builder'
@@ -535,6 +545,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/contact'
+    | '/corporate'
     | '/how-to-order'
     | '/payment-methods'
     | '/pc-builder'
@@ -584,6 +595,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/contact'
+    | '/corporate'
     | '/how-to-order'
     | '/payment-methods'
     | '/pc-builder'
@@ -636,6 +648,7 @@ export interface RootRouteChildren {
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
   ContactRoute: typeof ContactRoute
+  CorporateRoute: typeof CorporateRoute
   HowToOrderRoute: typeof HowToOrderRoute
   PaymentMethodsRoute: typeof PaymentMethodsRoute
   PcBuilderRoute: typeof PcBuilderRoute
@@ -715,6 +728,13 @@ declare module '@tanstack/react-router' {
       path: '/how-to-order'
       fullPath: '/how-to-order'
       preLoaderRoute: typeof HowToOrderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/corporate': {
+      id: '/corporate'
+      path: '/corporate'
+      fullPath: '/corporate'
+      preLoaderRoute: typeof CorporateRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -1140,6 +1160,7 @@ const rootRouteChildren: RootRouteChildren = {
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
   ContactRoute: ContactRoute,
+  CorporateRoute: CorporateRoute,
   HowToOrderRoute: HowToOrderRoute,
   PaymentMethodsRoute: PaymentMethodsRoute,
   PcBuilderRoute: PcBuilderRoute,
