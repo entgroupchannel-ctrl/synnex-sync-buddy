@@ -191,6 +191,7 @@ export const CATEGORIES = [
   "Monitor",
   "Printer",
   "PC",
+  "UPS",
   "Computer Set",
   "Components",
   "Software",

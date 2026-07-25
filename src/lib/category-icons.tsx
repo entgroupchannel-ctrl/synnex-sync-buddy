@@ -36,6 +36,7 @@ export const CATEGORY_ICONS: Record<string, ReactNode> = {
   Monitor: <Monitor className={ic} />,
   Printer: <Printer className={ic} />,
   PC: <Computer className={ic} />,
+  UPS: <Zap className={ic} />,
   "Computer Set": <Server className={ic} />,
   Components: <Cpu className={ic} />,
   Software: <Package className={ic} />,
