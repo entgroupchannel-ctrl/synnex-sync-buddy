@@ -21,7 +21,7 @@ import { StockBadge } from "@/components/stock-badge";
 
 import { displayPrice, getSellingPrice, priceFmt, useCart, useCustomerTier, type PricingProduct } from "@/lib/cart";
 import { B2BBadgeLarge, MemberBadge, DiscountBadgeRow } from "@/components/discount-badge";
-import { PriceOrQuote, isQuoteOnly } from "@/components/QuoteRequest";
+import { QuoteRequestButton, isQuoteOnly } from "@/components/QuoteRequest";
 import { computeProductPrice, useProductPrice } from "@/hooks/useProductPrice";
 import { triggerAuthPrompt, useSupabaseUser } from "@/lib/auth-sheet";
 import { usePurchaseHistoryForSku } from "@/lib/reorder";
@@ -471,8 +471,16 @@ function ProductDetail() {
                       <StockBadge stockQty={(p as { stock_qty?: number | null }).stock_qty} fulfillmentType={(p as { fulfillment_type?: string | null }).fulfillment_type} stockStatus={(p as { stock_status?: string | null }).stock_status} distributor={(p as { distributor?: string | null }).distributor} />
                     </div>
                     {isQuoteOnly(p.selling_price as number | null) ? (
-                      <div className="mt-1">
-                        <PriceOrQuote product={{ id: String(p.id), sku: (p.sku as string) ?? "", name: (p.name as string) ?? (p.sku as string) ?? "", selling_price: (p.selling_price as number | null) ?? 0 }} />
+                      <div className="mt-1 space-y-3">
+                        <div className="text-2xl font-bold text-slate-700">ราคา: กรุณาติดต่อสอบถาม</div>
+                        <QuoteRequestButton
+                          product={{
+                            id: String(p.id),
+                            sku: (p.sku as string) ?? "",
+                            name: (p.name as string) ?? (p.sku as string) ?? "",
+                            selling_price: (p.selling_price as number | null) ?? 0,
+                          }}
+                        />
                       </div>
                     ) : (
                       <div className="mt-1 flex flex-wrap items-baseline gap-3">
@@ -556,7 +564,7 @@ function ProductDetail() {
 
 
 
-              {getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier) != null && !!p.price_approved ? (
+              {getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier) != null && !!p.price_approved && !isQuoteOnly(p.selling_price as number | null) ? (
                 <>
                   <div className="mt-6">
                     <div className="mb-2 text-sm text-slate-600">จำนวน</div>
