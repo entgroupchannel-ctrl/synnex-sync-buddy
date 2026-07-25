@@ -274,7 +274,14 @@ function ProductDetail() {
                   iconClassName="h-20 w-20 text-slate-300"
                 />
               </div>
-              <div className="mt-3 flex items-center justify-center gap-2 rounded-lg border bg-white p-2">
+            </div>
+
+            <div className="flex flex-col">
+              {p.brand && <div className="mb-1 inline-flex w-fit rounded bg-slate-100 px-2 py-0.5 text-xs font-bold text-slate-700">{p.brand}</div>}
+              <h1 className="text-2xl font-bold text-slate-900 md:text-3xl">{p.name ?? decodedSku}</h1>
+              {showSku && <div className="mt-1 text-sm text-slate-500">SKU / Model: {decodedSku}</div>}
+
+              <div className="flex items-center gap-2 py-2 border-y border-slate-100 my-2">
                 <span className="text-xs text-slate-400">แชร์:</span>
                 <button
                   type="button"
@@ -317,18 +324,6 @@ function ProductDetail() {
                 >
                   {copied ? <Check className="h-4 w-4 text-emerald-600" /> : <LinkIcon className="h-4 w-4 text-slate-600" />}
                 </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    const added = toggleWishlist(p.id);
-                    setWishlisted(added);
-                    toast.success(added ? "❤️ บันทึกไว้ดูทีหลังแล้ว" : "นำออกจากรายการแล้ว");
-                  }}
-                  className="flex h-8 items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 hover:bg-slate-50"
-                >
-                  <Heart className={`h-4 w-4 transition-colors ${wishlisted ? "fill-red-500 text-red-500" : "text-slate-400 hover:text-red-400"}`} />
-                  <span className="text-xs">{wishlisted ? "บันทึกแล้ว" : "บันทึก"}</span>
-                </button>
                 <ProductQrDialog url={typeof window !== "undefined" ? window.location.href : `https://shop.entgroup.co.th/product/${slug}`} productName={p.name ?? ""}>
                   <button
                     type="button"
@@ -338,13 +333,22 @@ function ProductDetail() {
                     <QrCode className="h-4 w-4 text-slate-600" />
                   </button>
                 </ProductQrDialog>
+                <div className="ml-auto">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const added = toggleWishlist(p.id);
+                      setWishlisted(added);
+                      toast.success(added ? "❤️ บันทึกไว้ดูทีหลังแล้ว" : "นำออกจากรายการแล้ว");
+                    }}
+                    className="flex h-8 items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 hover:bg-slate-50"
+                  >
+                    <Heart className={`h-4 w-4 transition-colors ${wishlisted ? "fill-red-500 text-red-500" : "text-slate-400 hover:text-red-400"}`} />
+                    <span className="text-xs">{wishlisted ? "บันทึกแล้ว" : "บันทึก"}</span>
+                  </button>
+                </div>
               </div>
-            </div>
 
-            <div className="flex flex-col">
-              {p.brand && <div className="mb-1 inline-flex w-fit rounded bg-slate-100 px-2 py-0.5 text-xs font-bold text-slate-700">{p.brand}</div>}
-              <h1 className="text-2xl font-bold text-slate-900 md:text-3xl">{p.name ?? decodedSku}</h1>
-              {showSku && <div className="mt-1 text-sm text-slate-500">SKU / Model: {decodedSku}</div>}
 
 
 
