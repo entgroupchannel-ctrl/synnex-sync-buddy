@@ -195,6 +195,7 @@ export const CATEGORIES = [
   "Computer Set",
   "Components",
   "RAM",
+  "Edge AI Box",
   "Software",
   "Accessories",
   "Network",
