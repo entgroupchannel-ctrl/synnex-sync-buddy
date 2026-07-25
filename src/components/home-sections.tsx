@@ -843,12 +843,21 @@ export function TrustAndB2BBar() {
           })}
           <Link
             to="/corporate"
-            className="flex flex-col justify-center gap-1.5 rounded-lg bg-[color:var(--brand-navy)] p-4 text-white transition hover:bg-[color:var(--brand-navy-2)]"
+            className="flex items-center gap-3 rounded-lg bg-[color:var(--brand-navy)] p-4 transition hover:bg-[color:var(--brand-navy-2)]"
           >
-            <div className="text-sm font-bold">🏢 ลูกค้าองค์กร / B2B</div>
-            <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] text-white/80">
-              <Link to="/credit-application" className="underline hover:text-white">วงเงินเครดิต B2B</Link>
-              <Link to="/pc-builder" className="underline hover:text-white">Config PC</Link>
+            <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white/15 text-white">
+              <Building2 className="h-5 w-5" />
+            </div>
+            <div className="min-w-0">
+              <div className="truncate text-sm font-bold text-white">ลูกค้าองค์กร / B2B</div>
+              <div className="mt-0.5 flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] text-white/75">
+                <Link to="/credit-application" className="inline-flex items-center gap-1 hover:text-white hover:underline">
+                  <CreditCard className="h-3 w-3" /> วงเงินเครดิต B2B
+                </Link>
+                <Link to="/pc-builder" className="inline-flex items-center gap-1 hover:text-white hover:underline">
+                  <Wrench className="h-3 w-3" /> Config PC
+                </Link>
+              </div>
             </div>
           </Link>
         </div>
