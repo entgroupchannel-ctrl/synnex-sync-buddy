@@ -48,6 +48,7 @@ import { IndustrialPromoBanner } from "@/components/industrial-promo-banner";
 
 import { FrequentlyBought } from "@/components/frequently-bought";
 import { BrandLogo } from "@/components/brand-logo";
+import { useVolumeRules, hasVolumeDiscount } from "@/lib/volume-discount";
 import entLogo from "@/assets/entgroup-logo.jpg.asset.json";
 
 const searchSchema = z.object({
