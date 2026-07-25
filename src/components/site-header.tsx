@@ -327,7 +327,7 @@ export function SiteHeader() {
         </div>
 
         <nav className="hidden border-t border-white/10 bg-[color:var(--brand-navy-2)] lg:block">
-          <div className="mx-auto flex max-w-7xl items-center gap-1 overflow-x-auto px-4 no-scrollbar">
+          <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-0 px-4">
             {NAV_CATS.map((c) => {
               const cat = c === "ทั้งหมด" ? "all" : c;
               const active = pathname === "/" && (typeof window !== "undefined") && new URLSearchParams(window.location.search).get("category") === cat;
