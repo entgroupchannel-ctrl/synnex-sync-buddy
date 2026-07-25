@@ -1,7 +1,8 @@
 import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { SiteHeader } from "@/components/site-header";
+import { WorkHeader } from "@/components/work-header";
+import { WorkFooter } from "@/components/work-footer";
 import { User, MapPin, Package, Building2, CreditCard } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/my-account")({
@@ -41,9 +42,9 @@ function MyAccountLayout() {
   ] as const;
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <SiteHeader />
-      <div className="mx-auto max-w-6xl px-4 py-6">
+    <div className="min-h-screen bg-slate-50 flex flex-col">
+      <WorkHeader title="บัญชีของฉัน" />
+      <div className="mx-auto max-w-6xl px-4 py-6 flex-1 w-full">
         <h1 className="mb-6 text-2xl font-black text-[color:var(--brand-navy)]">บัญชีของฉัน</h1>
         <div className="grid gap-6 lg:grid-cols-[240px_1fr]">
           <aside className="h-fit rounded-lg border bg-white p-2">
@@ -65,6 +66,7 @@ function MyAccountLayout() {
           <main><Outlet /></main>
         </div>
       </div>
+      <WorkFooter />
     </div>
   );
 }

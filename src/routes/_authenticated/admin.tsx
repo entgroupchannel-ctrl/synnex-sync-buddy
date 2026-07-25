@@ -33,6 +33,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { WorkFooter } from "@/components/work-footer";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   ssr: false,
@@ -261,6 +262,7 @@ function AdminLayout() {
         <main className="flex-1 min-w-0">
           <Outlet />
         </main>
+        <WorkFooter />
       </div>
     </div>
   );
