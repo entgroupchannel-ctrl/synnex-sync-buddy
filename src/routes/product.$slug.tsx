@@ -21,6 +21,7 @@ import { StockBadge } from "@/components/stock-badge";
 
 import { displayPrice, getSellingPrice, priceFmt, useCart, useCustomerTier, type PricingProduct } from "@/lib/cart";
 import { B2BBadgeLarge, MemberBadge, DiscountBadgeRow } from "@/components/discount-badge";
+import { PriceOrQuote, isQuoteOnly } from "@/components/QuoteRequest";
 import { computeProductPrice, useProductPrice } from "@/hooks/useProductPrice";
 import { triggerAuthPrompt, useSupabaseUser } from "@/lib/auth-sheet";
 import { usePurchaseHistoryForSku } from "@/lib/reorder";
@@ -469,21 +470,27 @@ function ProductDetail() {
                       </Badge>
                       <StockBadge stockQty={(p as { stock_qty?: number | null }).stock_qty} fulfillmentType={(p as { fulfillment_type?: string | null }).fulfillment_type} stockStatus={(p as { stock_status?: string | null }).stock_status} distributor={(p as { distributor?: string | null }).distributor} />
                     </div>
-                    <div className="mt-1 flex flex-wrap items-baseline gap-3">
-                      <div className="text-4xl font-black text-[color:var(--brand-orange)]">
-                        ฿{pr.displayPrice.toLocaleString("th-TH")}
+                    {isQuoteOnly(p.selling_price as number | null) ? (
+                      <div className="mt-1">
+                        <PriceOrQuote product={{ id: String(p.id), sku: (p.sku as string) ?? "", name: (p.name as string) ?? (p.sku as string) ?? "", selling_price: (p.selling_price as number | null) ?? 0 }} />
                       </div>
-                      {pr.savings > 0 && (
-                        <>
-                          <span className="text-lg text-slate-400 line-through">
-                            ฿{pr.originalPrice.toLocaleString("th-TH")}
-                          </span>
-                          <span className="rounded-md bg-red-100 px-2 py-0.5 text-xs font-bold text-red-700">
-                            ประหยัด {pr.savingsPct}%
-                          </span>
-                        </>
-                      )}
-                    </div>
+                    ) : (
+                      <div className="mt-1 flex flex-wrap items-baseline gap-3">
+                        <div className="text-4xl font-black text-[color:var(--brand-orange)]">
+                          ฿{pr.displayPrice.toLocaleString("th-TH")}
+                        </div>
+                        {pr.savings > 0 && (
+                          <>
+                            <span className="text-lg text-slate-400 line-through">
+                              ฿{pr.originalPrice.toLocaleString("th-TH")}
+                            </span>
+                            <span className="rounded-md bg-red-100 px-2 py-0.5 text-xs font-bold text-red-700">
+                              ประหยัด {pr.savingsPct}%
+                            </span>
+                          </>
+                        )}
+                      </div>
+                    )}
                     <div className="mt-2 flex flex-wrap gap-2">
                       <B2BBadgeLarge
                         sellingPrice={p.selling_price as number | null}
@@ -560,25 +567,27 @@ function ProductDetail() {
                     </div>
                   </div>
 
-                  <div className="mt-5 grid gap-2 sm:grid-cols-2">
-                    <Button disabled={!available} onClick={() => addToCart()} className="bg-[color:var(--brand-navy)] hover:bg-[color:var(--brand-navy-2)]" size="lg">
-                      <ShoppingCart className="mr-2 h-5 w-5" /> {byOrder ? "สั่งจอง" : "ใส่ตะกร้า"}
-                    </Button>
-                    {byOrder ? (
-                      <Button asChild variant="outline" size="lg" className="border-blue-300 text-blue-800 hover:bg-blue-50">
-                        <a href="mailto:sales@entgroup.co.th?subject=ขอใบเสนอราคา">📄 ขอใบเสนอราคา</a>
+                  {!isQuoteOnly(p.selling_price as number | null) && (
+                    <div className="mt-5 grid gap-2 sm:grid-cols-2">
+                      <Button disabled={!available} onClick={() => addToCart()} className="bg-[color:var(--brand-navy)] hover:bg-[color:var(--brand-navy-2)]" size="lg">
+                        <ShoppingCart className="mr-2 h-5 w-5" /> {byOrder ? "สั่งจอง" : "ใส่ตะกร้า"}
                       </Button>
-                    ) : (
-                      <Button
-                        disabled={!available}
-                        onClick={() => { addToCart(); navigate({ to: "/checkout" }); }}
-                        className="bg-[color:var(--brand-orange)] hover:bg-[color:var(--brand-orange-dark)]"
-                        size="lg"
-                      >
-                        <Zap className="mr-2 h-5 w-5" /> สั่งซื้อทันที
-                      </Button>
-                    )}
-                  </div>
+                      {byOrder ? (
+                        <Button asChild variant="outline" size="lg" className="border-blue-300 text-blue-800 hover:bg-blue-50">
+                          <a href="mailto:sales@entgroup.co.th?subject=ขอใบเสนอราคา">📄 ขอใบเสนอราคา</a>
+                        </Button>
+                      ) : (
+                        <Button
+                          disabled={!available}
+                          onClick={() => { addToCart(); navigate({ to: "/checkout" }); }}
+                          className="bg-[color:var(--brand-orange)] hover:bg-[color:var(--brand-orange-dark)]"
+                          size="lg"
+                        >
+                          <Zap className="mr-2 h-5 w-5" /> สั่งซื้อทันที
+                        </Button>
+                      )}
+                    </div>
+                  )}
 
                   {/* Contact section */}
                   <div className="mt-4 rounded-2xl border border-green-100 bg-green-50 p-4">

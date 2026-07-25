@@ -22,6 +22,7 @@ import { DeliveryHint } from "@/components/delivery-info";
 import { StockBadge } from "@/components/stock-badge";
 import { WarrantyBadge } from "@/components/warranty-badge";
 import { DiscountBadgeRow } from "@/components/discount-badge";
+import { PriceOrQuote, isQuoteOnly } from "@/components/QuoteRequest";
 import { SpecTagsCompact } from "@/components/spec-tags";
 import { hasSpecTags } from "@/lib/parse-spec";
 import { CATEGORY_ICONS, SMART_LIFE_SUBCATEGORY_ICONS } from "@/lib/category-icons";
@@ -1086,23 +1087,27 @@ function HomePage() {
                     </div>
                     <div className="flex w-40 shrink-0 flex-col items-end justify-between gap-1">
                       {priced ? (
-                        <>
-                          <DiscountBadgeRow
-                            sellingPrice={p.selling_price}
-                            b2bPrice={p.b2b_price}
-                            memberPrice={p.member_price}
-                            className="justify-end"
-                          />
-                          <div className="text-xl font-black text-[color:var(--brand-orange)]">
-                            {displayPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier)}
-                          </div>
-                        </>
+                        isQuoteOnly(p.selling_price) ? (
+                          <PriceOrQuote product={{ id: String(p.id), sku: p.sku ?? "", name: p.name ?? p.sku ?? "", selling_price: p.selling_price ?? 0 }} />
+                        ) : (
+                          <>
+                            <DiscountBadgeRow
+                              sellingPrice={p.selling_price}
+                              b2bPrice={p.b2b_price}
+                              memberPrice={p.member_price}
+                              className="justify-end"
+                            />
+                            <div className="text-xl font-black text-[color:var(--brand-orange)]">
+                              {displayPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier)}
+                            </div>
+                          </>
+                        )
                       ) : (
                         <span className="text-sm text-gray-400">ติดต่อสอบถาม</span>
                       )}
                       {byOrder && <div className="text-[11px] text-blue-700">⏱ รับสินค้าภายใน 30 วัน</div>}
                       {priced && !byOrder && <DeliveryHint category={p.category} name={p.name} price={getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier)} />}
-                      {priced ? (
+                      {!isQuoteOnly(p.selling_price) && (priced ? (
                         available ? (
                           <Button onClick={() => addToCart(p as Record<string, unknown>)} className="w-full bg-[color:var(--brand-navy)] hover:bg-[color:var(--brand-navy-2)]" size="sm">
                             <ShoppingCart className="mr-1.5 h-4 w-4" /> {byOrder ? "สั่งจอง" : "ใส่ตะกร้า"}
@@ -1121,7 +1126,7 @@ function HomePage() {
                         <Button asChild className="w-full bg-[color:var(--brand-green)] hover:opacity-90" size="sm">
                           <a href="tel:020456104">📞 สอบถามราคา</a>
                         </Button>
-                      )}
+                      ))}
                     </div>
                   </div>
                 );
@@ -1163,17 +1168,21 @@ function HomePage() {
                       {hasSpecTags(p.category) && <SpecTagsCompact description={p.description} />}
                       <div className="mt-auto pt-1">
                         {priced ? (
-                          <>
-                            <DiscountBadgeRow
-                              sellingPrice={p.selling_price}
-                              b2bPrice={p.b2b_price}
-                              memberPrice={p.member_price}
-                              className="mb-0.5"
-                            />
-                            <div className="text-xl font-black text-[color:var(--brand-orange)]">
-                              {displayPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier)}
-                            </div>
-                          </>
+                          isQuoteOnly(p.selling_price) ? (
+                            <PriceOrQuote product={{ id: String(p.id), sku: p.sku ?? "", name: p.name ?? p.sku ?? "", selling_price: p.selling_price ?? 0 }} />
+                          ) : (
+                            <>
+                              <DiscountBadgeRow
+                                sellingPrice={p.selling_price}
+                                b2bPrice={p.b2b_price}
+                                memberPrice={p.member_price}
+                                className="mb-0.5"
+                              />
+                              <div className="text-xl font-black text-[color:var(--brand-orange)]">
+                                {displayPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier)}
+                              </div>
+                            </>
+                          )
                         ) : (
                           <div className="text-sm text-gray-400">ติดต่อสอบถาม</div>
                         )}
@@ -1193,7 +1202,7 @@ function HomePage() {
                         )}
 
                       </div>
-                      {priced ? (
+                      {!isQuoteOnly(p.selling_price) && (priced ? (
                         available ? (
                           <Button
                             onClick={() => addToCart(p as Record<string, unknown>)}
@@ -1216,7 +1225,7 @@ function HomePage() {
                         <Button asChild className="mt-2 w-full bg-[color:var(--brand-green)] font-semibold hover:opacity-90" size="sm">
                           <a href="tel:020456104">📞 สอบถามราคา</a>
                         </Button>
-                      )}
+                      ))}
                     </div>
                   </div>
                 );
