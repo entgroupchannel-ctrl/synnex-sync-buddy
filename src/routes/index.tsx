@@ -539,9 +539,6 @@ function HomePage() {
         </div>
       </div>
 
-      <div>
-        <div className="mb-2 text-sm font-bold text-[color:var(--brand-navy)]">แบรนด์</div>
-        <div className="max-h-56 space-y-1.5 overflow-y-auto pr-1">
       {isSmartLife && (
         <div>
           <h3 className="mb-3 text-sm font-bold text-[color:var(--brand-navy)]">ประเภทสินค้า</h3>
