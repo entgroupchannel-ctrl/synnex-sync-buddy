@@ -1,5 +1,5 @@
 /**
- * src/routes/_authenticated/admin.purchase-orders.$poId.tsx
+ * src/routes/_authenticated/admin.purchase-orders_.$poId.tsx
  * หน้ารายละเอียด PO ใบเดียว — ดูรายการ, กดสร้าง/ดาวน์โหลด PDF ส่งให้ distributor
  */
 import { createFileRoute, Link } from "@tanstack/react-router";
