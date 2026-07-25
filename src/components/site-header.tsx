@@ -1,5 +1,6 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { ShoppingCart, Search, Menu, Home, Grid3x3, User, X, LogOut, Package, MapPin, Building2, Heart } from "lucide-react";
+import { ShoppingCart, Search, Menu, User, X, LogOut, Package, MapPin, Building2, Heart, LayoutGrid, Wrench, CreditCard, Globe } from "lucide-react";
+import { CATEGORY_ICONS } from "@/lib/category-icons";
 import { useWishlistCount } from "@/lib/wishlist";
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -138,7 +139,17 @@ export function SiteHeader() {
       <div className="bg-slate-900 text-white/80 text-xs">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-2 px-4 py-1.5">
           <div>ส่วนหนึ่งของ <span className="font-semibold text-white">ENT Group Co., Ltd.</span> · โทร <a href="tel:020456104" className="hover:text-[color:var(--brand-green)]">02-045-6104</a></div>
-          <a href="https://entgroup.co.th" target="_blank" rel="noopener noreferrer" className="hover:text-[color:var(--brand-green)]">🔗 entgroup.co.th</a>
+          <div className="hidden lg:flex items-center gap-4">
+            <Link to="/credit-application" className="flex items-center gap-1 text-xs text-blue-300 hover:text-blue-200">
+              <CreditCard className="h-3 w-3" />
+              วงเงินเครดิต B2B
+            </Link>
+            <a href="https://entgroup.co.th" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs text-slate-400 hover:text-white">
+              <Globe className="h-3 w-3" />
+              entgroup.co.th
+            </a>
+          </div>
+          <a href="https://entgroup.co.th" target="_blank" rel="noopener noreferrer" className="hover:text-[color:var(--brand-green)] lg:hidden">🔗 entgroup.co.th</a>
         </div>
       </div>
       <header className="sticky top-0 z-40 bg-[color:var(--brand-navy)] text-white shadow-lg">
