@@ -309,6 +309,10 @@ function useAddToCart() {
   const { user } = useSupabaseUser();
   return (p: ProductRow) => {
     const name = p.name ?? p.sku;
+    if (Number(p.selling_price ?? 0) > 70000) {
+      toast.error("สินค้านี้ราคาเกิน ฿70,000 กรุณาขอใบเสนอราคาที่หน้ารายละเอียดสินค้า");
+      return;
+    }
     add({
       id: p.id, sku: p.sku, slug: p.slug, name,
       price: getSellingPrice(p, tier) ?? 0,
