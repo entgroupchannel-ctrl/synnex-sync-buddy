@@ -18,6 +18,7 @@ import {
   Wind,
   Zap,
   Shield,
+  Volume2,
 } from "lucide-react";
 
 // lucide-react has no Apple glyph — use the official-shaped SVG.
@@ -44,6 +45,7 @@ export const CATEGORY_ICONS: Record<string, ReactNode> = {
   "Smart Phone & Tablet": <Smartphone className={ic} />,
   "Solar & Energy": <Sun className={ic} />,
   "Smart Life": <Home className={ic} />,
+  "Speaker & Audio": <Volume2 className={ic} />,
 };
 
 export function getCategoryIcon(name: string): ReactNode {

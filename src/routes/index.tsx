@@ -44,6 +44,7 @@ import {
   ComponentsShowcase,
   SolarEnergy,
   SmartLife,
+  SpeakerAudio,
   CorporateITSolutions,
 } from "@/components/home-sections";
 import { AppleFeatured } from "@/components/apple-featured";
@@ -821,6 +822,9 @@ function HomePage() {
 
           {/* Smart Life */}
           <SmartLife />
+
+          {/* Speaker & Audio */}
+          <SpeakerAudio />
 
           {/* Corporate IT Solutions — B2B */}
           <CorporateITSolutions />
