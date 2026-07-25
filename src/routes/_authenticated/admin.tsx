@@ -96,6 +96,7 @@ const NAV: NavGroup[] = [
       { label: "ลูกค้าทั้งหมด", to: "/admin/customers", icon: Users },
       { label: "รอ Approve B2B", href: "/admin/customers?status=pending", icon: UserCheck },
       { label: "คำขอวงเงินเครดิต", to: "/admin/credit-applications", icon: CreditCard },
+      { label: "จัดการเครดิต B2B", to: "/admin/credit", icon: CreditCard },
       { label: "Newsletter", to: "/admin/newsletter", icon: Mail },
     ],
   },
