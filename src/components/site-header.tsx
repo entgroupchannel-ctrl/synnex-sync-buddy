@@ -390,7 +390,7 @@ export function SiteHeader() {
                   onClick={() => setMenuOpen(false)}
                   className="block rounded-md px-3 py-2 text-sm hover:bg-slate-100"
                 >
-                  {c === "ทั้งหมด" ? t("nav.all") : c}
+                  {c === "ทั้งหมด" ? t("nav.all") : c === "Smart Life" ? "🏠 Smart Life" : c}
                 </Link>
               ))}
             </div>
