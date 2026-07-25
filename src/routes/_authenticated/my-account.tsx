@@ -1,7 +1,8 @@
 import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { SiteHeader } from "@/components/site-header";
+import { WorkHeader } from "@/components/work-header";
+import { WorkFooter } from "@/components/work-footer";
 import { User, MapPin, Package, Building2, CreditCard } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/my-account")({
