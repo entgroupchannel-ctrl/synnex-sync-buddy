@@ -385,17 +385,22 @@ function HomePage() {
 
   const totalPages = Math.max(1, Math.ceil((productsQuery.data?.count ?? 0) / PAGE_SIZE));
 
+  const isSmartLife = search.category === "Smart Life";
+
   const toggleBrand = (b: string) => {
     const set = new Set(selectedBrands);
     if (set.has(b)) set.delete(b); else set.add(b);
     // Selecting/deselecting a brand auto-clears category to prevent 0-result conflicts.
-    update({ brands: [...set].join(","), category: "all" });
+    // Smart Life keeps its category so its sub-filters stay visible.
+    update(isSmartLife ? { brands: [...set].join(",") } : { brands: [...set].join(","), category: "all" });
   };
 
   const setCategory = (c: string) => {
     // Changing category auto-clears brand filter to prevent 0-result conflicts.
-    update({ category: c, brands: "" });
+    // Smart Life defaults to cheapest-first.
+    update(c === "Smart Life" ? { category: c, brands: "", sort: "price-asc" } : { category: c, brands: "" });
   };
+
 
   const clearAllFilters = () => {
     navigate({ to: "/", search: {} as never });
