@@ -79,7 +79,7 @@ const SMART_LIFE_PRICE_PRESETS: { label: string; min: number; max: number }[] = 
   { label: "ต่ำกว่า ฿1,000", min: 0, max: 1000 },
   { label: "฿1,000-5,000", min: 1000, max: 5000 },
   { label: "฿5,000-20,000", min: 5000, max: 20000 },
-  { label: "มากกว่า ฿20,000", min: 20000, max: PRICE_MAX },
+  { label: "มากกว่า ฿20,000", min: 20000, max: 100000 },
 ];
 
 
