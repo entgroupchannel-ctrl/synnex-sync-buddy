@@ -16,6 +16,7 @@ import { CheckoutTrustBox } from "@/components/trust-signals";
 import { ShippingMethodSelector } from "@/components/shipping-method-selector";
 import { getItemWeightKg, priceFmt, useCart } from "@/lib/cart";
 import { useSupabaseUser } from "@/lib/auth-sheet";
+import { bahtFmt, creditIsUsable, dueDateFrom, useCreditAccount } from "@/lib/credit";
 import {
   getWeightBasedShippingFee,
   applyDiscountCode,
