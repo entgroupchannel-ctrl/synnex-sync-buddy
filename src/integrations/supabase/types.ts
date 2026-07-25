@@ -1215,6 +1215,7 @@ export type Database = {
           distributor: string | null
           fulfillment_type: string | null
           id: string
+          image_gallery: Json | null
           image_url: string | null
           markup_applied: number | null
           markup_override: number | null
@@ -1245,6 +1246,7 @@ export type Database = {
           distributor?: string | null
           fulfillment_type?: string | null
           id?: string
+          image_gallery?: Json | null
           image_url?: string | null
           markup_applied?: number | null
           markup_override?: number | null
@@ -1275,6 +1277,7 @@ export type Database = {
           distributor?: string | null
           fulfillment_type?: string | null
           id?: string
+          image_gallery?: Json | null
           image_url?: string | null
           markup_applied?: number | null
           markup_override?: number | null
