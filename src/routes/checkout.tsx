@@ -328,6 +328,42 @@ function CheckoutPage() {
 
       if (oErr || !order) throw oErr ?? new Error("ไม่สามารถบันทึกออเดอร์ได้");
 
+      // บันทึก/อัปเดตที่อยู่จัดส่งอัตโนมัติ ให้ครั้งถัดไป pre-fill ได้เลยไม่ต้องพิมพ์ใหม่
+      // (เฉพาะลูกค้าที่ login แล้ว และไม่ใช่การรับที่สำนักงาน)
+      if (user && !isPickup) {
+        try {
+          const { data: existingDefault } = await supabase
+            .from("user_addresses")
+            .select("id")
+            .eq("user_id", user.id)
+            .eq("is_default", true)
+            .maybeSingle();
+
+          const addressPayload = {
+            recipient: base.data.shipping_name,
+            phone: base.data.shipping_phone,
+            address_line: base.data.shipping_address,
+            district: base.data.shipping_district,
+            province: base.data.shipping_province,
+            postcode: base.data.shipping_postcode,
+          };
+
+          if (existingDefault) {
+            await supabase.from("user_addresses").update(addressPayload).eq("id", existingDefault.id);
+          } else {
+            await supabase.from("user_addresses").insert({
+              ...addressPayload,
+              label: "ที่อยู่ล่าสุด",
+              is_default: true,
+              user_id: user.id,
+            });
+          }
+        } catch (addrErr) {
+          // ไม่ให้การบันทึกที่อยู่ล้มเหลวไปกระทบการสั่งซื้อที่สำเร็จไปแล้ว
+          console.warn("[save-address] ไม่สามารถบันทึกที่อยู่อัตโนมัติได้", addrErr);
+        }
+      }
+
       const itemRows = items.map((it) => ({
         order_id: order.id,
         product_sku: it.sku,
