@@ -1070,6 +1070,7 @@ function HomePage() {
                       <div className="text-[11px] uppercase tracking-wide text-slate-500">{p.brand ?? (p.category || detectCategory(p.name))}</div>
                       <Link to="/product/$slug" params={{ slug }} className="line-clamp-2 text-sm font-semibold hover:text-[color:var(--brand-navy)]">{p.name ?? p.sku}</Link>
                       <WarrantyBadge category={p.category} name={p.name} />
+                      {hasSpecTags(p.category) && <SpecTagsCompact description={p.description} />}
                       {p.description && <div className="mt-1 line-clamp-2 text-xs text-slate-500">{p.description}</div>}
                       <div className="mt-auto flex items-center gap-2 pt-1">
                         <span className={`inline-block h-2 w-2 rounded-full ${ready || byOrder ? "bg-green-500" : "bg-red-500"}`} />
@@ -1153,6 +1154,7 @@ function HomePage() {
                         {p.name ?? p.sku}
                       </Link>
                       <WarrantyBadge category={p.category} name={p.name} />
+                      {hasSpecTags(p.category) && <SpecTagsCompact description={p.description} />}
                       <div className="mt-auto pt-1">
                         {priced ? (
                           <>

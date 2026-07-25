@@ -365,6 +365,9 @@ export function TodaysBestDeals() {
                   </div>
                   <Link to="/product/$slug" params={{ slug }} className="line-clamp-2 text-sm font-semibold hover:text-[color:var(--brand-navy)]">{p.name ?? p.sku}</Link>
                   <WarrantyBadge category={p.category as string | null | undefined} name={p.name as string | null | undefined} />
+                  {hasSpecTags(p.category as string | null | undefined) && (
+                    <SpecTagsCompact description={(p as { description?: string | null }).description} />
+                  )}
                   <div className="flex flex-wrap items-center gap-1">
                     {freeShip && <Badge className="inline-flex items-center gap-1 bg-green-100 text-[10px] text-green-700 hover:bg-green-100"><Truck className="h-3 w-3" /> ฟรีจัดส่ง</Badge>}
                     <StockBadge stockQty={p.stock_qty as number | null | undefined} fulfillmentType={p.fulfillment_type as string | null | undefined} stockStatus={p.stock_status as string | null | undefined} distributor={(p as { distributor?: string | null }).distributor} />
@@ -443,6 +446,9 @@ export function PopularNotebooks() {
                 <div className="flex flex-1 flex-col gap-1 border-t p-3">
                   {p.brand && <div className="text-[10px] uppercase tracking-wide text-slate-500">{p.brand}</div>}
                   <Link to="/product/$slug" params={{ slug }} className="line-clamp-2 min-h-10 text-sm font-medium hover:text-[color:var(--brand-navy)]">{p.name ?? p.sku}</Link>
+                  {hasSpecTags(p.category as string | null | undefined) && (
+                    <SpecTagsCompact description={(p as { description?: string | null }).description} />
+                  )}
                   <div className="mt-auto text-lg font-black text-[color:var(--brand-orange)]">{displayPrice(p, tier)}</div>
                   <UrgencyIndicator index={idx} />
 
@@ -1144,6 +1150,9 @@ function CategoryGridCard({ p }: { p: ProductRow }) {
           {p.name ?? p.sku}
         </Link>
         <WarrantyBadge category={p.category as string | null | undefined} name={p.name as string | null | undefined} />
+        {hasSpecTags(p.category as string | null | undefined) && (
+          <SpecTagsCompact description={(p as { description?: string | null }).description} />
+        )}
         <div className="mt-auto text-lg font-black text-[color:var(--brand-orange)]">
           {displayPrice(p, tier)}
         </div>
