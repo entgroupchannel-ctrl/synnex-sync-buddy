@@ -174,6 +174,10 @@ function OrderConfirm() {
       });
       toast.success("อัปโหลดสำเร็จ ✓ กำลังตรวจสอบสลิปอัตโนมัติ...");
 
+      // แจ้งอีเมลลูกค้าทันที ว่าได้รับสลิปแล้วกำลังตรวจสอบ (fire-and-forget)
+      supabase.functions.invoke("send-slip-received-email", { body: { order_id: order.id } })
+        .catch((e) => console.warn("[send-slip-received-email]", e));
+
       // ตรวจสอบสลิปกับธนาคารจริงทันที (fire-and-forget — ไม่บล็อก UI ลูกค้า)
       supabase.functions.invoke("verify-payment-slip", { body: { order_id: order.id } })
         .then(({ data }) => {
