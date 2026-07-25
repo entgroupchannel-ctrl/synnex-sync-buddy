@@ -1390,8 +1390,9 @@ export function SmartLife() {
       <div className="mx-auto max-w-7xl px-4">
         <div className="mb-6 flex items-end justify-between gap-3">
           <div className="min-w-0">
-            <h2 className="text-xl font-black text-slate-900 md:text-2xl">
-              🏠 Smart Life / สมาร์ทไลฟ์
+            <h2 className="inline-flex items-center gap-2 text-xl font-black text-slate-900 md:text-2xl">
+              <Home className="h-5 w-5 text-green-600" />
+              Smart Life / สมาร์ทไลฟ์
             </h2>
             <p className="mt-1 text-sm font-medium text-slate-500">
               กล้องวงจรปิด · Smart Home · Smartwatch · IoT
@@ -1429,8 +1430,10 @@ export function SmartLife() {
           {q.data!.map((p) => <CategoryGridCard key={p.id} p={p} />)}
         </div>
 
-        <div className="mt-5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-center text-xs font-semibold text-amber-800 sm:text-sm">
-          🏷️ ส่วนลดพิเศษเมื่อซื้อจำนวนมาก | 💼 ราคาพิเศษสำหรับองค์กร ติดต่อ 02-045-6104
+        <div className="mt-5 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-center text-xs font-semibold text-amber-800 sm:text-sm">
+          <span className="inline-flex items-center gap-1"><Tag className="h-4 w-4" /> ส่วนลดพิเศษเมื่อซื้อจำนวนมาก</span>
+          <span className="text-amber-400">|</span>
+          <span className="inline-flex items-center gap-1"><Building2 className="h-4 w-4" /> ราคาพิเศษสำหรับองค์กร ติดต่อ 02-045-6104</span>
         </div>
 
         <div className="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs text-slate-500">
