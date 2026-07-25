@@ -10,6 +10,8 @@ import { ProductQrDialog } from "@/components/product-qr-dialog";
 import { toggleWishlist, isWishlisted } from "@/lib/wishlist";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { SpecTagsFull } from "@/components/spec-tags";
+import { hasSpecTags } from "@/lib/parse-spec";
 import { IndustrialPromoBanner } from "@/components/industrial-promo-banner";
 import { ProductImage } from "@/components/product-image";
 import { DeliveryInfoBox } from "@/components/delivery-info";
@@ -447,6 +449,14 @@ function ProductDetail() {
                   </ul>
                 </div>
               )}
+
+              {hasSpecTags(p.category as string | null | undefined) && (
+                <div className="mt-6">
+                  <SpecTagsFull description={p.description} />
+                </div>
+              )}
+
+
 
               {getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier) != null && !!p.price_approved ? (
                 <>

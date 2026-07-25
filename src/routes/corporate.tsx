@@ -6,6 +6,8 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { ProductImage } from "@/components/product-image";
 import { DiscountBadgeRow } from "@/components/discount-badge";
+import { SpecTagsCompact } from "@/components/spec-tags";
+import { hasSpecTags } from "@/lib/parse-spec";
 
 export const Route = createFileRoute("/corporate")({
   head: () => ({
@@ -97,6 +99,11 @@ function ProductCard({ p }: { p: Row }) {
       <div className="mb-1.5 line-clamp-2 min-h-[28px] text-xs font-medium leading-tight text-slate-700">
         {p.name ?? ""}
       </div>
+      {hasSpecTags((p as { category?: string | null }).category) && (
+        <div className="mb-1.5">
+          <SpecTagsCompact description={(p as { description?: string | null }).description} />
+        </div>
+      )}
       <DiscountBadgeRow
         sellingPrice={p.selling_price}
         b2bPrice={p.b2b_price}
