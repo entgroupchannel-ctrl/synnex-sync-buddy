@@ -132,7 +132,7 @@ function AdminOrdersPage() {
                     })}
                   </div>
                   <div onClick={(e) => e.stopPropagation()}>
-                    <AdminOrderSlipCell orderId={r.id} hasSlip={!!r.payment_slip_url} />
+                    <AdminOrderSlipCell orderId={r.id} slipPath={r.payment_slip_url} />
                   </div>
                   <div className="text-right">
                     <Link to="/admin/orders/$id" params={{ id: r.id }} className="text-sm font-semibold text-[color:var(--brand-green,#10B981)] hover:underline">
