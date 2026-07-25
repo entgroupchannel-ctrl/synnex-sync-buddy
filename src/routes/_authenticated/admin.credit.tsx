@@ -287,15 +287,14 @@ function ApplicationDetail({ app, onClose, onDone }: { app: App | null; onClose:
       });
       if (cErr) throw cErr;
 
-      supabase.functions.invoke("send-credit-approval", {
+      supabase.functions.invoke("send-credit-application", {
         body: {
-          email: app.contact_email,
-          company_name: app.company_name,
+          application_number: app.application_number,
+          decision: "approved",
           credit_limit: approvedAmount,
           payment_terms_days: Number(terms),
-          application_number: app.application_number,
         },
-      }).catch((e) => console.warn("[send-credit-approval]", e));
+      }).catch((e) => console.warn("[credit-approval-email]", e));
 
       toast.success("อนุมัติวงเงินเครดิตสำเร็จ!");
       setConfirmApprove(false);
@@ -317,15 +316,13 @@ function ApplicationDetail({ app, onClose, onDone }: { app: App | null; onClose:
         reviewed_at: new Date().toISOString(),
       }).eq("id", app.id);
       if (error) throw error;
-      supabase.functions.invoke("send-credit-approval", {
+      supabase.functions.invoke("send-credit-application", {
         body: {
-          email: app.contact_email,
-          company_name: app.company_name,
           application_number: app.application_number,
           decision: "rejected",
           rejection_reason: reason,
         },
-      }).catch((e) => console.warn("[send-credit-approval]", e));
+      }).catch((e) => console.warn("[credit-reject-email]", e));
       toast.success("ปฏิเสธคำขอแล้ว");
       setRejecting(false);
       onDone();
