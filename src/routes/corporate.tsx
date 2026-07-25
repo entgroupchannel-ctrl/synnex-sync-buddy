@@ -72,10 +72,10 @@ function ProductCard({ p }: { p: Row }) {
     <Link
       to="/product/$slug"
       params={{ slug }}
-      className="group cursor-pointer rounded-2xl border border-slate-200 bg-white p-3 transition-all duration-200 hover:border-blue-300 hover:shadow-lg"
+      className="group cursor-pointer rounded-2xl border border-slate-100 bg-white p-3 transition-all duration-200 hover:border-blue-200 hover:shadow-md"
     >
       <div
-        className="relative mb-3 w-full overflow-hidden rounded-xl border border-slate-100 bg-slate-50"
+        className="relative mb-3 w-full overflow-hidden rounded-xl border border-slate-100 bg-white"
         style={{ paddingBottom: "75%" }}
       >
         <div className="absolute inset-0 flex items-center justify-center p-2">
@@ -126,7 +126,7 @@ type SectionProps = {
 
 function Section({ icon, title, subtitle, products, loading, viewAllCategory }: SectionProps) {
   return (
-    <section>
+    <section className="bg-white">
       <div className="mb-4 flex items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">
           {icon}
@@ -184,7 +184,7 @@ function CorporatePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-white">
       <SiteHeader />
 
       <div className="bg-slate-900 py-14 text-white">
