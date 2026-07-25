@@ -208,6 +208,22 @@ function CorporatePage() {
 
       <div className="mx-auto max-w-7xl space-y-12 px-4 py-12">
         <Section
+          icon={<Laptop className="h-6 w-6 text-slate-600" />}
+          title="Notebook สำหรับองค์กร"
+          subtitle="Lenovo · HP · Dell · Acer · ASUS"
+          products={notebook.data ?? []}
+          loading={notebook.isLoading}
+          viewAllCategory="Notebook"
+        />
+        <Section
+          icon={<Monitor className="h-6 w-6 text-slate-600" />}
+          title="Desktop PC / AIO"
+          subtitle="Lenovo ThinkCentre · HP · Acer · MSI"
+          products={desktop.data ?? []}
+          loading={desktop.isLoading}
+          viewAllCategory="PC"
+        />
+        <Section
           icon={<Wifi className="h-6 w-6 text-blue-600" />}
           title="Network Equipment"
           subtitle="Switch · Router · Access Point · Firewall"
