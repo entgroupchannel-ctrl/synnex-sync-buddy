@@ -90,6 +90,25 @@ export function distMeta(d?: string | null) {
     dot: "bg-slate-400", text: "text-slate-700", bg: "bg-slate-100", ring: "ring-slate-200" };
 }
 
+export type PoStatus =
+  | "draft" | "sent" | "confirmed" | "shipped" | "partially_shipped" | "completed" | "cancelled";
+
+export const PO_STATUS_META: Record<PoStatus, { label: string; badge: string; dot: string }> = {
+  draft:             { label: "ร่าง",           badge: "bg-slate-100 text-slate-700 ring-1 ring-slate-200",      dot: "bg-slate-400" },
+  sent:              { label: "ส่งแล้ว",         badge: "bg-blue-50 text-blue-700 ring-1 ring-blue-200",          dot: "bg-blue-500" },
+  confirmed:         { label: "ยืนยันแล้ว",       badge: "bg-purple-50 text-purple-700 ring-1 ring-purple-200",    dot: "bg-purple-500" },
+  partially_shipped: { label: "จัดส่งบางส่วน",   badge: "bg-amber-50 text-amber-700 ring-1 ring-amber-200",       dot: "bg-amber-500" },
+  shipped:           { label: "จัดส่งแล้ว",       badge: "bg-teal-50 text-teal-700 ring-1 ring-teal-200",          dot: "bg-teal-500" },
+  completed:         { label: "เสร็จสิ้น",         badge: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200", dot: "bg-emerald-500" },
+  cancelled:         { label: "ยกเลิก",           badge: "bg-red-50 text-red-700 ring-1 ring-red-200",             dot: "bg-red-500" },
+};
+
+/** แยกยอดทุนสินค้าออกจาก VAT 7% (สมมติว่า cost_price ที่บันทึกไว้เป็นราคาก่อน VAT) */
+export function vatBreakdown(exVat: number) {
+  const vat = exVat * 0.07;
+  return { exVat, vat, total: exVat + vat };
+}
+
 export const bahtFmt = new Intl.NumberFormat("th-TH", {
   style: "currency", currency: "THB", maximumFractionDigits: 0,
 });
