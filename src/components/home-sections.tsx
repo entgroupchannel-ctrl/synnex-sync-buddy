@@ -10,7 +10,7 @@ import {
   Laptop, Monitor, Printer, Cpu, Smartphone, Wifi, HardDrive, Package,
   Cable, LayoutGrid, ShoppingCart, Truck, Award, FileText, Phone, ArrowRight,
   ChevronLeft, ChevronRight, Mail, Flame, ShieldCheck, Building2, Warehouse, MonitorCog, Sun,
-  Home, Shield, Camera, Wrench,
+  Home, Shield, Camera, Wrench, Server, Clock, Tag, DollarSign, Sparkles,
   Receipt, CreditCard, Headphones, Network as NetworkIcon, BatteryCharging,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -332,7 +332,7 @@ export function TodaysBestDeals() {
   return (
     <section className="border-b bg-slate-50">
       <div className="mx-auto max-w-7xl px-4 py-8">
-        <SectionHeader title="ดีลวันนี้" en="Today's Best Deals" />
+        <SectionHeader title={<span className="inline-flex items-center gap-2"><Flame className="h-5 w-5 text-red-500 animate-pulse" />ดีลวันนี้</span>} en={<span className="inline-flex items-center gap-2"><Flame className="h-5 w-5 text-red-500 animate-pulse" />Today's Best Deals</span>} />
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-5">
           {q.data!.map((p, idx) => {
             const ready = p.stock_status === "พร้อมจัดส่ง";
@@ -359,7 +359,7 @@ export function TodaysBestDeals() {
                   <Link to="/product/$slug" params={{ slug }} className="line-clamp-2 text-sm font-semibold hover:text-[color:var(--brand-navy)]">{p.name ?? p.sku}</Link>
                   <WarrantyBadge category={p.category as string | null | undefined} name={p.name as string | null | undefined} />
                   <div className="flex flex-wrap items-center gap-1">
-                    {freeShip && <Badge className="bg-green-100 text-[10px] text-green-700 hover:bg-green-100">🚚 ฟรีจัดส่ง</Badge>}
+                    {freeShip && <Badge className="inline-flex items-center gap-1 bg-green-100 text-[10px] text-green-700 hover:bg-green-100"><Truck className="h-3 w-3" /> ฟรีจัดส่ง</Badge>}
                     <StockBadge stockQty={p.stock_qty as number | null | undefined} fulfillmentType={p.fulfillment_type as string | null | undefined} stockStatus={p.stock_status as string | null | undefined} distributor={(p as { distributor?: string | null }).distributor} />
                   </div>
                   <div className="mt-1 text-xl font-black text-[color:var(--brand-orange)]">{displayPrice(p, tier)}</div>
@@ -412,7 +412,7 @@ export function PopularNotebooks() {
     <section className="border-b bg-white">
       <div className="mx-auto max-w-7xl px-4 py-8">
         <SectionHeader
-          title="Notebook ยอดนิยม"
+          title={<span className="inline-flex items-center gap-2"><Laptop className="h-5 w-5 text-blue-600" />Notebook ยอดนิยม</span>}
           en="Popular Notebooks"
           sub="เลือกจาก Notebook หลากหลายแบรนด์"
           link={{ to: "/", search: { category: "Notebook" }, label: "ดูทั้งหมด" }}
@@ -506,7 +506,7 @@ export function ComputerSets() {
     <section className="border-b bg-gradient-to-br from-slate-50 to-white">
       <div className="mx-auto max-w-7xl px-4 py-8">
         <SectionHeader
-          title="🖥 Computer Set / ชุดคอมพิวเตอร์"
+          title={<span className="inline-flex items-center gap-2"><Server className="h-5 w-5 text-slate-600" />Computer Set / ชุดคอมพิวเตอร์</span>}
           en="Computer Sets"
           sub="Gaming PC และ Workstation พร้อมใช้งาน · RTX 5090 / RTX 5070 / RTX 5060 · ส่งฟรีใน กทม เมื่อซื้อครบ ฿5,000"
           link={{ to: "/", search: { category: "Computer Set" }, label: "ดูทั้งหมด" }}
@@ -564,8 +564,8 @@ export function ComputerSets() {
                       )}
                     </div>
                     {freeShip && (
-                      <div className="rounded bg-emerald-50 px-2 py-1 text-[10px] font-semibold text-emerald-700 ring-1 ring-emerald-200">
-                        🚚 ส่งฟรี กทม./ปริมณฑล
+                      <div className="inline-flex items-center gap-1 rounded bg-emerald-50 px-2 py-1 text-[10px] font-semibold text-emerald-700 ring-1 ring-emerald-200">
+                        <Truck className="h-3 w-3" /> ส่งฟรี กทม./ปริมณฑล
                       </div>
                     )}
                     <div className="mt-auto pt-1">
@@ -812,7 +812,7 @@ export function RecentlyViewed() {
   return (
     <section className="border-b bg-white">
       <div className="mx-auto max-w-7xl px-4 py-8">
-        <SectionHeader title="สินค้าที่คุณเพิ่งดู" en="Recently Viewed" />
+        <SectionHeader title={<span className="inline-flex items-center gap-2"><Clock className="h-5 w-5 text-slate-400" />สินค้าที่คุณเพิ่งดู</span>} en={<span className="inline-flex items-center gap-2"><Clock className="h-5 w-5 text-slate-400" />Recently Viewed</span>} />
         <div className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-2 no-scrollbar">
           {items.map((r) => (
             <Link
@@ -1009,7 +1009,7 @@ export function MicrosoftFeatured() {
     >
       <div className="mx-auto max-w-7xl px-4 py-8">
         <SectionHeader
-          title="💿 Software & Licenses / ซอฟต์แวร์ลิขสิทธิ์"
+          title={<span className="inline-flex items-center gap-2"><Package className="h-5 w-5 text-purple-500" />Software & Licenses / ซอฟต์แวร์ลิขสิทธิ์</span>}
           en="Software & Licenses — Genuine"
           sub="Microsoft 365, Office 2024, Windows 11, Kaspersky, ESET, McAfee — สินค้าแท้ 100%"
           link={{ to: "/", search: { category: "Software" }, label: "ดู Software ทั้งหมด" }}
@@ -1254,7 +1254,7 @@ export function ComponentsShowcase() {
     <section className="border-b bg-white">
       <div className="mx-auto max-w-7xl px-4 py-8">
         <SectionHeader
-          title="⚙️ CPU & Components / ชิ้นส่วนคอมพิวเตอร์"
+          title={<span className="inline-flex items-center gap-2"><Cpu className="h-5 w-5 text-slate-700" />CPU & Components / ชิ้นส่วนคอมพิวเตอร์</span>}
           en="Components — CPU & Memory"
           sub="AMD Ryzen, Intel Core Ultra, Mainboard, RAM DDR4/DDR5"
           link={{ to: "/", search: { category: "Components" }, label: "ดู Components ทั้งหมด" }}
@@ -1332,7 +1332,7 @@ export function SolarEnergy() {
     <section className="border-b bg-gradient-to-br from-amber-50 to-white">
       <div className="mx-auto max-w-7xl px-4 py-8">
         <SectionHeader
-          title="☀️ Solar & Energy / โซลาร์และพลังงาน"
+          title={<span className="inline-flex items-center gap-2"><Sun className="h-5 w-5 text-yellow-500" />Solar & Energy / โซลาร์และพลังงาน</span>}
           en="Solar & Energy"
           sub="แผงโซลาร์เซลล์ Inverter และอุปกรณ์พลังงาน เหมาะสำหรับบ้านและองค์กร"
           link={{ to: "/", search: { category: "Solar & Energy" }, label: "ดูทั้งหมด" }}
@@ -1390,8 +1390,9 @@ export function SmartLife() {
       <div className="mx-auto max-w-7xl px-4">
         <div className="mb-6 flex items-end justify-between gap-3">
           <div className="min-w-0">
-            <h2 className="text-xl font-black text-slate-900 md:text-2xl">
-              🏠 Smart Life / สมาร์ทไลฟ์
+            <h2 className="inline-flex items-center gap-2 text-xl font-black text-slate-900 md:text-2xl">
+              <Home className="h-5 w-5 text-green-600" />
+              Smart Life / สมาร์ทไลฟ์
             </h2>
             <p className="mt-1 text-sm font-medium text-slate-500">
               กล้องวงจรปิด · Smart Home · Smartwatch · IoT
@@ -1429,8 +1430,10 @@ export function SmartLife() {
           {q.data!.map((p) => <CategoryGridCard key={p.id} p={p} />)}
         </div>
 
-        <div className="mt-5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-center text-xs font-semibold text-amber-800 sm:text-sm">
-          🏷️ ส่วนลดพิเศษเมื่อซื้อจำนวนมาก | 💼 ราคาพิเศษสำหรับองค์กร ติดต่อ 02-045-6104
+        <div className="mt-5 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-center text-xs font-semibold text-amber-800 sm:text-sm">
+          <span className="inline-flex items-center gap-1"><Tag className="h-4 w-4" /> ส่วนลดพิเศษเมื่อซื้อจำนวนมาก</span>
+          <span className="text-amber-400">|</span>
+          <span className="inline-flex items-center gap-1"><Building2 className="h-4 w-4" /> ราคาพิเศษสำหรับองค์กร ติดต่อ 02-045-6104</span>
         </div>
 
         <div className="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs text-slate-500">
