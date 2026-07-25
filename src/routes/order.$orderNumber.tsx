@@ -12,6 +12,8 @@ import { ProductImage } from "@/components/product-image";
 
 import { Button } from "@/components/ui/button";
 import { BANK_ACCOUNTS, STATUS_META, VAT_NOTES, isValidStatus, bahtFmt } from "@/lib/order-helpers";
+import { OrderProgressStepper } from "@/components/order-progress-stepper";
+import { OrderStatusTimeline } from "@/components/order-status-timeline";
 import { GuestSignupPrompt } from "@/components/guest-signup-prompt";
 import { PromptPayPaymentModal } from "@/components/promptpay-modal";
 import { LineQrDialog } from "@/components/line-qr-dialog";
@@ -187,6 +189,9 @@ function OrderConfirm() {
             <span className={`h-2 w-2 rounded-full ${stMeta.dot}`} />
             <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${stMeta.badge}`}>สถานะ: {stMeta.label}</span>
           </div>
+          <div className="mt-6">
+            <OrderProgressStepper status={order.status} />
+          </div>
         </div>
 
         {/* Items */}
@@ -220,6 +225,12 @@ function OrderConfirm() {
               <span className="text-[color:var(--brand-orange)]">{bahtFmt.format(Number(order.total ?? 0))}</span>
             </div>
           </div>
+        </section>
+
+        {/* Order status timeline */}
+        <section className="mt-4 rounded-2xl border bg-white p-6">
+          <h2 className="mb-3 font-bold text-[color:var(--brand-navy)]">ความคืบหน้าออเดอร์</h2>
+          <OrderStatusTimeline orderId={order.id} />
         </section>
 
         {/* Guest signup prompt */}

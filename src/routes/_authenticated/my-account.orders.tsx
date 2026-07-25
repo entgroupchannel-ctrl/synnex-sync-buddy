@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { priceFmt } from "@/lib/cart";
 import { Package, FileText, Receipt, Truck } from "lucide-react";
 import { STATUS_META, PAYMENT_STATUS_META, isValidStatus } from "@/lib/order-helpers";
+import { OrderProgressStepper } from "@/components/order-progress-stepper";
 import { providerLabel, eventLabel } from "@/lib/shipping";
 import { ReorderButton } from "@/components/reorder-dialog";
 import { FrequentlyBought } from "@/components/frequently-bought";
@@ -78,6 +79,9 @@ function MyOrders() {
                   <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${payMeta.badge}`}>{payMeta.label}</span>
                   <div className="text-lg font-black text-[color:var(--brand-orange)]">{priceFmt.format(Number(o.total ?? 0))}</div>
                 </div>
+              </div>
+              <div className="mt-3">
+                <OrderProgressStepper status={o.status} compact />
               </div>
               <div className="mt-3 border-t pt-3 text-sm text-slate-700">
                 {items.slice(0, 3).map((i, idx) => (
