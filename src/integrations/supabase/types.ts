@@ -1103,6 +1103,7 @@ export type Database = {
           ship_to_address: string
           ship_to_district: string | null
           ship_to_name: string
+          ship_to_office: boolean
           ship_to_phone: string
           ship_to_postcode: string | null
           ship_to_province: string | null
@@ -1124,6 +1125,7 @@ export type Database = {
           ship_to_address: string
           ship_to_district?: string | null
           ship_to_name: string
+          ship_to_office?: boolean
           ship_to_phone: string
           ship_to_postcode?: string | null
           ship_to_province?: string | null
@@ -1145,6 +1147,7 @@ export type Database = {
           ship_to_address?: string
           ship_to_district?: string | null
           ship_to_name?: string
+          ship_to_office?: boolean
           ship_to_phone?: string
           ship_to_postcode?: string | null
           ship_to_province?: string | null
