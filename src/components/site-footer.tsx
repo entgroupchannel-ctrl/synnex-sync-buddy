@@ -310,6 +310,7 @@ export function SiteFooter() {
           <Column title="หมวดหมู่สินค้า">
             <ul className="space-y-2">
               <li><FooterLink to="/?category=Smart+Life">🏠 Smart Life</FooterLink></li>
+              <li><FooterLink to="/?category=Speaker+%26+Audio">🔊 Speaker & Audio</FooterLink></li>
               <li><FooterLink to="/?category=Notebook">Notebook</FooterLink></li>
               <li><FooterLink to="/?category=Computer+Set">คอมพิวเตอร์ชุด</FooterLink></li>
               <li><FooterLink to="/?category=Components">ชิ้นส่วน / CPU</FooterLink></li>

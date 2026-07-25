@@ -199,6 +199,7 @@ export const CATEGORIES = [
   "Smart Phone & Tablet",
   "Solar & Energy",
   "Smart Life",
+  "Speaker & Audio",
 ] as const;
 
 export function detectCategory(name: string | null | undefined): string {
