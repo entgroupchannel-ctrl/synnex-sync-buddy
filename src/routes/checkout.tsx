@@ -671,7 +671,30 @@ function CheckoutPage() {
             {/* Payment */}
             <section className="space-y-3 rounded-lg border bg-white p-6">
               <h2 className="font-bold text-[color:var(--brand-navy)]">วิธีการชำระเงิน</h2>
-              <RadioGroup value={payment} onValueChange={(v) => setPayment(v as "transfer" | "cod" | "promptpay")} className="grid gap-2 sm:grid-cols-3">
+              <RadioGroup value={payment} onValueChange={(v) => setPayment(v as "transfer" | "cod" | "promptpay" | "credit")} className="grid gap-2 sm:grid-cols-3">
+                {creditAccount && (
+                  <label
+                    className={`flex items-center gap-3 rounded-lg border-2 p-4 transition sm:col-span-3 ${
+                      payment === "credit" ? "border-emerald-600 bg-emerald-50" : "hover:bg-slate-50"
+                    } ${creditUsable && creditEnough ? "cursor-pointer" : "cursor-not-allowed opacity-60"}`}
+                  >
+                    <RadioGroupItem value="credit" disabled={!creditUsable || !creditEnough} />
+                    <CreditCard className="h-5 w-5 text-emerald-700" />
+                    <div className="min-w-0 flex-1">
+                      <div className="font-semibold">วงเงินเครดิต B2B ({creditAccount.payment_terms_days} วัน)</div>
+                      <div className="text-xs text-slate-500">
+                        คงเหลือ {bahtFmt.format(creditAccount.credit_available)} จาก {bahtFmt.format(creditAccount.credit_limit)}
+                        {!creditUsable && " · บัญชีถูกระงับ/หมดอายุ"}
+                        {creditUsable && !creditEnough && " · วงเงินคงเหลือไม่พอสำหรับยอดนี้"}
+                      </div>
+                      {payment === "credit" && (
+                        <div className="mt-1 text-xs font-semibold text-emerald-700">
+                          กำหนดชำระ {dueDateFrom(creditAccount.payment_terms_days).toLocaleDateString("th-TH")}
+                        </div>
+                      )}
+                    </div>
+                  </label>
+                )}
                 <label className={`flex cursor-pointer items-center gap-3 rounded-lg border-2 p-4 transition ${payment === "promptpay" ? "border-blue-600 bg-blue-50" : "hover:bg-slate-50"}`}>
                   <RadioGroupItem value="promptpay" />
                   <Banknote className="h-5 w-5 text-blue-700" />
