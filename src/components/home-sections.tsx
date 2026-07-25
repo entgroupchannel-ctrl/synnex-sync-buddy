@@ -412,7 +412,7 @@ export function PopularNotebooks() {
     <section className="border-b bg-white">
       <div className="mx-auto max-w-7xl px-4 py-8">
         <SectionHeader
-          title="Notebook ยอดนิยม"
+          title={<span className="inline-flex items-center gap-2"><Laptop className="h-5 w-5 text-blue-600" />Notebook ยอดนิยม</span>}
           en="Popular Notebooks"
           sub="เลือกจาก Notebook หลากหลายแบรนด์"
           link={{ to: "/", search: { category: "Notebook" }, label: "ดูทั้งหมด" }}
@@ -506,7 +506,7 @@ export function ComputerSets() {
     <section className="border-b bg-gradient-to-br from-slate-50 to-white">
       <div className="mx-auto max-w-7xl px-4 py-8">
         <SectionHeader
-          title="🖥 Computer Set / ชุดคอมพิวเตอร์"
+          title={<span className="inline-flex items-center gap-2"><Server className="h-5 w-5 text-slate-600" />Computer Set / ชุดคอมพิวเตอร์</span>}
           en="Computer Sets"
           sub="Gaming PC และ Workstation พร้อมใช้งาน · RTX 5090 / RTX 5070 / RTX 5060 · ส่งฟรีใน กทม เมื่อซื้อครบ ฿5,000"
           link={{ to: "/", search: { category: "Computer Set" }, label: "ดูทั้งหมด" }}
@@ -812,7 +812,7 @@ export function RecentlyViewed() {
   return (
     <section className="border-b bg-white">
       <div className="mx-auto max-w-7xl px-4 py-8">
-        <SectionHeader title="สินค้าที่คุณเพิ่งดู" en="Recently Viewed" />
+        <SectionHeader title={<span className="inline-flex items-center gap-2"><Clock className="h-5 w-5 text-slate-400" />สินค้าที่คุณเพิ่งดู</span>} en={<span className="inline-flex items-center gap-2"><Clock className="h-5 w-5 text-slate-400" />Recently Viewed</span>} />
         <div className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-2 no-scrollbar">
           {items.map((r) => (
             <Link
@@ -1009,7 +1009,7 @@ export function MicrosoftFeatured() {
     >
       <div className="mx-auto max-w-7xl px-4 py-8">
         <SectionHeader
-          title="💿 Software & Licenses / ซอฟต์แวร์ลิขสิทธิ์"
+          title={<span className="inline-flex items-center gap-2"><Package className="h-5 w-5 text-purple-500" />Software & Licenses / ซอฟต์แวร์ลิขสิทธิ์</span>}
           en="Software & Licenses — Genuine"
           sub="Microsoft 365, Office 2024, Windows 11, Kaspersky, ESET, McAfee — สินค้าแท้ 100%"
           link={{ to: "/", search: { category: "Software" }, label: "ดู Software ทั้งหมด" }}
@@ -1254,7 +1254,7 @@ export function ComponentsShowcase() {
     <section className="border-b bg-white">
       <div className="mx-auto max-w-7xl px-4 py-8">
         <SectionHeader
-          title="⚙️ CPU & Components / ชิ้นส่วนคอมพิวเตอร์"
+          title={<span className="inline-flex items-center gap-2"><Cpu className="h-5 w-5 text-slate-700" />CPU & Components / ชิ้นส่วนคอมพิวเตอร์</span>}
           en="Components — CPU & Memory"
           sub="AMD Ryzen, Intel Core Ultra, Mainboard, RAM DDR4/DDR5"
           link={{ to: "/", search: { category: "Components" }, label: "ดู Components ทั้งหมด" }}
@@ -1332,7 +1332,7 @@ export function SolarEnergy() {
     <section className="border-b bg-gradient-to-br from-amber-50 to-white">
       <div className="mx-auto max-w-7xl px-4 py-8">
         <SectionHeader
-          title="☀️ Solar & Energy / โซลาร์และพลังงาน"
+          title={<span className="inline-flex items-center gap-2"><Sun className="h-5 w-5 text-yellow-500" />Solar & Energy / โซลาร์และพลังงาน</span>}
           en="Solar & Energy"
           sub="แผงโซลาร์เซลล์ Inverter และอุปกรณ์พลังงาน เหมาะสำหรับบ้านและองค์กร"
           link={{ to: "/", search: { category: "Solar & Energy" }, label: "ดูทั้งหมด" }}
