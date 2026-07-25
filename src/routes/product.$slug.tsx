@@ -288,7 +288,7 @@ function ProductDetail() {
               <div className="flex flex-col gap-2">
                 {/* Main image */}
                 <div
-                  className={`relative rounded-xl overflow-hidden border border-slate-100 ${p.brand === "JBL" ? "bg-slate-900" : "bg-white"}`}
+                  className="relative rounded-xl overflow-hidden border border-slate-100 bg-white"
                   style={{ paddingBottom: '75%' }}
                 >
                   <div className="absolute inset-0 flex items-center justify-center p-3">
