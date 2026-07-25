@@ -21,6 +21,7 @@ import { useDynamicSeo, getRobotsForCategory } from "@/lib/dynamic-seo";
 import { DeliveryHint } from "@/components/delivery-info";
 import { StockBadge } from "@/components/stock-badge";
 import { WarrantyBadge } from "@/components/warranty-badge";
+import { DiscountBadgeRow } from "@/components/discount-badge";
 import { CATEGORY_ICONS, SMART_LIFE_SUBCATEGORY_ICONS } from "@/lib/category-icons";
 
 
@@ -778,6 +779,12 @@ function HomePage() {
                         <div className="border-t p-2">
                           <div className="line-clamp-2 min-h-9 text-xs font-medium">{p.name ?? p.sku}</div>
                           <WarrantyBadge category={p.category} name={p.name} className="mt-0.5" />
+                          <DiscountBadgeRow
+                            sellingPrice={p.selling_price}
+                            b2bPrice={p.b2b_price}
+                            memberPrice={p.member_price}
+                            className="mt-1"
+                          />
                           <div className="mt-1 flex items-baseline gap-1.5">
                             <div className="text-base font-black text-[color:var(--brand-orange)]">
                               {displayPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier)}
@@ -1072,9 +1079,17 @@ function HomePage() {
                     </div>
                     <div className="flex w-40 shrink-0 flex-col items-end justify-between gap-1">
                       {priced ? (
-                        <div className="text-xl font-black text-[color:var(--brand-orange)]">
-                          {displayPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier)}
-                        </div>
+                        <>
+                          <DiscountBadgeRow
+                            sellingPrice={p.selling_price}
+                            b2bPrice={p.b2b_price}
+                            memberPrice={p.member_price}
+                            className="justify-end"
+                          />
+                          <div className="text-xl font-black text-[color:var(--brand-orange)]">
+                            {displayPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier)}
+                          </div>
+                        </>
                       ) : (
                         <span className="text-sm text-gray-400">ติดต่อสอบถาม</span>
                       )}
@@ -1140,9 +1155,17 @@ function HomePage() {
                       <WarrantyBadge category={p.category} name={p.name} />
                       <div className="mt-auto pt-1">
                         {priced ? (
-                          <div className="text-xl font-black text-[color:var(--brand-orange)]">
-                            {displayPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier)}
-                          </div>
+                          <>
+                            <DiscountBadgeRow
+                              sellingPrice={p.selling_price}
+                              b2bPrice={p.b2b_price}
+                              memberPrice={p.member_price}
+                              className="mb-0.5"
+                            />
+                            <div className="text-xl font-black text-[color:var(--brand-orange)]">
+                              {displayPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier)}
+                            </div>
+                          </>
                         ) : (
                           <div className="text-sm text-gray-400">ติดต่อสอบถาม</div>
                         )}

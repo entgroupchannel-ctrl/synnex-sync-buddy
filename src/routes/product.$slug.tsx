@@ -18,6 +18,7 @@ import { WarrantyBadge } from "@/components/warranty-badge";
 import { StockBadge } from "@/components/stock-badge";
 
 import { displayPrice, getSellingPrice, priceFmt, useCart, useCustomerTier, type PricingProduct } from "@/lib/cart";
+import { B2BBadgeLarge, MemberBadge, DiscountBadgeRow } from "@/components/discount-badge";
 import { computeProductPrice, useProductPrice } from "@/hooks/useProductPrice";
 import { triggerAuthPrompt, useSupabaseUser } from "@/lib/auth-sheet";
 import { usePurchaseHistoryForSku } from "@/lib/reorder";
@@ -390,6 +391,17 @@ function ProductDetail() {
                         </>
                       )}
                     </div>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      <B2BBadgeLarge
+                        sellingPrice={p.selling_price as number | null}
+                        b2bPrice={(p as { b2b_price?: number | null }).b2b_price}
+                      />
+                      <MemberBadge
+                        sellingPrice={p.selling_price as number | null}
+                        memberPrice={(p as { member_price?: number | null }).member_price}
+                        className="text-sm px-3 py-1"
+                      />
+                    </div>
                     {pr.volumeDiscount > 0 && (
                       <div className="mt-1 text-xs font-medium text-emerald-700">
                         รวมส่วนลดตามจำนวน −{Math.round(pr.volumeDiscount * 100)}% (×{qty})
@@ -736,6 +748,12 @@ function ProductDetail() {
                   </div>
                   <div className="mt-2 flex flex-col">
                     <div className="text-xs line-clamp-2 min-h-8 font-medium">{r.name ?? r.sku}</div>
+                    <DiscountBadgeRow
+                      sellingPrice={(r as { selling_price?: number | null }).selling_price}
+                      b2bPrice={(r as { b2b_price?: number | null }).b2b_price}
+                      memberPrice={(r as { member_price?: number | null }).member_price}
+                      className="mt-1"
+                    />
                     <div className="mt-1 text-sm font-bold text-[color:var(--brand-orange)]">{displayPrice(r as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier)}</div>
                   </div>
                 </Link>
