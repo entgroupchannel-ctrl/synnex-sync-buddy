@@ -13,6 +13,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { toast } from "sonner";
 import { ShoppingCart, Search, Package, Grid2x2, List, SlidersHorizontal, Flame, ChevronRight } from "lucide-react";
+import { ScrollingTicker } from "@/components/scrolling-ticker";
 import { useLanguage } from "@/lib/i18n";
 import { SiteHeader } from "@/components/site-header";
 import { ProductImage } from "@/components/product-image";
@@ -950,6 +951,7 @@ function HomePage() {
 
           {/* Today's Best Deals */}
           <FrequentlyBought />
+          <ScrollingTicker />
           <TodaysBestDeals />
 
           {/* Network & Security */}

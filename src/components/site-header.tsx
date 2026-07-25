@@ -14,7 +14,7 @@ import { CartReminderBell } from "@/components/cart-reminder-bell";
 import { DeliveryZoneDialog, DeliveryZoneBadge } from "@/components/delivery-zone-dialog";
 import { AppleMegaMenu } from "@/components/apple-mega-menu";
 import { FlashSaleCountdown } from "@/components/flash-sale-countdown";
-import { ScrollingTicker } from "@/components/scrolling-ticker";
+
 import { useLanguage } from "@/lib/i18n";
 import entLogo from "@/assets/entgroup-logo.jpg.asset.json";
 import {
@@ -155,7 +155,7 @@ export function SiteHeader() {
         </div>
       </div>
       <FlashSaleCountdown />
-      <ScrollingTicker />
+      
       <header className="sticky top-0 z-40 bg-[color:var(--brand-navy)] text-white shadow-lg">
 
         <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3">
