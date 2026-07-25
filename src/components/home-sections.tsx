@@ -417,12 +417,18 @@ export function PopularNotebooks() {
           link={{ to: "/", search: { category: "Notebook" }, label: "ดูทั้งหมด" }}
         />
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-5 lg:gap-3">
-          {q.data!.map((p) => {
+          {q.data!.map((p, idx) => {
             const ready = p.stock_status === "พร้อมจัดส่ง";
             const slug = p.slug || p.id;
+            const badge = getProductBadge(p, idx);
             return (
               <div key={p.id} className="group relative flex flex-col overflow-hidden rounded-lg border bg-white transition hover:shadow-lg">
                 <BrandLogo brand={p.brand} />
+                {badge && (
+                  <div className="absolute left-2 top-2 z-10">
+                    <SaleBadge type={badge} />
+                  </div>
+                )}
                 <Link to="/product/$slug" params={{ slug }} className="grid aspect-square place-items-center bg-white p-3">
                   <ProductImage src={p.image_url} alt={p.name ?? p.sku} className="h-full w-full object-contain transition group-hover:scale-105" iconClassName="h-16 w-16 text-slate-300" />
                 </Link>
@@ -430,6 +436,8 @@ export function PopularNotebooks() {
                   {p.brand && <div className="text-[10px] uppercase tracking-wide text-slate-500">{p.brand}</div>}
                   <Link to="/product/$slug" params={{ slug }} className="line-clamp-2 min-h-10 text-sm font-medium hover:text-[color:var(--brand-navy)]">{p.name ?? p.sku}</Link>
                   <div className="mt-auto text-lg font-black text-[color:var(--brand-orange)]">{displayPrice(p, tier)}</div>
+                  <UrgencyIndicator index={idx} />
+
                   <Button
                     disabled={!ready}
                     onClick={() => addToCart(p)}
