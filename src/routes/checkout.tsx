@@ -366,6 +366,32 @@ function CheckoutPage() {
         if (cErr) console.warn("[credit txn]", cErr);
       }
 
+      // Credit card charge — charge ทันทีหลังสร้างออเดอร์เสร็จ
+      if (payment === "credit_card") {
+        const { data: sessionData } = await supabase.auth.getSession();
+        const chargeBody: Record<string, unknown> = { order_id: order.id };
+        if (!useNewCard && selectedSavedCardId) {
+          chargeBody.saved_card_id = selectedSavedCardId;
+        } else if (cardToken) {
+          chargeBody.token = cardToken;
+          chargeBody.save_card = saveNewCard;
+        } else {
+          throw new Error("กรุณากรอกข้อมูลบัตรหรือเลือกบัตรที่บันทึกไว้ก่อนยืนยันคำสั่งซื้อ");
+        }
+        const { data: chargeData, error: chargeErr } = await supabase.functions.invoke("create-omise-card-charge", {
+          body: chargeBody,
+          headers: sessionData.session ? { Authorization: `Bearer ${sessionData.session.access_token}` } : undefined,
+        });
+        if (chargeErr || chargeData?.error) {
+          throw new Error(chargeData?.error ?? "ชำระเงินด้วยบัตรไม่สำเร็จ");
+        }
+        if (chargeData.authorize_uri) {
+          // ต้องยืนยัน 3D Secure ก่อน — พาไปหน้ายืนยันของธนาคาร แล้วธนาคารจะ redirect กลับมาที่ return_uri เอง
+          window.location.href = chargeData.authorize_uri;
+          return;
+        }
+      }
+
       // Fire-and-forget: send order confirmation email
       supabase.functions.invoke("send-order-confirmation", { body: { order_id: order.id } })
         .catch((e) => console.warn("[send-order-confirmation]", e));
