@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { ArrowLeft, ExternalLink, Save, FileText, Truck, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { ProductImage } from "@/components/product-image";
+import { SlipVerificationBadge } from "@/components/slip-verification-badge";
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -403,6 +404,11 @@ function AdminOrderDetail() {
                 </a>
               ) : (
                 <div className="text-sm text-slate-500">ยังไม่มีสลิป</div>
+              )}
+              {slipUrl && (
+                <div className="mt-3">
+                  <SlipVerificationBadge orderId={order.id} />
+                </div>
               )}
               <div className="mt-3">
                 <label className="text-xs font-bold uppercase text-slate-500">สถานะการชำระ</label>
