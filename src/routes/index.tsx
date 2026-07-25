@@ -109,6 +109,7 @@ const JETSON_SUBCATS: { key: string; label: string; value: string }[] = [
   { key: "board", label: "Carrier Board", value: "Carrier Board" },
   { key: "devkit", label: "Developer Kits", value: "Developer Kits" },
   { key: "module", label: "Module", value: "Module" },
+  { key: "supercomputer", label: "AI Supercomputer Desktop", value: "AI Supercomputer" },
 ];
 
 
