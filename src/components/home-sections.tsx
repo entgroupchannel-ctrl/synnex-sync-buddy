@@ -10,6 +10,7 @@ import {
   Laptop, Monitor, Printer, Cpu, Smartphone, Wifi, HardDrive, Package,
   Cable, LayoutGrid, ShoppingCart, Truck, Award, FileText, Phone, ArrowRight,
   ChevronLeft, ChevronRight, Mail, Flame, ShieldCheck, Building2, Warehouse, MonitorCog, Sun,
+  Home, Shield, Camera,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import heroWarehouse from "@/assets/hero-warehouse.jpg";
