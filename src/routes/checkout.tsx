@@ -364,19 +364,34 @@ function CheckoutPage() {
         }
       }
 
-      const itemRows = items.map((it) => ({
-        order_id: order.id,
-        product_sku: it.sku,
-        product_name: it.name,
-        product_image_url: it.image_url,
-        brand: null,
-        category: null,
-        distributor: (it.distributor ?? "OTHER"),
-        cost_price: null,
-        unit_price: it.price,
-        quantity: it.qty,
-        subtotal: it.price * it.qty,
-      }));
+      // ดึงข้อมูลจริงจาก synnex_products แทนการปล่อย cost_price/brand/category เป็น null
+      const skus = items.map((it) => it.sku).filter(Boolean);
+      const { data: productRows, error: prodErr } = await supabase
+        .from("synnex_products")
+        .select("sku, cost_price, brand, category")
+        .in("sku", skus);
+      if (prodErr) console.warn("[checkout] ดึง cost_price ไม่สำเร็จ จะบันทึกเป็น null ชั่วคราว", prodErr);
+
+      const productMap = new Map(
+        (productRows ?? []).map((p) => [p.sku, { cost_price: p.cost_price, brand: p.brand, category: p.category }]),
+      );
+
+      const itemRows = items.map((it) => {
+        const meta = productMap.get(it.sku);
+        return {
+          order_id: order.id,
+          product_sku: it.sku,
+          product_name: it.name,
+          product_image_url: it.image_url,
+          brand: meta?.brand ?? null,
+          category: meta?.category ?? (it as { category?: string | null }).category ?? null,
+          distributor: (it.distributor ?? "OTHER"),
+          cost_price: meta?.cost_price ?? null,
+          unit_price: it.price,
+          quantity: it.qty,
+          subtotal: it.price * it.qty,
+        };
+      });
       const { error: iErr } = await supabase.from("order_items").insert(itemRows);
       if (iErr) throw iErr;
 
