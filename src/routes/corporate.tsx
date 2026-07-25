@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Building2, Wifi, Printer, BatteryCharging, HardDrive, ShoppingCart, CreditCard } from "lucide-react";
+import { Building2, Wifi, Printer, BatteryCharging, HardDrive, ShoppingCart, CreditCard, Laptop, Monitor } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
@@ -42,7 +42,7 @@ function useCorpQuery(
   key: string,
   category: string,
   brands: string[],
-  minPrice = 0,
+  opts: { minPrice?: number; distributor?: string } = {},
 ) {
   return useQuery({
     queryKey: ["corporate-page", key],
@@ -55,7 +55,8 @@ function useCorpQuery(
         .eq("price_approved", true)
         .order("selling_price", { ascending: true })
         .limit(5);
-      if (minPrice > 0) q = q.gte("selling_price", minPrice);
+      if (opts.distributor) q = q.eq("distributor", opts.distributor);
+      if (opts.minPrice && opts.minPrice > 0) q = q.gt("selling_price", opts.minPrice);
       const { data } = await q;
       return (data ?? []) as Row[];
     },
@@ -152,8 +153,20 @@ function Section({ icon, title, subtitle, products, loading, viewAllCategory }: 
 }
 
 function CorporatePage() {
-  const network = useCorpQuery("network", "Network", ["CISCO", "DLINK", "TPLINK", "UBIQUITI"], 1000);
-  const printer = useCorpQuery("printer", "Printer", ["BROTHER", "HP", "RICOH", "PANTUM", "FUJIFILM"], 1000);
+  const notebook = useCorpQuery(
+    "notebook",
+    "Notebook",
+    ["LENOVO", "HP", "DELL", "ACER", "ASUS", "MSI", "MICROSOFT"],
+    { distributor: "ADVICE" },
+  );
+  const desktop = useCorpQuery(
+    "desktop",
+    "PC",
+    ["LENOVO", "HP", "ACER", "MSI", "SVOA", "MINIX"],
+    { distributor: "ADVICE", minPrice: 15000 },
+  );
+  const network = useCorpQuery("network", "Network", ["CISCO", "DLINK", "TPLINK", "UBIQUITI"], { minPrice: 1000 });
+  const printer = useCorpQuery("printer", "Printer", ["BROTHER", "HP", "RICOH", "PANTUM", "FUJIFILM"], { minPrice: 1000 });
   const ups = useCorpQuery("ups", "PC", ["APC", "SYNDOME", "SUN", "ETECH", "VERTIV", "CKT"]);
   const nas = useCorpQuery("nas", "Storage", ["QNAP", "SYNOLOGY"]);
 
@@ -194,6 +207,22 @@ function CorporatePage() {
       </div>
 
       <div className="mx-auto max-w-7xl space-y-12 px-4 py-12">
+        <Section
+          icon={<Laptop className="h-6 w-6 text-slate-600" />}
+          title="Notebook สำหรับองค์กร"
+          subtitle="Lenovo · HP · Dell · Acer · ASUS"
+          products={notebook.data ?? []}
+          loading={notebook.isLoading}
+          viewAllCategory="Notebook"
+        />
+        <Section
+          icon={<Monitor className="h-6 w-6 text-slate-600" />}
+          title="Desktop PC / AIO"
+          subtitle="Lenovo ThinkCentre · HP · Acer · MSI"
+          products={desktop.data ?? []}
+          loading={desktop.isLoading}
+          viewAllCategory="PC"
+        />
         <Section
           icon={<Wifi className="h-6 w-6 text-blue-600" />}
           title="Network Equipment"
