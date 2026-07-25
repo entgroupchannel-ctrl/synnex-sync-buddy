@@ -33,6 +33,8 @@ type PoRow = {
 
 function PurchaseOrdersPage() {
   const qc = useQueryClient();
+  const navigate = useNavigate();
+
   const getPending = useServerFn(getPendingItemsByDistributor);
   const generatePo = useServerFn(generatePurchaseOrder);
   const [generatingFor, setGeneratingFor] = useState<string | null>(null);
