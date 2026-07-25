@@ -183,6 +183,7 @@ function PurchaseOrdersPage() {
               <TableHead className="text-right">รายการ</TableHead>
               <TableHead className="text-right">ยอดรวม (ก่อน VAT)</TableHead>
               <TableHead>วันที่</TableHead>
+              <TableHead>เอกสาร</TableHead>
               <TableHead></TableHead>
             </TableRow>
           </TableHeader>
