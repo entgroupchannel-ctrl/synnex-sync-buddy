@@ -1291,6 +1291,42 @@ export type Database = {
         }
         Relationships: []
       }
+      saved_cards: {
+        Row: {
+          brand: string
+          created_at: string | null
+          expiration_month: number | null
+          expiration_year: number | null
+          id: string
+          is_default: boolean
+          last_digits: string
+          omise_card_id: string
+          user_id: string
+        }
+        Insert: {
+          brand: string
+          created_at?: string | null
+          expiration_month?: number | null
+          expiration_year?: number | null
+          id?: string
+          is_default?: boolean
+          last_digits: string
+          omise_card_id: string
+          user_id: string
+        }
+        Update: {
+          brand?: string
+          created_at?: string | null
+          expiration_month?: number | null
+          expiration_year?: number | null
+          id?: string
+          is_default?: boolean
+          last_digits?: string
+          omise_card_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       shipping_events: {
         Row: {
           description: string | null
@@ -1599,6 +1635,7 @@ export type Database = {
           id: string
           is_admin: boolean | null
           loyalty_tier: string | null
+          omise_customer_id: string | null
           phone: string | null
           position: string | null
           tags: string[]
@@ -1620,6 +1657,7 @@ export type Database = {
           id: string
           is_admin?: boolean | null
           loyalty_tier?: string | null
+          omise_customer_id?: string | null
           phone?: string | null
           position?: string | null
           tags?: string[]
@@ -1641,6 +1679,7 @@ export type Database = {
           id?: string
           is_admin?: boolean | null
           loyalty_tier?: string | null
+          omise_customer_id?: string | null
           phone?: string | null
           position?: string | null
           tags?: string[]

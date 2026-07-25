@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,7 @@ import { ArrowLeft, Banknote, Truck, Building2, User, Loader2, Tag, X, CheckCirc
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { CheckoutTrustBox } from "@/components/trust-signals";
+import { OmiseCardForm } from "@/components/omise-card-form";
 import { ShippingMethodSelector } from "@/components/shipping-method-selector";
 import { getItemWeightKg, priceFmt, useCart } from "@/lib/cart";
 import { useSupabaseUser } from "@/lib/auth-sheet";
@@ -92,7 +94,31 @@ function CheckoutPage() {
   const [errors, setErrors] = useState<Partial<Record<keyof Fields | keyof z.infer<typeof taxSchema>, string>>>({});
   const [wantsTaxInvoice, setWantsTaxInvoice] = useState(false);
   const [tax, setTax] = useState({ company_name: "", tax_id: "", company_address: "" });
-  const [payment, setPayment] = useState<"transfer" | "cod" | "promptpay" | "credit">("promptpay");
+  const [payment, setPayment] = useState<"transfer" | "cod" | "promptpay" | "credit" | "credit_card">("promptpay");
+  const [cardToken, setCardToken] = useState<string | null>(null);
+  const [saveNewCard, setSaveNewCard] = useState(true);
+  const [selectedSavedCardId, setSelectedSavedCardId] = useState<string | null>(null);
+  const [useNewCard, setUseNewCard] = useState(false);
+
+  const savedCardsQ = useQuery({
+    queryKey: ["saved-cards-checkout"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("saved_cards")
+        .select("id, brand, last_digits, is_default")
+        .order("is_default", { ascending: false });
+      if (error) throw error;
+      return (data ?? []) as { id: string; brand: string; last_digits: string; is_default: boolean }[];
+    },
+  });
+
+  useEffect(() => {
+    if (savedCardsQ.data && savedCardsQ.data.length > 0 && !selectedSavedCardId) {
+      setSelectedSavedCardId(savedCardsQ.data.find((c) => c.is_default)?.id ?? savedCardsQ.data[0].id);
+    } else if (savedCardsQ.data && savedCardsQ.data.length === 0) {
+      setUseNewCard(true);
+    }
+  }, [savedCardsQ.data]);
   const [submitting, setSubmitting] = useState(false);
   const [orderCreated, setOrderCreated] = useState(false);
 
@@ -338,6 +364,32 @@ function CheckoutPage() {
           note: `สั่งซื้อด้วยวงเงินเครดิต (${creditAccount.payment_terms_days} วัน)`,
         });
         if (cErr) console.warn("[credit txn]", cErr);
+      }
+
+      // Credit card charge — charge ทันทีหลังสร้างออเดอร์เสร็จ
+      if (payment === "credit_card") {
+        const { data: sessionData } = await supabase.auth.getSession();
+        const chargeBody: Record<string, unknown> = { order_id: order.id };
+        if (!useNewCard && selectedSavedCardId) {
+          chargeBody.saved_card_id = selectedSavedCardId;
+        } else if (cardToken) {
+          chargeBody.token = cardToken;
+          chargeBody.save_card = saveNewCard;
+        } else {
+          throw new Error("กรุณากรอกข้อมูลบัตรหรือเลือกบัตรที่บันทึกไว้ก่อนยืนยันคำสั่งซื้อ");
+        }
+        const { data: chargeData, error: chargeErr } = await supabase.functions.invoke("create-omise-card-charge", {
+          body: chargeBody,
+          headers: sessionData.session ? { Authorization: `Bearer ${sessionData.session.access_token}` } : undefined,
+        });
+        if (chargeErr || chargeData?.error) {
+          throw new Error(chargeData?.error ?? "ชำระเงินด้วยบัตรไม่สำเร็จ");
+        }
+        if (chargeData.authorize_uri) {
+          // ต้องยืนยัน 3D Secure ก่อน — พาไปหน้ายืนยันของธนาคาร แล้วธนาคารจะ redirect กลับมาที่ return_uri เอง
+          window.location.href = chargeData.authorize_uri;
+          return;
+        }
       }
 
       // Fire-and-forget: send order confirmation email
@@ -671,7 +723,7 @@ function CheckoutPage() {
             {/* Payment */}
             <section className="space-y-3 rounded-lg border bg-white p-6">
               <h2 className="font-bold text-[color:var(--brand-navy)]">วิธีการชำระเงิน</h2>
-              <RadioGroup value={payment} onValueChange={(v) => setPayment(v as "transfer" | "cod" | "promptpay" | "credit")} className="grid gap-2 sm:grid-cols-3">
+              <RadioGroup value={payment} onValueChange={(v) => setPayment(v as "transfer" | "cod" | "promptpay" | "credit" | "credit_card")} className="grid gap-2 sm:grid-cols-3">
                 {creditAccount && (
                   <label
                     className={`flex items-center gap-3 rounded-lg border-2 p-4 transition sm:col-span-3 ${
@@ -719,7 +771,63 @@ function CheckoutPage() {
                     <div className="text-xs text-slate-500">+฿{COD_FEE} ค่าธรรมเนียม</div>
                   </div>
                 </label>
+                <label className={`flex cursor-pointer items-center gap-3 rounded-lg border-2 p-4 transition ${payment === "credit_card" ? "border-purple-600 bg-purple-50" : "hover:bg-slate-50"}`}>
+                  <RadioGroupItem value="credit_card" />
+                  <CreditCard className="h-5 w-5 text-purple-700" />
+                  <div>
+                    <div className="font-semibold">บัตรเครดิต/เดบิต</div>
+                    <div className="text-xs text-slate-500">Visa, Mastercard, JCB</div>
+                  </div>
+                </label>
               </RadioGroup>
+
+              {payment === "credit_card" && (
+                <div className="rounded-lg border bg-slate-50 p-4">
+                  {(savedCardsQ.data?.length ?? 0) > 0 && !useNewCard ? (
+                    <div className="space-y-2">
+                      {savedCardsQ.data!.map((c) => (
+                        <label key={c.id} className="flex cursor-pointer items-center gap-3 rounded-md border bg-white px-3 py-2 text-sm">
+                          <input
+                            type="radio"
+                            checked={selectedSavedCardId === c.id}
+                            onChange={() => setSelectedSavedCardId(c.id)}
+                          />
+                          <CreditCard className="h-4 w-4 text-slate-500" />
+                          <span className="font-semibold">{c.brand} **** {c.last_digits}</span>
+                          {c.is_default && <span className="rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] text-emerald-700">ค่าเริ่มต้น</span>}
+                        </label>
+                      ))}
+                      <button
+                        type="button"
+                        onClick={() => setUseNewCard(true)}
+                        className="text-sm text-purple-700 underline"
+                      >
+                        + ใช้บัตรใบใหม่
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      {(savedCardsQ.data?.length ?? 0) > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => setUseNewCard(false)}
+                          className="mb-3 text-sm text-purple-700 underline"
+                        >
+                          ← เลือกจากบัตรที่บันทึกไว้
+                        </button>
+                      )}
+                      <OmiseCardForm
+                        onToken={(token, save) => {
+                          setCardToken(token);
+                          setSaveNewCard(save);
+                          toast.success("รับข้อมูลบัตรแล้ว กด \"ยืนยันคำสั่งซื้อ\" เพื่อชำระเงิน");
+                        }}
+                        submitLabel="ยืนยันข้อมูลบัตร"
+                      />
+                    </>
+                  )}
+                </div>
+              )}
             </section>
           </div>
 
