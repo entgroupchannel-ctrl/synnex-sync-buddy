@@ -1425,3 +1425,173 @@ export function SmartLife() {
     </section>
   );
 }
+
+/* ---------- Corporate IT Solutions ---------- */
+
+type CorpTab = "all" | "network" | "storage" | "security" | "printer" | "ups";
+
+const CORP_TABS: { key: CorpTab; label: string }[] = [
+  { key: "all", label: "ทั้งหมด" },
+  { key: "network", label: "🌐 Network" },
+  { key: "storage", label: "💾 Storage & NAS" },
+  { key: "security", label: "🔒 Security" },
+  { key: "printer", label: "🖨️ Printer" },
+  { key: "ups", label: "⚡ UPS" },
+];
+
+export function CorporateITSolutions() {
+  const [tab, setTab] = useState<CorpTab>("all");
+
+  const q = useQuery({
+    queryKey: ["corporate-it", tab],
+    queryFn: async () => {
+      let qi = supabase
+        .from("synnex_products")
+        .select("*")
+        .eq("price_approved", true)
+        .gt("selling_price", 0)
+        .order("selling_price", { ascending: true })
+        .limit(10);
+
+      if (tab === "all") {
+        qi = qi
+          .in("category", ["Network", "Storage"])
+          .in("brand", ["CISCO", "DLINK", "TPLINK", "UBIQUITI", "QNAP", "SYNOLOGY", "FORTINET"]);
+      } else if (tab === "network") {
+        qi = qi.in("category", ["Network"]);
+      } else if (tab === "storage") {
+        qi = qi.eq("category", "Storage");
+      } else if (tab === "security") {
+        qi = qi.eq("category", "Smart Life").in("brand", ["DAHUA", "HIKVISION", "EZVIZ"]);
+      } else if (tab === "printer") {
+        qi = qi.eq("category", "Printer");
+      } else if (tab === "ups") {
+        qi = qi.eq("category", "PC").in("brand", ["APC", "SYNDOME", "SUN", "ETECH", "VERTIV", "CKT"]);
+      }
+
+      const { data } = await qi;
+      return (data ?? []) as (ProductRow & { b2b_price?: number | null })[];
+    },
+    staleTime: 5 * 60_000,
+  });
+
+  const products = q.data ?? [];
+
+  return (
+    <section
+      className="py-14"
+      style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)" }}
+    >
+      <div className="mx-auto max-w-7xl px-4">
+        <div className="mb-8 text-center">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-blue-500/30 bg-blue-500/20 px-4 py-1.5 text-sm text-blue-300">
+            🏢 FOR BUSINESS & ENTERPRISE
+          </div>
+          <h2 className="mb-3 text-3xl font-black text-white md:text-4xl">
+            Corporate IT Solutions
+          </h2>
+          <p className="mx-auto max-w-2xl text-base text-slate-400 md:text-lg">
+            Network · Security · Storage · Server
+            <br />
+            สำหรับองค์กร หน่วยงาน และธุรกิจทุกขนาด
+          </p>
+        </div>
+
+        <div className="mb-6 flex flex-wrap justify-center gap-2">
+          {CORP_TABS.map((t) => (
+            <button
+              key={t.key}
+              onClick={() => setTab(t.key)}
+              className={`shrink-0 rounded-full px-4 py-1.5 text-xs font-medium whitespace-nowrap transition-colors ${
+                tab === t.key
+                  ? "bg-blue-600 text-white"
+                  : "bg-white/10 text-slate-300 hover:bg-white/20"
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+
+        {products.length === 0 ? (
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-10 text-center text-sm text-slate-400">
+            {q.isLoading ? "กำลังโหลด..." : "ยังไม่มีสินค้าในหมวดนี้ กรุณาติดต่อทีมขาย 02-045-6104"}
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 lg:gap-4">
+            {products.map((p) => {
+              const slug = (p.slug as string | null) || (p.id as string);
+              const b2b = p.b2b_price ?? null;
+              return (
+                <Link
+                  key={p.id as string}
+                  to="/product/$slug"
+                  params={{ slug }}
+                  className="group cursor-pointer rounded-2xl border border-white/10 bg-white/5 p-4 transition-all duration-200 hover:border-white/20 hover:bg-white/10"
+                >
+                  <div className="mb-3 grid aspect-square place-items-center overflow-hidden rounded-xl bg-white/5">
+                    <ProductImage
+                      src={p.image_url as string | null}
+                      alt={(p.name as string | null) ?? ""}
+                      brand={p.brand as string | null}
+                      category={p.category as string | null}
+                      className="max-h-[120px] object-contain"
+                    />
+                  </div>
+                  <div className="mb-1 text-[10px] font-bold uppercase tracking-wider text-blue-400">
+                    {(p.brand as string | null) ?? ""}
+                  </div>
+                  <div className="mb-2 line-clamp-2 min-h-[32px] text-xs leading-tight text-slate-300">
+                    {(p.name as string | null) ?? ""}
+                  </div>
+                  <div className="text-base font-black text-white">
+                    ฿{Number(p.selling_price).toLocaleString("th-TH")}
+                  </div>
+                  {b2b && b2b > 0 ? (
+                    <div className="mt-0.5 text-[10px] text-blue-300">
+                      B2B: ฿{Number(b2b).toLocaleString("th-TH")}
+                    </div>
+                  ) : null}
+                </Link>
+              );
+            })}
+          </div>
+        )}
+
+        <div className="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
+          {[
+            { icon: "📋", title: "ใบเสนอราคา", desc: "ออกใบเสนอราคาได้ทันที" },
+            { icon: "🧾", title: "ใบกำกับภาษี", desc: "รองรับนิติบุคคล VAT 7%" },
+            { icon: "💳", title: "วงเงินเครดิต", desc: "สำหรับองค์กรที่ผ่านการอนุมัติ" },
+            { icon: "🛠️", title: "After Sale", desc: "ทีมช่างผู้เชี่ยวชาญพร้อมให้บริการ" },
+          ].map((item) => (
+            <div
+              key={item.title}
+              className="rounded-xl border border-white/10 bg-white/5 p-4 text-center"
+            >
+              <div className="mb-2 text-2xl">{item.icon}</div>
+              <div className="text-sm font-bold text-white">{item.title}</div>
+              <div className="mt-1 text-xs text-slate-400">{item.desc}</div>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-8 flex flex-wrap justify-center gap-4">
+          <Link
+            to="/"
+            search={{ category: "Network" } as never}
+            className="rounded-full bg-blue-600 px-8 py-3 font-bold text-white transition-all hover:bg-blue-500"
+          >
+            ดูสินค้า Corporate ทั้งหมด →
+          </Link>
+          <Link
+            to="/credit-application"
+            className="rounded-full border border-white/30 px-8 py-3 font-medium text-white transition-all hover:bg-white/10"
+          >
+            💳 สมัครวงเงินเครดิต B2B
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
