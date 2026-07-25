@@ -72,20 +72,40 @@ function CartPage() {
     enabled: skus.length > 0,
     queryKey: ["cart-fulfill", skus.join(",")],
     queryFn: async () => {
-      const { data } = await supabase.from("synnex_products").select("sku,fulfillment_type").in("sku", skus);
-      const map: Record<string, string | null> = {};
-      for (const r of data ?? []) map[(r as { sku: string }).sku] = (r as { fulfillment_type: string | null }).fulfillment_type;
+      const { data } = await supabase.from("synnex_products").select("sku,fulfillment_type,brand,category").in("sku", skus);
+      const map: Record<string, { fulfillment_type: string | null; brand: string | null; category: string | null }> = {};
+      for (const r of data ?? []) {
+        const row = r as { sku: string; fulfillment_type: string | null; brand: string | null; category: string | null };
+        map[row.sku] = { fulfillment_type: row.fulfillment_type, brand: row.brand, category: row.category };
+      }
       return map;
     },
     staleTime: 60_000,
   });
   const fulfillMap = fulfillQ.data ?? {};
-  const hasByOrder = items.some((i) => fulfillMap[i.sku] === "by_order");
+  const hasByOrder = items.some((i) => fulfillMap[i.sku]?.fulfillment_type === "by_order");
+
+  // Volume discount (grouped by brand, falling back to category)
+  const { data: volumeRules } = useVolumeRules();
+  const volume = useMemo(
+    () =>
+      getVolumeDiscount(
+        items.map((i) => ({
+          brand: fulfillMap[i.sku]?.brand ?? null,
+          category: fulfillMap[i.sku]?.category ?? i.category ?? null,
+          price: i.price,
+          qty: i.qty,
+        })),
+        volumeRules,
+      ),
+    [items, fulfillMap, volumeRules],
+  );
 
   // Cheapest fee across both zones (used for a rough "cart total incl. shipping" preview)
   const cheapestFee = Math.min(shipBkk.fee, shipOther.fee);
   const isBkkFree = shipBkk.freeShipping;
   const remainingForFree = Math.max(0, 5000 - total);
+
 
 
   // Persist cart snapshot for logged-in users so the reminder job can email them.
