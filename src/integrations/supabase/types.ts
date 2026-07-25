@@ -1406,6 +1406,54 @@ export type Database = {
         }
         Relationships: []
       }
+      volume_discount_rules: {
+        Row: {
+          apply_to: string
+          apply_value: string | null
+          created_at: string | null
+          discount_type: string
+          discount_value: number
+          id: string
+          is_active: boolean | null
+          label_en: string | null
+          label_th: string | null
+          max_qty: number | null
+          min_qty: number
+          valid_from: string | null
+          valid_until: string | null
+        }
+        Insert: {
+          apply_to: string
+          apply_value?: string | null
+          created_at?: string | null
+          discount_type: string
+          discount_value: number
+          id?: string
+          is_active?: boolean | null
+          label_en?: string | null
+          label_th?: string | null
+          max_qty?: number | null
+          min_qty: number
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Update: {
+          apply_to?: string
+          apply_value?: string | null
+          created_at?: string | null
+          discount_type?: string
+          discount_value?: number
+          id?: string
+          is_active?: boolean | null
+          label_en?: string | null
+          label_th?: string | null
+          max_qty?: number | null
+          min_qty?: number
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Relationships: []
+      }
       volume_discounts: {
         Row: {
           applies_to: string | null

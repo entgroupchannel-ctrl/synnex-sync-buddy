@@ -16,6 +16,7 @@ import { saveCartReminder, deleteCartReminder } from "@/lib/cart-reminder";
 import { getWeightBasedShippingFee } from "@/lib/shipping";
 import { CartReassurance } from "@/components/trust-signals";
 import { DeliveryZoneInfoBox } from "@/components/delivery-zone-dialog";
+import { useVolumeRules, getVolumeDiscount } from "@/lib/volume-discount";
 
 
 export const Route = createFileRoute("/cart")({
@@ -72,20 +73,40 @@ function CartPage() {
     enabled: skus.length > 0,
     queryKey: ["cart-fulfill", skus.join(",")],
     queryFn: async () => {
-      const { data } = await supabase.from("synnex_products").select("sku,fulfillment_type").in("sku", skus);
-      const map: Record<string, string | null> = {};
-      for (const r of data ?? []) map[(r as { sku: string }).sku] = (r as { fulfillment_type: string | null }).fulfillment_type;
+      const { data } = await supabase.from("synnex_products").select("sku,fulfillment_type,brand,category").in("sku", skus);
+      const map: Record<string, { fulfillment_type: string | null; brand: string | null; category: string | null }> = {};
+      for (const r of data ?? []) {
+        const row = r as { sku: string; fulfillment_type: string | null; brand: string | null; category: string | null };
+        map[row.sku] = { fulfillment_type: row.fulfillment_type, brand: row.brand, category: row.category };
+      }
       return map;
     },
     staleTime: 60_000,
   });
   const fulfillMap = fulfillQ.data ?? {};
-  const hasByOrder = items.some((i) => fulfillMap[i.sku] === "by_order");
+  const hasByOrder = items.some((i) => fulfillMap[i.sku]?.fulfillment_type === "by_order");
+
+  // Volume discount (grouped by brand, falling back to category)
+  const { data: volumeRules } = useVolumeRules();
+  const volume = useMemo(
+    () =>
+      getVolumeDiscount(
+        items.map((i) => ({
+          brand: fulfillMap[i.sku]?.brand ?? null,
+          category: fulfillMap[i.sku]?.category ?? i.category ?? null,
+          price: i.price,
+          qty: i.qty,
+        })),
+        volumeRules,
+      ),
+    [items, fulfillMap, volumeRules],
+  );
 
   // Cheapest fee across both zones (used for a rough "cart total incl. shipping" preview)
   const cheapestFee = Math.min(shipBkk.fee, shipOther.fee);
   const isBkkFree = shipBkk.freeShipping;
   const remainingForFree = Math.max(0, 5000 - total);
+
 
 
   // Persist cart snapshot for logged-in users so the reminder job can email them.
@@ -112,7 +133,17 @@ function CartPage() {
         ) : (
           <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
             <div className="space-y-3">
+              {volume.groups.map((g) => (
+                <div key={g.key} className="rounded-lg border border-green-200 bg-green-50 p-3 text-sm font-semibold text-green-800">
+                  🎉 คุณได้รับส่วนลด{" "}
+                  {g.rule.discount_type === "percent"
+                    ? `${Number(g.rule.discount_value)}%`
+                    : priceFmt.format(Number(g.rule.discount_value))}{" "}
+                  สำหรับการซื้อ {g.key} {g.qty} ชิ้น!
+                </div>
+              ))}
               {hasByOrder && (
+
                 <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">
                   <div className="flex items-center gap-2 font-bold">
                     <AlertTriangle className="h-4 w-4" /> สินค้า By Order ในตะกร้าของคุณ
@@ -122,7 +153,7 @@ function CartPage() {
                 </div>
               )}
               {items.map((it) => {
-                const itemByOrder = fulfillMap[it.sku] === "by_order";
+                const itemByOrder = fulfillMap[it.sku]?.fulfillment_type === "by_order";
                 const displaySku = safeDisplaySku(it.sku);
                 return (
                 <div key={it.id} className="flex max-w-full gap-4 rounded-lg border bg-white p-4">
@@ -182,10 +213,17 @@ function CartPage() {
                 <span>{t("cart.subtotal")}</span>
                 <span>{priceFmt.format(total)}</span>
               </div>
+              {volume.total > 0 && (
+                <div className="mt-1 flex justify-between text-sm font-semibold text-green-600">
+                  <span>🏷️ ส่วนลดปริมาณ</span>
+                  <span>-{priceFmt.format(volume.total)} ✅</span>
+                </div>
+              )}
               <div className="mt-1 flex justify-between text-sm text-slate-600">
                 <span>{t("cart.shipping")}</span>
                 <span className="text-slate-500">คำนวณตอนชำระเงิน</span>
               </div>
+
 
               <div className="mt-3 space-y-2 rounded-lg border border-slate-200 bg-slate-50 p-3 text-xs text-slate-700">
                 <div className="flex items-start gap-2">
@@ -230,8 +268,9 @@ function CartPage() {
               <div className="my-4 h-px bg-slate-200" />
               <div className="flex justify-between text-lg font-bold text-[color:var(--brand-navy)]">
                 <span>{t("cart.total")}</span>
-                <span>{priceFmt.format(total + cheapestFee)}</span>
+                <span>{priceFmt.format(Math.max(0, total - volume.total) + cheapestFee)}</span>
               </div>
+
               {hasByOrder && (
                 <p className="mt-2 text-xs text-orange-600">* ราคาสินค้า By Order จะแจ้งแยกต่างหาก</p>
               )}
