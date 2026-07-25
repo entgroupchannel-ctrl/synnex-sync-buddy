@@ -387,6 +387,8 @@ function ProductDetail() {
                           <span className="rounded-md bg-red-100 px-2 py-0.5 text-xs font-bold text-red-700">
                             ประหยัด {pr.savingsPct}%
                           </span>
+                        </>
+                      )}
                     </div>
                     <div className="mt-2 flex flex-wrap gap-2">
                       <B2BBadgeLarge
