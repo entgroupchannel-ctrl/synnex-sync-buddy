@@ -330,7 +330,7 @@ export function SiteFooter() {
             </ul>
           </Column>
 
-          {/* Column 3 — Payment */}
+          {/* Column 4 — Payment */}
           <Column title="วิธีการชำระเงิน / Payment">
             <PillList
               items={[
