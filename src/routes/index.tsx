@@ -1103,7 +1103,7 @@ function HomePage() {
                       )}
                       {byOrder && <div className="text-[11px] text-blue-700">⏱ รับสินค้าภายใน 30 วัน</div>}
                       {priced && !byOrder && <DeliveryHint category={p.category} name={p.name} price={getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier)} />}
-                      {!isQuoteOnly(p.selling_price) && (priced ? (
+                      {priced ? (
                         available ? (
                           <Button onClick={() => addToCart(p as Record<string, unknown>)} className="w-full bg-[color:var(--brand-navy)] hover:bg-[color:var(--brand-navy-2)]" size="sm">
                             <ShoppingCart className="mr-1.5 h-4 w-4" /> {byOrder ? "สั่งจอง" : "ใส่ตะกร้า"}
@@ -1122,7 +1122,7 @@ function HomePage() {
                         <Button asChild className="w-full bg-[color:var(--brand-green)] hover:opacity-90" size="sm">
                           <a href="tel:020456104">📞 สอบถามราคา</a>
                         </Button>
-                      ))}
+                      )}
                     </div>
                   </div>
                 );
