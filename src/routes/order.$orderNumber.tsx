@@ -321,12 +321,42 @@ function OrderConfirm() {
                     <span>อัปโหลดสลิปสำเร็จ ✓</span>
                     <a href={slipUrl} target="_blank" rel="noreferrer" className="ml-auto underline">ดูสลิป</a>
                   </div>
+                ) : pendingFile ? (
+                  <div className="rounded-lg border-2 border-slate-200 bg-white p-4">
+                    <div className="mb-3 text-sm font-semibold text-slate-700">ตรวจสอบไฟล์ก่อนส่ง</div>
+                    {pendingPreview ? (
+                      <img src={pendingPreview} alt="ตัวอย่างสลิป" className="max-h-64 w-full rounded-md border object-contain bg-slate-50" />
+                    ) : (
+                      <div className="flex items-center gap-2 rounded-md border bg-slate-50 p-3 text-sm text-slate-600">
+                        <FileCheck2 className="h-5 w-5" /> {pendingFile.name}
+                      </div>
+                    )}
+                    <div className="mt-3 flex gap-2">
+                      <button
+                        type="button"
+                        onClick={cancelPending}
+                        disabled={uploading}
+                        className="flex-1 rounded-lg border px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 disabled:opacity-50"
+                      >
+                        ยกเลิก / เลือกใหม่
+                      </button>
+                      <button
+                        type="button"
+                        onClick={confirmUpload}
+                        disabled={uploading}
+                        className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-[color:var(--brand-green)] px-4 py-2 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-60"
+                      >
+                        {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                        {uploading ? "กำลังส่ง..." : "ยืนยันส่งสลิป"}
+                      </button>
+                    </div>
+                  </div>
                 ) : (
-                  <label className={`flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-dashed border-slate-300 bg-white px-4 py-6 text-sm font-semibold text-[color:var(--brand-navy)] hover:bg-slate-50 ${uploading ? "pointer-events-none opacity-60" : ""}`}>
-                    {uploading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Upload className="h-5 w-5" />}
-                    {uploading ? "กำลังอัปโหลด..." : "แนบสลิปโอนเงิน"}
-                    <input type="file" accept={ACCEPT} className="hidden" disabled={uploading}
-                      onChange={(e) => e.target.files?.[0] && uploadSlip(e.target.files[0])} />
+                  <label className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-dashed border-slate-300 bg-white px-4 py-6 text-sm font-semibold text-[color:var(--brand-navy)] hover:bg-slate-50">
+                    <Upload className="h-5 w-5" />
+                    แนบสลิปโอนเงิน
+                    <input type="file" accept={ACCEPT} className="hidden"
+                      onChange={(e) => e.target.files?.[0] && selectFile(e.target.files[0])} />
                   </label>
                 )}
                 <p className="mt-2 text-xs text-slate-500">รองรับ JPG, PNG, WebP, PDF ไม่เกิน 5MB</p>
