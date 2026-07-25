@@ -994,7 +994,7 @@ export function MicrosoftFeatured() {
 
         <div className="flex gap-4 overflow-x-auto pb-3 no-scrollbar snap-x">
           {q.data!.map((p) => {
-            const meta = msMeta(p.name);
+            const meta = msMeta(p.name, p.brand);
             const slug = p.slug || p.id;
             const selling = getSellingPrice(p, tier) ?? 0;
             const regular = p.selling_price ?? 0;
@@ -1006,13 +1006,12 @@ export function MicrosoftFeatured() {
                 className="group relative flex w-64 shrink-0 snap-start flex-col overflow-hidden rounded-xl bg-white shadow-sm transition hover:shadow-lg"
                 style={{ border: "1px solid #bfdbfe" }}
               >
-                {/* Microsoft logo top-left */}
-                <div className="absolute left-2 top-2 z-10 rounded-md border border-slate-200 bg-white p-1 shadow-sm">
-                  <img
-                    src="https://img.icons8.com/color/48/microsoft.png"
-                    alt="Microsoft"
-                    className="h-5 w-5 object-contain"
-                  />
+                {/* Brand icon + name top-left */}
+                <div className="absolute left-2 top-2 z-10 flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-1.5 py-1 shadow-sm">
+                  <span className="text-base leading-none">{getSoftwareBrandIcon(p.brand)}</span>
+                  {p.brand && (
+                    <span className="text-xs font-semibold uppercase text-slate-500">{p.brand}</span>
+                  )}
                 </div>
                 {/* Genuine license pill */}
                 <div className="absolute right-2 top-2 z-10 rounded-full bg-emerald-500 px-2 py-0.5 text-[10px] font-bold text-white shadow-sm">
@@ -1068,7 +1067,7 @@ export function MicrosoftFeatured() {
             <span className="text-emerald-600">✓</span> รับประกันศูนย์ไทย
           </span>
           <span className="inline-flex items-center gap-1.5 rounded-full bg-white/70 px-3 py-1.5 shadow-sm">
-            <span className="text-emerald-600">✓</span> รับประกันโดย Microsoft Thailand
+            <span className="text-emerald-600">✓</span> รับประกันจากผู้ผลิตโดยตรง
           </span>
         </div>
       </div>
