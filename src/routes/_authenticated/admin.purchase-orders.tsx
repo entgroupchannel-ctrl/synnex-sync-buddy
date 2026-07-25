@@ -85,6 +85,25 @@ function PurchaseOrdersPage() {
   const pending = pendingQ.data ?? [];
   const poList = poListQ.data ?? [];
 
+  const [pdfBusy, setPdfBusy] = useState<string | null>(null);
+  const makePdf = async (poId: string) => {
+    setPdfBusy(poId);
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-purchase-order", {
+        body: { po_id: poId },
+      });
+      if (error) throw error;
+      toast.success("สร้างเอกสาร PDF สำเร็จ");
+      qc.invalidateQueries({ queryKey: ["purchase-orders"] });
+      const url = (data as { pdf_url?: string })?.pdf_url;
+      if (url) window.open(url, "_blank");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "สร้าง PDF ไม่สำเร็จ");
+    } finally {
+      setPdfBusy(null);
+    }
+  };
+
   const statusLabel: Record<string, string> = {
     draft: "ร่าง", sent: "ส่งแล้ว", confirmed: "ยืนยันแล้ว",
     shipped: "จัดส่งแล้ว", partially_shipped: "จัดส่งบางส่วน",
