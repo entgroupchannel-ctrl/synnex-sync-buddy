@@ -342,10 +342,10 @@ function HomePage() {
           q = q.or("name.ilike.%RAM%,name.ilike.%DDR%,name.ilike.%Memory%");
         }
         if (selectedBrands.length > 0) q = q.in("brand", selectedBrands);
-        if (search.min > 0) q = q.gte("price", search.min);
-        if (search.max < PRICE_MAX) q = q.lte("price", search.max);
-        if (search.sort === "price-asc") q = q.order("price", { ascending: true, nullsFirst: false });
-        else if (search.sort === "price-desc") q = q.order("price", { ascending: false, nullsFirst: false });
+        if (search.min > 0) q = q.gte("selling_price", search.min);
+        if (search.max < PRICE_MAX) q = q.lte("selling_price", search.max);
+        if (search.sort === "price-asc") q = q.order("selling_price", { ascending: true, nullsFirst: false });
+        else if (search.sort === "price-desc") q = q.order("selling_price", { ascending: false, nullsFirst: false });
         else if (search.sort === "popular") q = q.order("name", { ascending: true });
         else if (search.category === "Smart Life") q = q.order("selling_price", { ascending: true, nullsFirst: false });
         else q = q.order("synced_at", { ascending: false });
