@@ -927,10 +927,34 @@ const MS_DESCRIPTIONS: { match: RegExp; short: string; desc: string }[] = [
   { match: /m365|365\s*personal/i, short: "M365 Personal", desc: "Microsoft 365 สำหรับผู้ใช้ 1 คน" },
 ];
 
-function msMeta(name: string | null | undefined) {
+function getSoftwareDescription(brand: string | null | undefined, name: string | null | undefined): string {
+  const b = (brand ?? "").toUpperCase();
+  const n = (name ?? "").toUpperCase();
+  if (b.includes("KASPERSKY")) return "โปรแกรมป้องกันไวรัส ลิขสิทธิ์แท้จาก Kaspersky Lab";
+  if (b.includes("ESET")) return "โปรแกรมป้องกันไวรัส ลิขสิทธิ์แท้จาก ESET";
+  if (b.includes("MCAFEE")) return "โปรแกรมความปลอดภัย ลิขสิทธิ์แท้จาก McAfee";
+  if (b.includes("MICROSOFT")) {
+    if (n.includes("WINDOWS")) return "ระบบปฏิบัติการ Windows ลิขสิทธิ์แท้จาก Microsoft";
+    if (n.includes("365") || n.includes("M365")) return "Microsoft 365 สำหรับผู้ใช้ 1 คน หรือครอบครัว";
+    if (n.includes("OFFICE")) return "Microsoft Office ลิขสิทธิ์แท้ ใช้งานได้ตลอดชีพ";
+    return "ซอฟต์แวร์ลิขสิทธิ์แท้จาก Microsoft";
+  }
+  return "ซอฟต์แวร์ลิขสิทธิ์แท้ 100%";
+}
+
+function getSoftwareBrandIcon(brand: string | null | undefined): string {
+  const b = (brand ?? "").toUpperCase();
+  if (b.includes("KASPERSKY")) return "🛡️";
+  if (b.includes("ESET")) return "🔒";
+  if (b.includes("MCAFEE")) return "🔐";
+  if (b.includes("MICROSOFT")) return "🪟";
+  return "💿";
+}
+
+function msMeta(name: string | null | undefined, brand?: string | null) {
   const n = name ?? "";
   for (const m of MS_DESCRIPTIONS) if (m.match.test(n)) return { short: m.short, desc: m.desc };
-  return { short: n.length > 40 ? n.slice(0, 40) + "…" : n, desc: "ผลิตภัณฑ์ลิขสิทธิ์แท้จาก Microsoft" };
+  return { short: n.length > 40 ? n.slice(0, 40) + "…" : n, desc: getSoftwareDescription(brand, n) };
 }
 
 export function MicrosoftFeatured() {
@@ -970,7 +994,7 @@ export function MicrosoftFeatured() {
 
         <div className="flex gap-4 overflow-x-auto pb-3 no-scrollbar snap-x">
           {q.data!.map((p) => {
-            const meta = msMeta(p.name);
+            const meta = msMeta(p.name, p.brand);
             const slug = p.slug || p.id;
             const selling = getSellingPrice(p, tier) ?? 0;
             const regular = p.selling_price ?? 0;
@@ -982,13 +1006,12 @@ export function MicrosoftFeatured() {
                 className="group relative flex w-64 shrink-0 snap-start flex-col overflow-hidden rounded-xl bg-white shadow-sm transition hover:shadow-lg"
                 style={{ border: "1px solid #bfdbfe" }}
               >
-                {/* Microsoft logo top-left */}
-                <div className="absolute left-2 top-2 z-10 rounded-md border border-slate-200 bg-white p-1 shadow-sm">
-                  <img
-                    src="https://img.icons8.com/color/48/microsoft.png"
-                    alt="Microsoft"
-                    className="h-5 w-5 object-contain"
-                  />
+                {/* Brand icon + name top-left */}
+                <div className="absolute left-2 top-2 z-10 flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-1.5 py-1 shadow-sm">
+                  <span className="text-base leading-none">{getSoftwareBrandIcon(p.brand)}</span>
+                  {p.brand && (
+                    <span className="text-xs font-semibold uppercase text-slate-500">{p.brand}</span>
+                  )}
                 </div>
                 {/* Genuine license pill */}
                 <div className="absolute right-2 top-2 z-10 rounded-full bg-emerald-500 px-2 py-0.5 text-[10px] font-bold text-white shadow-sm">
@@ -1044,7 +1067,7 @@ export function MicrosoftFeatured() {
             <span className="text-emerald-600">✓</span> รับประกันศูนย์ไทย
           </span>
           <span className="inline-flex items-center gap-1.5 rounded-full bg-white/70 px-3 py-1.5 shadow-sm">
-            <span className="text-emerald-600">✓</span> รับประกันโดย Microsoft Thailand
+            <span className="text-emerald-600">✓</span> รับประกันจากผู้ผลิตโดยตรง
           </span>
         </div>
       </div>
