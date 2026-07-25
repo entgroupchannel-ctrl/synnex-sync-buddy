@@ -36,6 +36,7 @@ import { BrandLogo } from "@/components/brand-logo";
 import { getBrandLogoUrl } from "@/lib/brand-assets";
 import { StockBadge } from "@/components/stock-badge";
 import { WarrantyBadge } from "@/components/warranty-badge";
+import { DiscountBadgeRow } from "@/components/discount-badge";
 
 
 /* ---------- Hero Carousel (compact, split layout) ---------- */
