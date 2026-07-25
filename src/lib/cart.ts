@@ -198,6 +198,7 @@ export const CATEGORIES = [
   "Storage",
   "Smart Phone & Tablet",
   "Solar & Energy",
+  "Smart Life",
 ] as const;
 
 export function detectCategory(name: string | null | undefined): string {
