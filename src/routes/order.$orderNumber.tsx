@@ -149,7 +149,14 @@ function OrderConfirm() {
         note: "ลูกค้าแนบสลิปโอนเงิน",
         changed_by: "customer",
       });
-      toast.success("อัปโหลดสำเร็จ ✓");
+      toast.success("อัปโหลดสำเร็จ ✓ กำลังตรวจสอบสลิปอัตโนมัติ...");
+
+      // ตรวจสอบสลิปกับธนาคารจริงทันที (fire-and-forget — ไม่บล็อก UI ลูกค้า)
+      supabase.functions.invoke("verify-payment-slip", { body: { order_id: order.id } })
+        .then(({ data }) => {
+          if (data?.auto_approved) toast.success("ยืนยันการชำระเงินอัตโนมัติแล้ว ✓");
+        })
+        .catch((e) => console.warn("[verify-payment-slip]", e));
       q.refetch();
     } catch (err) {
       const msg = err instanceof Error ? err.message : "อัปโหลดไม่สำเร็จ";

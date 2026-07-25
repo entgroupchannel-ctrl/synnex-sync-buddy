@@ -599,6 +599,7 @@ export type Database = {
           discount_code: string | null
           discount_code_id: string | null
           estimated_delivery: string | null
+          fraud_review_required: boolean | null
           id: string
           is_guest: boolean | null
           items: Json | null
@@ -656,6 +657,7 @@ export type Database = {
           discount_code?: string | null
           discount_code_id?: string | null
           estimated_delivery?: string | null
+          fraud_review_required?: boolean | null
           id?: string
           is_guest?: boolean | null
           items?: Json | null
@@ -713,6 +715,7 @@ export type Database = {
           discount_code?: string | null
           discount_code_id?: string | null
           estimated_delivery?: string | null
+          fraud_review_required?: boolean | null
           id?: string
           is_guest?: boolean | null
           items?: Json | null
@@ -1406,6 +1409,77 @@ export type Database = {
           sort_order?: number | null
         }
         Relationships: []
+      }
+      slip_verifications: {
+        Row: {
+          auto_approved: boolean | null
+          created_at: string | null
+          error_message: string | null
+          id: string
+          is_account_matched: boolean | null
+          is_amount_matched: boolean | null
+          is_duplicate: boolean | null
+          order_id: string
+          provider: string
+          raw_response: Json | null
+          receiver_bank: string | null
+          receiver_name: string | null
+          risk_flags: string[] | null
+          sender_bank: string | null
+          sender_name: string | null
+          slip_amount: number | null
+          slip_date: string | null
+          trans_ref: string | null
+        }
+        Insert: {
+          auto_approved?: boolean | null
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          is_account_matched?: boolean | null
+          is_amount_matched?: boolean | null
+          is_duplicate?: boolean | null
+          order_id: string
+          provider?: string
+          raw_response?: Json | null
+          receiver_bank?: string | null
+          receiver_name?: string | null
+          risk_flags?: string[] | null
+          sender_bank?: string | null
+          sender_name?: string | null
+          slip_amount?: number | null
+          slip_date?: string | null
+          trans_ref?: string | null
+        }
+        Update: {
+          auto_approved?: boolean | null
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          is_account_matched?: boolean | null
+          is_amount_matched?: boolean | null
+          is_duplicate?: boolean | null
+          order_id?: string
+          provider?: string
+          raw_response?: Json | null
+          receiver_bank?: string | null
+          receiver_name?: string | null
+          risk_flags?: string[] | null
+          sender_bank?: string | null
+          sender_name?: string | null
+          slip_amount?: number | null
+          slip_date?: string | null
+          trans_ref?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "slip_verifications_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       sync_logs: {
         Row: {
