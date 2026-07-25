@@ -23,6 +23,7 @@ type Row = {
   status: string | null;
   payment_status: string;
   payment_method: string | null;
+  payment_slip_url: string | null;
   order_items: { distributor: string | null }[];
 };
 
@@ -36,7 +37,7 @@ function AdminOrdersPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("orders")
-        .select("id,order_number,created_at,customer_name,customer_phone,total,status,payment_status,payment_method,order_items(distributor)")
+        .select("id,order_number,created_at,customer_name,customer_phone,total,status,payment_status,payment_method,payment_slip_url,order_items(distributor)")
         .order("created_at", { ascending: false })
         .limit(500);
       if (error) throw error;
@@ -91,7 +92,7 @@ function AdminOrdersPage() {
         </div>
 
         <div className="overflow-hidden rounded-lg border bg-white">
-          <div className="grid grid-cols-[170px_150px_1fr_120px_120px_130px_180px_70px] gap-3 border-b bg-slate-50 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
+          <div className="grid grid-cols-[170px_150px_1fr_120px_120px_130px_150px_180px_70px] gap-3 border-b bg-slate-50 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
             <div>Order #</div>
             <div>วันที่</div>
             <div>ลูกค้า</div>
@@ -99,6 +100,7 @@ function AdminOrdersPage() {
             <div>ชำระ</div>
             <div>สถานะ</div>
             <div>Distributor</div>
+            <div>สลิป</div>
             <div className="text-right">Action</div>
           </div>
           {query.isLoading ? (
@@ -113,7 +115,7 @@ function AdminOrdersPage() {
               const pMeta = PAYMENT_STATUS_META[payKey];
               const dists = [...new Set((r.order_items ?? []).map((i) => (i.distributor ?? "").toUpperCase()).filter(Boolean))];
               return (
-                <div key={r.id} className="grid grid-cols-[170px_150px_1fr_120px_120px_130px_180px_70px] items-center gap-3 border-b px-4 py-3 text-sm last:border-b-0 hover:bg-slate-50">
+                <div key={r.id} className="grid grid-cols-[170px_150px_1fr_120px_120px_130px_150px_180px_70px] items-center gap-3 border-b px-4 py-3 text-sm last:border-b-0 hover:bg-slate-50">
                   <div className="font-mono text-xs font-semibold">{r.order_number}</div>
                   <div className="text-slate-600">{r.created_at ? new Date(r.created_at).toLocaleString("th-TH") : "-"}</div>
                   <div className="min-w-0">
@@ -128,6 +130,9 @@ function AdminOrdersPage() {
                       const m = distMeta(d);
                       return <span key={d} className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${m.bg} ${m.text} ring-1 ${m.ring}`}><span className={`h-1.5 w-1.5 rounded-full ${m.dot}`} />{m.label}</span>;
                     })}
+                  </div>
+                  <div onClick={(e) => e.stopPropagation()}>
+                    <AdminOrderSlipCell orderId={r.id} hasSlip={!!r.payment_slip_url} />
                   </div>
                   <div className="text-right">
                     <Link to="/admin/orders/$id" params={{ id: r.id }} className="text-sm font-semibold text-[color:var(--brand-green,#10B981)] hover:underline">
