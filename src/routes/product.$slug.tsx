@@ -349,7 +349,7 @@ function ProductDetail() {
                           alt={`มุมที่ ${i + 1}`}
                           className="w-full h-full object-contain"
                           onError={(e) => {
-                            (e.target as HTMLImageElement).style.display = 'none';
+                            (e.target as HTMLElement).closest('button')?.remove();
                           }}
                         />
                       </button>
