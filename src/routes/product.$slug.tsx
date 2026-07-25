@@ -471,8 +471,16 @@ function ProductDetail() {
                       <StockBadge stockQty={(p as { stock_qty?: number | null }).stock_qty} fulfillmentType={(p as { fulfillment_type?: string | null }).fulfillment_type} stockStatus={(p as { stock_status?: string | null }).stock_status} distributor={(p as { distributor?: string | null }).distributor} />
                     </div>
                     {isQuoteOnly(p.selling_price as number | null) ? (
-                      <div className="mt-1">
-                        <PriceOrQuote product={{ id: String(p.id), sku: (p.sku as string) ?? "", name: (p.name as string) ?? (p.sku as string) ?? "", selling_price: (p.selling_price as number | null) ?? 0 }} />
+                      <div className="mt-1 space-y-3">
+                        <div className="text-2xl font-bold text-slate-700">ราคา: กรุณาติดต่อสอบถาม</div>
+                        <QuoteRequestButton
+                          product={{
+                            id: String(p.id),
+                            sku: (p.sku as string) ?? "",
+                            name: (p.name as string) ?? (p.sku as string) ?? "",
+                            selling_price: (p.selling_price as number | null) ?? 0,
+                          }}
+                        />
                       </div>
                     ) : (
                       <div className="mt-1 flex flex-wrap items-baseline gap-3">
