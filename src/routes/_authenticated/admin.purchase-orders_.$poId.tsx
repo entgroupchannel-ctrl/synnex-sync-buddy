@@ -1,5 +1,5 @@
 /**
- * src/routes/_authenticated/admin.purchase-orders.$poId.tsx
+ * src/routes/_authenticated/admin.purchase-orders_.$poId.tsx
  * หน้ารายละเอียด PO ใบเดียว — ดูรายการ, กดสร้าง/ดาวน์โหลด PDF ส่งให้ distributor
  */
 import { createFileRoute, Link } from "@tanstack/react-router";
@@ -20,7 +20,7 @@ import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { distMeta, PO_STATUS_META, vatBreakdown, type PoStatus } from "@/lib/order-helpers";
 
-export const Route = createFileRoute("/_authenticated/admin/purchase-orders/$poId")({
+export const Route = createFileRoute("/_authenticated/admin/purchase-orders_/$poId")({
   ssr: false,
   head: () => ({ meta: [{ title: "รายละเอียด PO — ENT Admin" }] }),
   component: PurchaseOrderDetailPage,

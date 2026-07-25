@@ -58,7 +58,7 @@ import { Route as AuthenticatedAdminCustomersRouteImport } from './routes/_authe
 import { Route as AuthenticatedAdminCreditApplicationsRouteImport } from './routes/_authenticated/admin.credit-applications'
 import { Route as AuthenticatedAdminCreditRouteImport } from './routes/_authenticated/admin.credit'
 import { Route as AuthenticatedAdminAnalyticsRouteImport } from './routes/_authenticated/admin.analytics'
-import { Route as AuthenticatedAdminPurchaseOrdersPoIdRouteImport } from './routes/_authenticated/admin.purchase-orders.$poId'
+import { Route as AuthenticatedAdminPurchaseOrdersPoIdRouteImport } from './routes/_authenticated/admin.purchase-orders_.$poId'
 import { Route as AuthenticatedAdminPricingProductsRouteImport } from './routes/_authenticated/admin.pricing.products'
 import { Route as AuthenticatedAdminPricingAuditRouteImport } from './routes/_authenticated/admin.pricing.audit'
 import { Route as AuthenticatedAdminOrdersIdRouteImport } from './routes/_authenticated/admin.orders.$id'
@@ -330,9 +330,9 @@ const AuthenticatedAdminAnalyticsRoute =
   } as any)
 const AuthenticatedAdminPurchaseOrdersPoIdRoute =
   AuthenticatedAdminPurchaseOrdersPoIdRouteImport.update({
-    id: '/$poId',
-    path: '/$poId',
-    getParentRoute: () => AuthenticatedAdminPurchaseOrdersRoute,
+    id: '/purchase-orders_/$poId',
+    path: '/purchase-orders/$poId',
+    getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
 const AuthenticatedAdminPricingProductsRoute =
   AuthenticatedAdminPricingProductsRouteImport.update({
@@ -396,7 +396,7 @@ export interface FileRoutesByFullPath {
   '/admin/newsletter': typeof AuthenticatedAdminNewsletterRoute
   '/admin/orders': typeof AuthenticatedAdminOrdersRouteWithChildren
   '/admin/pricing': typeof AuthenticatedAdminPricingRouteWithChildren
-  '/admin/purchase-orders': typeof AuthenticatedAdminPurchaseOrdersRouteWithChildren
+  '/admin/purchase-orders': typeof AuthenticatedAdminPurchaseOrdersRoute
   '/admin/seo': typeof AuthenticatedAdminSeoRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/sync': typeof AuthenticatedAdminSyncRoute
@@ -449,7 +449,7 @@ export interface FileRoutesByTo {
   '/admin/newsletter': typeof AuthenticatedAdminNewsletterRoute
   '/admin/orders': typeof AuthenticatedAdminOrdersRouteWithChildren
   '/admin/pricing': typeof AuthenticatedAdminPricingRouteWithChildren
-  '/admin/purchase-orders': typeof AuthenticatedAdminPurchaseOrdersRouteWithChildren
+  '/admin/purchase-orders': typeof AuthenticatedAdminPurchaseOrdersRoute
   '/admin/seo': typeof AuthenticatedAdminSeoRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/sync': typeof AuthenticatedAdminSyncRoute
@@ -506,7 +506,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/newsletter': typeof AuthenticatedAdminNewsletterRoute
   '/_authenticated/admin/orders': typeof AuthenticatedAdminOrdersRouteWithChildren
   '/_authenticated/admin/pricing': typeof AuthenticatedAdminPricingRouteWithChildren
-  '/_authenticated/admin/purchase-orders': typeof AuthenticatedAdminPurchaseOrdersRouteWithChildren
+  '/_authenticated/admin/purchase-orders': typeof AuthenticatedAdminPurchaseOrdersRoute
   '/_authenticated/admin/seo': typeof AuthenticatedAdminSeoRoute
   '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/_authenticated/admin/sync': typeof AuthenticatedAdminSyncRoute
@@ -522,7 +522,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/orders/$id': typeof AuthenticatedAdminOrdersIdRoute
   '/_authenticated/admin/pricing/audit': typeof AuthenticatedAdminPricingAuditRoute
   '/_authenticated/admin/pricing/products': typeof AuthenticatedAdminPricingProductsRoute
-  '/_authenticated/admin/purchase-orders/$poId': typeof AuthenticatedAdminPurchaseOrdersPoIdRoute
+  '/_authenticated/admin/purchase-orders_/$poId': typeof AuthenticatedAdminPurchaseOrdersPoIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -688,7 +688,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/orders/$id'
     | '/_authenticated/admin/pricing/audit'
     | '/_authenticated/admin/pricing/products'
-    | '/_authenticated/admin/purchase-orders/$poId'
+    | '/_authenticated/admin/purchase-orders_/$poId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -1062,12 +1062,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAnalyticsRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
-    '/_authenticated/admin/purchase-orders/$poId': {
-      id: '/_authenticated/admin/purchase-orders/$poId'
-      path: '/$poId'
+    '/_authenticated/admin/purchase-orders_/$poId': {
+      id: '/_authenticated/admin/purchase-orders_/$poId'
+      path: '/purchase-orders/$poId'
       fullPath: '/admin/purchase-orders/$poId'
       preLoaderRoute: typeof AuthenticatedAdminPurchaseOrdersPoIdRouteImport
-      parentRoute: typeof AuthenticatedAdminPurchaseOrdersRoute
+      parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/admin/pricing/products': {
       id: '/_authenticated/admin/pricing/products'
@@ -1145,21 +1145,6 @@ const AuthenticatedAdminPricingRouteWithChildren =
     AuthenticatedAdminPricingRouteChildren,
   )
 
-interface AuthenticatedAdminPurchaseOrdersRouteChildren {
-  AuthenticatedAdminPurchaseOrdersPoIdRoute: typeof AuthenticatedAdminPurchaseOrdersPoIdRoute
-}
-
-const AuthenticatedAdminPurchaseOrdersRouteChildren: AuthenticatedAdminPurchaseOrdersRouteChildren =
-  {
-    AuthenticatedAdminPurchaseOrdersPoIdRoute:
-      AuthenticatedAdminPurchaseOrdersPoIdRoute,
-  }
-
-const AuthenticatedAdminPurchaseOrdersRouteWithChildren =
-  AuthenticatedAdminPurchaseOrdersRoute._addFileChildren(
-    AuthenticatedAdminPurchaseOrdersRouteChildren,
-  )
-
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminAnalyticsRoute: typeof AuthenticatedAdminAnalyticsRoute
   AuthenticatedAdminCreditRoute: typeof AuthenticatedAdminCreditRoute
@@ -1171,11 +1156,12 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminNewsletterRoute: typeof AuthenticatedAdminNewsletterRoute
   AuthenticatedAdminOrdersRoute: typeof AuthenticatedAdminOrdersRouteWithChildren
   AuthenticatedAdminPricingRoute: typeof AuthenticatedAdminPricingRouteWithChildren
-  AuthenticatedAdminPurchaseOrdersRoute: typeof AuthenticatedAdminPurchaseOrdersRouteWithChildren
+  AuthenticatedAdminPurchaseOrdersRoute: typeof AuthenticatedAdminPurchaseOrdersRoute
   AuthenticatedAdminSeoRoute: typeof AuthenticatedAdminSeoRoute
   AuthenticatedAdminSettingsRoute: typeof AuthenticatedAdminSettingsRoute
   AuthenticatedAdminSyncRoute: typeof AuthenticatedAdminSyncRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+  AuthenticatedAdminPurchaseOrdersPoIdRoute: typeof AuthenticatedAdminPurchaseOrdersPoIdRoute
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
@@ -1192,12 +1178,13 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminNewsletterRoute: AuthenticatedAdminNewsletterRoute,
   AuthenticatedAdminOrdersRoute: AuthenticatedAdminOrdersRouteWithChildren,
   AuthenticatedAdminPricingRoute: AuthenticatedAdminPricingRouteWithChildren,
-  AuthenticatedAdminPurchaseOrdersRoute:
-    AuthenticatedAdminPurchaseOrdersRouteWithChildren,
+  AuthenticatedAdminPurchaseOrdersRoute: AuthenticatedAdminPurchaseOrdersRoute,
   AuthenticatedAdminSeoRoute: AuthenticatedAdminSeoRoute,
   AuthenticatedAdminSettingsRoute: AuthenticatedAdminSettingsRoute,
   AuthenticatedAdminSyncRoute: AuthenticatedAdminSyncRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  AuthenticatedAdminPurchaseOrdersPoIdRoute:
+    AuthenticatedAdminPurchaseOrdersPoIdRoute,
 }
 
 const AuthenticatedAdminRouteWithChildren =
