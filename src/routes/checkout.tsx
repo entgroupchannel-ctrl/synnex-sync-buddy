@@ -325,6 +325,21 @@ function CheckoutPage() {
         changed_by: user?.email ?? "customer",
       });
 
+      // B2B credit purchase — record the drawdown on the credit account
+      if (payment === "credit" && creditAccount && user) {
+        const { error: cErr } = await supabase.from("credit_transactions").insert({
+          credit_account_id: creditAccount.id,
+          user_id: user.id,
+          order_id: order.id,
+          type: "purchase",
+          amount: grandTotal,
+          due_date: dueDateFrom(creditAccount.payment_terms_days).toISOString().slice(0, 10),
+          reference: order.order_number,
+          note: `สั่งซื้อด้วยวงเงินเครดิต (${creditAccount.payment_terms_days} วัน)`,
+        });
+        if (cErr) console.warn("[credit txn]", cErr);
+      }
+
       // Fire-and-forget: send order confirmation email
       supabase.functions.invoke("send-order-confirmation", { body: { order_id: order.id } })
         .catch((e) => console.warn("[send-order-confirmation]", e));
