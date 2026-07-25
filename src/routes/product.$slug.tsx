@@ -265,7 +265,7 @@ function ProductDetail() {
           </div>
         ) : (
           <div className="grid gap-8 rounded-lg border bg-white p-4 md:p-6 lg:grid-cols-2">
-            <div>
+            <div className="flex flex-col gap-3">
               <div className="lg:sticky lg:top-4 grid w-full place-items-center rounded-lg bg-slate-50 p-4" style={{ maxHeight: "420px" }}>
                 <ProductImage
                   src={p.image_url}
@@ -273,6 +273,74 @@ function ProductDetail() {
                   className="max-h-[380px] w-full object-contain"
                   iconClassName="h-20 w-20 text-slate-300"
                 />
+              </div>
+
+              <div className="flex items-center justify-center gap-2 rounded-lg border bg-white p-2.5">
+                <span className="text-xs text-slate-400 mr-1">แชร์:</span>
+                <button
+                  type="button"
+                  onClick={() => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, "_blank", "width=600,height=400")}
+                  className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white hover:bg-slate-50"
+                  aria-label="แชร์ไปยัง Facebook"
+                >
+                  <Facebook className="h-4 w-4" style={{ color: "#1877F2" }} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => window.open(`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(window.location.href)}`, "_blank")}
+                  className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white hover:bg-slate-50"
+                  aria-label="แชร์ไปยัง LINE"
+                >
+                  <MessageCircle className="h-4 w-4" style={{ color: "#06C755" }} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => window.open(`https://x.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(p.name ?? "")}`, "_blank")}
+                  className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white hover:bg-slate-50"
+                  aria-label="แชร์ไปยัง X"
+                >
+                  <Twitter className="h-4 w-4 text-slate-900" />
+                </button>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    try {
+                      await navigator.clipboard.writeText(window.location.href);
+                      toast.success("คัดลอกลิงก์แล้ว!");
+                      setCopied(true);
+                      setTimeout(() => setCopied(false), 2000);
+                    } catch {
+                      toast.error("ไม่สามารถคัดลอกลิงก์");
+                    }
+                  }}
+                  className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white hover:bg-slate-50"
+                  aria-label="คัดลอกลิงก์"
+                >
+                  {copied ? <Check className="h-4 w-4 text-emerald-600" /> : <LinkIcon className="h-4 w-4 text-slate-600" />}
+                </button>
+                <ProductQrDialog url={typeof window !== "undefined" ? window.location.href : `https://shop.entgroup.co.th/product/${slug}`} productName={p.name ?? ""}>
+                  <button
+                    type="button"
+                    className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white hover:bg-slate-50"
+                    aria-label="สแกน QR Code เปิดในมือถือ"
+                  >
+                    <QrCode className="h-4 w-4 text-slate-600" />
+                  </button>
+                </ProductQrDialog>
+                <div className="ml-auto">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const added = toggleWishlist(p.id);
+                      setWishlisted(added);
+                      toast.success(added ? "❤️ บันทึกไว้ดูทีหลังแล้ว" : "นำออกจากรายการแล้ว");
+                    }}
+                    className="flex h-8 items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 hover:bg-slate-50"
+                  >
+                    <Heart className={`h-4 w-4 transition-colors ${wishlisted ? "fill-red-500 text-red-500" : "text-slate-400 hover:text-red-400"}`} />
+                    <span className="text-xs">{wishlisted ? "บันทึกแล้ว" : "บันทึก"}</span>
+                  </button>
+                </div>
               </div>
             </div>
 
