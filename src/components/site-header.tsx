@@ -1,5 +1,5 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { ShoppingCart, Search, Menu, User, X, LogOut, Package, MapPin, Building2, Heart, LayoutGrid, Wrench, CreditCard, Globe } from "lucide-react";
+import { ShoppingCart, Search, Menu, Home, Grid3x3, User, X, LogOut, Package, MapPin, Building2, Heart, LayoutGrid, Wrench, CreditCard, Globe } from "lucide-react";
 import { CATEGORY_ICONS } from "@/lib/category-icons";
 import { useWishlistCount } from "@/lib/wishlist";
 import { useEffect, useRef, useState } from "react";
