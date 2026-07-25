@@ -17,7 +17,7 @@ import {
 import { useSupabaseUser } from "@/lib/auth-sheet";
 import { bahtFmt } from "@/lib/credit";
 
-export const Route = createFileRoute("/credit-application")({
+export const Route = createFileRoute("/credit-application/")({
   ssr: false,
   component: CreditApplicationPage,
   head: () => ({

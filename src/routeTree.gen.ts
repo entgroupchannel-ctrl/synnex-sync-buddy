@@ -18,7 +18,6 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PcBuilderRouteImport } from './routes/pc-builder'
 import { Route as PaymentMethodsRouteImport } from './routes/payment-methods'
 import { Route as HowToOrderRouteImport } from './routes/how-to-order'
-import { Route as CreditApplicationRouteImport } from './routes/credit-application'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CartRouteImport } from './routes/cart'
@@ -27,6 +26,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CreditApplicationIndexRouteImport } from './routes/credit-application.index'
 import { Route as TrackOrderNumberRouteImport } from './routes/track.$orderNumber'
 import { Route as ProductSlugRouteImport } from './routes/product.$slug'
 import { Route as OrderOrderNumberRouteImport } from './routes/order.$orderNumber'
@@ -100,11 +100,6 @@ const HowToOrderRoute = HowToOrderRouteImport.update({
   path: '/how-to-order',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CreditApplicationRoute = CreditApplicationRouteImport.update({
-  id: '/credit-application',
-  path: '/credit-application',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
@@ -142,6 +137,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CreditApplicationIndexRoute = CreditApplicationIndexRouteImport.update({
+  id: '/credit-application/',
+  path: '/credit-application/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TrackOrderNumberRoute = TrackOrderNumberRouteImport.update({
@@ -305,7 +305,6 @@ export interface FileRoutesByFullPath {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
-  '/credit-application': typeof CreditApplicationRoute
   '/how-to-order': typeof HowToOrderRoute
   '/payment-methods': typeof PaymentMethodsRoute
   '/pc-builder': typeof PcBuilderRoute
@@ -322,6 +321,7 @@ export interface FileRoutesByFullPath {
   '/order/$orderNumber': typeof OrderOrderNumberRoute
   '/product/$slug': typeof ProductSlugRoute
   '/track/$orderNumber': typeof TrackOrderNumberRoute
+  '/credit-application/': typeof CreditApplicationIndexRoute
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/customers': typeof AuthenticatedAdminCustomersRouteWithChildren
   '/admin/discount-codes': typeof AuthenticatedAdminDiscountCodesRoute
@@ -351,7 +351,6 @@ export interface FileRoutesByTo {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
-  '/credit-application': typeof CreditApplicationRoute
   '/how-to-order': typeof HowToOrderRoute
   '/payment-methods': typeof PaymentMethodsRoute
   '/pc-builder': typeof PcBuilderRoute
@@ -366,6 +365,7 @@ export interface FileRoutesByTo {
   '/order/$orderNumber': typeof OrderOrderNumberRoute
   '/product/$slug': typeof ProductSlugRoute
   '/track/$orderNumber': typeof TrackOrderNumberRoute
+  '/credit-application': typeof CreditApplicationIndexRoute
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/customers': typeof AuthenticatedAdminCustomersRouteWithChildren
   '/admin/discount-codes': typeof AuthenticatedAdminDiscountCodesRoute
@@ -397,7 +397,6 @@ export interface FileRoutesById {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
-  '/credit-application': typeof CreditApplicationRoute
   '/how-to-order': typeof HowToOrderRoute
   '/payment-methods': typeof PaymentMethodsRoute
   '/pc-builder': typeof PcBuilderRoute
@@ -414,6 +413,7 @@ export interface FileRoutesById {
   '/order/$orderNumber': typeof OrderOrderNumberRoute
   '/product/$slug': typeof ProductSlugRoute
   '/track/$orderNumber': typeof TrackOrderNumberRoute
+  '/credit-application/': typeof CreditApplicationIndexRoute
   '/_authenticated/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/_authenticated/admin/customers': typeof AuthenticatedAdminCustomersRouteWithChildren
   '/_authenticated/admin/discount-codes': typeof AuthenticatedAdminDiscountCodesRoute
@@ -445,7 +445,6 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/contact'
-    | '/credit-application'
     | '/how-to-order'
     | '/payment-methods'
     | '/pc-builder'
@@ -462,6 +461,7 @@ export interface FileRouteTypes {
     | '/order/$orderNumber'
     | '/product/$slug'
     | '/track/$orderNumber'
+    | '/credit-application/'
     | '/admin/analytics'
     | '/admin/customers'
     | '/admin/discount-codes'
@@ -491,7 +491,6 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/contact'
-    | '/credit-application'
     | '/how-to-order'
     | '/payment-methods'
     | '/pc-builder'
@@ -506,6 +505,7 @@ export interface FileRouteTypes {
     | '/order/$orderNumber'
     | '/product/$slug'
     | '/track/$orderNumber'
+    | '/credit-application'
     | '/admin/analytics'
     | '/admin/customers'
     | '/admin/discount-codes'
@@ -536,7 +536,6 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/contact'
-    | '/credit-application'
     | '/how-to-order'
     | '/payment-methods'
     | '/pc-builder'
@@ -553,6 +552,7 @@ export interface FileRouteTypes {
     | '/order/$orderNumber'
     | '/product/$slug'
     | '/track/$orderNumber'
+    | '/credit-application/'
     | '/_authenticated/admin/analytics'
     | '/_authenticated/admin/customers'
     | '/_authenticated/admin/discount-codes'
@@ -584,7 +584,6 @@ export interface RootRouteChildren {
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
   ContactRoute: typeof ContactRoute
-  CreditApplicationRoute: typeof CreditApplicationRoute
   HowToOrderRoute: typeof HowToOrderRoute
   PaymentMethodsRoute: typeof PaymentMethodsRoute
   PcBuilderRoute: typeof PcBuilderRoute
@@ -597,6 +596,7 @@ export interface RootRouteChildren {
   OrderOrderNumberRoute: typeof OrderOrderNumberRoute
   ProductSlugRoute: typeof ProductSlugRoute
   TrackOrderNumberRoute: typeof TrackOrderNumberRoute
+  CreditApplicationIndexRoute: typeof CreditApplicationIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -664,13 +664,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HowToOrderRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/credit-application': {
-      id: '/credit-application'
-      path: '/credit-application'
-      fullPath: '/credit-application'
-      preLoaderRoute: typeof CreditApplicationRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/contact': {
       id: '/contact'
       path: '/contact'
@@ -725,6 +718,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/credit-application/': {
+      id: '/credit-application/'
+      path: '/credit-application'
+      fullPath: '/credit-application/'
+      preLoaderRoute: typeof CreditApplicationIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/track/$orderNumber': {
@@ -1052,7 +1052,6 @@ const rootRouteChildren: RootRouteChildren = {
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
   ContactRoute: ContactRoute,
-  CreditApplicationRoute: CreditApplicationRoute,
   HowToOrderRoute: HowToOrderRoute,
   PaymentMethodsRoute: PaymentMethodsRoute,
   PcBuilderRoute: PcBuilderRoute,
@@ -1065,6 +1064,7 @@ const rootRouteChildren: RootRouteChildren = {
   OrderOrderNumberRoute: OrderOrderNumberRoute,
   ProductSlugRoute: ProductSlugRoute,
   TrackOrderNumberRoute: TrackOrderNumberRoute,
+  CreditApplicationIndexRoute: CreditApplicationIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
