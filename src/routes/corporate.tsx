@@ -90,16 +90,15 @@ function ProductCard({ p }: { p: Row }) {
       <div className="mb-2 line-clamp-2 min-h-[32px] text-xs font-medium leading-tight text-slate-700">
         {p.name ?? ""}
       </div>
+      <DiscountBadgeRow
+        sellingPrice={p.selling_price}
+        b2bPrice={p.b2b_price}
+        memberPrice={(p as { member_price?: number | null }).member_price}
+        className="mb-1.5"
+      />
       <div className="flex items-end justify-between">
-        <div>
-          <div className="text-base font-black text-slate-900">
-            ฿{Number(p.selling_price).toLocaleString("th-TH")}
-          </div>
-          {b2b && b2b > 0 ? (
-            <div className="text-[10px] font-medium text-blue-500">
-              B2B: ฿{Number(b2b).toLocaleString("th-TH")}
-            </div>
-          ) : null}
+        <div className="text-base font-black text-slate-900">
+          ฿{Number(p.selling_price).toLocaleString("th-TH")}
         </div>
         <div className="cursor-pointer rounded-lg bg-slate-900 p-2 transition-colors group-hover:bg-blue-600">
           <ShoppingCart className="h-3.5 w-3.5 text-white" />
