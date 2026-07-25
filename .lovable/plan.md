@@ -1,23 +1,15 @@
-## สาเหตุที่กดปุ่ม Admin แล้วช้า
+## สิ่งที่ตรวจพบ
 
-ตรวจจากโค้ดจริง พบว่ากว่าหน้าจะขึ้น ต้องรอ **เรียก network 3 รอบต่อกันแบบเรียงลำดับ** ก่อนจะ render อะไรเลย:
+ตรวจ DOM สดของหน้าเว็บที่ความกว้าง 966px แล้ว: มุมขวาบน (x≈857, y≈6) มีลิงก์จริงในโค้ด ไม่ใช่ overlay ของเบราว์เซอร์
 
-1. `src/routes/_authenticated/route.tsx` → `supabase.auth.getUser()` (ยิงไป `/auth/v1/user` ทุกครั้ง ไม่ได้อ่าน session ในเครื่อง)
-2. `src/routes/_authenticated/admin.tsx` → `supabase.auth.getUser()` **ซ้ำอีกรอบ**
-3. แล้วค่อย query `user_profiles.is_admin`
+- ไฟล์: `src/components/site-header.tsx` บรรทัด 154
+- โค้ด: `<a href="https://entgroup.co.th" ... className="hover:text-[color:var(--brand-green)] lg:hidden">🔗 entgroup.co.th</a>`
+- แสดงเฉพาะจอ < 1024px (`lg:hidden`) จึงโผล่มาที่หน้าจอปัจจุบัน ส่วนจอใหญ่จะเห็นเวอร์ชัน desktop (บรรทัด 149-152) แทน
 
-ทั้งหมดอยู่ใน `beforeLoad` ซึ่งบล็อกการนำทาง และโปรเจกต์ **ไม่มี `pendingComponent` เลย** → ระหว่างรอ ผู้ใช้จึงเห็นหน้าเดิมค้างอยู่ เหมือนกดแล้วไม่ตอบสนอง
+## แผนการแก้
 
-## สิ่งที่จะแก้
+1. ลบลิงก์บรรทัด 154 ใน `src/components/site-header.tsx` ออก เพื่อไม่ให้มีปุ่มลอยมุมขวาบนบนจอเล็ก/แท็บเล็ต
+2. คงบล็อก desktop (วงเงินเครดิต B2B + entgroup.co.th) ที่บรรทัด 144-153 ไว้ตามเดิม
+3. ตรวจสอบว่าแถบประกาศยังจัดวางถูก (`justify-between`) หลังลบ — ข้อความ ENT Group Co., Ltd. + เบอร์โทรจะชิดซ้ายตามปกติ
 
-- เปลี่ยน `getUser()` เป็น `getSession()` (อ่าน session จาก storage ทันที ไม่ยิง network) ทั้งใน `_authenticated/route.tsx` และ `admin.tsx`
-- ตัดการเช็ค auth ซ้ำใน `admin.tsx` ให้ใช้ user จาก context ของ parent แทน
-- แคชผล `is_admin` ไว้ (in-memory ต่อ session) เพื่อไม่ให้ query ซ้ำทุกครั้งที่สลับหน้า admin
-- เพิ่ม `pendingComponent` + `pendingMs: 0` ให้ route admin แสดง skeleton ของ sidebar/หน้า ทันทีที่กด
-- เพิ่ม `preload="intent"` ให้ปุ่ม Admin เพื่อเริ่มโหลดตั้งแต่เมาส์ชี้
-
-ไม่แตะ logic สิทธิ์ (ยังต้อง `is_admin` เท่านั้น) และไม่แตะ styling อื่น
-
-## ปุ่มมุมขวาบนในภาพ
-
-ค้นทั้งโปรเจกต์แล้ว **ไม่มีโค้ดใดสร้างปุ่ม/แบดจ์ลอยมุมขวาบน** (ไม่มี element `fixed top-*` นอกจาก dialog) — กล่องกรอบฟ้าที่เขียน `entgroup.co.th` พร้อมไอคอนลิงก์ เป็น overlay ของเบราว์เซอร์/ตัว preview (tooltip ตอนชี้ลิงก์หรือ popup ของ extension) ที่ทับข้อความ "By Order" ในแถบ ticker พอดี ไม่ใช่ส่วนหนึ่งของเว็บ จึงไม่ต้องแก้อะไร — ถ้าอยากยืนยัน จะเปิดหน้าเดียวกันด้วย headless browser แล้วแคปหน้าจอมาเทียบให้ดูได้
+หมายเหตุ: ถ้าอยากให้จอเล็กยังมีลิงก์นี้แต่ไม่รบกวนสายตา บอกได้ครับ จะย้ายไปไว้ในเมนูแฮมเบอร์เกอร์แทนการลบทิ้ง
