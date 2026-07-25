@@ -52,6 +52,7 @@ import { Route as AuthenticatedAdminFlashDealsRouteImport } from './routes/_auth
 import { Route as AuthenticatedAdminDiscountCodesRouteImport } from './routes/_authenticated/admin.discount-codes'
 import { Route as AuthenticatedAdminCustomersRouteImport } from './routes/_authenticated/admin.customers'
 import { Route as AuthenticatedAdminCreditApplicationsRouteImport } from './routes/_authenticated/admin.credit-applications'
+import { Route as AuthenticatedAdminCreditRouteImport } from './routes/_authenticated/admin.credit'
 import { Route as AuthenticatedAdminAnalyticsRouteImport } from './routes/_authenticated/admin.analytics'
 import { Route as AuthenticatedAdminPricingProductsRouteImport } from './routes/_authenticated/admin.pricing.products'
 import { Route as AuthenticatedAdminPricingAuditRouteImport } from './routes/_authenticated/admin.pricing.audit'
@@ -287,6 +288,12 @@ const AuthenticatedAdminCreditApplicationsRoute =
     path: '/credit-applications',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminCreditRoute =
+  AuthenticatedAdminCreditRouteImport.update({
+    id: '/credit',
+    path: '/credit',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminAnalyticsRoute =
   AuthenticatedAdminAnalyticsRouteImport.update({
     id: '/analytics',
@@ -345,6 +352,7 @@ export interface FileRoutesByFullPath {
   '/track/$orderNumber': typeof TrackOrderNumberRoute
   '/credit-application/': typeof CreditApplicationIndexRoute
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
+  '/admin/credit': typeof AuthenticatedAdminCreditRoute
   '/admin/credit-applications': typeof AuthenticatedAdminCreditApplicationsRoute
   '/admin/customers': typeof AuthenticatedAdminCustomersRouteWithChildren
   '/admin/discount-codes': typeof AuthenticatedAdminDiscountCodesRoute
@@ -392,6 +400,7 @@ export interface FileRoutesByTo {
   '/track/$orderNumber': typeof TrackOrderNumberRoute
   '/credit-application': typeof CreditApplicationIndexRoute
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
+  '/admin/credit': typeof AuthenticatedAdminCreditRoute
   '/admin/credit-applications': typeof AuthenticatedAdminCreditApplicationsRoute
   '/admin/customers': typeof AuthenticatedAdminCustomersRouteWithChildren
   '/admin/discount-codes': typeof AuthenticatedAdminDiscountCodesRoute
@@ -443,6 +452,7 @@ export interface FileRoutesById {
   '/track/$orderNumber': typeof TrackOrderNumberRoute
   '/credit-application/': typeof CreditApplicationIndexRoute
   '/_authenticated/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
+  '/_authenticated/admin/credit': typeof AuthenticatedAdminCreditRoute
   '/_authenticated/admin/credit-applications': typeof AuthenticatedAdminCreditApplicationsRoute
   '/_authenticated/admin/customers': typeof AuthenticatedAdminCustomersRouteWithChildren
   '/_authenticated/admin/discount-codes': typeof AuthenticatedAdminDiscountCodesRoute
@@ -494,6 +504,7 @@ export interface FileRouteTypes {
     | '/track/$orderNumber'
     | '/credit-application/'
     | '/admin/analytics'
+    | '/admin/credit'
     | '/admin/credit-applications'
     | '/admin/customers'
     | '/admin/discount-codes'
@@ -541,6 +552,7 @@ export interface FileRouteTypes {
     | '/track/$orderNumber'
     | '/credit-application'
     | '/admin/analytics'
+    | '/admin/credit'
     | '/admin/credit-applications'
     | '/admin/customers'
     | '/admin/discount-codes'
@@ -591,6 +603,7 @@ export interface FileRouteTypes {
     | '/track/$orderNumber'
     | '/credit-application/'
     | '/_authenticated/admin/analytics'
+    | '/_authenticated/admin/credit'
     | '/_authenticated/admin/credit-applications'
     | '/_authenticated/admin/customers'
     | '/_authenticated/admin/discount-codes'
@@ -942,6 +955,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminCreditApplicationsRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/credit': {
+      id: '/_authenticated/admin/credit'
+      path: '/credit'
+      fullPath: '/admin/credit'
+      preLoaderRoute: typeof AuthenticatedAdminCreditRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/analytics': {
       id: '/_authenticated/admin/analytics'
       path: '/analytics'
@@ -1027,6 +1047,7 @@ const AuthenticatedAdminPricingRouteWithChildren =
 
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminAnalyticsRoute: typeof AuthenticatedAdminAnalyticsRoute
+  AuthenticatedAdminCreditRoute: typeof AuthenticatedAdminCreditRoute
   AuthenticatedAdminCreditApplicationsRoute: typeof AuthenticatedAdminCreditApplicationsRoute
   AuthenticatedAdminCustomersRoute: typeof AuthenticatedAdminCustomersRouteWithChildren
   AuthenticatedAdminDiscountCodesRoute: typeof AuthenticatedAdminDiscountCodesRoute
@@ -1042,6 +1063,7 @@ interface AuthenticatedAdminRouteChildren {
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminAnalyticsRoute: AuthenticatedAdminAnalyticsRoute,
+  AuthenticatedAdminCreditRoute: AuthenticatedAdminCreditRoute,
   AuthenticatedAdminCreditApplicationsRoute:
     AuthenticatedAdminCreditApplicationsRoute,
   AuthenticatedAdminCustomersRoute:
