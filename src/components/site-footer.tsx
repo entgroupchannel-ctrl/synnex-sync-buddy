@@ -324,6 +324,8 @@ export function SiteFooter() {
             <ul className="space-y-2">
               <li><FooterLink href="https://entgroup.co.th/about">เกี่ยวกับเรา</FooterLink></li>
               <li><FooterLink href="https://entgroup.co.th">ผลิตภัณฑ์ ENT Group</FooterLink></li>
+              <li><FooterLink to="/credit-application">💳 วงเงินเครดิต B2B</FooterLink></li>
+              <li><FooterLink to="/?category=Network">🏢 Corporate Solutions</FooterLink></li>
               <li><FooterLink to="/contact">ติดต่อเรา</FooterLink></li>
               <li><FooterLink to="/careers">ร่วมงานกับเรา</FooterLink></li>
               <li><FooterLink href="https://entgroup.co.th/blog">ENT Group Blog</FooterLink></li>
