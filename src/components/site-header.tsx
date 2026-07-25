@@ -337,6 +337,14 @@ export function SiteHeader() {
                   >
                     🔧 Config PC
                   </Link>,
+                  <Link
+                    key="corporate-nav"
+                    to="/"
+                    search={{ category: "Network" } as never}
+                    className="whitespace-nowrap px-3 py-2.5 text-sm font-medium text-white/85 transition hover:text-[color:var(--brand-orange)]"
+                  >
+                    🏢 Corporate
+                  </Link>,
                 );
               }
               return items;

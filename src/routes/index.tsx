@@ -40,6 +40,7 @@ import {
   ComponentsShowcase,
   SolarEnergy,
   SmartLife,
+  CorporateITSolutions,
 } from "@/components/home-sections";
 import { AppleFeatured } from "@/components/apple-featured";
 import { PcBuilderLanding } from "@/components/pc-builder-landing";
@@ -779,6 +780,10 @@ function HomePage() {
 
           {/* Smart Life */}
           <SmartLife />
+
+          {/* Corporate IT Solutions — B2B */}
+          <CorporateITSolutions />
+
 
           {/* Industrial Grade Computer — links to entgroup.co.th */}
           <IndustrialComputer />
