@@ -13,7 +13,7 @@ import { AddToCartSheet } from "@/components/add-to-cart-sheet";
 import { CartReminderBell } from "@/components/cart-reminder-bell";
 import { DeliveryZoneDialog, DeliveryZoneBadge } from "@/components/delivery-zone-dialog";
 import { AppleMegaMenu } from "@/components/apple-mega-menu";
-import { FlashSaleCountdown } from "@/components/flash-sale-countdown";
+
 
 import { useLanguage } from "@/lib/i18n";
 import entLogo from "@/assets/entgroup-logo.jpg.asset.json";
@@ -138,23 +138,6 @@ export function SiteHeader() {
   return (
     <>
       <AddToCartSheet />
-      <div className="bg-slate-900 text-white/80 text-xs">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-2 px-4 py-1.5">
-          <div>ส่วนหนึ่งของ <span className="font-semibold text-white">ENT Group Co., Ltd.</span> · โทร <a href="tel:020456104" className="hover:text-[color:var(--brand-green)]">02-045-6104</a></div>
-          <div className="hidden lg:flex items-center gap-4">
-            <Link to="/credit-application" className="flex items-center gap-1 text-xs text-blue-300 hover:text-blue-200">
-              <CreditCard className="h-3 w-3" />
-              วงเงินเครดิต B2B
-            </Link>
-            <a href="https://entgroup.co.th" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs text-slate-400 hover:text-white">
-              <Globe className="h-3 w-3" />
-              entgroup.co.th
-            </a>
-          </div>
-          
-        </div>
-      </div>
-      <FlashSaleCountdown />
       
       <header className="sticky top-0 z-40 bg-[color:var(--brand-navy)] text-white shadow-lg">
 
