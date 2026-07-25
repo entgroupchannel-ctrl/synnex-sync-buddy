@@ -290,7 +290,7 @@ function CheckoutPage() {
           tax_id: taxInvoice?.tax_id ?? null,
           company_address: taxInvoice?.company_address ?? null,
           payment_method: payment,
-          payment_status: "pending",
+          payment_status: payment === "credit" ? "credit" : "pending",
           subtotal,
           cod_fee: codFee,
           total: grandTotal,
