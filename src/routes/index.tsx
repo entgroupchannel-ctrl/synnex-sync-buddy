@@ -63,6 +63,7 @@ const searchSchema = z.object({
   category: fallback(z.string(), "all").default("all"),
   brands: fallback(z.string(), "").default(""),
   ramSpec: fallback(z.string(), "").default(""),
+  jetsonType: fallback(z.string(), "").default(""),
   min: fallback(z.number(), 0).default(0),
   max: fallback(z.number(), 100000).default(100000),
   ready: fallback(z.boolean(), false).default(false),
@@ -100,6 +101,14 @@ const RAM_SUBCATS: { key: string; label: string; patterns: string[] }[] = [
   { key: "ddr5-4800", label: "DDR5(4800)", patterns: ["DDR5(4800)"] },
   { key: "ddr5-5200", label: "DDR5(5200)", patterns: ["DDR5(5200)"] },
   { key: "ddr5-5600up", label: "DDR5(5600) ขึ้นไป", patterns: ["DDR5(5600)", "DDR5(6000)", "DDR5(6200)", "DDR5(6400)", "DDR5(6600)", "DDR5(6800)", "DDR5(7200)"] },
+];
+
+const JETSON_SUBCATS: { key: string; label: string; value: string }[] = [
+  { key: "edgebox", label: "Edge AI Box", value: "Edge AI Box" },
+  { key: "devsystem", label: "Developer System", value: "Developer System" },
+  { key: "board", label: "Carrier Board", value: "Carrier Board" },
+  { key: "devkit", label: "Developer Kits", value: "Developer Kits" },
+  { key: "module", label: "Module", value: "Module" },
 ];
 
 
