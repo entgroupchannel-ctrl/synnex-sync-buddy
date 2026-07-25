@@ -157,30 +157,47 @@ function PurchaseOrdersPage() {
               <TableHead>Distributor</TableHead>
               <TableHead>สถานะ</TableHead>
               <TableHead className="text-right">รายการ</TableHead>
-              <TableHead className="text-right">ยอดรวม</TableHead>
+              <TableHead className="text-right">ยอดรวม (ก่อน VAT)</TableHead>
               <TableHead>วันที่</TableHead>
               <TableHead></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {poList.map((po) => (
-              <TableRow key={po.id}>
-                <TableCell className="font-mono text-xs">{po.po_number}</TableCell>
-                <TableCell>{po.distributor}</TableCell>
-                <TableCell>{statusLabel[po.status] ?? po.status}</TableCell>
-                <TableCell className="text-right">{po.total_items}</TableCell>
-                <TableCell className="text-right">฿{Number(po.total_cost).toLocaleString("th-TH")}</TableCell>
-                <TableCell>{new Date(po.created_at).toLocaleDateString("th-TH")}</TableCell>
-                <TableCell>
-                  <Link to="/admin/purchase-orders/$poId" params={{ poId: po.id }} className="text-sm text-blue-600 underline">
-                    ดู/พิมพ์
-                  </Link>
-                </TableCell>
-              </TableRow>
-            ))}
+            {poList.map((po) => {
+              const dm = distMeta(po.distributor);
+              const sm = PO_STATUS_META[(po.status as PoStatus) ?? "draft"] ?? PO_STATUS_META.draft;
+              return (
+                <TableRow
+                  key={po.id}
+                  onClick={() => navigate({ to: "/admin/purchase-orders/$poId", params: { poId: po.id } })}
+                  className="cursor-pointer hover:bg-slate-50"
+                >
+                  <TableCell className="font-mono text-xs">{po.po_number}</TableCell>
+                  <TableCell>
+                    <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs ${dm.bg} ${dm.text} ring-1 ${dm.ring}`}>
+                      <span className={`h-1.5 w-1.5 rounded-full ${dm.dot}`} />
+                      {dm.label}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs ${sm.badge}`}>
+                      <span className={`h-1.5 w-1.5 rounded-full ${sm.dot}`} />
+                      {sm.label}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-right">{po.total_items}</TableCell>
+                  <TableCell className="text-right">฿{Number(po.total_cost).toLocaleString("th-TH")}</TableCell>
+                  <TableCell>{new Date(po.created_at).toLocaleDateString("th-TH")}</TableCell>
+                  <TableCell className="text-right">
+                    <ChevronRight className="h-4 w-4 text-slate-400" />
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </section>
+
     </div>
   );
 }
