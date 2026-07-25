@@ -4,13 +4,19 @@
  */
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { ArrowLeft, FileText, Download } from "lucide-react";
+import { ArrowLeft, FileText, Download, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { distMeta, PO_STATUS_META, vatBreakdown, type PoStatus } from "@/lib/order-helpers";
 
@@ -70,6 +76,63 @@ function PurchaseOrderDetailPage() {
   });
 
   const po = poQ.data;
+
+  const [emailOpen, setEmailOpen] = useState(false);
+  const [toEmail, setToEmail] = useState("");
+  const [toName, setToName] = useState("");
+  const [subject, setSubject] = useState("");
+  const [bodyHtml, setBodyHtml] = useState("");
+  const [sending, setSending] = useState(false);
+
+  const contactQ = useQuery({
+    queryKey: ["distributor-contact", poId],
+    enabled: emailOpen,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("distributor_contacts")
+        .select("*")
+        .eq("distributor", po?.distributor ?? "")
+        .maybeSingle();
+      return data as { contact_name: string | null; contact_email: string | null } | null;
+    },
+  });
+
+  const openEmailDialog = () => {
+    setToEmail(contactQ.data?.contact_email ?? "");
+    setToName(contactQ.data?.contact_name ?? "");
+    setSubject(`ใบสั่งซื้อ ${po?.po_number} — ENT Group`);
+    setBodyHtml(
+      `<p>เรียน ${contactQ.data?.contact_name ?? "ทีมงาน"},</p>
+<p>ทางบริษัท อี เอ็น ที กรุ๊ป จำกัด ขอส่งใบสั่งซื้อเลขที่ <b>${po?.po_number}</b> รบกวนตรวจสอบและยืนยันกลับด้วยครับ/ค่ะ</p>`,
+    );
+    setEmailOpen(true);
+  };
+
+  const sendEmail = async () => {
+    if (!toEmail) { toast.error("กรุณากรอกอีเมลผู้รับ"); return; }
+    setSending(true);
+    try {
+      const { error } = await supabase.functions.invoke("send-po-email", {
+        body: { po_id: poId, to_email: toEmail, to_name: toName, subject, body_html: bodyHtml },
+      });
+      if (error) throw error;
+      toast.success("ส่งอีเมลสำเร็จ");
+      setEmailOpen(false);
+      qc.invalidateQueries({ queryKey: ["purchase-order", poId] });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "ส่งอีเมลไม่สำเร็จ");
+    } finally {
+      setSending(false);
+    }
+  };
+
+  useEffect(() => {
+    if (emailOpen && contactQ.data) {
+      setToEmail((prev) => prev || contactQ.data?.contact_email || "");
+      setToName((prev) => prev || contactQ.data?.contact_name || "");
+    }
+  }, [emailOpen, contactQ.data]);
+
   if (poQ.isLoading) return <div className="p-6 text-sm text-slate-500">กำลังโหลด...</div>;
   if (!po) return <div className="p-6 text-sm text-red-600">ไม่พบ PO นี้</div>;
 
@@ -113,6 +176,9 @@ function PurchaseOrderDetailPage() {
               <Download className="mr-1.5 h-4 w-4" /> เปิด PDF ล่าสุด
             </Button>
           )}
+          <Button variant="outline" onClick={openEmailDialog}>
+            <Mail className="mr-1.5 h-4 w-4" /> ส่งอีเมลถึง Supplier
+          </Button>
         </div>
       </div>
 
@@ -171,6 +237,53 @@ function PurchaseOrderDetailPage() {
           ))}
         </TableBody>
       </Table>
+
+      <Dialog open={emailOpen} onOpenChange={setEmailOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>ส่งอีเมลใบสั่งซื้อถึง Supplier</DialogTitle>
+            <DialogDescription>
+              ส่งถึงผู้ติดต่อของ {po.distributor} — แนบลิงก์ PDF ให้อัตโนมัติ
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-3">
+            <div className="space-y-1.5">
+              <Label>อีเมลผู้รับ</Label>
+              <Input
+                value={toEmail}
+                onChange={(e) => setToEmail(e.target.value)}
+                placeholder="purchasing@distributor.com"
+              />
+              {!contactQ.data?.contact_email && (
+                <p className="text-xs text-amber-600">
+                  ยังไม่มีอีเมลบันทึกไว้สำหรับ {po.distributor} — กรอกที่นี่แล้วไปตั้งค่าถาวรที่ตาราง distributor_contacts ทีหลังได้
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-1.5">
+              <Label>ชื่อผู้ติดต่อ (ถ้ามี)</Label>
+              <Input value={toName} onChange={(e) => setToName(e.target.value)} />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label>หัวข้ออีเมล</Label>
+              <Input value={subject} onChange={(e) => setSubject(e.target.value)} />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label>เนื้อหา (HTML)</Label>
+              <Textarea rows={8} value={bodyHtml} onChange={(e) => setBodyHtml(e.target.value)} />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEmailOpen(false)}>ยกเลิก</Button>
+            <Button disabled={sending} onClick={sendEmail}>{sending ? "กำลังส่ง..." : "ส่งอีเมล"}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
