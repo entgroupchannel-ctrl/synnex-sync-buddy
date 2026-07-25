@@ -14,6 +14,7 @@ import { ArrowLeft, Banknote, Truck, Building2, User, Loader2, Tag, X, CheckCirc
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { CheckoutTrustBox } from "@/components/trust-signals";
+import { OmiseCardForm } from "@/components/omise-card-form";
 import { ShippingMethodSelector } from "@/components/shipping-method-selector";
 import { getItemWeightKg, priceFmt, useCart } from "@/lib/cart";
 import { useSupabaseUser } from "@/lib/auth-sheet";
