@@ -306,8 +306,8 @@ export function PcBuilderLanding() {
                       alt={part.name}
                       category={null}
                       productName={part.name}
-                      className="h-full w-full object-contain"
-                      fallbackLabel="ไม่มีรูปสินค้า"
+                      className="max-h-full max-w-full object-contain"
+                      fallbackLabel="ไม่มีรูปสิ้นค้า"
                     />
                   ) : (
                     <img
@@ -316,7 +316,7 @@ export function PcBuilderLanding() {
                       loading="lazy"
                       width={1024}
                       height={1024}
-                      className="h-full w-full object-contain"
+                      className="max-h-full max-w-full object-contain"
                     />
                   )}
                   <span
