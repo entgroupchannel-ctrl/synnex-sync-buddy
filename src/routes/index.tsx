@@ -211,6 +211,8 @@ function HomePage() {
   const { add } = useCart();
  const { user } = useSupabaseUser();
  const tier = useCustomerTier();
+  const { data: volumeRules } = useVolumeRules();
+
   const [searchInput, setSearchInput] = useState(search.q);
   const countdown = useCountdown();
   const { t } = useLanguage();
