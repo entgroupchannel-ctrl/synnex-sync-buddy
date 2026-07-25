@@ -307,6 +307,7 @@ export function SiteHeader() {
             {NAV_CATS.map((c) => {
               const cat = c === "ทั้งหมด" ? "all" : c;
               const active = pathname === "/" && (typeof window !== "undefined") && new URLSearchParams(window.location.search).get("category") === cat;
+              const label = c === "ทั้งหมด" ? t("nav.all") : c === "Smart Life" ? "🏠 Smart Life" : c;
               const items: React.ReactNode[] = [
                 <Link
                   key={c}
@@ -316,7 +317,7 @@ export function SiteHeader() {
                     active ? "text-[color:var(--brand-orange)]" : "text-white/85"
                   }`}
                 >
-                  {c === "ทั้งหมด" ? t("nav.all") : c}
+                  {label}
                 </Link>,
               ];
               // Insert Apple mega-menu right after "Notebook"
@@ -389,7 +390,7 @@ export function SiteHeader() {
                   onClick={() => setMenuOpen(false)}
                   className="block rounded-md px-3 py-2 text-sm hover:bg-slate-100"
                 >
-                  {c === "ทั้งหมด" ? t("nav.all") : c}
+                  {c === "ทั้งหมด" ? t("nav.all") : c === "Smart Life" ? "🏠 Smart Life" : c}
                 </Link>
               ))}
             </div>

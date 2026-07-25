@@ -291,7 +291,7 @@ export function SiteFooter() {
       <NewsletterStrip />
 
       <div className="bg-[color:var(--brand-navy)] text-white/80">
-        <div className="mx-auto grid max-w-7xl gap-6 px-4 py-10 md:grid-cols-5">
+        <div className="mx-auto grid max-w-7xl gap-6 px-4 py-10 md:grid-cols-6">
           {/* Column 1 — Help Center */}
           <Column title="ศูนย์ช่วยเหลือ">
             <ul className="space-y-2">
@@ -306,7 +306,20 @@ export function SiteFooter() {
             </ul>
           </Column>
 
-          {/* Column 2 — About */}
+          {/* Column 2 — Categories */}
+          <Column title="หมวดหมู่สินค้า">
+            <ul className="space-y-2">
+              <li><FooterLink to="/?category=Smart+Life">🏠 Smart Life</FooterLink></li>
+              <li><FooterLink to="/?category=Notebook">Notebook</FooterLink></li>
+              <li><FooterLink to="/?category=Computer+Set">คอมพิวเตอร์ชุด</FooterLink></li>
+              <li><FooterLink to="/?category=Components">ชิ้นส่วน / CPU</FooterLink></li>
+              <li><FooterLink to="/?category=Solar+%26+Energy">โซลาร์และพลังงาน</FooterLink></li>
+              <li><FooterLink to="/?category=Software">Software</FooterLink></li>
+              <li><FooterLink to="/pc-builder">🔧 Config PC</FooterLink></li>
+            </ul>
+          </Column>
+
+          {/* Column 3 — About */}
           <Column title="เกี่ยวกับ ENT Group">
             <ul className="space-y-2">
               <li><FooterLink href="https://entgroup.co.th/about">เกี่ยวกับเรา</FooterLink></li>
@@ -317,7 +330,7 @@ export function SiteFooter() {
             </ul>
           </Column>
 
-          {/* Column 3 — Payment */}
+          {/* Column 4 — Payment */}
           <Column title="วิธีการชำระเงิน / Payment">
             <PillList
               items={[
@@ -334,7 +347,7 @@ export function SiteFooter() {
             </p>
           </Column>
 
-          {/* Column 4 — Shipping */}
+          {/* Column 5 — Shipping */}
           <Column title="บริการจัดส่ง / Delivery">
             <PillList
               items={[
@@ -349,7 +362,7 @@ export function SiteFooter() {
             </p>
           </Column>
 
-          {/* Column 5 — Follow + Contact */}
+          {/* Column 6 — Follow + Contact */}
           <Column title="ติดตามเรา / Follow Us">
             <div className="flex flex-wrap gap-2">
               <a

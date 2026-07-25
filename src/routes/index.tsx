@@ -39,6 +39,7 @@ import {
   StorageDeals,
   ComponentsShowcase,
   SolarEnergy,
+  SmartLife,
 } from "@/components/home-sections";
 import { AppleFeatured } from "@/components/apple-featured";
 import { PcBuilderLanding } from "@/components/pc-builder-landing";
@@ -693,6 +694,9 @@ function HomePage() {
 
           {/* Solar & Energy */}
           <SolarEnergy />
+
+          {/* Smart Life */}
+          <SmartLife />
 
           {/* Industrial Grade Computer — links to entgroup.co.th */}
           <IndustrialComputer />
