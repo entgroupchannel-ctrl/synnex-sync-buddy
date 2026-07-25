@@ -387,8 +387,17 @@ function ProductDetail() {
                           <span className="rounded-md bg-red-100 px-2 py-0.5 text-xs font-bold text-red-700">
                             ประหยัด {pr.savingsPct}%
                           </span>
-                        </>
-                      )}
+                    </div>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      <B2BBadgeLarge
+                        sellingPrice={p.selling_price as number | null}
+                        b2bPrice={(p as { b2b_price?: number | null }).b2b_price}
+                      />
+                      <MemberBadge
+                        sellingPrice={p.selling_price as number | null}
+                        memberPrice={(p as { member_price?: number | null }).member_price}
+                        className="text-sm px-3 py-1"
+                      />
                     </div>
                     {pr.volumeDiscount > 0 && (
                       <div className="mt-1 text-xs font-medium text-emerald-700">
