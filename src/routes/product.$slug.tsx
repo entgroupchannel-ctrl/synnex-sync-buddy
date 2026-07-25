@@ -766,9 +766,12 @@ function ProductDetail() {
               {/* AEO — Answer-Ready Summary (for AI answer engines & voice search) */}
               {(() => {
                 const priceNum = Number(p.selling_price ?? 0);
-                const stockLabel = ready ? "พร้อมจัดส่ง" : byOrder ? "By Order 30 วัน" : (p.stock_status ?? "สินค้าหมด");
+                const isOverseasFactory = p.distributor === "PLINK-AI";
+                const stockLabel = isOverseasFactory
+                  ? "สั่งผลิตจากโรงงานต่างประเทศ ~15-20 วัน"
+                  : ready ? "พร้อมจัดส่ง" : byOrder ? "By Order 30 วัน" : (p.stock_status ?? "สินค้าหมด");
                 const summary = [
-                  `${p.name ?? decodedSku} ราคา ฿${priceNum.toLocaleString("th-TH")}`,
+                  priceNum > 0 ? `${p.name ?? decodedSku} ราคา ฿${priceNum.toLocaleString("th-TH")}` : (p.name ?? decodedSku),
                   stockLabel,
                   p.brand ? `แบรนด์ ${p.brand}` : "",
                   showSku ? `รหัสสินค้า ${decodedSku}` : "",
@@ -795,8 +798,12 @@ function ProductDetail() {
                     {[
                       ...(showSku ? [["รุ่น / Model", decodedSku]] : []),
                       ["แบรนด์", p.brand ?? "—"],
-                      ["ราคา", `฿${Number(p.selling_price ?? 0).toLocaleString("th-TH")}`],
-                      ["สถานะ", `${p.stock_status ?? "—"}${byOrder ? " (By Order ~30 วัน)" : ""}`],
+                      ...(Number(p.selling_price ?? 0) > 0
+                        ? [["ราคา", `฿${Number(p.selling_price ?? 0).toLocaleString("th-TH")}`]]
+                        : []),
+                      ["สถานะ", p.distributor === "PLINK-AI"
+                        ? "สั่งผลิตจากโรงงานต่างประเทศ ~15-20 วัน"
+                        : `${p.stock_status ?? "—"}${byOrder ? " (By Order ~30 วัน)" : ""}`],
                       ["หมวดหมู่", p.category ?? "—"],
                       ["รับประกัน", "รับประกันศูนย์ไทย"],
                     ].filter(Boolean).map((row, i) => {
