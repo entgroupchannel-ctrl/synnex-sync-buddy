@@ -64,6 +64,26 @@ const searchSchema = z.object({
   page: fallback(z.number().int(), 1).default(1),
 });
 
+const SMART_LIFE_SUBCATS: { label: string; brands: string[] }[] = [
+  { label: "📹 กล้องวงจรปิด (CCTV)", brands: ["DAHUA", "HIKVISION"] },
+  { label: "⌚ Smartwatch & Fitness", brands: ["SAMSUNG", "GARMIN", "HUAWEI", "AMAZFIT"] },
+  { label: "🏠 Smart Home / Xiaomi", brands: ["XIAOMI"] },
+  { label: "💨 เครื่องฟอกอากาศ", brands: ["HONEYWELL", "XIAOMI"] },
+  { label: "🌀 Gadget & Accessories", brands: ["SOTHING"] },
+  { label: "📡 Smart Devices / HUAWEI", brands: ["HUAWEI"] },
+];
+
+const SMART_LIFE_BRANDS = ["DAHUA", "HIKVISION", "SAMSUNG", "GARMIN", "HUAWEI", "XIAOMI", "HONEYWELL", "SOTHING", "AMAZFIT"];
+
+const SMART_LIFE_PRICE_PRESETS: { label: string; min: number; max: number }[] = [
+  { label: "ต่ำกว่า ฿1,000", min: 0, max: 1000 },
+  { label: "฿1,000-5,000", min: 1000, max: 5000 },
+  { label: "฿5,000-20,000", min: 5000, max: 20000 },
+  { label: "มากกว่า ฿20,000", min: 20000, max: 100000 },
+];
+
+
+
 export const Route = createFileRoute("/")({
   ssr: false,
   validateSearch: zodValidator(searchSchema),
@@ -317,7 +337,9 @@ function HomePage() {
         if (search.sort === "price-asc") q = q.order("price", { ascending: true, nullsFirst: false });
         else if (search.sort === "price-desc") q = q.order("price", { ascending: false, nullsFirst: false });
         else if (search.sort === "popular") q = q.order("name", { ascending: true });
+        else if (search.category === "Smart Life") q = q.order("selling_price", { ascending: true, nullsFirst: false });
         else q = q.order("synced_at", { ascending: false });
+
         return q;
       };
       type Result = { data: Record<string, unknown>[] | null; error: unknown; count: number | null };
@@ -385,17 +407,22 @@ function HomePage() {
 
   const totalPages = Math.max(1, Math.ceil((productsQuery.data?.count ?? 0) / PAGE_SIZE));
 
+  const isSmartLife = search.category === "Smart Life";
+
   const toggleBrand = (b: string) => {
     const set = new Set(selectedBrands);
     if (set.has(b)) set.delete(b); else set.add(b);
     // Selecting/deselecting a brand auto-clears category to prevent 0-result conflicts.
-    update({ brands: [...set].join(","), category: "all" });
+    // Smart Life keeps its category so its sub-filters stay visible.
+    update(isSmartLife ? { brands: [...set].join(",") } : { brands: [...set].join(","), category: "all" });
   };
 
   const setCategory = (c: string) => {
     // Changing category auto-clears brand filter to prevent 0-result conflicts.
-    update({ category: c, brands: "" });
+    // Smart Life defaults to cheapest-first.
+    update(c === "Smart Life" ? { category: c, brands: "", sort: "price-asc" } : { category: c, brands: "" });
   };
+
 
   const clearAllFilters = () => {
     navigate({ to: "/", search: {} as never });
@@ -534,10 +561,42 @@ function HomePage() {
         </div>
       </div>
 
+      {isSmartLife && (
+        <div>
+          <h3 className="mb-3 text-sm font-bold text-[color:var(--brand-navy)]">ประเภทสินค้า</h3>
+          <div className="space-y-1.5">
+            {SMART_LIFE_SUBCATS.map((sub) => (
+              <button
+                key={sub.label}
+                onClick={() => update({ brands: sub.brands.join(",") })}
+                className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm transition-colors ${
+                  selectedBrands.join() === sub.brands.join()
+                    ? "bg-[color:var(--brand-green)] font-medium text-white"
+                    : "text-slate-600 hover:bg-slate-100"
+                }`}
+              >
+                <span>{sub.label}</span>
+                <ChevronRight className="h-3.5 w-3.5 opacity-50" />
+              </button>
+            ))}
+            {selectedBrands.length > 0 && (
+              <button
+                onClick={() => update({ brands: "" })}
+                className="w-full rounded-lg px-3 py-2 text-left text-xs text-slate-400 hover:text-slate-600"
+              >
+                × ล้างตัวกรอง
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
       <div>
         <div className="mb-2 text-sm font-bold text-[color:var(--brand-navy)]">แบรนด์</div>
         <div className="max-h-56 space-y-1.5 overflow-y-auto pr-1">
-          {(brandsQ.data ?? []).map(({ brand, count }) => (
+          {(brandsQ.data ?? [])
+            .filter(({ brand }) => !isSmartLife || SMART_LIFE_BRANDS.includes(brand.toUpperCase()))
+            .map(({ brand, count }) => (
             <label key={brand} className="flex cursor-pointer items-center gap-2 text-sm">
               <Checkbox
                 checked={selectedBrands.includes(brand)}
@@ -547,11 +606,31 @@ function HomePage() {
               <span className="text-xs text-slate-400">{count}</span>
             </label>
           ))}
+          {isSmartLife && (brandsQ.data ?? []).filter(({ brand }) => SMART_LIFE_BRANDS.includes(brand.toUpperCase())).length === 0 && (
+            <div className="text-xs text-slate-400">ไม่มีแบรนด์ให้กรอง</div>
+          )}
         </div>
       </div>
 
       <div>
         <div className="mb-2 text-sm font-bold text-[color:var(--brand-navy)]">ช่วงราคา</div>
+        {isSmartLife && (
+          <div className="mb-3 flex flex-wrap gap-1.5">
+            {SMART_LIFE_PRICE_PRESETS.map((p) => (
+              <button
+                key={p.label}
+                onClick={() => update({ min: p.min, max: p.max })}
+                className={`rounded-full border px-3 py-1 text-xs ${
+                  search.min === p.min && search.max === p.max
+                    ? "border-[color:var(--brand-green)] bg-[color:var(--brand-green)] text-white"
+                    : "bg-white hover:bg-slate-50"
+                }`}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
+        )}
         <Slider
           min={0}
           max={PRICE_MAX}
@@ -564,6 +643,7 @@ function HomePage() {
           <span>฿{search.max.toLocaleString()}</span>
         </div>
       </div>
+
 
       <div>
         <div className="mb-2 text-sm font-bold text-[color:var(--brand-navy)]">รูปแบบสินค้า</div>
