@@ -10,7 +10,7 @@ import {
   Laptop, Monitor, Printer, Cpu, Smartphone, Wifi, HardDrive, Package,
   Cable, LayoutGrid, ShoppingCart, Truck, Award, FileText, Phone, ArrowRight,
   ChevronLeft, ChevronRight, Mail, Flame, ShieldCheck, Building2, Warehouse, MonitorCog, Sun,
-  Home, Shield, Camera,
+  Home, Shield, Camera, Wrench,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import heroWarehouse from "@/assets/hero-warehouse.jpg";
@@ -1328,17 +1328,37 @@ export function SolarEnergy() {
 
 /* ---------- Smart Life (CCTV / Smart Home / IoT) ---------- */
 
+type SmartTab = "all" | "cctv" | "xiaomi" | "sothing" | "huawei";
+
+const SMART_TABS: { key: SmartTab; label: string }[] = [
+  { key: "all", label: "ทั้งหมด" },
+  { key: "cctv", label: "📹 CCTV" },
+  { key: "xiaomi", label: "🏠 Xiaomi" },
+  { key: "sothing", label: "🌀 SOTHING" },
+  { key: "huawei", label: "HUAWEI" },
+];
+
 export function SmartLife() {
+  const [tab, setTab] = useState<SmartTab>("all");
+
   const q = useQuery({
-    queryKey: ["smart-life"],
+    queryKey: ["smart-life", tab],
     queryFn: async () => {
-      const { data } = await supabase.from("synnex_products")
+      let qi = supabase
+        .from("synnex_products")
         .select("*")
         .eq("category", "Smart Life")
         .eq("price_approved", true)
         .gt("selling_price", 0)
         .order("selling_price", { ascending: true })
         .limit(10);
+
+      if (tab === "cctv") qi = qi.in("brand", ["DAHUA", "HIKVISION"]);
+      else if (tab === "xiaomi") qi = qi.eq("brand", "XIAOMI");
+      else if (tab === "sothing") qi = qi.eq("brand", "SOTHING");
+      else if (tab === "huawei") qi = qi.eq("brand", "HUAWEI");
+
+      const { data } = await qi;
       return (data ?? []) as ProductRow[];
     },
     staleTime: 5 * 60_000,
@@ -1347,39 +1367,39 @@ export function SmartLife() {
   if ((q.data?.length ?? 0) === 0) return null;
 
   return (
-    <section className="py-10 bg-white">
+    <section className="border-b bg-white py-10">
       <div className="mx-auto max-w-7xl px-4">
-        <div className="mb-6 flex items-end justify-between">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-2xl">🏠</span>
-              <h2 className="text-2xl font-black text-slate-900">
-                Smart Life / สมาร์ทไลฟ์
-              </h2>
-              <span className="text-sm text-slate-400 ml-2">
-                / กล้องวงจรปิด · Smart Home · IoT
-              </span>
-            </div>
-            <p className="text-sm text-slate-500">
-              CCTV, Dahua, Hikvision, Xiaomi Smart Home — ระบบรักษาความปลอดภัยและบ้านอัจฉริยะ
+        <div className="mb-6 flex items-end justify-between gap-3">
+          <div className="min-w-0">
+            <h2 className="text-xl font-black text-slate-900 md:text-2xl">
+              🏠 Smart Life / สมาร์ทไลฟ์
+              <span className="ml-2 text-sm font-medium text-slate-400">/ กล้องวงจรปิด · Smart Home · IoT</span>
+            </h2>
+            <p className="mt-1 text-sm text-slate-500">
+              CCTV, Dahua, Hikvision, Xiaomi — ระบบรักษาความปลอดภัยและบ้านอัจฉริยะ
             </p>
           </div>
           <Link
             to="/"
             search={{ category: "Smart Life" } as never}
-            className="text-sm font-medium text-green-600 hover:text-green-700 whitespace-nowrap"
+            className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap text-sm font-semibold text-[color:var(--brand-green)] hover:underline"
           >
-            ดู Smart Life ทั้งหมด →
+            ดู Smart Life ทั้งหมด <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </div>
 
-        <div className="flex gap-2 mb-4 overflow-x-auto pb-1 no-scrollbar">
-          {["ทั้งหมด", "กล้องวงจรปิด", "Smart Home", "Xiaomi", "HUAWEI"].map((tab) => (
+        <div className="mb-4 flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+          {SMART_TABS.map((t) => (
             <button
-              key={tab}
-              className="shrink-0 rounded-full border px-4 py-1.5 text-xs font-medium whitespace-nowrap hover:border-green-500 hover:text-green-600 transition-colors"
+              key={t.key}
+              onClick={() => setTab(t.key)}
+              className={`shrink-0 rounded-full border px-4 py-1.5 text-xs font-medium whitespace-nowrap transition-colors ${
+                tab === t.key
+                  ? "border-[color:var(--brand-green)] bg-[color:var(--brand-green)] text-white"
+                  : "hover:border-[color:var(--brand-green)] hover:text-[color:var(--brand-green)]"
+              }`}
             >
-              {tab}
+              {t.label}
             </button>
           ))}
         </div>
@@ -1388,11 +1408,11 @@ export function SmartLife() {
           {q.data!.map((p) => <CategoryGridCard key={p.id} p={p} />)}
         </div>
 
-        <div className="mt-6 flex flex-wrap gap-4 justify-center text-xs text-slate-500">
-          <span className="inline-flex items-center gap-1"><Shield className="h-3.5 w-3.5" /> ระบบรักษาความปลอดภัย</span>
-          <span className="inline-flex items-center gap-1"><Camera className="h-3.5 w-3.5" /> กล้อง HD/4K/8MP</span>
-          <span className="inline-flex items-center gap-1"><Home className="h-3.5 w-3.5" /> Smart Home ครบวงจร</span>
-          <span className="inline-flex items-center gap-1"><Phone className="h-3.5 w-3.5" /> ติดตั้งโดยช่างผู้เชี่ยวชาญ</span>
+        <div className="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs text-slate-500">
+          <span className="inline-flex items-center gap-1.5"><Shield className="h-3.5 w-3.5 text-[color:var(--brand-green)]" /> ระบบรักษาความปลอดภัย</span>
+          <span className="inline-flex items-center gap-1.5"><Camera className="h-3.5 w-3.5 text-[color:var(--brand-green)]" /> กล้อง HD/4K/8MP</span>
+          <span className="inline-flex items-center gap-1.5"><Home className="h-3.5 w-3.5 text-[color:var(--brand-green)]" /> Smart Home ครบวงจร</span>
+          <span className="inline-flex items-center gap-1.5"><Wrench className="h-3.5 w-3.5 text-[color:var(--brand-green)]" /> ติดตั้งโดยช่างผู้เชี่ยวชาญ</span>
         </div>
       </div>
     </section>
