@@ -263,12 +263,11 @@ export function SiteHeader() {
 
 
           <Link
-            to="/"
-            search={{ category: "Network" } as never}
+            to="/corporate"
             className="hidden lg:flex items-center gap-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 px-3 py-1.5 text-xs font-bold text-white transition-colors shrink-0"
           >
             <Building2 className="h-3.5 w-3.5" />
-            Corporate
+            {lang === "th" ? "ลูกค้าองค์กร" : "Corporate"}
           </Link>
 
           <LangToggle className="hidden lg:inline-flex" />
