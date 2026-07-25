@@ -330,14 +330,14 @@ export function PcBuilderLanding() {
                     {part.price != null ? "ราคา" : "By Order"}
                   </span>
                 </div>
-                <div className="mb-1 text-xs text-slate-400">{part.type}</div>
-                <div className="min-h-[2.5rem] text-sm font-semibold leading-snug text-white">
+                <div className="mb-1 text-[10px] font-bold uppercase text-slate-500">{part.type}</div>
+                <div className="min-h-[2.5rem] text-sm font-bold leading-snug text-slate-800">
                   {part.name}
                 </div>
-                <div className="mt-3 text-base font-bold text-green-300">
+                <div className="mt-3 text-base font-black text-green-600">
                   {part.price != null
                     ? formatTHB(part.price)
-                    : "ติดต่อสอบถาม"}
+                    : <span className="text-orange-500 font-medium text-sm">ติดต่อสอบถาม</span>}
                 </div>
               </div>
             );
