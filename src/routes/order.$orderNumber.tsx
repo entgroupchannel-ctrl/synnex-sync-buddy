@@ -227,6 +227,12 @@ function OrderConfirm() {
           </div>
         </section>
 
+        {/* Order status timeline */}
+        <section className="mt-4 rounded-2xl border bg-white p-6">
+          <h2 className="mb-3 font-bold text-[color:var(--brand-navy)]">ความคืบหน้าออเดอร์</h2>
+          <OrderStatusTimeline orderId={order.id} />
+        </section>
+
         {/* Guest signup prompt */}
         {order.customer_type === "guest" && !order.user_id && order.customer_email && (
           <GuestSignupPrompt
