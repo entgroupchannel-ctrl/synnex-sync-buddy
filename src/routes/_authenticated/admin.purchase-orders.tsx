@@ -2,7 +2,10 @@
  * src/routes/_authenticated/admin.purchase-orders.tsx  (ไฟล์ใหม่)
  * หน้า Admin: ดูสินค้าที่รอสั่งจาก distributor (จัดกลุ่มอัตโนมัติ) + กดสร้าง PO
  */
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { ChevronRight } from "lucide-react";
+import { distMeta, PO_STATUS_META, type PoStatus } from "@/lib/order-helpers";
+
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
