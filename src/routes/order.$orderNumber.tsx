@@ -12,6 +12,8 @@ import { ProductImage } from "@/components/product-image";
 
 import { Button } from "@/components/ui/button";
 import { BANK_ACCOUNTS, STATUS_META, VAT_NOTES, isValidStatus, bahtFmt } from "@/lib/order-helpers";
+import { OrderProgressStepper } from "@/components/order-progress-stepper";
+import { OrderStatusTimeline } from "@/components/order-status-timeline";
 import { GuestSignupPrompt } from "@/components/guest-signup-prompt";
 import { PromptPayPaymentModal } from "@/components/promptpay-modal";
 import { LineQrDialog } from "@/components/line-qr-dialog";
