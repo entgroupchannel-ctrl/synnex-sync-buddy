@@ -21,6 +21,7 @@ import { useDynamicSeo, getRobotsForCategory } from "@/lib/dynamic-seo";
 import { DeliveryHint } from "@/components/delivery-info";
 import { StockBadge } from "@/components/stock-badge";
 import { WarrantyBadge } from "@/components/warranty-badge";
+import { CATEGORY_ICONS, SMART_LIFE_SUBCATEGORY_ICONS } from "@/lib/category-icons";
 
 
 import { CATEGORIES, detectCategory, displayPrice, getSellingPrice, useCart, useCustomerTier } from "@/lib/cart";
@@ -67,11 +68,12 @@ const searchSchema = z.object({
 });
 
 const SMART_LIFE_SUBCATS: { label: string; brands: string[] }[] = [
-  { label: "📹 กล้องวงจรปิด (CCTV)", brands: ["DAHUA", "HIKVISION"] },
-  { label: "⌚ Smartwatch & Fitness", brands: ["SAMSUNG", "GARMIN", "HUAWEI"] },
-  { label: "🏠 Smart Home / Xiaomi", brands: ["XIAOMI"] },
-  { label: "💨 เครื่องฟอกอากาศ", brands: ["HONEYWELL"] },
-  { label: "🌀 Gadget", brands: ["SOTHING"] },
+  { label: "กล้องวงจรปิด (CCTV)", brands: ["DAHUA", "HIKVISION"] },
+  { label: "Smartwatch & Fitness", brands: ["SAMSUNG", "GARMIN", "HUAWEI", "AMAZFIT"] },
+  { label: "Smart Home / Xiaomi", brands: ["XIAOMI", "LAMPTAN"] },
+  { label: "เครื่องฟอกอากาศ", brands: ["HONEYWELL"] },
+  { label: "Gadget", brands: ["SOTHING"] },
+  { label: "Smart Security", brands: ["EZVIZ", "TPLINK"] },
 ];
 
 const SMART_LIFE_BRANDS = ["DAHUA", "HIKVISION", "SAMSUNG", "GARMIN", "HUAWEI", "XIAOMI", "HONEYWELL", "SOTHING", "AMAZFIT"];
@@ -545,21 +547,45 @@ function HomePage() {
       <div>
         <div className="mb-2 text-sm font-bold text-[color:var(--brand-navy)]">หมวดหมู่</div>
         <div className="space-y-0.5">
-          <button
-            onClick={() => setCategory("all")}
-            className={`flex w-full items-center justify-between rounded-md px-2 py-1.5 text-sm ${search.category === "all" ? "bg-[color:var(--brand-navy)] text-white" : "hover:bg-slate-100"}`}
-          >
-            ทั้งหมด <ChevronRight className="h-3 w-3 opacity-50" />
-          </button>
-          {CATEGORIES.map((c) => (
-            <button
-              key={c}
-              onClick={() => setCategory(c)}
-              className={`flex w-full items-center justify-between rounded-md px-2 py-1.5 text-sm ${search.category === c ? "bg-[color:var(--brand-navy)] text-white" : "hover:bg-slate-100"}`}
-            >
-              {c} <ChevronRight className="h-3 w-3 opacity-50" />
-            </button>
-          ))}
+          {(() => {
+            const allSelected = search.category === "all";
+            return (
+              <button
+                onClick={() => setCategory("all")}
+                className={`w-full flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors ${
+                  allSelected
+                    ? "bg-[color:var(--brand-navy)] text-white font-medium"
+                    : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                }`}
+              >
+                <span className={allSelected ? "text-white" : "text-slate-400"}>
+                  <Package className="h-4 w-4" />
+                </span>
+                <span className="flex-1 text-left">ทั้งหมด</span>
+                <ChevronRight className={`h-3.5 w-3.5 opacity-40 ${allSelected ? "text-white" : "text-slate-400"}`} />
+              </button>
+            );
+          })()}
+          {CATEGORIES.map((c) => {
+            const isSelected = search.category === c;
+            return (
+              <button
+                key={c}
+                onClick={() => setCategory(c)}
+                className={`w-full flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors ${
+                  isSelected
+                    ? "bg-[color:var(--brand-navy)] text-white font-medium"
+                    : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                }`}
+              >
+                <span className={isSelected ? "text-white" : "text-slate-400"}>
+                  {CATEGORY_ICONS[c] ?? <Package className="h-4 w-4" />}
+                </span>
+                <span className="flex-1 text-left">{c}</span>
+                <ChevronRight className={`h-3.5 w-3.5 opacity-40 ${isSelected ? "text-white" : "text-slate-400"}`} />
+              </button>
+            );
+          })}
 
         </div>
       </div>
@@ -568,20 +594,26 @@ function HomePage() {
         <div>
           <h3 className="mb-3 text-sm font-bold text-[color:var(--brand-navy)]">ประเภทสินค้า</h3>
           <div className="space-y-1.5">
-            {SMART_LIFE_SUBCATS.map((sub) => (
-              <button
-                key={sub.label}
-                onClick={() => update({ brands: sub.brands.join(",") })}
-                className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm transition-colors ${
-                  selectedBrands.join() === sub.brands.join()
-                    ? "bg-[color:var(--brand-green)] font-medium text-white"
-                    : "text-slate-600 hover:bg-slate-100"
-                }`}
-              >
-                <span>{sub.label}</span>
-                <ChevronRight className="h-3.5 w-3.5 opacity-50" />
-              </button>
-            ))}
+            {SMART_LIFE_SUBCATS.map((sub) => {
+              const isSelected = selectedBrands.join() === sub.brands.join();
+              return (
+                <button
+                  key={sub.label}
+                  onClick={() => update({ brands: sub.brands.join(",") })}
+                  className={`w-full flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors ${
+                    isSelected
+                      ? "bg-[color:var(--brand-green)] text-white font-medium"
+                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                  }`}
+                >
+                  <span className={isSelected ? "text-white" : "text-slate-400"}>
+                    {SMART_LIFE_SUBCATEGORY_ICONS[sub.label] ?? <Package className="h-4 w-4" />}
+                  </span>
+                  <span className="flex-1 text-left">{sub.label}</span>
+                  <ChevronRight className={`h-3.5 w-3.5 opacity-40 ${isSelected ? "text-white" : "text-slate-400"}`} />
+                </button>
+              );
+            })}
             {selectedBrands.length > 0 && (
               <button
                 onClick={() => update({ brands: "" })}
