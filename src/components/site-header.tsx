@@ -1,5 +1,6 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { ShoppingCart, Search, Menu, Home, Grid3x3, User, X, LogOut, Package, MapPin, Building2, Heart } from "lucide-react";
+import { ShoppingCart, Search, Menu, Home, Grid3x3, User, X, LogOut, Package, MapPin, Building2, Heart, LayoutGrid, Wrench, CreditCard, Globe } from "lucide-react";
+import { CATEGORY_ICONS } from "@/lib/category-icons";
 import { useWishlistCount } from "@/lib/wishlist";
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -138,7 +139,17 @@ export function SiteHeader() {
       <div className="bg-slate-900 text-white/80 text-xs">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-2 px-4 py-1.5">
           <div>ส่วนหนึ่งของ <span className="font-semibold text-white">ENT Group Co., Ltd.</span> · โทร <a href="tel:020456104" className="hover:text-[color:var(--brand-green)]">02-045-6104</a></div>
-          <a href="https://entgroup.co.th" target="_blank" rel="noopener noreferrer" className="hover:text-[color:var(--brand-green)]">🔗 entgroup.co.th</a>
+          <div className="hidden lg:flex items-center gap-4">
+            <Link to="/credit-application" className="flex items-center gap-1 text-xs text-blue-300 hover:text-blue-200">
+              <CreditCard className="h-3 w-3" />
+              วงเงินเครดิต B2B
+            </Link>
+            <a href="https://entgroup.co.th" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs text-slate-400 hover:text-white">
+              <Globe className="h-3 w-3" />
+              entgroup.co.th
+            </a>
+          </div>
+          <a href="https://entgroup.co.th" target="_blank" rel="noopener noreferrer" className="hover:text-[color:var(--brand-green)] lg:hidden">🔗 entgroup.co.th</a>
         </div>
       </div>
       <header className="sticky top-0 z-40 bg-[color:var(--brand-navy)] text-white shadow-lg">
@@ -246,6 +257,15 @@ export function SiteHeader() {
           </div>
 
 
+          <Link
+            to="/"
+            search={{ category: "Network" } as never}
+            className="hidden lg:flex items-center gap-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 px-3 py-1.5 text-xs font-bold text-white transition-colors shrink-0"
+          >
+            <Building2 className="h-3.5 w-3.5" />
+            Corporate
+          </Link>
+
           <LangToggle className="hidden lg:inline-flex" />
 
           {user ? (
@@ -307,16 +327,18 @@ export function SiteHeader() {
             {NAV_CATS.map((c) => {
               const cat = c === "ทั้งหมด" ? "all" : c;
               const active = pathname === "/" && (typeof window !== "undefined") && new URLSearchParams(window.location.search).get("category") === cat;
-              const label = c === "ทั้งหมด" ? t("nav.all") : c === "Smart Life" ? "🏠 Smart Life" : c;
+              const label = c === "ทั้งหมด" ? t("nav.all") : c;
+              const icon = c === "ทั้งหมด" ? <LayoutGrid className="h-3.5 w-3.5" /> : CATEGORY_ICONS[c];
               const items: React.ReactNode[] = [
                 <Link
                   key={c}
                   to="/"
                   search={{ category: cat } as never}
-                  className={`whitespace-nowrap px-3 py-2.5 text-sm transition hover:text-[color:var(--brand-orange)] ${
+                  className={`inline-flex items-center gap-1.5 whitespace-nowrap px-3 py-2.5 text-sm transition hover:text-[color:var(--brand-orange)] ${
                     active ? "text-[color:var(--brand-orange)]" : "text-white/85"
                   }`}
                 >
+                  {icon}
                   {label}
                 </Link>,
               ];
@@ -331,19 +353,12 @@ export function SiteHeader() {
                     key="pc-builder-nav"
                     to="/pc-builder"
                     preload="intent"
-                    className={`whitespace-nowrap px-3 py-2.5 text-sm font-medium transition hover:text-[color:var(--brand-orange)] ${
+                    className={`inline-flex items-center gap-1.5 whitespace-nowrap px-3 py-2.5 text-sm font-medium transition hover:text-[color:var(--brand-orange)] ${
                       pathname === "/pc-builder" ? "text-[color:var(--brand-orange)]" : "text-white/85"
                     }`}
                   >
-                    🔧 Config PC
-                  </Link>,
-                  <Link
-                    key="corporate-nav"
-                    to="/"
-                    search={{ category: "Network" } as never}
-                    className="whitespace-nowrap px-3 py-2.5 text-sm font-medium text-white/85 transition hover:text-[color:var(--brand-orange)]"
-                  >
-                    🏢 Corporate
+                    <Wrench className="h-3.5 w-3.5" />
+                    Config PC
                   </Link>,
                 );
               }
