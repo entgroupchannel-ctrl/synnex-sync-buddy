@@ -35,24 +35,56 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { WorkFooter } from "@/components/work-footer";
 
+// แคชผลเช็คสิทธิ์ admin ไว้ในหน่วยความจำ เพื่อไม่ต้อง query ซ้ำทุกครั้งที่สลับหน้า
+let adminCheckCache: { userId: string; isAdmin: boolean } | null = null;
+
 export const Route = createFileRoute("/_authenticated/admin")({
   ssr: false,
-  beforeLoad: async () => {
-    const { data: userData } = await supabase.auth.getUser();
-    if (!userData.user) throw redirect({ to: "/auth" });
-    const { data: profile } = await supabase
-      .from("user_profiles")
-      .select("is_admin")
-      .eq("id", userData.user.id)
-      .maybeSingle();
-    if (!profile?.is_admin) {
+  beforeLoad: async ({ context }) => {
+    const user = (context as { user?: { id: string } }).user;
+    if (!user) throw redirect({ to: "/auth" });
+
+    if (adminCheckCache?.userId !== user.id) {
+      const { data: profile } = await supabase
+        .from("user_profiles")
+        .select("is_admin")
+        .eq("id", user.id)
+        .maybeSingle();
+      adminCheckCache = { userId: user.id, isAdmin: !!profile?.is_admin };
+    }
+
+    if (!adminCheckCache.isAdmin) {
+      adminCheckCache = null;
       toast.error("ไม่มีสิทธิ์เข้าถึงหน้านี้");
       throw redirect({ to: "/" });
     }
-    return { user: userData.user };
+    return { user };
   },
+  pendingMs: 0,
+  pendingComponent: AdminPending,
   component: AdminLayout,
 });
+
+function AdminPending() {
+  return (
+    <div className="flex min-h-screen bg-slate-50">
+      <div className="hidden w-64 shrink-0 border-r border-slate-200 bg-white p-4 lg:block">
+        <div className="mb-6 h-8 w-32 animate-pulse rounded bg-slate-200" />
+        {Array.from({ length: 10 }).map((_, i) => (
+          <div key={i} className="mb-3 h-6 w-full animate-pulse rounded bg-slate-100" />
+        ))}
+      </div>
+      <div className="flex-1 p-6">
+        <div className="mb-6 h-8 w-48 animate-pulse rounded bg-slate-200" />
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="h-24 animate-pulse rounded-xl bg-white shadow-sm" />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 type NavItem = {
   label: string;

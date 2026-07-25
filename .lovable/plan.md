@@ -1,39 +1,23 @@
-## สาเหตุที่คลิก "🔧 Config PC" แล้วหน้าไม่ปรากฏทันที
+## สาเหตุที่กดปุ่ม Admin แล้วช้า
 
-ตรวจสอบแล้วพบ **3 สาเหตุหลัก**:
+ตรวจจากโค้ดจริง พบว่ากว่าหน้าจะขึ้น ต้องรอ **เรียก network 3 รอบต่อกันแบบเรียงลำดับ** ก่อนจะ render อะไรเลย:
 
-### 1. Router ไม่ได้เปิด preload (สาเหตุหลัก)
-`src/router.tsx` ตั้ง `defaultPreloadStaleTime: 0` แต่**ไม่มี `defaultPreload: "intent"`** → ตอน hover ที่ลิงก์ TanStack Router ไม่ pre-fetch route chunk ล่วงหน้า พอคลิกจริงต้องดาวน์โหลด chunk แบบ cold
+1. `src/routes/_authenticated/route.tsx` → `supabase.auth.getUser()` (ยิงไป `/auth/v1/user` ทุกครั้ง ไม่ได้อ่าน session ในเครื่อง)
+2. `src/routes/_authenticated/admin.tsx` → `supabase.auth.getUser()` **ซ้ำอีกรอบ**
+3. แล้วค่อย query `user_profiles.is_admin`
 
-### 2. Route file หนัก (1,063 บรรทัด)
-`src/routes/pc-builder.tsx` รวม 7-step wizard + quotation dialog + form ในไฟล์เดียว → chunk ใหญ่ ดาวน์โหลดช้าโดยเฉพาะบน mobile
+ทั้งหมดอยู่ใน `beforeLoad` ซึ่งบล็อกการนำทาง และโปรเจกต์ **ไม่มี `pendingComponent` เลย** → ระหว่างรอ ผู้ใช้จึงเห็นหน้าเดิมค้างอยู่ เหมือนกดแล้วไม่ตอบสนอง
 
-### 3. Query Supabase ยิงตอน mount ไม่มี skeleton
-`useEffect` บรรทัด 462 ยิง query ตอน mount และตั้ง `loading = true` แต่พื้นที่รายการสินค้าแสดงเป็นว่าง ทำให้รู้สึกว่าหน้ายัง "ไม่มา" ทั้งที่ shell มาแล้ว
+## สิ่งที่จะแก้
 
-Link ใน `src/components/site-header.tsx` (บรรทัด 327) ก็ไม่มี `preload="intent"` เฉพาะตัว
+- เปลี่ยน `getUser()` เป็น `getSession()` (อ่าน session จาก storage ทันที ไม่ยิง network) ทั้งใน `_authenticated/route.tsx` และ `admin.tsx`
+- ตัดการเช็ค auth ซ้ำใน `admin.tsx` ให้ใช้ user จาก context ของ parent แทน
+- แคชผล `is_admin` ไว้ (in-memory ต่อ session) เพื่อไม่ให้ query ซ้ำทุกครั้งที่สลับหน้า admin
+- เพิ่ม `pendingComponent` + `pendingMs: 0` ให้ route admin แสดง skeleton ของ sidebar/หน้า ทันทีที่กด
+- เพิ่ม `preload="intent"` ให้ปุ่ม Admin เพื่อเริ่มโหลดตั้งแต่เมาส์ชี้
 
----
+ไม่แตะ logic สิทธิ์ (ยังต้อง `is_admin` เท่านั้น) และไม่แตะ styling อื่น
 
-## แผนแก้ไข
+## ปุ่มมุมขวาบนในภาพ
 
-### Step 1 — เปิด preload ระดับ router
-แก้ `src/router.tsx` เพิ่ม `defaultPreload: "intent"` และ `defaultPreloadDelay: 50` เพื่อให้ทุก `<Link>` pre-fetch chunk ตอน hover/focus/touchstart — คลิกจริงจะรู้สึก instant
-
-### Step 2 — เพิ่ม preload ที่ nav link
-ระบุ `preload="intent"` ให้ `<Link to="/pc-builder">` ใน `site-header.tsx` เป็น safety net
-
-### Step 3 — Skeleton แทน blank ระหว่างโหลด
-ใน `pc-builder.tsx` ช่วง `loading = true` แสดง skeleton card 8–12 ใบ แทนพื้นที่ว่าง เพื่อให้หน้ารู้สึก "ปรากฏทันที"
-
-### (Optional) Step 4 — ลดขนาด chunk ด้วย lazy dialog
-แยก quotation dialog (`Dialog`, `Textarea`, form logic) ออกเป็นไฟล์ย่อย import ด้วย `React.lazy` เฉพาะตอนกดปุ่ม → ลด initial chunk ของ `/pc-builder` อย่างมีนัยสำคัญ
-
-หมายเหตุ: TanStack Start เปิด `autoCodeSplitting` อยู่แล้ว → component ของ route นี้ถูก split เป็น chunk แยกอัตโนมัติ ปัญหาจึงอยู่ที่ **ไม่มี prefetch** ไม่ใช่ splitting
-
----
-
-## Technical notes
-- `defaultPreload: "intent"` + `defaultPreloadStaleTime: 0` เป็นคู่ที่แนะนำ (Query เป็นเจ้าของ freshness แทน router)
-- ไม่แตะ database, edge function, business logic
-- Step 1–3 ควรแก้อาการได้ครบ; Step 4 เป็น optimization
+ค้นทั้งโปรเจกต์แล้ว **ไม่มีโค้ดใดสร้างปุ่ม/แบดจ์ลอยมุมขวาบน** (ไม่มี element `fixed top-*` นอกจาก dialog) — กล่องกรอบฟ้าที่เขียน `entgroup.co.th` พร้อมไอคอนลิงก์ เป็น overlay ของเบราว์เซอร์/ตัว preview (tooltip ตอนชี้ลิงก์หรือ popup ของ extension) ที่ทับข้อความ "By Order" ในแถบ ticker พอดี ไม่ใช่ส่วนหนึ่งของเว็บ จึงไม่ต้องแก้อะไร — ถ้าอยากยืนยัน จะเปิดหน้าเดียวกันด้วย headless browser แล้วแคปหน้าจอมาเทียบให้ดูได้
