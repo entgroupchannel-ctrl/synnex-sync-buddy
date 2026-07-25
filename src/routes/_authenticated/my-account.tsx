@@ -2,7 +2,7 @@ import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-r
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteHeader } from "@/components/site-header";
-import { User, MapPin, Package, Building2 } from "lucide-react";
+import { User, MapPin, Package, Building2, CreditCard } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/my-account")({
   head: () => ({
