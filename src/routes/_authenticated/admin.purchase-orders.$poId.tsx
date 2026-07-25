@@ -237,6 +237,53 @@ function PurchaseOrderDetailPage() {
           ))}
         </TableBody>
       </Table>
+
+      <Dialog open={emailOpen} onOpenChange={setEmailOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>ส่งอีเมลใบสั่งซื้อถึง Supplier</DialogTitle>
+            <DialogDescription>
+              ส่งถึงผู้ติดต่อของ {po.distributor} — แนบลิงก์ PDF ให้อัตโนมัติ
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-3">
+            <div className="space-y-1.5">
+              <Label>อีเมลผู้รับ</Label>
+              <Input
+                value={toEmail}
+                onChange={(e) => setToEmail(e.target.value)}
+                placeholder="purchasing@distributor.com"
+              />
+              {!contactQ.data?.contact_email && (
+                <p className="text-xs text-amber-600">
+                  ยังไม่มีอีเมลบันทึกไว้สำหรับ {po.distributor} — กรอกที่นี่แล้วไปตั้งค่าถาวรที่ตาราง distributor_contacts ทีหลังได้
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-1.5">
+              <Label>ชื่อผู้ติดต่อ (ถ้ามี)</Label>
+              <Input value={toName} onChange={(e) => setToName(e.target.value)} />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label>หัวข้ออีเมล</Label>
+              <Input value={subject} onChange={(e) => setSubject(e.target.value)} />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label>เนื้อหา (HTML)</Label>
+              <Textarea rows={8} value={bodyHtml} onChange={(e) => setBodyHtml(e.target.value)} />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEmailOpen(false)}>ยกเลิก</Button>
+            <Button disabled={sending} onClick={sendEmail}>{sending ? "กำลังส่ง..." : "ส่งอีเมล"}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
