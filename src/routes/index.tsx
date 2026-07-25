@@ -695,6 +695,9 @@ function HomePage() {
           {/* Solar & Energy */}
           <SolarEnergy />
 
+          {/* Smart Life */}
+          <SmartLife />
+
           {/* Industrial Grade Computer — links to entgroup.co.th */}
           <IndustrialComputer />
 
