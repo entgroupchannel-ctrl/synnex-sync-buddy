@@ -203,10 +203,17 @@ function CartPage() {
                 <span>{t("cart.subtotal")}</span>
                 <span>{priceFmt.format(total)}</span>
               </div>
+              {volume.total > 0 && (
+                <div className="mt-1 flex justify-between text-sm font-semibold text-green-600">
+                  <span>🏷️ ส่วนลดปริมาณ</span>
+                  <span>-{priceFmt.format(volume.total)} ✅</span>
+                </div>
+              )}
               <div className="mt-1 flex justify-between text-sm text-slate-600">
                 <span>{t("cart.shipping")}</span>
                 <span className="text-slate-500">คำนวณตอนชำระเงิน</span>
               </div>
+
 
               <div className="mt-3 space-y-2 rounded-lg border border-slate-200 bg-slate-50 p-3 text-xs text-slate-700">
                 <div className="flex items-start gap-2">
