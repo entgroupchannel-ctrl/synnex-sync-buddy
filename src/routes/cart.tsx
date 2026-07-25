@@ -16,6 +16,7 @@ import { saveCartReminder, deleteCartReminder } from "@/lib/cart-reminder";
 import { getWeightBasedShippingFee } from "@/lib/shipping";
 import { CartReassurance } from "@/components/trust-signals";
 import { DeliveryZoneInfoBox } from "@/components/delivery-zone-dialog";
+import { useVolumeRules, getVolumeDiscount } from "@/lib/volume-discount";
 
 
 export const Route = createFileRoute("/cart")({
@@ -142,7 +143,7 @@ function CartPage() {
                 </div>
               )}
               {items.map((it) => {
-                const itemByOrder = fulfillMap[it.sku] === "by_order";
+                const itemByOrder = fulfillMap[it.sku]?.fulfillment_type === "by_order";
                 const displaySku = safeDisplaySku(it.sku);
                 return (
                 <div key={it.id} className="flex max-w-full gap-4 rounded-lg border bg-white p-4">
