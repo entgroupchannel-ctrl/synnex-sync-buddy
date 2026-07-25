@@ -362,7 +362,7 @@ export function SiteFooter() {
             </p>
           </Column>
 
-          {/* Column 5 — Follow + Contact */}
+          {/* Column 6 — Follow + Contact */}
           <Column title="ติดตามเรา / Follow Us">
             <div className="flex flex-wrap gap-2">
               <a
