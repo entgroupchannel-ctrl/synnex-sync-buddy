@@ -245,8 +245,8 @@ export function QuickCategoryGrid() {
   const navigate = useNavigate();
   return (
     <section className="border-b bg-white">
-      <div className="mx-auto max-w-7xl px-4 py-6">
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5 md:gap-4">
+      <div className="mx-auto max-w-7xl px-4 py-4">
+        <div className="grid grid-cols-5 gap-2 sm:grid-cols-6 sm:gap-2 lg:grid-cols-10 lg:gap-2">
           {QUICK_CATS.map((c) => {
             const isBrand = "brand" in c && c.brand;
             const search = isBrand ? { brands: c.brand } : { category: c.cat };
@@ -262,24 +262,24 @@ export function QuickCategoryGrid() {
                     document.getElementById("product-grid")?.scrollIntoView({ behavior: "smooth" });
                   }, 300);
                 }}
-                className="group flex flex-col items-center gap-2 rounded-lg border bg-white p-3 text-center transition hover:-translate-y-0.5 hover:border-[color:var(--brand-green)] hover:shadow-md"
+                className="group block"
               >
-                <div
-                  className="grid h-11 w-11 place-items-center rounded-full text-[color:var(--brand-navy)] transition group-hover:bg-[color:var(--brand-green)]/10 group-hover:text-[color:var(--brand-green)]"
-                  style={{ background: isBrand ? c.bg : "#f8fafc" }}
-                >
-                  {c.icon ? (
-                    <c.icon className="h-5 w-5" />
-                  ) : "brand" in c && c.brand === "APPLE" ? (
-                    <svg viewBox="0 0 814 1000" className="h-5 w-5 text-slate-800" fill="currentColor" aria-hidden>
-                      <path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76.5 0-103.7 40.8-165.9 40.8s-105-57.8-155.5-127.4C46 790.2 0 663 0 541.8c0-207.1 134.7-316.6 266.8-316.6 70.5 0 129.2 46.5 173.8 46.5 42.8 0 109.7-49.2 187.5-49.2zM649.3 97.2c31.2-38.5 53.3-91.6 53.3-144.7 0-8.3-.6-16.6-2-24.3-50.6 1.9-110.8 33.7-147.1 75.8-28.5 32.4-55.1 85.5-55.1 139.3 0 9 1.3 18 2 20.9 3.2.6 8.4 1.3 13.6 1.3 45.4 0 102.5-30.4 135.3-68.3z"/>
-                    </svg>
-                  ) : (
-                    <span className="text-xl leading-none">{c.emoji}</span>
-                  )}
+                <div className="flex flex-col items-center justify-center aspect-square rounded-xl border border-slate-200 bg-white p-3 transition-all duration-200 hover:border-green-500 hover:shadow-sm cursor-pointer">
+                  <div className="mb-1.5 text-slate-500 transition group-hover:text-[color:var(--brand-green)]">
+                    {c.icon ? (
+                      <c.icon className="h-6 w-6" />
+                    ) : "brand" in c && c.brand === "APPLE" ? (
+                      <svg viewBox="0 0 814 1000" className="h-6 w-6 text-slate-800" fill="currentColor" aria-hidden>
+                        <path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76.5 0-103.7 40.8-165.9 40.8s-105-57.8-155.5-127.4C46 790.2 0 663 0 541.8c0-207.1 134.7-316.6 266.8-316.6 70.5 0 129.2 46.5 173.8 46.5 42.8 0 109.7-49.2 187.5-49.2zM649.3 97.2c31.2-38.5 53.3-91.6 53.3-144.7 0-8.3-.6-16.6-2-24.3-50.6 1.9-110.8 33.7-147.1 75.8-28.5 32.4-55.1 85.5-55.1 139.3 0 9 1.3 18 2 20.9 3.2.6 8.4 1.3 13.6 1.3 45.4 0 102.5-30.4 135.3-68.3z"/>
+                      </svg>
+                    ) : (
+                      <span className="text-xl leading-none">{c.emoji}</span>
+                    )}
+                  </div>
+                  <span className="text-xs font-medium text-slate-700 text-center leading-tight line-clamp-2">
+                    {c.label}
+                  </span>
                 </div>
-                <div className="text-[12px] font-semibold leading-tight text-slate-800">{c.label}</div>
-                <div className="text-[10px] text-slate-400">{c.sub}</div>
               </Link>
             );
           })}
