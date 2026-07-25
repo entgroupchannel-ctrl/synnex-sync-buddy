@@ -251,8 +251,9 @@ function CartPage() {
               <div className="my-4 h-px bg-slate-200" />
               <div className="flex justify-between text-lg font-bold text-[color:var(--brand-navy)]">
                 <span>{t("cart.total")}</span>
-                <span>{priceFmt.format(total + cheapestFee)}</span>
+                <span>{priceFmt.format(Math.max(0, total - volume.total) + cheapestFee)}</span>
               </div>
+
               {hasByOrder && (
                 <p className="mt-2 text-xs text-orange-600">* ราคาสินค้า By Order จะแจ้งแยกต่างหาก</p>
               )}
