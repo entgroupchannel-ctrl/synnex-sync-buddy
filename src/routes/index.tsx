@@ -22,6 +22,8 @@ import { DeliveryHint } from "@/components/delivery-info";
 import { StockBadge } from "@/components/stock-badge";
 import { WarrantyBadge } from "@/components/warranty-badge";
 import { DiscountBadgeRow } from "@/components/discount-badge";
+import { SpecTagsCompact } from "@/components/spec-tags";
+import { hasSpecTags } from "@/lib/parse-spec";
 import { CATEGORY_ICONS, SMART_LIFE_SUBCATEGORY_ICONS } from "@/lib/category-icons";
 
 
