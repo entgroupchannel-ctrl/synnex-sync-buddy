@@ -297,9 +297,9 @@ export function PcBuilderLanding() {
             return (
               <div
                 key={i}
-                className="rounded-2xl border border-white/20 bg-white/10 p-4 backdrop-blur transition-all duration-200 hover:scale-[1.02] hover:bg-white/15"
+                className="group rounded-2xl bg-white/95 border border-white/20 p-3 hover:bg-white hover:shadow-lg transition-all duration-200 cursor-pointer"
               >
-                <div className="relative mb-3 h-32 overflow-hidden rounded-xl bg-white/90 p-2">
+                <div className="aspect-square rounded-xl bg-white grid place-items-center overflow-hidden p-2">
                   {sample?.image_url ? (
                     <ProductImage
                       src={sample.image_url}
