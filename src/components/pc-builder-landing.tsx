@@ -307,7 +307,7 @@ export function PcBuilderLanding() {
                       category={null}
                       productName={part.name}
                       className="max-h-full max-w-full object-contain"
-                      fallbackLabel="ไม่มีรูปสิ้นค้า"
+                      fallbackLabel="ไม่มีรูปสินค้า"
                     />
                   ) : (
                     <img
