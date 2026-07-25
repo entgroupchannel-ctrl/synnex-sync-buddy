@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { ShoppingCart, Package, Zap, Minus, Plus, ChevronRight, ChevronLeft, FileText, Phone, MessageCircle, Facebook, Link as LinkIcon, Check, Heart, Twitter, QrCode } from "lucide-react";
+import { ShoppingCart, Package, Zap, Minus, Plus, ChevronRight, ChevronLeft, FileText, Phone, Mail, MessageCircle, Facebook, Link as LinkIcon, Check, Heart, Twitter, QrCode } from "lucide-react";
 import { ProductQrDialog } from "@/components/product-qr-dialog";
 import { toggleWishlist, isWishlisted } from "@/lib/wishlist";
 import { SiteHeader } from "@/components/site-header";
@@ -682,10 +682,25 @@ function ProductDetail() {
                   )}
                 </>
               ) : (
-                <div className="mt-6">
-                  <Button asChild className="bg-[color:var(--brand-green)] hover:opacity-90" size="lg">
-                    <a href="tel:020456104">📞 สอบถามราคา — 02-045-6104</a>
-                  </Button>
+                <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 p-4">
+                  <div className="mb-3 text-sm font-semibold text-amber-900">💬 สินค้านี้กรุณาติดต่อสอบถามราคา</div>
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    <LineQrDialog>
+                      <Button type="button" className="w-full gap-1.5 rounded-lg bg-[#06C755] px-3 py-2.5 text-sm font-semibold text-white hover:bg-[#05a548]">
+                        <MessageCircle className="h-4 w-4" /> Line: @entgroup
+                      </Button>
+                    </LineQrDialog>
+                    <Button asChild className="w-full gap-1.5 rounded-lg bg-[color:var(--brand-green)] px-3 py-2.5 text-sm font-semibold text-white hover:opacity-90">
+                      <a href="tel:020456104"><Phone className="h-4 w-4" /> 02-045-6104</a>
+                    </Button>
+                  </div>
+                  <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-600">
+                    <a href="tel:0957391053" className="inline-flex items-center gap-1 hover:text-gray-900">📱 095-739-1053</a>
+                    <a href="tel:0840461315" className="inline-flex items-center gap-1 hover:text-gray-900">📱 084-046-1315</a>
+                    <a href="mailto:sales@entgroup.co.th" className="inline-flex items-center gap-1 hover:text-gray-900">
+                      <Mail className="h-3.5 w-3.5" /> sales@entgroup.co.th
+                    </a>
+                  </div>
                 </div>
               )}
 

@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog";
 
 const LINE_ID = "@entgroup";
-const LINE_ADD_URL = "https://line.me/R/ti/p/%40entgroup";
+const LINE_ADD_URL = "https://line.me/R/ti/p/%40njm2688e";
 const LINE_QR_URL = `https://api.qrserver.com/v1/create-qr-code/?size=360x360&margin=8&data=${encodeURIComponent(LINE_ADD_URL)}`;
 
 type LineQrDialogProps = {
