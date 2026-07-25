@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { ShoppingCart, Package, Zap, Minus, Plus, ChevronRight, FileText, Phone, MessageCircle, Facebook, Link as LinkIcon, Check, Heart, Twitter, QrCode } from "lucide-react";
+import { ShoppingCart, Package, Zap, Minus, Plus, ChevronRight, ChevronLeft, FileText, Phone, MessageCircle, Facebook, Link as LinkIcon, Check, Heart, Twitter, QrCode } from "lucide-react";
 import { ProductQrDialog } from "@/components/product-qr-dialog";
 import { toggleWishlist, isWishlisted } from "@/lib/wishlist";
 import { SiteHeader } from "@/components/site-header";
@@ -34,7 +34,7 @@ export const Route = createFileRoute("/product/$slug")({
   loader: async ({ params }) => {
     const slugOrId = params.slug;
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slugOrId);
-    const selectFields = "id, sku, slug, name, brand, category, description, image_url, selling_price, member_price, stock_status, price_approved";
+    const selectFields = "id, sku, slug, name, brand, category, description, image_url, image_gallery, selling_price, member_price, stock_status, price_approved";
     const { data: slugProduct, error: slugError } = await supabase
       .from("synnex_products")
       .select(selectFields)
@@ -150,6 +150,7 @@ function ProductDetail() {
   const [qty, setQty] = useState(1);
   const [copied, setCopied] = useState(false);
   const [wishlisted, setWishlisted] = useState(false);
+  const [activeImg, setActiveImg] = useState(0);
   const tier = useCustomerTier();
 
   const productQ = useQuery({
@@ -266,13 +267,85 @@ function ProductDetail() {
         ) : (
           <div className="grid gap-8 rounded-lg border bg-white p-4 md:p-6 lg:grid-cols-2">
             <div className="flex flex-col gap-3">
-              <div className="lg:sticky lg:top-4 grid w-full place-items-center rounded-lg bg-slate-50 p-4" style={{ maxHeight: "420px" }}>
-                <ProductImage
-                  src={p.image_url}
-                  alt={p.name ?? decodedSku}
-                  className="max-h-[380px] w-full object-contain"
-                  iconClassName="h-20 w-20 text-slate-300"
-                />
+              <div className="flex flex-col gap-2">
+                {/* Main image */}
+                <div
+                  className="relative rounded-xl bg-white overflow-hidden border border-slate-100"
+                  style={{ paddingBottom: '75%' }}
+                >
+                  <div className="absolute inset-0 flex items-center justify-center p-3">
+                    <img
+                      src={images[activeImg]}
+                      alt={p.name ?? decodedSku}
+                      className="max-h-full max-w-full object-contain transition-all duration-300"
+                      onError={(e) => {
+                        // fallback to main image if angle not found
+                        if (activeImg > 0) setActiveImg(0);
+                      }}
+                    />
+                  </div>
+
+                  {/* Prev/Next arrows */}
+                  {images.length > 1 && (
+                    <>
+                      <button
+                        onClick={() => setActiveImg((i) => (i > 0 ? i - 1 : images.length - 1))}
+                        className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-white shadow-md p-1.5 hover:shadow-lg transition-shadow z-10"
+                      >
+                        <ChevronLeft className="h-4 w-4 text-slate-600" />
+                      </button>
+                      <button
+                        onClick={() => setActiveImg((i) => (i < images.length - 1 ? i + 1 : 0))}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-white shadow-md p-1.5 hover:shadow-lg transition-shadow z-10"
+                      >
+                        <ChevronRight className="h-4 w-4 text-slate-600" />
+                      </button>
+                    </>
+                  )}
+
+                  {/* Image counter dot indicators */}
+                  {images.length > 1 && (
+                    <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1.5">
+                      {images.map((_, i) => (
+                        <button
+                          key={i}
+                          onClick={() => setActiveImg(i)}
+                          className={`rounded-full transition-all ${
+                            i === activeImg
+                              ? 'w-4 h-1.5 bg-green-500'
+                              : 'w-1.5 h-1.5 bg-slate-300 hover:bg-slate-400'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Thumbnails — show only if multiple images */}
+                {images.length > 1 && (
+                  <div className="flex gap-2 overflow-x-auto pb-1">
+                    {images.map((img, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setActiveImg(i)}
+                        className={`shrink-0 rounded-lg overflow-hidden border-2 transition-all w-16 h-16 bg-white p-1 ${
+                          i === activeImg
+                            ? 'border-green-500 shadow-sm'
+                            : 'border-slate-200 hover:border-slate-300 opacity-70 hover:opacity-100'
+                        }`}
+                      >
+                        <img
+                          src={img}
+                          alt={`มุมที่ ${i + 1}`}
+                          className="w-full h-full object-contain"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.display = 'none';
+                          }}
+                        />
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div className="flex items-center justify-center gap-2 rounded-lg border bg-white p-2.5">
