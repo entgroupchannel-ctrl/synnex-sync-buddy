@@ -213,6 +213,27 @@ function PurchaseOrdersPage() {
                   <TableCell className="text-right">{po.total_items}</TableCell>
                   <TableCell className="text-right">฿{Number(po.total_cost).toLocaleString("th-TH")}</TableCell>
                   <TableCell>{new Date(po.created_at).toLocaleDateString("th-TH")}</TableCell>
+                  <TableCell onClick={(e) => e.stopPropagation()}>
+                    {po.pdf_url ? (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => window.open(po.pdf_url!, "_blank")}
+                      >
+                        <FileDown className="mr-1.5 h-4 w-4" /> เปิด PDF
+                      </Button>
+                    ) : (
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        disabled={pdfBusy === po.id}
+                        onClick={() => makePdf(po.id)}
+                      >
+                        <FileText className="mr-1.5 h-4 w-4" />
+                        {pdfBusy === po.id ? "กำลังสร้าง..." : "สร้าง PDF"}
+                      </Button>
+                    )}
+                  </TableCell>
                   <TableCell className="text-right">
                     <ChevronRight className="h-4 w-4 text-slate-400" />
                   </TableCell>
