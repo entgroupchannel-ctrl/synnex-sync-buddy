@@ -30,6 +30,7 @@ import { Route as CreditApplicationIndexRouteImport } from './routes/credit-appl
 import { Route as TrackOrderNumberRouteImport } from './routes/track.$orderNumber'
 import { Route as ProductSlugRouteImport } from './routes/product.$slug'
 import { Route as OrderOrderNumberRouteImport } from './routes/order.$orderNumber'
+import { Route as CreditApplicationSuccessRouteImport } from './routes/credit-application.success'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as AuthenticatedMyOrdersRouteImport } from './routes/_authenticated/my-orders'
 import { Route as AuthenticatedMyAccountRouteImport } from './routes/_authenticated/my-account'
@@ -159,6 +160,12 @@ const OrderOrderNumberRoute = OrderOrderNumberRouteImport.update({
   path: '/order/$orderNumber',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CreditApplicationSuccessRoute =
+  CreditApplicationSuccessRouteImport.update({
+    id: '/credit-application/success',
+    path: '/credit-application/success',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthCallbackRoute = AuthCallbackRouteImport.update({
   id: '/callback',
   path: '/callback',
@@ -318,6 +325,7 @@ export interface FileRoutesByFullPath {
   '/my-account': typeof AuthenticatedMyAccountRouteWithChildren
   '/my-orders': typeof AuthenticatedMyOrdersRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/credit-application/success': typeof CreditApplicationSuccessRoute
   '/order/$orderNumber': typeof OrderOrderNumberRoute
   '/product/$slug': typeof ProductSlugRoute
   '/track/$orderNumber': typeof TrackOrderNumberRoute
@@ -362,6 +370,7 @@ export interface FileRoutesByTo {
   '/wishlist': typeof WishlistRoute
   '/my-orders': typeof AuthenticatedMyOrdersRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/credit-application/success': typeof CreditApplicationSuccessRoute
   '/order/$orderNumber': typeof OrderOrderNumberRoute
   '/product/$slug': typeof ProductSlugRoute
   '/track/$orderNumber': typeof TrackOrderNumberRoute
@@ -410,6 +419,7 @@ export interface FileRoutesById {
   '/_authenticated/my-account': typeof AuthenticatedMyAccountRouteWithChildren
   '/_authenticated/my-orders': typeof AuthenticatedMyOrdersRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/credit-application/success': typeof CreditApplicationSuccessRoute
   '/order/$orderNumber': typeof OrderOrderNumberRoute
   '/product/$slug': typeof ProductSlugRoute
   '/track/$orderNumber': typeof TrackOrderNumberRoute
@@ -458,6 +468,7 @@ export interface FileRouteTypes {
     | '/my-account'
     | '/my-orders'
     | '/auth/callback'
+    | '/credit-application/success'
     | '/order/$orderNumber'
     | '/product/$slug'
     | '/track/$orderNumber'
@@ -502,6 +513,7 @@ export interface FileRouteTypes {
     | '/wishlist'
     | '/my-orders'
     | '/auth/callback'
+    | '/credit-application/success'
     | '/order/$orderNumber'
     | '/product/$slug'
     | '/track/$orderNumber'
@@ -549,6 +561,7 @@ export interface FileRouteTypes {
     | '/_authenticated/my-account'
     | '/_authenticated/my-orders'
     | '/auth/callback'
+    | '/credit-application/success'
     | '/order/$orderNumber'
     | '/product/$slug'
     | '/track/$orderNumber'
@@ -593,6 +606,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
   WishlistRoute: typeof WishlistRoute
+  CreditApplicationSuccessRoute: typeof CreditApplicationSuccessRoute
   OrderOrderNumberRoute: typeof OrderOrderNumberRoute
   ProductSlugRoute: typeof ProductSlugRoute
   TrackOrderNumberRoute: typeof TrackOrderNumberRoute
@@ -746,6 +760,13 @@ declare module '@tanstack/react-router' {
       path: '/order/$orderNumber'
       fullPath: '/order/$orderNumber'
       preLoaderRoute: typeof OrderOrderNumberRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/credit-application/success': {
+      id: '/credit-application/success'
+      path: '/credit-application/success'
+      fullPath: '/credit-application/success'
+      preLoaderRoute: typeof CreditApplicationSuccessRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/callback': {
@@ -1061,6 +1082,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
   WishlistRoute: WishlistRoute,
+  CreditApplicationSuccessRoute: CreditApplicationSuccessRoute,
   OrderOrderNumberRoute: OrderOrderNumberRoute,
   ProductSlugRoute: ProductSlugRoute,
   TrackOrderNumberRoute: TrackOrderNumberRoute,
