@@ -297,16 +297,16 @@ export function PcBuilderLanding() {
             return (
               <div
                 key={i}
-                className="rounded-2xl border border-white/20 bg-white/10 p-4 backdrop-blur transition-all duration-200 hover:scale-[1.02] hover:bg-white/15"
+                className="group rounded-2xl bg-white/95 border border-white/20 p-3 hover:bg-white hover:shadow-lg transition-all duration-200 cursor-pointer"
               >
-                <div className="relative mb-3 h-32 overflow-hidden rounded-xl bg-white/90 p-2">
+                <div className="aspect-square rounded-xl bg-white grid place-items-center overflow-hidden p-2">
                   {sample?.image_url ? (
                     <ProductImage
                       src={sample.image_url}
                       alt={part.name}
                       category={null}
                       productName={part.name}
-                      className="h-full w-full object-contain"
+                      className="max-h-full max-w-full object-contain"
                       fallbackLabel="ไม่มีรูปสินค้า"
                     />
                   ) : (
@@ -316,7 +316,7 @@ export function PcBuilderLanding() {
                       loading="lazy"
                       width={1024}
                       height={1024}
-                      className="h-full w-full object-contain"
+                      className="max-h-full max-w-full object-contain"
                     />
                   )}
                   <span
@@ -330,14 +330,14 @@ export function PcBuilderLanding() {
                     {part.price != null ? "ราคา" : "By Order"}
                   </span>
                 </div>
-                <div className="mb-1 text-xs text-slate-400">{part.type}</div>
-                <div className="min-h-[2.5rem] text-sm font-semibold leading-snug text-white">
+                <div className="mb-1 text-[10px] font-bold uppercase text-slate-500">{part.type}</div>
+                <div className="min-h-[2.5rem] text-sm font-bold leading-snug text-slate-800">
                   {part.name}
                 </div>
-                <div className="mt-3 text-base font-bold text-green-300">
+                <div className="mt-3 text-base font-black text-green-600">
                   {part.price != null
                     ? formatTHB(part.price)
-                    : "ติดต่อสอบถาม"}
+                    : <span className="text-orange-500 font-medium text-sm">ติดต่อสอบถาม</span>}
                 </div>
               </div>
             );
