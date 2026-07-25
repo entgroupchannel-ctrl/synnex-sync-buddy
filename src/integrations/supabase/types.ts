@@ -1481,6 +1481,33 @@ export type Database = {
           },
         ]
       }
+      sync_credentials: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          label: string
+          last_used_at: string | null
+          secret_hash: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          label: string
+          last_used_at?: string | null
+          secret_hash: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          label?: string
+          last_used_at?: string | null
+          secret_hash?: string
+        }
+        Relationships: []
+      }
       sync_logs: {
         Row: {
           created_at: string
@@ -1843,6 +1870,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_sync_secret: { Args: { input_secret: string }; Returns: boolean }
       cleanup_rate_limits: { Args: never; Returns: undefined }
       get_product_price: {
         Args: {
