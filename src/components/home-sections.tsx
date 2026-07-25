@@ -1328,14 +1328,14 @@ export function SolarEnergy() {
 
 /* ---------- Smart Life (CCTV / Smart Home / IoT) ---------- */
 
-type SmartTab = "all" | "cctv" | "xiaomi" | "sothing" | "huawei";
+type SmartTab = "all" | "cctv" | "smartwatch" | "xiaomi" | "gadget";
 
 const SMART_TABS: { key: SmartTab; label: string }[] = [
   { key: "all", label: "ทั้งหมด" },
   { key: "cctv", label: "📹 CCTV" },
+  { key: "smartwatch", label: "⌚ Smartwatch" },
   { key: "xiaomi", label: "🏠 Xiaomi" },
-  { key: "sothing", label: "🌀 SOTHING" },
-  { key: "huawei", label: "HUAWEI" },
+  { key: "gadget", label: "🌀 Gadget" },
 ];
 
 export function SmartLife() {
@@ -1354,9 +1354,9 @@ export function SmartLife() {
         .limit(10);
 
       if (tab === "cctv") qi = qi.in("brand", ["DAHUA", "HIKVISION"]);
+      else if (tab === "smartwatch") qi = qi.in("brand", ["SAMSUNG", "GARMIN", "HUAWEI"]);
       else if (tab === "xiaomi") qi = qi.eq("brand", "XIAOMI");
-      else if (tab === "sothing") qi = qi.eq("brand", "SOTHING");
-      else if (tab === "huawei") qi = qi.eq("brand", "HUAWEI");
+      else if (tab === "gadget") qi = qi.in("brand", ["SOTHING", "HONEYWELL"]);
 
       const { data } = await qi;
       return (data ?? []) as ProductRow[];
@@ -1373,10 +1373,12 @@ export function SmartLife() {
           <div className="min-w-0">
             <h2 className="text-xl font-black text-slate-900 md:text-2xl">
               🏠 Smart Life / สมาร์ทไลฟ์
-              <span className="ml-2 text-sm font-medium text-slate-400">/ กล้องวงจรปิด · Smart Home · IoT</span>
             </h2>
+            <p className="mt-1 text-sm font-medium text-slate-500">
+              กล้องวงจรปิด · Smart Home · Smartwatch · IoT
+            </p>
             <p className="mt-1 text-sm text-slate-500">
-              CCTV, Dahua, Hikvision, Xiaomi — ระบบรักษาความปลอดภัยและบ้านอัจฉริยะ
+              CCTV, Dahua, Hikvision, Samsung, Garmin, Xiaomi
             </p>
           </div>
           <Link
