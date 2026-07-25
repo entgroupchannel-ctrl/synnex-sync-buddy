@@ -567,25 +567,27 @@ function ProductDetail() {
                     </div>
                   </div>
 
-                  <div className="mt-5 grid gap-2 sm:grid-cols-2">
-                    <Button disabled={!available} onClick={() => addToCart()} className="bg-[color:var(--brand-navy)] hover:bg-[color:var(--brand-navy-2)]" size="lg">
-                      <ShoppingCart className="mr-2 h-5 w-5" /> {byOrder ? "สั่งจอง" : "ใส่ตะกร้า"}
-                    </Button>
-                    {byOrder ? (
-                      <Button asChild variant="outline" size="lg" className="border-blue-300 text-blue-800 hover:bg-blue-50">
-                        <a href="mailto:sales@entgroup.co.th?subject=ขอใบเสนอราคา">📄 ขอใบเสนอราคา</a>
+                  {!isQuoteOnly(p.selling_price as number | null) && (
+                    <div className="mt-5 grid gap-2 sm:grid-cols-2">
+                      <Button disabled={!available} onClick={() => addToCart()} className="bg-[color:var(--brand-navy)] hover:bg-[color:var(--brand-navy-2)]" size="lg">
+                        <ShoppingCart className="mr-2 h-5 w-5" /> {byOrder ? "สั่งจอง" : "ใส่ตะกร้า"}
                       </Button>
-                    ) : (
-                      <Button
-                        disabled={!available}
-                        onClick={() => { addToCart(); navigate({ to: "/checkout" }); }}
-                        className="bg-[color:var(--brand-orange)] hover:bg-[color:var(--brand-orange-dark)]"
-                        size="lg"
-                      >
-                        <Zap className="mr-2 h-5 w-5" /> สั่งซื้อทันที
-                      </Button>
-                    )}
-                  </div>
+                      {byOrder ? (
+                        <Button asChild variant="outline" size="lg" className="border-blue-300 text-blue-800 hover:bg-blue-50">
+                          <a href="mailto:sales@entgroup.co.th?subject=ขอใบเสนอราคา">📄 ขอใบเสนอราคา</a>
+                        </Button>
+                      ) : (
+                        <Button
+                          disabled={!available}
+                          onClick={() => { addToCart(); navigate({ to: "/checkout" }); }}
+                          className="bg-[color:var(--brand-orange)] hover:bg-[color:var(--brand-orange-dark)]"
+                          size="lg"
+                        >
+                          <Zap className="mr-2 h-5 w-5" /> สั่งซื้อทันที
+                        </Button>
+                      )}
+                    </div>
+                  )}
 
                   {/* Contact section */}
                   <div className="mt-4 rounded-2xl border border-green-100 bg-green-50 p-4">
