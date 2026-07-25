@@ -257,6 +257,15 @@ export function SiteHeader() {
           </div>
 
 
+          <Link
+            to="/"
+            search={{ category: "Network" } as never}
+            className="hidden lg:flex items-center gap-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 px-3 py-1.5 text-xs font-bold text-white transition-colors shrink-0"
+          >
+            <Building2 className="h-3.5 w-3.5" />
+            Corporate
+          </Link>
+
           <LangToggle className="hidden lg:inline-flex" />
 
           {user ? (
@@ -318,16 +327,18 @@ export function SiteHeader() {
             {NAV_CATS.map((c) => {
               const cat = c === "ทั้งหมด" ? "all" : c;
               const active = pathname === "/" && (typeof window !== "undefined") && new URLSearchParams(window.location.search).get("category") === cat;
-              const label = c === "ทั้งหมด" ? t("nav.all") : c === "Smart Life" ? "🏠 Smart Life" : c;
+              const label = c === "ทั้งหมด" ? t("nav.all") : c;
+              const icon = c === "ทั้งหมด" ? <LayoutGrid className="h-3.5 w-3.5" /> : CATEGORY_ICONS[c];
               const items: React.ReactNode[] = [
                 <Link
                   key={c}
                   to="/"
                   search={{ category: cat } as never}
-                  className={`whitespace-nowrap px-3 py-2.5 text-sm transition hover:text-[color:var(--brand-orange)] ${
+                  className={`inline-flex items-center gap-1.5 whitespace-nowrap px-3 py-2.5 text-sm transition hover:text-[color:var(--brand-orange)] ${
                     active ? "text-[color:var(--brand-orange)]" : "text-white/85"
                   }`}
                 >
+                  {icon}
                   {label}
                 </Link>,
               ];
@@ -342,19 +353,12 @@ export function SiteHeader() {
                     key="pc-builder-nav"
                     to="/pc-builder"
                     preload="intent"
-                    className={`whitespace-nowrap px-3 py-2.5 text-sm font-medium transition hover:text-[color:var(--brand-orange)] ${
+                    className={`inline-flex items-center gap-1.5 whitespace-nowrap px-3 py-2.5 text-sm font-medium transition hover:text-[color:var(--brand-orange)] ${
                       pathname === "/pc-builder" ? "text-[color:var(--brand-orange)]" : "text-white/85"
                     }`}
                   >
-                    🔧 Config PC
-                  </Link>,
-                  <Link
-                    key="corporate-nav"
-                    to="/"
-                    search={{ category: "Network" } as never}
-                    className="whitespace-nowrap px-3 py-2.5 text-sm font-medium text-white/85 transition hover:text-[color:var(--brand-orange)]"
-                  >
-                    🏢 Corporate
+                    <Wrench className="h-3.5 w-3.5" />
+                    Config PC
                   </Link>,
                 );
               }
