@@ -779,6 +779,12 @@ function HomePage() {
                         <div className="border-t p-2">
                           <div className="line-clamp-2 min-h-9 text-xs font-medium">{p.name ?? p.sku}</div>
                           <WarrantyBadge category={p.category} name={p.name} className="mt-0.5" />
+                          <DiscountBadgeRow
+                            sellingPrice={p.selling_price}
+                            b2bPrice={p.b2b_price}
+                            memberPrice={p.member_price}
+                            className="mt-1"
+                          />
                           <div className="mt-1 flex items-baseline gap-1.5">
                             <div className="text-base font-black text-[color:var(--brand-orange)]">
                               {displayPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier)}
