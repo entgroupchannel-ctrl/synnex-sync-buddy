@@ -62,6 +62,7 @@ const searchSchema = z.object({
   q: fallback(z.string(), "").default(""),
   category: fallback(z.string(), "all").default("all"),
   brands: fallback(z.string(), "").default(""),
+  ramSpec: fallback(z.string(), "").default(""),
   min: fallback(z.number(), 0).default(0),
   max: fallback(z.number(), 100000).default(100000),
   ready: fallback(z.boolean(), false).default(false),
@@ -88,6 +89,17 @@ const SMART_LIFE_PRICE_PRESETS: { label: string; min: number; max: number }[] = 
   { label: "฿1,000-5,000", min: 1000, max: 5000 },
   { label: "฿5,000-20,000", min: 5000, max: 20000 },
   { label: "มากกว่า ฿20,000", min: 20000, max: 100000 },
+];
+
+const RAM_SUBCATS: { key: string; label: string; patterns: string[] }[] = [
+  { key: "ddr2", label: "DDR2", patterns: ["DDR2"] },
+  { key: "ddr3", label: "DDR3", patterns: ["DDR3"] },
+  { key: "ddr4-low", label: "DDR4(2133-2400)", patterns: ["DDR4(2133)", "DDR4(2400)"] },
+  { key: "ddr4-mid", label: "DDR4(2666-3000)", patterns: ["DDR4(2666)", "DDR4(2800)", "DDR4(3000)"] },
+  { key: "ddr4-3200", label: "DDR4(3200)", patterns: ["DDR4(3200)"] },
+  { key: "ddr5-4800", label: "DDR5(4800)", patterns: ["DDR5(4800)"] },
+  { key: "ddr5-5200", label: "DDR5(5200)", patterns: ["DDR5(5200)"] },
+  { key: "ddr5-5600up", label: "DDR5(5600) ขึ้นไป", patterns: ["DDR5(5600)", "DDR5(6000)", "DDR5(6200)", "DDR5(6400)", "DDR5(6600)", "DDR5(6800)", "DDR5(7200)"] },
 ];
 
 
@@ -341,6 +353,10 @@ function HomePage() {
         } else if (search.category === "Components" && search.compType === "ram") {
           q = q.or("name.ilike.%RAM%,name.ilike.%DDR%,name.ilike.%Memory%");
         }
+        if (search.category === "RAM" && search.ramSpec) {
+          const spec = RAM_SUBCATS.find((s) => s.key === search.ramSpec);
+          if (spec) q = q.or(spec.patterns.map((p) => `name.ilike.%${p}%`).join(","));
+        }
         if (selectedBrands.length > 0) q = q.in("brand", selectedBrands);
         if (search.min > 0) q = q.gte("selling_price", search.min);
         if (search.max < PRICE_MAX) q = q.lte("selling_price", search.max);
@@ -418,6 +434,7 @@ function HomePage() {
   const totalPages = Math.max(1, Math.ceil((productsQuery.data?.count ?? 0) / PAGE_SIZE));
 
   const isSmartLife = search.category === "Smart Life";
+  const isRam = search.category === "RAM";
 
   const toggleBrand = (b: string) => {
     const set = new Set(selectedBrands);
@@ -428,9 +445,9 @@ function HomePage() {
   };
 
   const setCategory = (c: string) => {
-    // Changing category auto-clears brand filter to prevent 0-result conflicts.
+    // Changing category auto-clears brand/ramSpec filter to prevent 0-result conflicts.
     // Smart Life defaults to cheapest-first.
-    update(c === "Smart Life" ? { category: c, brands: "", sort: "price-asc" } : { category: c, brands: "" });
+    update(c === "Smart Life" ? { category: c, brands: "", ramSpec: "", sort: "price-asc" } : { category: c, brands: "", ramSpec: "" });
   };
 
 
@@ -594,6 +611,39 @@ function HomePage() {
 
         </div>
       </div>
+
+      {isRam && (
+        <div>
+          <h3 className="mb-3 text-sm font-bold text-[color:var(--brand-navy)]">รุ่น DDR / ความเร็ว</h3>
+          <div className="space-y-1.5">
+            {RAM_SUBCATS.map((sub) => {
+              const isSelected = search.ramSpec === sub.key;
+              return (
+                <button
+                  key={sub.key}
+                  onClick={() => update({ ramSpec: isSelected ? "" : sub.key })}
+                  className={`w-full flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors ${
+                    isSelected
+                      ? "bg-[color:var(--brand-green)] text-white font-medium"
+                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                  }`}
+                >
+                  <span className="flex-1 text-left">{sub.label}</span>
+                  <ChevronRight className={`h-3.5 w-3.5 opacity-40 ${isSelected ? "text-white" : "text-slate-400"}`} />
+                </button>
+              );
+            })}
+            {search.ramSpec && (
+              <button
+                onClick={() => update({ ramSpec: "" })}
+                className="w-full rounded-lg px-3 py-2 text-left text-xs text-slate-400 hover:text-slate-600"
+              >
+                × ล้างตัวกรอง
+              </button>
+            )}
+          </div>
+        </div>
+      )}
 
       {isSmartLife && (
         <div>
