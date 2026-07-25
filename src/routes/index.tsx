@@ -337,7 +337,9 @@ function HomePage() {
         if (search.sort === "price-asc") q = q.order("price", { ascending: true, nullsFirst: false });
         else if (search.sort === "price-desc") q = q.order("price", { ascending: false, nullsFirst: false });
         else if (search.sort === "popular") q = q.order("name", { ascending: true });
+        else if (search.category === "Smart Life") q = q.order("selling_price", { ascending: true, nullsFirst: false });
         else q = q.order("synced_at", { ascending: false });
+
         return q;
       };
       type Result = { data: Record<string, unknown>[] | null; error: unknown; count: number | null };
