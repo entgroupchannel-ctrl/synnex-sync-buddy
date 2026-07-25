@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Minus, Plus, Trash2, Package, ArrowLeft, ShoppingCart, ShoppingBag, Truck, AlertTriangle, ClipboardList, PartyPopper, Lightbulb } from "lucide-react";
+import { Minus, Plus, Trash2, Package, ArrowLeft, ShoppingCart, ShoppingBag, Truck, AlertTriangle, ClipboardList, PartyPopper, Lightbulb, FileText } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { IndustrialPromoBanner } from "@/components/industrial-promo-banner";
@@ -291,12 +291,33 @@ function CartPage() {
                 <span>{priceFmt.format(Math.max(0, total - volume.total) + cheapestFee)}</span>
               </div>
 
-              {hasByOrder && (
-                <p className="mt-2 text-xs text-orange-600">* ราคาสินค้า By Order จะแจ้งแยกต่างหาก</p>
+              {hasMixedCart ? (
+                <div className="mt-4 rounded-lg border border-orange-200 bg-orange-50 p-4">
+                  <p className="text-sm text-orange-900">
+                    ตะกร้ามีทั้งสินค้าพร้อมส่ง ({readyItems.length} ชิ้น) และ By Order ({byOrderItems.length} ชิ้น) — เลือกได้ว่าจะสั่งซื้อแยกกันเพื่อให้ของถึงเร็วขึ้น หรือสั่งรวมกันทีเดียว
+                  </p>
+                  <div className="mt-3 space-y-2">
+                    <Button onClick={checkoutReadyOnly} className="w-full bg-[color:var(--brand-orange)] hover:bg-[color:var(--brand-orange-dark)]" size="lg">
+                      สั่งซื้อเฉพาะสินค้าพร้อมส่ง ({readyItems.length} ชิ้น)
+                    </Button>
+                    <Button asChild variant="outline" className="w-full border-[color:var(--brand-navy)] text-[color:var(--brand-navy)] hover:bg-[color:var(--brand-navy)]/5" size="lg">
+                      <a href={byOrderQuoteMailto()}><FileText className="mr-2 h-4 w-4" /> ขอใบเสนอราคาสินค้า By Order แยก ({byOrderItems.length} ชิ้น)</a>
+                    </Button>
+                    <Button asChild variant="ghost" className="w-full text-[color:var(--brand-navy)] hover:bg-slate-100" size="lg">
+                      <Link to="/checkout">หรือสั่งซื้อรวมกันทั้งหมดทีเดียว →</Link>
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  {hasByOrder && (
+                    <p className="mt-2 text-xs text-orange-600">* ราคาสินค้า By Order จะแจ้งแยกต่างหาก</p>
+                  )}
+                  <Button asChild className="mt-4 w-full bg-[color:var(--brand-orange)] hover:bg-[color:var(--brand-orange-dark)]" size="lg">
+                    <Link to="/checkout">{t("cart.checkout")}</Link>
+                  </Button>
+                </>
               )}
-              <Button asChild className="mt-4 w-full bg-[color:var(--brand-orange)] hover:bg-[color:var(--brand-orange-dark)]" size="lg">
-                <Link to="/checkout">{t("cart.checkout")}</Link>
-              </Button>
               <DeliveryZoneInfoBox className="mb-3" />
               <CartReassurance />
             </aside>
