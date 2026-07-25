@@ -564,7 +564,7 @@ function ProductDetail() {
 
 
 
-              {getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier) != null && !!p.price_approved ? (
+              {getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier) != null && !!p.price_approved && !isQuoteOnly(p.selling_price as number | null) ? (
                 <>
                   <div className="mt-6">
                     <div className="mb-2 text-sm text-slate-600">จำนวน</div>
