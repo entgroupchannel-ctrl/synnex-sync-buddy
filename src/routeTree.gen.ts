@@ -26,9 +26,11 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CreditApplicationIndexRouteImport } from './routes/credit-application.index'
 import { Route as TrackOrderNumberRouteImport } from './routes/track.$orderNumber'
 import { Route as ProductSlugRouteImport } from './routes/product.$slug'
 import { Route as OrderOrderNumberRouteImport } from './routes/order.$orderNumber'
+import { Route as CreditApplicationSuccessRouteImport } from './routes/credit-application.success'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as AuthenticatedMyOrdersRouteImport } from './routes/_authenticated/my-orders'
 import { Route as AuthenticatedMyAccountRouteImport } from './routes/_authenticated/my-account'
@@ -37,6 +39,7 @@ import { Route as AuthenticatedMyAccountIndexRouteImport } from './routes/_authe
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedMyAccountProfileRouteImport } from './routes/_authenticated/my-account.profile'
 import { Route as AuthenticatedMyAccountOrdersRouteImport } from './routes/_authenticated/my-account.orders'
+import { Route as AuthenticatedMyAccountCreditRouteImport } from './routes/_authenticated/my-account.credit'
 import { Route as AuthenticatedMyAccountCompanyRouteImport } from './routes/_authenticated/my-account.company'
 import { Route as AuthenticatedMyAccountAddressesRouteImport } from './routes/_authenticated/my-account.addresses'
 import { Route as AuthenticatedAdminSyncRouteImport } from './routes/_authenticated/admin.sync'
@@ -48,6 +51,7 @@ import { Route as AuthenticatedAdminNewsletterRouteImport } from './routes/_auth
 import { Route as AuthenticatedAdminFlashDealsRouteImport } from './routes/_authenticated/admin.flash-deals'
 import { Route as AuthenticatedAdminDiscountCodesRouteImport } from './routes/_authenticated/admin.discount-codes'
 import { Route as AuthenticatedAdminCustomersRouteImport } from './routes/_authenticated/admin.customers'
+import { Route as AuthenticatedAdminCreditApplicationsRouteImport } from './routes/_authenticated/admin.credit-applications'
 import { Route as AuthenticatedAdminAnalyticsRouteImport } from './routes/_authenticated/admin.analytics'
 import { Route as AuthenticatedAdminPricingProductsRouteImport } from './routes/_authenticated/admin.pricing.products'
 import { Route as AuthenticatedAdminPricingAuditRouteImport } from './routes/_authenticated/admin.pricing.audit'
@@ -138,6 +142,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CreditApplicationIndexRoute = CreditApplicationIndexRouteImport.update({
+  id: '/credit-application/',
+  path: '/credit-application/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TrackOrderNumberRoute = TrackOrderNumberRouteImport.update({
   id: '/track/$orderNumber',
   path: '/track/$orderNumber',
@@ -153,6 +162,12 @@ const OrderOrderNumberRoute = OrderOrderNumberRouteImport.update({
   path: '/order/$orderNumber',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CreditApplicationSuccessRoute =
+  CreditApplicationSuccessRouteImport.update({
+    id: '/credit-application/success',
+    path: '/credit-application/success',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthCallbackRoute = AuthCallbackRouteImport.update({
   id: '/callback',
   path: '/callback',
@@ -194,6 +209,12 @@ const AuthenticatedMyAccountOrdersRoute =
   AuthenticatedMyAccountOrdersRouteImport.update({
     id: '/orders',
     path: '/orders',
+    getParentRoute: () => AuthenticatedMyAccountRoute,
+  } as any)
+const AuthenticatedMyAccountCreditRoute =
+  AuthenticatedMyAccountCreditRouteImport.update({
+    id: '/credit',
+    path: '/credit',
     getParentRoute: () => AuthenticatedMyAccountRoute,
   } as any)
 const AuthenticatedMyAccountCompanyRoute =
@@ -260,6 +281,12 @@ const AuthenticatedAdminCustomersRoute =
     path: '/customers',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminCreditApplicationsRoute =
+  AuthenticatedAdminCreditApplicationsRouteImport.update({
+    id: '/credit-applications',
+    path: '/credit-applications',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminAnalyticsRoute =
   AuthenticatedAdminAnalyticsRouteImport.update({
     id: '/analytics',
@@ -312,10 +339,13 @@ export interface FileRoutesByFullPath {
   '/my-account': typeof AuthenticatedMyAccountRouteWithChildren
   '/my-orders': typeof AuthenticatedMyOrdersRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/credit-application/success': typeof CreditApplicationSuccessRoute
   '/order/$orderNumber': typeof OrderOrderNumberRoute
   '/product/$slug': typeof ProductSlugRoute
   '/track/$orderNumber': typeof TrackOrderNumberRoute
+  '/credit-application/': typeof CreditApplicationIndexRoute
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
+  '/admin/credit-applications': typeof AuthenticatedAdminCreditApplicationsRoute
   '/admin/customers': typeof AuthenticatedAdminCustomersRouteWithChildren
   '/admin/discount-codes': typeof AuthenticatedAdminDiscountCodesRoute
   '/admin/flash-deals': typeof AuthenticatedAdminFlashDealsRoute
@@ -327,6 +357,7 @@ export interface FileRoutesByFullPath {
   '/admin/sync': typeof AuthenticatedAdminSyncRoute
   '/my-account/addresses': typeof AuthenticatedMyAccountAddressesRoute
   '/my-account/company': typeof AuthenticatedMyAccountCompanyRoute
+  '/my-account/credit': typeof AuthenticatedMyAccountCreditRoute
   '/my-account/orders': typeof AuthenticatedMyAccountOrdersRoute
   '/my-account/profile': typeof AuthenticatedMyAccountProfileRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
@@ -355,10 +386,13 @@ export interface FileRoutesByTo {
   '/wishlist': typeof WishlistRoute
   '/my-orders': typeof AuthenticatedMyOrdersRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/credit-application/success': typeof CreditApplicationSuccessRoute
   '/order/$orderNumber': typeof OrderOrderNumberRoute
   '/product/$slug': typeof ProductSlugRoute
   '/track/$orderNumber': typeof TrackOrderNumberRoute
+  '/credit-application': typeof CreditApplicationIndexRoute
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
+  '/admin/credit-applications': typeof AuthenticatedAdminCreditApplicationsRoute
   '/admin/customers': typeof AuthenticatedAdminCustomersRouteWithChildren
   '/admin/discount-codes': typeof AuthenticatedAdminDiscountCodesRoute
   '/admin/flash-deals': typeof AuthenticatedAdminFlashDealsRoute
@@ -370,6 +404,7 @@ export interface FileRoutesByTo {
   '/admin/sync': typeof AuthenticatedAdminSyncRoute
   '/my-account/addresses': typeof AuthenticatedMyAccountAddressesRoute
   '/my-account/company': typeof AuthenticatedMyAccountCompanyRoute
+  '/my-account/credit': typeof AuthenticatedMyAccountCreditRoute
   '/my-account/orders': typeof AuthenticatedMyAccountOrdersRoute
   '/my-account/profile': typeof AuthenticatedMyAccountProfileRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
@@ -402,10 +437,13 @@ export interface FileRoutesById {
   '/_authenticated/my-account': typeof AuthenticatedMyAccountRouteWithChildren
   '/_authenticated/my-orders': typeof AuthenticatedMyOrdersRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/credit-application/success': typeof CreditApplicationSuccessRoute
   '/order/$orderNumber': typeof OrderOrderNumberRoute
   '/product/$slug': typeof ProductSlugRoute
   '/track/$orderNumber': typeof TrackOrderNumberRoute
+  '/credit-application/': typeof CreditApplicationIndexRoute
   '/_authenticated/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
+  '/_authenticated/admin/credit-applications': typeof AuthenticatedAdminCreditApplicationsRoute
   '/_authenticated/admin/customers': typeof AuthenticatedAdminCustomersRouteWithChildren
   '/_authenticated/admin/discount-codes': typeof AuthenticatedAdminDiscountCodesRoute
   '/_authenticated/admin/flash-deals': typeof AuthenticatedAdminFlashDealsRoute
@@ -417,6 +455,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/sync': typeof AuthenticatedAdminSyncRoute
   '/_authenticated/my-account/addresses': typeof AuthenticatedMyAccountAddressesRoute
   '/_authenticated/my-account/company': typeof AuthenticatedMyAccountCompanyRoute
+  '/_authenticated/my-account/credit': typeof AuthenticatedMyAccountCreditRoute
   '/_authenticated/my-account/orders': typeof AuthenticatedMyAccountOrdersRoute
   '/_authenticated/my-account/profile': typeof AuthenticatedMyAccountProfileRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
@@ -449,10 +488,13 @@ export interface FileRouteTypes {
     | '/my-account'
     | '/my-orders'
     | '/auth/callback'
+    | '/credit-application/success'
     | '/order/$orderNumber'
     | '/product/$slug'
     | '/track/$orderNumber'
+    | '/credit-application/'
     | '/admin/analytics'
+    | '/admin/credit-applications'
     | '/admin/customers'
     | '/admin/discount-codes'
     | '/admin/flash-deals'
@@ -464,6 +506,7 @@ export interface FileRouteTypes {
     | '/admin/sync'
     | '/my-account/addresses'
     | '/my-account/company'
+    | '/my-account/credit'
     | '/my-account/orders'
     | '/my-account/profile'
     | '/admin/'
@@ -492,10 +535,13 @@ export interface FileRouteTypes {
     | '/wishlist'
     | '/my-orders'
     | '/auth/callback'
+    | '/credit-application/success'
     | '/order/$orderNumber'
     | '/product/$slug'
     | '/track/$orderNumber'
+    | '/credit-application'
     | '/admin/analytics'
+    | '/admin/credit-applications'
     | '/admin/customers'
     | '/admin/discount-codes'
     | '/admin/flash-deals'
@@ -507,6 +553,7 @@ export interface FileRouteTypes {
     | '/admin/sync'
     | '/my-account/addresses'
     | '/my-account/company'
+    | '/my-account/credit'
     | '/my-account/orders'
     | '/my-account/profile'
     | '/admin'
@@ -538,10 +585,13 @@ export interface FileRouteTypes {
     | '/_authenticated/my-account'
     | '/_authenticated/my-orders'
     | '/auth/callback'
+    | '/credit-application/success'
     | '/order/$orderNumber'
     | '/product/$slug'
     | '/track/$orderNumber'
+    | '/credit-application/'
     | '/_authenticated/admin/analytics'
+    | '/_authenticated/admin/credit-applications'
     | '/_authenticated/admin/customers'
     | '/_authenticated/admin/discount-codes'
     | '/_authenticated/admin/flash-deals'
@@ -553,6 +603,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/sync'
     | '/_authenticated/my-account/addresses'
     | '/_authenticated/my-account/company'
+    | '/_authenticated/my-account/credit'
     | '/_authenticated/my-account/orders'
     | '/_authenticated/my-account/profile'
     | '/_authenticated/admin/'
@@ -581,9 +632,11 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
   WishlistRoute: typeof WishlistRoute
+  CreditApplicationSuccessRoute: typeof CreditApplicationSuccessRoute
   OrderOrderNumberRoute: typeof OrderOrderNumberRoute
   ProductSlugRoute: typeof ProductSlugRoute
   TrackOrderNumberRoute: typeof TrackOrderNumberRoute
+  CreditApplicationIndexRoute: typeof CreditApplicationIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -707,6 +760,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/credit-application/': {
+      id: '/credit-application/'
+      path: '/credit-application'
+      fullPath: '/credit-application/'
+      preLoaderRoute: typeof CreditApplicationIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/track/$orderNumber': {
       id: '/track/$orderNumber'
       path: '/track/$orderNumber'
@@ -726,6 +786,13 @@ declare module '@tanstack/react-router' {
       path: '/order/$orderNumber'
       fullPath: '/order/$orderNumber'
       preLoaderRoute: typeof OrderOrderNumberRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/credit-application/success': {
+      id: '/credit-application/success'
+      path: '/credit-application/success'
+      fullPath: '/credit-application/success'
+      preLoaderRoute: typeof CreditApplicationSuccessRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/callback': {
@@ -782,6 +849,13 @@ declare module '@tanstack/react-router' {
       path: '/orders'
       fullPath: '/my-account/orders'
       preLoaderRoute: typeof AuthenticatedMyAccountOrdersRouteImport
+      parentRoute: typeof AuthenticatedMyAccountRoute
+    }
+    '/_authenticated/my-account/credit': {
+      id: '/_authenticated/my-account/credit'
+      path: '/credit'
+      fullPath: '/my-account/credit'
+      preLoaderRoute: typeof AuthenticatedMyAccountCreditRouteImport
       parentRoute: typeof AuthenticatedMyAccountRoute
     }
     '/_authenticated/my-account/company': {
@@ -859,6 +933,13 @@ declare module '@tanstack/react-router' {
       path: '/customers'
       fullPath: '/admin/customers'
       preLoaderRoute: typeof AuthenticatedAdminCustomersRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/credit-applications': {
+      id: '/_authenticated/admin/credit-applications'
+      path: '/credit-applications'
+      fullPath: '/admin/credit-applications'
+      preLoaderRoute: typeof AuthenticatedAdminCreditApplicationsRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/admin/analytics': {
@@ -946,6 +1027,7 @@ const AuthenticatedAdminPricingRouteWithChildren =
 
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminAnalyticsRoute: typeof AuthenticatedAdminAnalyticsRoute
+  AuthenticatedAdminCreditApplicationsRoute: typeof AuthenticatedAdminCreditApplicationsRoute
   AuthenticatedAdminCustomersRoute: typeof AuthenticatedAdminCustomersRouteWithChildren
   AuthenticatedAdminDiscountCodesRoute: typeof AuthenticatedAdminDiscountCodesRoute
   AuthenticatedAdminFlashDealsRoute: typeof AuthenticatedAdminFlashDealsRoute
@@ -960,6 +1042,8 @@ interface AuthenticatedAdminRouteChildren {
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminAnalyticsRoute: AuthenticatedAdminAnalyticsRoute,
+  AuthenticatedAdminCreditApplicationsRoute:
+    AuthenticatedAdminCreditApplicationsRoute,
   AuthenticatedAdminCustomersRoute:
     AuthenticatedAdminCustomersRouteWithChildren,
   AuthenticatedAdminDiscountCodesRoute: AuthenticatedAdminDiscountCodesRoute,
@@ -979,6 +1063,7 @@ const AuthenticatedAdminRouteWithChildren =
 interface AuthenticatedMyAccountRouteChildren {
   AuthenticatedMyAccountAddressesRoute: typeof AuthenticatedMyAccountAddressesRoute
   AuthenticatedMyAccountCompanyRoute: typeof AuthenticatedMyAccountCompanyRoute
+  AuthenticatedMyAccountCreditRoute: typeof AuthenticatedMyAccountCreditRoute
   AuthenticatedMyAccountOrdersRoute: typeof AuthenticatedMyAccountOrdersRoute
   AuthenticatedMyAccountProfileRoute: typeof AuthenticatedMyAccountProfileRoute
   AuthenticatedMyAccountIndexRoute: typeof AuthenticatedMyAccountIndexRoute
@@ -988,6 +1073,7 @@ const AuthenticatedMyAccountRouteChildren: AuthenticatedMyAccountRouteChildren =
   {
     AuthenticatedMyAccountAddressesRoute: AuthenticatedMyAccountAddressesRoute,
     AuthenticatedMyAccountCompanyRoute: AuthenticatedMyAccountCompanyRoute,
+    AuthenticatedMyAccountCreditRoute: AuthenticatedMyAccountCreditRoute,
     AuthenticatedMyAccountOrdersRoute: AuthenticatedMyAccountOrdersRoute,
     AuthenticatedMyAccountProfileRoute: AuthenticatedMyAccountProfileRoute,
     AuthenticatedMyAccountIndexRoute: AuthenticatedMyAccountIndexRoute,
@@ -1041,9 +1127,11 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
   WishlistRoute: WishlistRoute,
+  CreditApplicationSuccessRoute: CreditApplicationSuccessRoute,
   OrderOrderNumberRoute: OrderOrderNumberRoute,
   ProductSlugRoute: ProductSlugRoute,
   TrackOrderNumberRoute: TrackOrderNumberRoute,
+  CreditApplicationIndexRoute: CreditApplicationIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

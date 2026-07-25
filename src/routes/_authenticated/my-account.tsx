@@ -2,7 +2,7 @@ import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-r
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteHeader } from "@/components/site-header";
-import { User, MapPin, Package, Building2 } from "lucide-react";
+import { User, MapPin, Package, Building2, CreditCard } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/my-account")({
   head: () => ({
@@ -32,7 +32,12 @@ function MyAccountLayout() {
     { to: "/my-account/profile", label: "ข้อมูลส่วนตัว", icon: User },
     { to: "/my-account/addresses", label: "ที่อยู่จัดส่ง", icon: MapPin },
     { to: "/my-account/orders", label: "ประวัติการสั่งซื้อ", icon: Package },
-    ...(userType === "b2b" ? [{ to: "/my-account/company", label: "ข้อมูลบริษัท", icon: Building2 }] : []),
+    ...(userType === "b2b"
+      ? [
+          { to: "/my-account/company", label: "ข้อมูลบริษัท", icon: Building2 },
+          { to: "/my-account/credit", label: "วงเงินเครดิต", icon: CreditCard },
+        ]
+      : []),
   ] as const;
 
   return (

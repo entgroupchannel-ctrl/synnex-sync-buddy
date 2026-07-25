@@ -9,13 +9,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { ArrowLeft, Banknote, Truck, Building2, User, Loader2, Tag, X, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Banknote, Truck, Building2, User, Loader2, Tag, X, CheckCircle2, CreditCard } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { CheckoutTrustBox } from "@/components/trust-signals";
 import { ShippingMethodSelector } from "@/components/shipping-method-selector";
 import { getItemWeightKg, priceFmt, useCart } from "@/lib/cart";
 import { useSupabaseUser } from "@/lib/auth-sheet";
+import { bahtFmt, creditIsUsable, dueDateFrom, useCreditAccount } from "@/lib/credit";
 import {
   getWeightBasedShippingFee,
   applyDiscountCode,
@@ -91,7 +92,7 @@ function CheckoutPage() {
   const [errors, setErrors] = useState<Partial<Record<keyof Fields | keyof z.infer<typeof taxSchema>, string>>>({});
   const [wantsTaxInvoice, setWantsTaxInvoice] = useState(false);
   const [tax, setTax] = useState({ company_name: "", tax_id: "", company_address: "" });
-  const [payment, setPayment] = useState<"transfer" | "cod" | "promptpay">("promptpay");
+  const [payment, setPayment] = useState<"transfer" | "cod" | "promptpay" | "credit">("promptpay");
   const [submitting, setSubmitting] = useState(false);
   const [orderCreated, setOrderCreated] = useState(false);
 
@@ -159,6 +160,14 @@ function CheckoutPage() {
   const shippingFee = isPickup ? 0 : discount?.isFreeShipping ? 0 : shipCalc.fee;
   const discountAmount = discount?.discountAmount ?? 0;
   const grandTotal = Math.max(0, subtotal + shippingFee + codFee - discountAmount);
+
+  // B2B credit line
+  const { account: creditAccount } = useCreditAccount(user?.id);
+  const creditUsable = creditIsUsable(creditAccount);
+  const creditEnough = !!creditAccount && creditAccount.credit_available >= grandTotal;
+  useEffect(() => {
+    if (payment === "credit" && !(creditUsable && creditEnough)) setPayment("promptpay");
+  }, [payment, creditUsable, creditEnough]);
 
   const userType: UserType = user
     ? (wantsTaxInvoice ? "b2b" : "b2c")
@@ -281,7 +290,7 @@ function CheckoutPage() {
           tax_id: taxInvoice?.tax_id ?? null,
           company_address: taxInvoice?.company_address ?? null,
           payment_method: payment,
-          payment_status: "pending",
+          payment_status: payment === "credit" ? "credit" : "pending",
           subtotal,
           cod_fee: codFee,
           total: grandTotal,
@@ -315,6 +324,21 @@ function CheckoutPage() {
         note: "ลูกค้าสร้าง order",
         changed_by: user?.email ?? "customer",
       });
+
+      // B2B credit purchase — record the drawdown on the credit account
+      if (payment === "credit" && creditAccount && user) {
+        const { error: cErr } = await supabase.from("credit_transactions").insert({
+          credit_account_id: creditAccount.id,
+          user_id: user.id,
+          order_id: order.id,
+          type: "purchase",
+          amount: grandTotal,
+          due_date: dueDateFrom(creditAccount.payment_terms_days).toISOString().slice(0, 10),
+          reference: order.order_number,
+          note: `สั่งซื้อด้วยวงเงินเครดิต (${creditAccount.payment_terms_days} วัน)`,
+        });
+        if (cErr) console.warn("[credit txn]", cErr);
+      }
 
       // Fire-and-forget: send order confirmation email
       supabase.functions.invoke("send-order-confirmation", { body: { order_id: order.id } })
@@ -647,7 +671,30 @@ function CheckoutPage() {
             {/* Payment */}
             <section className="space-y-3 rounded-lg border bg-white p-6">
               <h2 className="font-bold text-[color:var(--brand-navy)]">วิธีการชำระเงิน</h2>
-              <RadioGroup value={payment} onValueChange={(v) => setPayment(v as "transfer" | "cod" | "promptpay")} className="grid gap-2 sm:grid-cols-3">
+              <RadioGroup value={payment} onValueChange={(v) => setPayment(v as "transfer" | "cod" | "promptpay" | "credit")} className="grid gap-2 sm:grid-cols-3">
+                {creditAccount && (
+                  <label
+                    className={`flex items-center gap-3 rounded-lg border-2 p-4 transition sm:col-span-3 ${
+                      payment === "credit" ? "border-emerald-600 bg-emerald-50" : "hover:bg-slate-50"
+                    } ${creditUsable && creditEnough ? "cursor-pointer" : "cursor-not-allowed opacity-60"}`}
+                  >
+                    <RadioGroupItem value="credit" disabled={!creditUsable || !creditEnough} />
+                    <CreditCard className="h-5 w-5 text-emerald-700" />
+                    <div className="min-w-0 flex-1">
+                      <div className="font-semibold">วงเงินเครดิต B2B ({creditAccount.payment_terms_days} วัน)</div>
+                      <div className="text-xs text-slate-500">
+                        คงเหลือ {bahtFmt.format(creditAccount.credit_available)} จาก {bahtFmt.format(creditAccount.credit_limit)}
+                        {!creditUsable && " · บัญชีถูกระงับ/หมดอายุ"}
+                        {creditUsable && !creditEnough && " · วงเงินคงเหลือไม่พอสำหรับยอดนี้"}
+                      </div>
+                      {payment === "credit" && (
+                        <div className="mt-1 text-xs font-semibold text-emerald-700">
+                          กำหนดชำระ {dueDateFrom(creditAccount.payment_terms_days).toLocaleDateString("th-TH")}
+                        </div>
+                      )}
+                    </div>
+                  </label>
+                )}
                 <label className={`flex cursor-pointer items-center gap-3 rounded-lg border-2 p-4 transition ${payment === "promptpay" ? "border-blue-600 bg-blue-50" : "hover:bg-slate-50"}`}>
                   <RadioGroupItem value="promptpay" />
                   <Banknote className="h-5 w-5 text-blue-700" />

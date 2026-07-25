@@ -297,6 +297,7 @@ export function SiteFooter() {
             <ul className="space-y-2">
               <li><FooterLink to="/how-to-order">วิธีสั่งซื้อสินค้า</FooterLink></li>
               <li><FooterLink to="/payment-methods">วิธีชำระเงิน</FooterLink></li>
+              <li><FooterLink to="/credit-application">สมัครวงเงินเครดิต B2B</FooterLink></li>
               <li><FooterLink to="/shipping-info">การจัดส่งสินค้า</FooterLink></li>
               <li><FooterLink to="/returns">การคืนเงินและคืนสินค้า</FooterLink></li>
               <li><FooterLink to="/contact">ติดต่อ ENT Group</FooterLink></li>
