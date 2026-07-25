@@ -470,8 +470,10 @@ export function ComputerSets() {
       const { data } = await supabase.from("synnex_products")
         .select("*")
         .eq("category", "Computer Set")
-        .eq("price_approved", true).gt("selling_price", 0)
-        .order("selling_price", { ascending: false });
+        .eq("price_approved", true)
+        .gt("selling_price", 0)
+        .order("selling_price", { ascending: true })
+        .limit(10);
       return (data ?? []) as (ProductRow & { description: string | null })[];
     },
     staleTime: 5 * 60_000,
