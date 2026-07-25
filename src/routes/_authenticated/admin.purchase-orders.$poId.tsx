@@ -280,7 +280,10 @@ function PurchaseOrderDetailPage() {
               />
               {!contactQ.data?.contact_email && (
                 <p className="text-xs text-amber-600">
-                  ยังไม่มีอีเมลบันทึกไว้สำหรับ {po.distributor} — กรอกที่นี่แล้วไปตั้งค่าถาวรที่ตาราง distributor_contacts ทีหลังได้
+                  ยังไม่มีอีเมลบันทึกไว้สำหรับ {po.distributor} — กรอกที่นี่ หรือ{" "}
+                  <Link to="/admin/distributor-contacts" className="underline">
+                    ตั้งค่าถาวรที่หน้าข้อมูล Distributor
+                  </Link>
                 </p>
               )}
             </div>
