@@ -1071,6 +1071,59 @@ export type Database = {
         }
         Relationships: []
       }
+      quote_requests: {
+        Row: {
+          company_name: string | null
+          created_at: string | null
+          customer_email: string | null
+          customer_name: string
+          customer_phone: string
+          id: string
+          message: string | null
+          product_id: string | null
+          product_name: string | null
+          product_sku: string | null
+          selling_price: number | null
+          status: string | null
+        }
+        Insert: {
+          company_name?: string | null
+          created_at?: string | null
+          customer_email?: string | null
+          customer_name: string
+          customer_phone: string
+          id?: string
+          message?: string | null
+          product_id?: string | null
+          product_name?: string | null
+          product_sku?: string | null
+          selling_price?: number | null
+          status?: string | null
+        }
+        Update: {
+          company_name?: string | null
+          created_at?: string | null
+          customer_email?: string | null
+          customer_name?: string
+          customer_phone?: string
+          id?: string
+          message?: string | null
+          product_id?: string | null
+          product_name?: string | null
+          product_sku?: string | null
+          selling_price?: number | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quote_requests_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "synnex_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       rate_limits: {
         Row: {
           blocked_until: number | null
@@ -1295,6 +1348,51 @@ export type Database = {
           synced_at?: string
           updated_at?: string
           weight_kg?: number | null
+        }
+        Relationships: []
+      }
+      synnex_products_price_backup_20260725: {
+        Row: {
+          b2b_markup_applied: number | null
+          b2b_price: number | null
+          backed_up_at: string | null
+          brand: string | null
+          cost_price: number | null
+          id: string | null
+          markup_applied: number | null
+          member_price: number | null
+          name: string | null
+          price_approved: boolean | null
+          selling_price: number | null
+          sku: string | null
+        }
+        Insert: {
+          b2b_markup_applied?: number | null
+          b2b_price?: number | null
+          backed_up_at?: string | null
+          brand?: string | null
+          cost_price?: number | null
+          id?: string | null
+          markup_applied?: number | null
+          member_price?: number | null
+          name?: string | null
+          price_approved?: boolean | null
+          selling_price?: number | null
+          sku?: string | null
+        }
+        Update: {
+          b2b_markup_applied?: number | null
+          b2b_price?: number | null
+          backed_up_at?: string | null
+          brand?: string | null
+          cost_price?: number | null
+          id?: string | null
+          markup_applied?: number | null
+          member_price?: number | null
+          name?: string | null
+          price_approved?: boolean | null
+          selling_price?: number | null
+          sku?: string | null
         }
         Relationships: []
       }
