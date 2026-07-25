@@ -89,6 +89,221 @@ export type Database = {
         }
         Relationships: []
       }
+      credit_accounts: {
+        Row: {
+          application_id: string | null
+          approved_at: string | null
+          approved_by: string | null
+          company_name: string
+          created_at: string
+          credit_available: number | null
+          credit_limit: number
+          credit_used: number
+          expires_at: string | null
+          id: string
+          interest_rate: number | null
+          is_active: boolean
+          payment_terms_days: number
+          suspended_reason: string | null
+          tax_id: string
+          user_id: string | null
+        }
+        Insert: {
+          application_id?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          company_name: string
+          created_at?: string
+          credit_available?: number | null
+          credit_limit?: number
+          credit_used?: number
+          expires_at?: string | null
+          id?: string
+          interest_rate?: number | null
+          is_active?: boolean
+          payment_terms_days?: number
+          suspended_reason?: string | null
+          tax_id: string
+          user_id?: string | null
+        }
+        Update: {
+          application_id?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          company_name?: string
+          created_at?: string
+          credit_available?: number | null
+          credit_limit?: number
+          credit_used?: number
+          expires_at?: string | null
+          id?: string
+          interest_rate?: number | null
+          is_active?: boolean
+          payment_terms_days?: number
+          suspended_reason?: string | null
+          tax_id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credit_accounts_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "credit_applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      credit_applications: {
+        Row: {
+          admin_note: string | null
+          annual_revenue: string | null
+          application_number: string | null
+          company_address: string
+          company_email: string
+          company_name: string
+          company_phone: string
+          company_registration_url: string | null
+          company_type: string | null
+          contact_email: string
+          contact_name: string
+          contact_phone: string
+          contact_position: string
+          created_at: string
+          financial_statement_url: string | null
+          id: string
+          rejection_reason: string | null
+          requested_credit_limit: number
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          tax_id: string
+          user_id: string | null
+          vat_certificate_url: string | null
+          website: string | null
+          years_in_business: string | null
+        }
+        Insert: {
+          admin_note?: string | null
+          annual_revenue?: string | null
+          application_number?: string | null
+          company_address: string
+          company_email: string
+          company_name: string
+          company_phone: string
+          company_registration_url?: string | null
+          company_type?: string | null
+          contact_email: string
+          contact_name: string
+          contact_phone: string
+          contact_position: string
+          created_at?: string
+          financial_statement_url?: string | null
+          id?: string
+          rejection_reason?: string | null
+          requested_credit_limit?: number
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          tax_id: string
+          user_id?: string | null
+          vat_certificate_url?: string | null
+          website?: string | null
+          years_in_business?: string | null
+        }
+        Update: {
+          admin_note?: string | null
+          annual_revenue?: string | null
+          application_number?: string | null
+          company_address?: string
+          company_email?: string
+          company_name?: string
+          company_phone?: string
+          company_registration_url?: string | null
+          company_type?: string | null
+          contact_email?: string
+          contact_name?: string
+          contact_phone?: string
+          contact_position?: string
+          created_at?: string
+          financial_statement_url?: string | null
+          id?: string
+          rejection_reason?: string | null
+          requested_credit_limit?: number
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          tax_id?: string
+          user_id?: string | null
+          vat_certificate_url?: string | null
+          website?: string | null
+          years_in_business?: string | null
+        }
+        Relationships: []
+      }
+      credit_transactions: {
+        Row: {
+          amount: number
+          balance_after: number
+          balance_before: number
+          created_at: string
+          credit_account_id: string | null
+          due_date: string | null
+          id: string
+          note: string | null
+          order_id: string | null
+          paid_at: string | null
+          reference: string | null
+          type: string | null
+          user_id: string | null
+        }
+        Insert: {
+          amount: number
+          balance_after?: number
+          balance_before?: number
+          created_at?: string
+          credit_account_id?: string | null
+          due_date?: string | null
+          id?: string
+          note?: string | null
+          order_id?: string | null
+          paid_at?: string | null
+          reference?: string | null
+          type?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number
+          balance_after?: number
+          balance_before?: number
+          created_at?: string
+          credit_account_id?: string | null
+          due_date?: string | null
+          id?: string
+          note?: string | null
+          order_id?: string | null
+          paid_at?: string | null
+          reference?: string | null
+          type?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credit_transactions_credit_account_id_fkey"
+            columns: ["credit_account_id"]
+            isOneToOne: false
+            referencedRelation: "credit_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "credit_transactions_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       discount_code_usage: {
         Row: {
           code_id: string | null
@@ -382,6 +597,7 @@ export type Database = {
           notes: string | null
           order_number: string
           paid_at: string | null
+          payment_due_date: string | null
           payment_gateway_ref: string | null
           payment_method: string | null
           payment_slip_url: string | null
@@ -438,6 +654,7 @@ export type Database = {
           notes?: string | null
           order_number: string
           paid_at?: string | null
+          payment_due_date?: string | null
           payment_gateway_ref?: string | null
           payment_method?: string | null
           payment_slip_url?: string | null
@@ -494,6 +711,7 @@ export type Database = {
           notes?: string | null
           order_number?: string
           paid_at?: string | null
+          payment_due_date?: string | null
           payment_gateway_ref?: string | null
           payment_method?: string | null
           payment_slip_url?: string | null
@@ -1231,6 +1449,7 @@ export type Database = {
         Returns: number
       }
       increment: { Args: { x: number }; Returns: number }
+      is_admin_user: { Args: { _uid: string }; Returns: boolean }
       psych_price: { Args: { p: number }; Returns: number }
       recompute_user_order_stats: { Args: { _uid: string }; Returns: undefined }
     }
