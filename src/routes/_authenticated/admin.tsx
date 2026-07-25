@@ -25,6 +25,7 @@ import {
   CreditCard,
   Search,
   ExternalLink,
+  FileOutput,
 
   LogOut,
   Menu,
@@ -87,6 +88,7 @@ const NAV: NavGroup[] = [
       { label: "ออเดอร์ทั้งหมด", to: "/admin/orders", icon: ClipboardList },
       { label: "รอยืนยัน", href: "/admin/orders?status=pending", icon: ClipboardList },
       { label: "รอจัดส่ง", href: "/admin/orders?status=confirmed", icon: Truck },
+      { label: "ใบสั่งซื้อ Distributor", to: "/admin/purchase-orders", icon: FileOutput },
     ],
   },
   {
