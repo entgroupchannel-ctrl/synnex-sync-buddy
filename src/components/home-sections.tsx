@@ -1474,27 +1474,27 @@ export function CorporateITSolutions() {
         .from("synnex_products")
         .select("*")
         .eq("price_approved", true)
-        .gt("selling_price", 0)
+        .gt("selling_price", 1000)
         .order("selling_price", { ascending: true })
         .limit(10);
 
       if (tab === "all") {
         qi = qi.or(
           [
-            "category.eq.Network",
+            "and(category.eq.Network,brand.in.(CISCO,DLINK,TPLINK,UBIQUITI,FORTINET))",
             "and(category.eq.Storage,brand.in.(QNAP,SYNOLOGY))",
-            "and(category.eq.Printer,brand.in.(BROTHER,HP,RICOH,PANTUM))",
-            "and(category.eq.PC,brand.in.(APC,SYNDOME,SUN,ETECH,VERTIV,CKT))",
+            "and(category.eq.Printer,brand.in.(BROTHER,HP,RICOH,PANTUM,FUJIFILM,OKI,EPSON,CANON,XEROX))",
+            "and(category.eq.PC,brand.in.(APC,SYNDOME,SUN,ETECH,VERTIV,CKT,ADVICE-UPS))",
           ].join(","),
         );
       } else if (tab === "network") {
-        qi = qi.eq("category", "Network");
+        qi = qi.eq("category", "Network").in("brand", ["CISCO", "DLINK", "TPLINK", "UBIQUITI"]);
       } else if (tab === "storage") {
         qi = qi.eq("category", "Storage").in("brand", ["QNAP", "SYNOLOGY"]);
       } else if (tab === "security") {
         qi = qi.eq("category", "Smart Life").in("brand", ["DAHUA", "HIKVISION", "EZVIZ"]);
       } else if (tab === "printer") {
-        qi = qi.eq("category", "Printer").in("brand", ["BROTHER", "HP", "RICOH", "PANTUM"]);
+        qi = qi.eq("category", "Printer").in("brand", ["BROTHER", "HP", "RICOH", "PANTUM", "FUJIFILM", "OKI"]);
       } else if (tab === "ups") {
         qi = qi.eq("category", "PC").in("brand", ["APC", "SYNDOME", "SUN", "ETECH", "VERTIV", "CKT"]);
       }
@@ -1502,6 +1502,7 @@ export function CorporateITSolutions() {
       const { data } = await qi;
       return (data ?? []) as (ProductRow & { b2b_price?: number | null })[];
     },
+
     staleTime: 5 * 60_000,
   });
 
