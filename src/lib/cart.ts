@@ -194,6 +194,7 @@ export const CATEGORIES = [
   "UPS",
   "Computer Set",
   "Components",
+  "RAM",
   "Software",
   "Accessories",
   "Network",

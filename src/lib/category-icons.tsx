@@ -5,6 +5,7 @@ import {
   Printer,
   Server,
   Cpu,
+  MemoryStick,
   Package,
   Plug,
   Wifi,
@@ -39,7 +40,8 @@ export const CATEGORY_ICONS: Record<string, ReactNode> = {
   UPS: <Zap className={ic} />,
   "Computer Set": <Server className={ic} />,
   Components: <Cpu className={ic} />,
-  Software: <Package className={ic} />,
+  RAM: <MemoryStick className={ic} />,
+  Software: <Package className={ic} />
   Accessories: <Plug className={ic} />,
   Network: <Wifi className={ic} />,
   Storage: <HardDrive className={ic} />,
