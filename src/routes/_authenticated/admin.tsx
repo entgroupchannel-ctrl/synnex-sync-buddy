@@ -26,6 +26,7 @@ import {
   Search,
   ExternalLink,
   FileOutput,
+  Building2,
 
   LogOut,
   Menu,
