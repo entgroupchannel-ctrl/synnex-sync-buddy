@@ -697,7 +697,7 @@ function CheckoutPage() {
             {/* Payment */}
             <section className="space-y-3 rounded-lg border bg-white p-6">
               <h2 className="font-bold text-[color:var(--brand-navy)]">วิธีการชำระเงิน</h2>
-              <RadioGroup value={payment} onValueChange={(v) => setPayment(v as "transfer" | "cod" | "promptpay" | "credit")} className="grid gap-2 sm:grid-cols-3">
+              <RadioGroup value={payment} onValueChange={(v) => setPayment(v as "transfer" | "cod" | "promptpay" | "credit" | "credit_card")} className="grid gap-2 sm:grid-cols-3">
                 {creditAccount && (
                   <label
                     className={`flex items-center gap-3 rounded-lg border-2 p-4 transition sm:col-span-3 ${
