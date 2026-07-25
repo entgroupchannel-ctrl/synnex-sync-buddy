@@ -745,7 +745,63 @@ function CheckoutPage() {
                     <div className="text-xs text-slate-500">+฿{COD_FEE} ค่าธรรมเนียม</div>
                   </div>
                 </label>
+                <label className={`flex cursor-pointer items-center gap-3 rounded-lg border-2 p-4 transition ${payment === "credit_card" ? "border-purple-600 bg-purple-50" : "hover:bg-slate-50"}`}>
+                  <RadioGroupItem value="credit_card" />
+                  <CreditCard className="h-5 w-5 text-purple-700" />
+                  <div>
+                    <div className="font-semibold">บัตรเครดิต/เดบิต</div>
+                    <div className="text-xs text-slate-500">Visa, Mastercard, JCB</div>
+                  </div>
+                </label>
               </RadioGroup>
+
+              {payment === "credit_card" && (
+                <div className="rounded-lg border bg-slate-50 p-4">
+                  {(savedCardsQ.data?.length ?? 0) > 0 && !useNewCard ? (
+                    <div className="space-y-2">
+                      {savedCardsQ.data!.map((c) => (
+                        <label key={c.id} className="flex cursor-pointer items-center gap-3 rounded-md border bg-white px-3 py-2 text-sm">
+                          <input
+                            type="radio"
+                            checked={selectedSavedCardId === c.id}
+                            onChange={() => setSelectedSavedCardId(c.id)}
+                          />
+                          <CreditCard className="h-4 w-4 text-slate-500" />
+                          <span className="font-semibold">{c.brand} **** {c.last_digits}</span>
+                          {c.is_default && <span className="rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] text-emerald-700">ค่าเริ่มต้น</span>}
+                        </label>
+                      ))}
+                      <button
+                        type="button"
+                        onClick={() => setUseNewCard(true)}
+                        className="text-sm text-purple-700 underline"
+                      >
+                        + ใช้บัตรใบใหม่
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      {(savedCardsQ.data?.length ?? 0) > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => setUseNewCard(false)}
+                          className="mb-3 text-sm text-purple-700 underline"
+                        >
+                          ← เลือกจากบัตรที่บันทึกไว้
+                        </button>
+                      )}
+                      <OmiseCardForm
+                        onToken={(token, save) => {
+                          setCardToken(token);
+                          setSaveNewCard(save);
+                          toast.success("รับข้อมูลบัตรแล้ว กด \"ยืนยันคำสั่งซื้อ\" เพื่อชำระเงิน");
+                        }}
+                        submitLabel="ยืนยันข้อมูลบัตร"
+                      />
+                    </>
+                  )}
+                </div>
+              )}
             </section>
           </div>
 
