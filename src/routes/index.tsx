@@ -63,6 +63,7 @@ const searchSchema = z.object({
   category: fallback(z.string(), "all").default("all"),
   brands: fallback(z.string(), "").default(""),
   ramSpec: fallback(z.string(), "").default(""),
+  jetsonType: fallback(z.string(), "").default(""),
   min: fallback(z.number(), 0).default(0),
   max: fallback(z.number(), 100000).default(100000),
   ready: fallback(z.boolean(), false).default(false),
@@ -100,6 +101,14 @@ const RAM_SUBCATS: { key: string; label: string; patterns: string[] }[] = [
   { key: "ddr5-4800", label: "DDR5(4800)", patterns: ["DDR5(4800)"] },
   { key: "ddr5-5200", label: "DDR5(5200)", patterns: ["DDR5(5200)"] },
   { key: "ddr5-5600up", label: "DDR5(5600) ขึ้นไป", patterns: ["DDR5(5600)", "DDR5(6000)", "DDR5(6200)", "DDR5(6400)", "DDR5(6600)", "DDR5(6800)", "DDR5(7200)"] },
+];
+
+const JETSON_SUBCATS: { key: string; label: string; value: string }[] = [
+  { key: "edgebox", label: "Edge AI Box", value: "Edge AI Box" },
+  { key: "devsystem", label: "Developer System", value: "Developer System" },
+  { key: "board", label: "Carrier Board", value: "Carrier Board" },
+  { key: "devkit", label: "Developer Kits", value: "Developer Kits" },
+  { key: "module", label: "Module", value: "Module" },
 ];
 
 
@@ -348,7 +357,19 @@ function HomePage() {
         // สินค้า PLINK-AI ไม่มีราคาแสดง (ต้องขอใบเสนอราคา) จึงยกเว้นให้ผ่านแม้ selling_price = 0
         q = q.eq("price_approved", true).or("selling_price.gt.0,distributor.eq.PLINK-AI");
         if (s) q = q.or(`name.ilike.%${s}%,sku.ilike.%${s}%,brand.ilike.%${s}%,description.ilike.%${s}%`);
-        if (search.category !== "all") q = q.eq("category", search.category);
+        if (search.category !== "all") {
+          if (search.category === "Edge AI Box") {
+            // เมนู "Edge AI Box" เป็นร่มรวมสินค้า NVIDIA Jetson ทุกประเภทจาก Plink-AI
+            if (search.jetsonType) {
+              const sub = JETSON_SUBCATS.find((s) => s.key === search.jetsonType);
+              q = q.eq("category", sub ? sub.value : search.category);
+            } else {
+              q = q.in("category", JETSON_SUBCATS.map((s) => s.value));
+            }
+          } else {
+            q = q.eq("category", search.category);
+          }
+        }
         if (search.category === "Components" && search.compType === "cpu") {
           q = q.or("name.ilike.%CPU%,name.ilike.%Ryzen%,name.ilike.%Core Ultra%");
         } else if (search.category === "Components" && search.compType === "ram") {
@@ -436,6 +457,7 @@ function HomePage() {
 
   const isSmartLife = search.category === "Smart Life";
   const isRam = search.category === "RAM";
+  const isJetson = search.category === "Edge AI Box";
 
   const toggleBrand = (b: string) => {
     const set = new Set(selectedBrands);
@@ -446,9 +468,9 @@ function HomePage() {
   };
 
   const setCategory = (c: string) => {
-    // Changing category auto-clears brand/ramSpec filter to prevent 0-result conflicts.
+    // Changing category auto-clears brand/ramSpec/jetsonType filter to prevent 0-result conflicts.
     // Smart Life defaults to cheapest-first.
-    update(c === "Smart Life" ? { category: c, brands: "", ramSpec: "", sort: "price-asc" } : { category: c, brands: "", ramSpec: "" });
+    update(c === "Smart Life" ? { category: c, brands: "", ramSpec: "", jetsonType: "", sort: "price-asc" } : { category: c, brands: "", ramSpec: "", jetsonType: "" });
   };
 
 
@@ -640,6 +662,39 @@ function HomePage() {
                 className="w-full rounded-lg px-3 py-2 text-left text-xs text-slate-400 hover:text-slate-600"
               >
                 × ล้างตัวกรอง
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {isJetson && (
+        <div>
+          <h3 className="mb-3 text-sm font-bold text-[color:var(--brand-navy)]">ประเภทสินค้า Jetson</h3>
+          <div className="space-y-1.5">
+            {JETSON_SUBCATS.map((sub) => {
+              const isSelected = search.jetsonType === sub.key;
+              return (
+                <button
+                  key={sub.key}
+                  onClick={() => update({ jetsonType: isSelected ? "" : sub.key })}
+                  className={`w-full flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors ${
+                    isSelected
+                      ? "bg-[color:var(--brand-green)] text-white font-medium"
+                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                  }`}
+                >
+                  <span className="flex-1 text-left">{sub.label}</span>
+                  <ChevronRight className={`h-3.5 w-3.5 opacity-40 ${isSelected ? "text-white" : "text-slate-400"}`} />
+                </button>
+              );
+            })}
+            {search.jetsonType && (
+              <button
+                onClick={() => update({ jetsonType: "" })}
+                className="w-full rounded-lg px-3 py-2 text-left text-xs text-slate-400 hover:text-slate-600"
+              >
+                ล้างตัวกรอง
               </button>
             )}
           </div>
