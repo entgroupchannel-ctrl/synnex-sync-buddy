@@ -332,7 +332,7 @@ export function TodaysBestDeals() {
   return (
     <section className="border-b bg-slate-50">
       <div className="mx-auto max-w-7xl px-4 py-8">
-        <SectionHeader title="ดีลวันนี้" en="Today's Best Deals" />
+        <SectionHeader title={<span className="inline-flex items-center gap-2"><Flame className="h-5 w-5 text-red-500 animate-pulse" />ดีลวันนี้</span>} en={<span className="inline-flex items-center gap-2"><Flame className="h-5 w-5 text-red-500 animate-pulse" />Today's Best Deals</span>} />
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-5">
           {q.data!.map((p, idx) => {
             const ready = p.stock_status === "พร้อมจัดส่ง";
