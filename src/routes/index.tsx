@@ -357,7 +357,19 @@ function HomePage() {
         // สินค้า PLINK-AI ไม่มีราคาแสดง (ต้องขอใบเสนอราคา) จึงยกเว้นให้ผ่านแม้ selling_price = 0
         q = q.eq("price_approved", true).or("selling_price.gt.0,distributor.eq.PLINK-AI");
         if (s) q = q.or(`name.ilike.%${s}%,sku.ilike.%${s}%,brand.ilike.%${s}%,description.ilike.%${s}%`);
-        if (search.category !== "all") q = q.eq("category", search.category);
+        if (search.category !== "all") {
+          if (search.category === "Edge AI Box") {
+            // เมนู "Edge AI Box" เป็นร่มรวมสินค้า NVIDIA Jetson ทุกประเภทจาก Plink-AI
+            if (search.jetsonType) {
+              const sub = JETSON_SUBCATS.find((s) => s.key === search.jetsonType);
+              q = q.eq("category", sub ? sub.value : search.category);
+            } else {
+              q = q.in("category", JETSON_SUBCATS.map((s) => s.value));
+            }
+          } else {
+            q = q.eq("category", search.category);
+          }
+        }
         if (search.category === "Components" && search.compType === "cpu") {
           q = q.or("name.ilike.%CPU%,name.ilike.%Ryzen%,name.ilike.%Core Ultra%");
         } else if (search.category === "Components" && search.compType === "ram") {
@@ -445,6 +457,7 @@ function HomePage() {
 
   const isSmartLife = search.category === "Smart Life";
   const isRam = search.category === "RAM";
+  const isJetson = search.category === "Edge AI Box";
 
   const toggleBrand = (b: string) => {
     const set = new Set(selectedBrands);
@@ -455,9 +468,9 @@ function HomePage() {
   };
 
   const setCategory = (c: string) => {
-    // Changing category auto-clears brand/ramSpec filter to prevent 0-result conflicts.
+    // Changing category auto-clears brand/ramSpec/jetsonType filter to prevent 0-result conflicts.
     // Smart Life defaults to cheapest-first.
-    update(c === "Smart Life" ? { category: c, brands: "", ramSpec: "", sort: "price-asc" } : { category: c, brands: "", ramSpec: "" });
+    update(c === "Smart Life" ? { category: c, brands: "", ramSpec: "", jetsonType: "", sort: "price-asc" } : { category: c, brands: "", ramSpec: "", jetsonType: "" });
   };
 
 
