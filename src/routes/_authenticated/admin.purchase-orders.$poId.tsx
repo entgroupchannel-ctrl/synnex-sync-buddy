@@ -205,6 +205,29 @@ function PurchaseOrderDetailPage() {
         </p>
       </div>
 
+      {/* เอกสารสำหรับส่ง Distributor */}
+      <div className="rounded-lg border">
+        <div className="flex items-center justify-between border-b px-4 py-3">
+          <h2 className="text-sm font-semibold text-slate-700">เอกสารสำหรับส่ง Distributor (PDF)</h2>
+          {po.pdf_url && (
+            <Button size="sm" variant="outline" onClick={() => window.open(po.pdf_url!, "_blank")}>
+              <Download className="mr-1.5 h-4 w-4" /> ดาวน์โหลด
+            </Button>
+          )}
+        </div>
+        {po.pdf_url ? (
+          <iframe
+            title={`PO ${po.po_number}`}
+            src={po.pdf_url}
+            className="h-[600px] w-full rounded-b-lg bg-slate-100"
+          />
+        ) : (
+          <div className="px-4 py-10 text-center text-sm text-slate-500">
+            ยังไม่ได้สร้างเอกสารสำหรับใบสั่งซื้อนี้ — กดปุ่ม "สร้าง PDF" ด้านบนเพื่อสร้างเอกสาร
+          </div>
+        )}
+      </div>
+
       <Table>
         <TableHeader>
           <TableRow>
