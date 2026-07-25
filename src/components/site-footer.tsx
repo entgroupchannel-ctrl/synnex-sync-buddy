@@ -347,7 +347,7 @@ export function SiteFooter() {
             </p>
           </Column>
 
-          {/* Column 4 — Shipping */}
+          {/* Column 5 — Shipping */}
           <Column title="บริการจัดส่ง / Delivery">
             <PillList
               items={[
