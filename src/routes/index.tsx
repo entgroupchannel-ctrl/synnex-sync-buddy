@@ -345,7 +345,8 @@ function HomePage() {
       type AnyQ = { eq: (...a: unknown[]) => AnyQ; neq: (...a: unknown[]) => AnyQ; gt: (...a: unknown[]) => AnyQ; gte: (...a: unknown[]) => AnyQ; lte: (...a: unknown[]) => AnyQ; in: (...a: unknown[]) => AnyQ; or: (...a: unknown[]) => AnyQ; order: (...a: unknown[]) => AnyQ; range: (...a: unknown[]) => AnyQ };
       const applyCommon = (qi: unknown): AnyQ => {
         let q = qi as AnyQ;
-        q = q.eq("price_approved", true).gt("selling_price", 0);
+        // สินค้า PLINK-AI ไม่มีราคาแสดง (ต้องขอใบเสนอราคา) จึงยกเว้นให้ผ่านแม้ selling_price = 0
+        q = q.eq("price_approved", true).or("selling_price.gt.0,distributor.eq.PLINK-AI");
         if (s) q = q.or(`name.ilike.%${s}%,sku.ilike.%${s}%,brand.ilike.%${s}%,description.ilike.%${s}%`);
         if (search.category !== "all") q = q.eq("category", search.category);
         if (search.category === "Components" && search.compType === "cpu") {

@@ -6,6 +6,7 @@ import {
   Server,
   Cpu,
   MemoryStick,
+  Bot,
   Package,
   Plug,
   Wifi,
