@@ -14,7 +14,7 @@ type Props = {
 
 function pickEmoji(category?: string | null, name?: string | null): string {
   const hay = `${category ?? ""} ${name ?? ""}`.toLowerCase();
-  if (/gpu|graphic|geforce|radeon|rtx|gtx|\brx ?\d/.test(hay)) return "🎮";
+  if (/gpu|graphic|geforce|radeon|rtx|gtx|\brx ?\d/.test(hay)) return "🟪";
   if (/\bcpu\b|processor|ryzen|core i\d|threadripper/.test(hay)) return "🔲";
   if (/\bram\b|ddr\d|memory/.test(hay)) return "💾";
   if (/ssd|nvme|hdd|hard disk|storage/.test(hay)) return "💿";
