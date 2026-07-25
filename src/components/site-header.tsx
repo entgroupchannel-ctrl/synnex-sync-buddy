@@ -151,7 +151,7 @@ export function SiteHeader() {
               entgroup.co.th
             </a>
           </div>
-          <a href="https://entgroup.co.th" target="_blank" rel="noopener noreferrer" className="hover:text-[color:var(--brand-green)] lg:hidden">🔗 entgroup.co.th</a>
+          
         </div>
       </div>
       <FlashSaleCountdown />
