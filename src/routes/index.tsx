@@ -22,7 +22,7 @@ import { DeliveryHint } from "@/components/delivery-info";
 import { StockBadge } from "@/components/stock-badge";
 import { WarrantyBadge } from "@/components/warranty-badge";
 import { DiscountBadgeRow } from "@/components/discount-badge";
-import { PriceOrQuote, isQuoteOnly } from "@/components/QuoteRequest";
+
 import { SpecTagsCompact } from "@/components/spec-tags";
 import { hasSpecTags } from "@/lib/parse-spec";
 import { CATEGORY_ICONS, SMART_LIFE_SUBCATEGORY_ICONS } from "@/lib/category-icons";
@@ -1087,21 +1087,17 @@ function HomePage() {
                     </div>
                     <div className="flex w-40 shrink-0 flex-col items-end justify-between gap-1">
                       {priced ? (
-                        isQuoteOnly(p.selling_price) ? (
-                          <PriceOrQuote product={{ id: String(p.id), sku: p.sku ?? "", name: p.name ?? p.sku ?? "", selling_price: p.selling_price ?? 0 }} />
-                        ) : (
-                          <>
-                            <DiscountBadgeRow
-                              sellingPrice={p.selling_price}
-                              b2bPrice={p.b2b_price}
-                              memberPrice={p.member_price}
-                              className="justify-end"
-                            />
-                            <div className="text-xl font-black text-[color:var(--brand-orange)]">
-                              {displayPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier)}
-                            </div>
-                          </>
-                        )
+                        <>
+                          <DiscountBadgeRow
+                            sellingPrice={p.selling_price}
+                            b2bPrice={p.b2b_price}
+                            memberPrice={p.member_price}
+                            className="justify-end"
+                          />
+                          <div className="text-xl font-black text-[color:var(--brand-orange)]">
+                            {displayPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier)}
+                          </div>
+                        </>
                       ) : (
                         <span className="text-sm text-gray-400">ติดต่อสอบถาม</span>
                       )}
