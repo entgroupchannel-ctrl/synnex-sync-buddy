@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Building2, Star, Crown, BadgePercent } from "lucide-react";
 
 export function getDiscountPct(
   sellingPrice: number | null | undefined,
@@ -30,8 +31,9 @@ export function B2BBadge({ sellingPrice, b2bPrice, className }: B2BBadgeProps) {
   return (
     <div className={`relative group inline-block ${className ?? ""}`}>
       <span
-        className={`inline-flex items-center gap-0.5 rounded-full ${b2bColor(pct)} px-2 py-0.5 text-[10px] font-bold text-white cursor-pointer`}
+        className={`inline-flex items-center gap-1 rounded-full ${b2bColor(pct)} px-2 py-0.5 text-[10px] font-bold text-white cursor-pointer`}
       >
+        <Building2 className="h-3 w-3" />
         B2B -{pct}%
       </span>
       <div className="pointer-events-none absolute bottom-full left-0 z-20 mb-1 hidden whitespace-nowrap rounded-lg bg-slate-900 px-3 py-2 text-xs text-white shadow-xl group-hover:block">
@@ -58,8 +60,9 @@ export function MemberBadge({ sellingPrice, memberPrice, className }: MemberBadg
   if (!pct) return null;
   return (
     <span
-      className={`inline-flex items-center gap-0.5 rounded-full bg-amber-400 px-2 py-0.5 text-[10px] font-bold text-slate-900 ${className ?? ""}`}
+      className={`inline-flex items-center gap-1 rounded-full bg-amber-400 px-2 py-0.5 text-[10px] font-bold text-slate-900 ${className ?? ""}`}
     >
+      {pct >= 15 ? <Crown className="h-3 w-3" /> : <Star className="h-3 w-3" />}
       สมาชิก -{pct}%
     </span>
   );
@@ -110,7 +113,9 @@ export function B2BBadgeLarge({ sellingPrice, b2bPrice, className }: LargeB2BBad
     <span
       className={`inline-flex items-center gap-1.5 rounded-full bg-blue-600 px-3 py-1 text-sm font-bold text-white ${className ?? ""}`}
     >
-      💼 B2B ประหยัด {pct}% = ฿{saving.toLocaleString("th-TH")}
+      <Building2 className="h-4 w-4" />
+      B2B ประหยัด {pct}% = ฿{saving.toLocaleString("th-TH")}
+      <BadgePercent className="h-3.5 w-3.5 opacity-70" />
     </span>
   );
 }

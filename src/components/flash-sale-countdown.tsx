@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { Flame, Clock, Zap } from "lucide-react";
 
 const getSecondsUntilMidnight = () => {
   const now = new Date();
@@ -25,9 +26,13 @@ export function FlashSaleCountdown() {
     <div className="bg-gradient-to-r from-red-600 via-orange-500 to-red-600 text-white">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-3 px-4 py-2 text-xs sm:text-sm">
         <span className="inline-flex items-center gap-1 rounded-full bg-white/20 px-2.5 py-0.5 font-bold animate-pulse">
-          🔥 FLASH SALE
+          <Flame className="h-3.5 w-3.5" />
+          FLASH SALE
         </span>
-        <span className="hidden sm:inline">หมดเวลาใน</span>
+        <span className="hidden items-center gap-1 sm:inline-flex">
+          <Clock className="h-3.5 w-3.5" />
+          หมดเวลาใน
+        </span>
         <div className="flex items-center gap-1 font-mono font-bold">
           {parts.map((val, i) => (
             <span key={i} className="flex items-center gap-1">
@@ -41,8 +46,9 @@ export function FlashSaleCountdown() {
         <span className="hidden md:inline">ลดสูงสุด 20% เฉพาะสมาชิก</span>
         <Link
           to="/auth"
-          className="rounded-full bg-white px-3 py-0.5 text-xs font-semibold text-red-600 hover:bg-yellow-100"
+          className="inline-flex items-center gap-1 rounded-full bg-white px-3 py-0.5 text-xs font-semibold text-red-600 hover:bg-yellow-100"
         >
+          <Zap className="h-3 w-3" />
           สมัครฟรี →
         </Link>
       </div>
