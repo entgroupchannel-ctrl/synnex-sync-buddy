@@ -11,6 +11,7 @@ import {
   Cable, LayoutGrid, ShoppingCart, Truck, Award, FileText, Phone, ArrowRight,
   ChevronLeft, ChevronRight, Mail, Flame, ShieldCheck, Building2, Warehouse, MonitorCog, Sun,
   Home, Shield, Camera, Wrench,
+  Receipt, CreditCard, Headphones, Network as NetworkIcon, BatteryCharging,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import heroWarehouse from "@/assets/hero-warehouse.jpg";
@@ -1430,13 +1431,20 @@ export function SmartLife() {
 
 type CorpTab = "all" | "network" | "storage" | "security" | "printer" | "ups";
 
-const CORP_TABS: { key: CorpTab; label: string }[] = [
-  { key: "all", label: "ทั้งหมด" },
-  { key: "network", label: "🌐 Network" },
-  { key: "storage", label: "💾 Storage & NAS" },
-  { key: "security", label: "🔒 Security" },
-  { key: "printer", label: "🖨️ Printer" },
-  { key: "ups", label: "⚡ UPS" },
+const CORP_TABS: { key: CorpTab; label: string; icon: React.ReactNode }[] = [
+  { key: "all", label: "ทั้งหมด", icon: <LayoutGrid className="h-4 w-4" /> },
+  { key: "network", label: "Network", icon: <NetworkIcon className="h-4 w-4" /> },
+  { key: "storage", label: "Storage & NAS", icon: <HardDrive className="h-4 w-4" /> },
+  { key: "security", label: "Security", icon: <Shield className="h-4 w-4" /> },
+  { key: "printer", label: "Printer", icon: <Printer className="h-4 w-4" /> },
+  { key: "ups", label: "UPS", icon: <BatteryCharging className="h-4 w-4" /> },
+];
+
+const CORP_TRUST_BADGES = [
+  { icon: <FileText className="h-3.5 w-3.5" />, text: "ใบเสนอราคาทันที" },
+  { icon: <Receipt className="h-3.5 w-3.5" />, text: "ใบกำกับภาษี VAT 7%" },
+  { icon: <CreditCard className="h-3.5 w-3.5" />, text: "วงเงินเครดิต B2B" },
+  { icon: <Headphones className="h-3.5 w-3.5" />, text: "After Sale Support" },
 ];
 
 export function CorporateITSolutions() {
@@ -1454,17 +1462,22 @@ export function CorporateITSolutions() {
         .limit(10);
 
       if (tab === "all") {
-        qi = qi
-          .in("category", ["Network", "Storage"])
-          .in("brand", ["CISCO", "DLINK", "TPLINK", "UBIQUITI", "QNAP", "SYNOLOGY", "FORTINET"]);
+        qi = qi.or(
+          [
+            "category.eq.Network",
+            "and(category.eq.Storage,brand.in.(QNAP,SYNOLOGY))",
+            "and(category.eq.Printer,brand.in.(BROTHER,HP,RICOH,PANTUM))",
+            "and(category.eq.PC,brand.in.(APC,SYNDOME,SUN,ETECH,VERTIV,CKT))",
+          ].join(","),
+        );
       } else if (tab === "network") {
-        qi = qi.in("category", ["Network"]);
+        qi = qi.eq("category", "Network");
       } else if (tab === "storage") {
-        qi = qi.eq("category", "Storage");
+        qi = qi.eq("category", "Storage").in("brand", ["QNAP", "SYNOLOGY"]);
       } else if (tab === "security") {
         qi = qi.eq("category", "Smart Life").in("brand", ["DAHUA", "HIKVISION", "EZVIZ"]);
       } else if (tab === "printer") {
-        qi = qi.eq("category", "Printer");
+        qi = qi.eq("category", "Printer").in("brand", ["BROTHER", "HP", "RICOH", "PANTUM"]);
       } else if (tab === "ups") {
         qi = qi.eq("category", "PC").in("brand", ["APC", "SYNDOME", "SUN", "ETECH", "VERTIV", "CKT"]);
       }
@@ -1479,42 +1492,63 @@ export function CorporateITSolutions() {
 
   return (
     <section
-      className="py-14"
-      style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)" }}
+      className="py-16"
+      style={{ background: "linear-gradient(180deg, #f8fafc 0%, #f0f4ff 100%)" }}
     >
       <div className="mx-auto max-w-7xl px-4">
-        <div className="mb-8 text-center">
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-blue-500/30 bg-blue-500/20 px-4 py-1.5 text-sm text-blue-300">
-            🏢 FOR BUSINESS & ENTERPRISE
+        {/* Header */}
+        <div className="mb-10 text-center">
+          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-4 py-1.5 text-sm font-medium text-blue-700">
+            <Building2 className="h-4 w-4" />
+            FOR BUSINESS & ENTERPRISE
           </div>
-          <h2 className="mb-3 text-3xl font-black text-white md:text-4xl">
+          <h2 className="mb-3 text-3xl font-black text-slate-900 md:text-4xl">
             Corporate IT Solutions
           </h2>
-          <p className="mx-auto max-w-2xl text-base text-slate-400 md:text-lg">
+          <p className="mx-auto mb-6 max-w-xl text-base text-slate-500 md:text-lg">
             Network · Security · Storage · Server
             <br />
-            สำหรับองค์กร หน่วยงาน และธุรกิจทุกขนาด
+            <span className="text-sm text-slate-400 md:text-base">
+              สำหรับองค์กร หน่วยงาน และธุรกิจทุกขนาด
+            </span>
           </p>
+          <div className="mb-2 flex flex-wrap justify-center gap-3">
+            {CORP_TRUST_BADGES.map((b) => (
+              <div
+                key={b.text}
+                className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 shadow-sm"
+              >
+                <span className="text-blue-500">{b.icon}</span>
+                {b.text}
+              </div>
+            ))}
+          </div>
         </div>
 
-        <div className="mb-6 flex flex-wrap justify-center gap-2">
-          {CORP_TABS.map((t) => (
-            <button
-              key={t.key}
-              onClick={() => setTab(t.key)}
-              className={`shrink-0 rounded-full px-4 py-1.5 text-xs font-medium whitespace-nowrap transition-colors ${
-                tab === t.key
-                  ? "bg-blue-600 text-white"
-                  : "bg-white/10 text-slate-300 hover:bg-white/20"
-              }`}
-            >
-              {t.label}
-            </button>
-          ))}
+        {/* Filter tabs */}
+        <div className="mb-8 flex flex-wrap justify-center gap-2">
+          {CORP_TABS.map((t) => {
+            const active = tab === t.key;
+            return (
+              <button
+                key={t.key}
+                onClick={() => setTab(t.key)}
+                className={`flex items-center gap-2 rounded-full px-5 py-2 text-sm font-medium transition-all duration-200 ${
+                  active
+                    ? "bg-[color:var(--brand-navy)] text-white shadow-md"
+                    : "border border-slate-200 bg-white text-slate-600 hover:border-blue-300 hover:text-blue-600"
+                }`}
+              >
+                {t.icon}
+                {t.label}
+              </button>
+            );
+          })}
         </div>
 
+        {/* Products */}
         {products.length === 0 ? (
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-10 text-center text-sm text-slate-400">
+          <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center text-sm text-slate-500 shadow-sm">
             {q.isLoading ? "กำลังโหลด..." : "ยังไม่มีสินค้าในหมวดนี้ กรุณาติดต่อทีมขาย 02-045-6104"}
           </div>
         ) : (
@@ -1527,69 +1561,72 @@ export function CorporateITSolutions() {
                   key={p.id as string}
                   to="/product/$slug"
                   params={{ slug }}
-                  className="group cursor-pointer rounded-2xl border border-white/10 bg-white/5 p-4 transition-all duration-200 hover:border-white/20 hover:bg-white/10"
+                  className="group cursor-pointer rounded-2xl border border-slate-200 bg-white p-4 transition-all duration-200 hover:border-blue-300 hover:shadow-lg"
                 >
-                  <div className="mb-3 grid aspect-square place-items-center overflow-hidden rounded-xl bg-white/5">
+                  <div className="mb-3 grid aspect-square place-items-center overflow-hidden rounded-xl border border-slate-100 bg-slate-50">
                     <ProductImage
                       src={p.image_url as string | null}
                       alt={(p.name as string | null) ?? ""}
                       productName={p.name as string | null}
                       category={p.category as string | null}
-                      className="max-h-[120px] object-contain"
+                      className="max-h-[110px] w-full object-contain transition-transform duration-300 group-hover:scale-105"
                     />
                   </div>
-                  <div className="mb-1 text-[10px] font-bold uppercase tracking-wider text-blue-400">
-                    {(p.brand as string | null) ?? ""}
+                  <div className="mb-1.5 inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600">
+                      {(p.brand as string | null) ?? ""}
+                    </span>
                   </div>
-                  <div className="mb-2 line-clamp-2 min-h-[32px] text-xs leading-tight text-slate-300">
+                  <div className="mb-2 line-clamp-2 min-h-[32px] text-xs font-medium leading-tight text-slate-700">
                     {(p.name as string | null) ?? ""}
                   </div>
-                  <div className="text-base font-black text-white">
-                    ฿{Number(p.selling_price).toLocaleString("th-TH")}
-                  </div>
-                  {b2b && b2b > 0 ? (
-                    <div className="mt-0.5 text-[10px] text-blue-300">
-                      B2B: ฿{Number(b2b).toLocaleString("th-TH")}
+                  <div className="flex items-end justify-between">
+                    <div>
+                      <div className="text-base font-black text-slate-900">
+                        ฿{Number(p.selling_price).toLocaleString("th-TH")}
+                      </div>
+                      {b2b && b2b > 0 ? (
+                        <div className="text-[10px] font-medium text-blue-500">
+                          B2B: ฿{Number(b2b).toLocaleString("th-TH")}
+                        </div>
+                      ) : null}
                     </div>
-                  ) : null}
+                    <div className="cursor-pointer rounded-lg bg-slate-900 p-2 transition-colors group-hover:bg-blue-600">
+                      <ShoppingCart className="h-3.5 w-3.5 text-white" />
+                    </div>
+                  </div>
                 </Link>
               );
             })}
           </div>
         )}
 
-        <div className="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
-          {[
-            { icon: "📋", title: "ใบเสนอราคา", desc: "ออกใบเสนอราคาได้ทันที" },
-            { icon: "🧾", title: "ใบกำกับภาษี", desc: "รองรับนิติบุคคล VAT 7%" },
-            { icon: "💳", title: "วงเงินเครดิต", desc: "สำหรับองค์กรที่ผ่านการอนุมัติ" },
-            { icon: "🛠️", title: "After Sale", desc: "ทีมช่างผู้เชี่ยวชาญพร้อมให้บริการ" },
-          ].map((item) => (
-            <div
-              key={item.title}
-              className="rounded-xl border border-white/10 bg-white/5 p-4 text-center"
+        {/* Bottom CTA */}
+        <div className="mt-10 flex flex-col items-center justify-between gap-6 rounded-2xl bg-slate-900 p-8 lg:flex-row">
+          <div className="text-center lg:text-left">
+            <h3 className="mb-1 text-xl font-bold text-white">
+              ต้องการราคาพิเศษสำหรับองค์กร?
+            </h3>
+            <p className="text-sm text-slate-400">
+              ทีมผู้เชี่ยวชาญพร้อมให้คำปรึกษา พร้อมออกใบเสนอราคาและวางระบบให้ครบ
+            </p>
+          </div>
+          <div className="flex shrink-0 flex-wrap justify-center gap-3">
+            <Link
+              to="/"
+              search={{ category: "Network" } as never}
+              className="rounded-xl bg-white px-6 py-3 text-sm font-bold text-slate-900 transition-colors hover:bg-slate-100"
             >
-              <div className="mb-2 text-2xl">{item.icon}</div>
-              <div className="text-sm font-bold text-white">{item.title}</div>
-              <div className="mt-1 text-xs text-slate-400">{item.desc}</div>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-8 flex flex-wrap justify-center gap-4">
-          <Link
-            to="/"
-            search={{ category: "Network" } as never}
-            className="rounded-full bg-blue-600 px-8 py-3 font-bold text-white transition-all hover:bg-blue-500"
-          >
-            ดูสินค้า Corporate ทั้งหมด →
-          </Link>
-          <Link
-            to="/credit-application"
-            className="rounded-full border border-white/30 px-8 py-3 font-medium text-white transition-all hover:bg-white/10"
-          >
-            💳 สมัครวงเงินเครดิต B2B
-          </Link>
+              ดูสินค้าทั้งหมด →
+            </Link>
+            <Link
+              to="/credit-application"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-blue-500"
+            >
+              <CreditCard className="h-4 w-4" />
+              สมัครวงเงินเครดิต
+            </Link>
+          </div>
         </div>
       </div>
     </section>
