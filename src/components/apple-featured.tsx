@@ -23,12 +23,12 @@ type Row = {
 };
 
 const TABS = [
-  { key: "all",         label: "ทั้งหมด",     pattern: null },
-  { key: "iPhone",      label: "iPhone",      pattern: "%iPhone%" },
-  { key: "MacBook",     label: "MacBook",     pattern: "%MacBook%" },
-  { key: "iPad",        label: "iPad",        pattern: "%iPad%" },
-  { key: "Mac",         label: "Mac",         pattern: "%iMac%,%Mac Mini%,%Mac Studio%" },
-  { key: "Accessories", label: "Accessories", pattern: "%AirPods%,%Watch%,%HomePod%,%Magic %,%Apple Pencil%" },
+  { key: "all",        label: "ทั้งหมด",  pattern: null },
+  { key: "iPhone",     label: "iPhone",   pattern: "%iPhone%" },
+  { key: "MacBook",    label: "MacBook",  pattern: "%MacBook%" },
+  { key: "iPad",       label: "iPad",     pattern: "%iPad%" },
+  { key: "Mac",        label: "Mac",      pattern: "%iMac%,%Mac Mini%,%Mac Studio%" },
+  { key: "AppleWatch", label: "Apple Watch", pattern: "%Watch%" },
 ] as const;
 
 export function AppleFeatured() {
