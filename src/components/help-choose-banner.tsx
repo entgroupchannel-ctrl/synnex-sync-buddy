@@ -158,20 +158,32 @@ export function HelpChooseBanner({
           </div>
         </div>
         <div className="shrink-0">
-          <Button
-            onClick={() => setOpen(true)}
-            size="lg"
-            className="w-full bg-[color:var(--brand-green)] font-bold text-white hover:brightness-110 lg:w-auto"
-          >
-            <Send className="mr-2 h-4 w-4" /> ให้เราติดต่อกลับ
-          </Button>
-          <p className="mt-2 text-center text-[11px] text-white/70">กรอกชื่อ · เบอร์ · LINE · อีเมล</p>
+        <div className="flex shrink-0 flex-col items-center gap-3 lg:flex-row">
+          <img
+            src={supportTeam}
+            alt="ทีมงานฝ่ายบริการลูกค้า ENT Group พร้อมให้คำปรึกษา"
+            loading="lazy"
+            width={1536}
+            height={768}
+            className="hidden h-32 w-56 rounded-xl object-cover ring-2 ring-white/20 sm:block lg:h-36 lg:w-64"
+          />
+          <div className="w-full lg:w-auto">
+            <Button
+              onClick={() => setOpen(true)}
+              size="lg"
+              className="w-full bg-[color:var(--brand-green)] font-bold text-white hover:brightness-110 lg:w-auto"
+            >
+              <Send className="mr-2 h-4 w-4" /> ให้เราติดต่อกลับ
+            </Button>
+            <p className="mt-2 text-center text-[11px] text-white/70">กรอกชื่อ · เบอร์ · LINE · อีเมล</p>
+          </div>
         </div>
       </div>
       <HelpChooseDialog open={open} onOpenChange={setOpen} category={category} />
     </section>
   );
 }
+
 
 /** การ์ดแบบแทรกกลางกริดสินค้า */
 export function HelpChooseInlineCard({ category }: { category?: string | null }) {
