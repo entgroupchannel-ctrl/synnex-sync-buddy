@@ -11,6 +11,8 @@ type Props = {
   loading?: "eager" | "lazy";
   category?: string | null;
   productName?: string | null;
+  ramGeneration?: string | null;
+  subcategory?: string | null;
 };
 
 function pickIcon(category?: string | null, name?: string | null): { Icon: LucideIcon; color: string } {
