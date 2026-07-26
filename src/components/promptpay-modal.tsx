@@ -1,3 +1,4 @@
+import { LineQrDialog } from "@/components/line-qr-dialog";
 import { useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { CheckCircle2, Copy, CreditCard, Landmark, Loader2, Timer, X } from "lucide-react";
