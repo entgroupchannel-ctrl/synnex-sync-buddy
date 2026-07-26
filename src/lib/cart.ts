@@ -211,6 +211,20 @@ export const CATEGORIES = [
   "Speaker & Audio",
 ] as const;
 
+/** หมวดย่อยของแต่ละหมวดหลัก — คีย์ต้องตรงกับค่าใน synnex_products.category */
+export const SUBCATEGORIES: Record<string, string[]> = {
+  RAM: ["RAM Desktop", "RAM Notebook"],
+};
+
+/** ป้ายชื่อสั้นสำหรับแสดงบนเมนู */
+export const SUBCATEGORY_LABELS: Record<string, string> = {
+  "RAM Desktop": "แรมคอมตั้งโต๊ะ",
+  "RAM Notebook": "แรมโน้ตบุ๊ก",
+};
+
+/** รุ่นแรมเรียงจากใหม่ไปเก่า ใช้ทำตัวกรองและ badge */
+export const RAM_GENERATIONS = ["DDR5", "DDR4", "DDR3L", "DDR3", "DDR2"] as const;
+
 export function detectCategory(name: string | null | undefined): string {
   const n = (name || "").toLowerCase();
   if (/(notebook|laptop|\bnb\b)/i.test(n)) return "Notebook";
