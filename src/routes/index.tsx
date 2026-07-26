@@ -78,6 +78,7 @@ import { ConferenceBrief } from "@/components/conference-explainer";
 import { CctvBrief } from "@/components/cctv-explainer";
 import { SolarBrief } from "@/components/solar-explainer";
 import { ComputerSetBrief } from "@/components/computer-set-explainer";
+import { WishlistButton } from "@/components/wishlist-button";
 
 import { ComputerSetBanner } from "@/components/computer-set-banner";
 
@@ -1348,7 +1349,8 @@ function HomePage() {
                 
                 const priced = getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null; tier_price_guest?: number | null; tier_price_b2c?: number | null; tier_price_b2c_silver?: number | null; tier_price_b2c_gold?: number | null; tier_price_b2c_vip?: number | null; tier_price_b2b?: number | null; tier_price_b2b_silver?: number | null; tier_price_b2b_gold?: number | null }, tier) != null && !!p.price_approved;
                 return (
-                  <div key={p.id} className="flex gap-4 rounded-lg border bg-white p-3 transition hover:shadow-md">
+                  <div key={p.id} className="relative flex gap-4 rounded-lg border bg-white p-3 transition hover:shadow-md">
+                    <div className="absolute right-2 top-2 z-10"><WishlistButton productId={p.id} productName={p.name} size="sm" /></div>
                     <Link to="/product/$slug" params={{ slug }} className="grid h-28 w-28 shrink-0 place-items-center rounded-md bg-white">
                       <ProductImage src={p.image_url} alt={p.name ?? p.sku}
                       category={p.category as string | null}
@@ -1449,6 +1451,7 @@ function HomePage() {
                         </div>
                       </>
                     )}
+                    <div className="absolute right-2 top-11 z-20"><WishlistButton productId={p.id} productName={p.name} size="sm" /></div>
                     <Link to="/product/$slug" params={{ slug }} className="grid aspect-square place-items-center bg-white p-3">
                       <ProductImage
                         src={p.image_url}

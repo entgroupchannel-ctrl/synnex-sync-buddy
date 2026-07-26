@@ -33,6 +33,7 @@ import { displayPrice, getSellingPrice, priceFmt, useCustomerTier } from "@/lib/
 import { triggerAuthPrompt, useSupabaseUser } from "@/lib/auth-sheet";
 import { useCart } from "@/lib/cart";
 import { useLanguage } from "@/lib/i18n";
+import { WishlistButton } from "@/components/wishlist-button";
 import { ProductImage } from "@/components/product-image";
 import { SaleBadge, UrgencyIndicator } from "@/components/sale-badge";
 import { getProductBadge } from "@/lib/product-badge";
@@ -367,6 +368,7 @@ export function TodaysBestDeals() {
                     <SaleBadge type={badge} />
                   </div>
                 )}
+                <div className="absolute right-2 top-2 z-20"><WishlistButton productId={p.id} productName={p.name} size="sm" /></div>
                 <Link to="/product/$slug" params={{ slug }} className="grid h-32 w-36 shrink-0 place-items-center bg-white p-2 lg:h-40 lg:w-full">
                   <ProductImage src={p.image_url} alt={p.name ?? p.sku}
                       category={p.category as string | null}
@@ -457,6 +459,7 @@ export function PopularNotebooks() {
                     <SaleBadge type={badge} />
                   </div>
                 )}
+                <div className="absolute right-2 top-2 z-20"><WishlistButton productId={p.id} productName={p.name} size="sm" /></div>
                 <Link to="/product/$slug" params={{ slug }} className="grid aspect-square place-items-center bg-white p-3">
                   <ProductImage src={p.image_url} alt={p.name ?? p.sku}
                       category={p.category as string | null}
@@ -1188,7 +1191,9 @@ function CategoryGridCard({ p }: { p: ProductRow }) {
           distributor={(p as { distributor?: string | null }).distributor}
         />
       </div>
+      <div className="absolute right-2 top-11 z-20"><WishlistButton productId={p.id} productName={p.name} size="sm" /></div>
       <Link to="/product/$slug" params={{ slug }} className="grid aspect-square place-items-center bg-white p-3">
+
         <ProductImage
           src={p.image_url}
           alt={p.name ?? p.sku}
