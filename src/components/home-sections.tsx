@@ -1317,9 +1317,34 @@ export function ComponentsShowcase() {
         .in("category", ["Components", "RAM"])
         .eq("price_approved", true)
         .gt("selling_price", 0)
-        .order("selling_price", { ascending: true })
-        .limit(10);
-      return (data ?? []) as ProductRow[];
+        .limit(80);
+
+      const rows = (data ?? []) as ProductRow[];
+
+      // จัดกลุ่มตามประเภทสินค้าคร่าวๆ จากชื่อ กันไม่ให้ของถูกประเภทเดียวยึดพื้นที่ทั้งหมด
+      const buckets: Record<string, ProductRow[]> = { cpu: [], ram: [], mainboard: [], other: [] };
+      for (const p of rows) {
+        const n = (p.name ?? "").toLowerCase();
+        if (/ryzen|core i\d|core ultra|threadripper/.test(n)) buckets.cpu.push(p);
+        else if (/ddr\d|\bram\b/.test(n)) buckets.ram.push(p);
+        else if (/mainboard|mobo/.test(n)) buckets.mainboard.push(p);
+        else buckets.other.push(p);
+      }
+      // สุ่มลำดับในแต่ละกลุ่มก่อน กันได้ของราคาถูกสุดซ้ำหน้าเดิมทุกครั้ง
+      Object.values(buckets).forEach((arr) => arr.sort(() => Math.random() - 0.5));
+
+      // หยิบวนทีละกลุ่มจนครบ 10 ชิ้น ให้กระจายทุกประเภทเท่าที่มีของ
+      const picked: ProductRow[] = [];
+      const keys = Object.keys(buckets);
+      let i = 0;
+      while (picked.length < 10 && keys.some((k) => buckets[k].length > 0)) {
+        const k = keys[i % keys.length];
+        const item = buckets[k].shift();
+        if (item) picked.push(item);
+        i++;
+      }
+      // สลับลำดับการแสดงผลสุดท้ายอีกที ไม่ให้เรียงเป็นกลุ่มๆ ติดกัน
+      return picked.sort(() => Math.random() - 0.5);
     },
     staleTime: 5 * 60_000,
   });
