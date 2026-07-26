@@ -211,7 +211,6 @@ export function TechHelpBanner({
   productName?: string | null;
 }) {
   const [open, setOpen] = useState(false);
-  const [lineOpen, setLineOpen] = useState(false);
   const profile = category ? PROFILES[category] : undefined;
   if (!profile) return null;
 
@@ -238,13 +237,14 @@ export function TechHelpBanner({
               >
                 <Phone className="h-3.5 w-3.5" /> {PHONE}
               </a>
-              <button
-                type="button"
-                onClick={() => setLineOpen(true)}
-                className="inline-flex items-center gap-1.5 rounded-md border border-green-500 px-3 py-1.5 text-xs font-semibold text-green-700 hover:bg-green-50"
-              >
-                <MessageCircle className="h-3.5 w-3.5" /> LINE @entgroup
-              </button>
+              <LineQrDialog>
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-1.5 rounded-md border border-green-500 px-3 py-1.5 text-xs font-semibold text-green-700 hover:bg-green-50"
+                >
+                  <MessageCircle className="h-3.5 w-3.5" /> LINE @entgroup
+                </button>
+              </LineQrDialog>
               <a
                 href={`mailto:${EMAIL}`}
                 className="inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
@@ -269,7 +269,6 @@ export function TechHelpBanner({
         topic={profile.topic}
         productName={productName}
       />
-      <LineQrDialog open={lineOpen} onOpenChange={setLineOpen} />
     </>
   );
 }
