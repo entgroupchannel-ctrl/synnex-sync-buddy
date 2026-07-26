@@ -99,17 +99,28 @@ const CPU_IMAGES = [
   "/cpu-placeholders/cpu-2.png",
   "/cpu-placeholders/cpu-3.png",
   "/cpu-placeholders/cpu-4.png",
+  "/cpu-placeholders/cpu-5.png",
+  "/cpu-placeholders/cpu-6.png",
+  "/cpu-placeholders/cpu-7.png",
 ];
+
+/** ภาพกล่อง Ryzen 5 โดยเฉพาะ */
+const RYZEN5_IMAGES = [CPU_IMAGES[4], CPU_IMAGES[5], CPU_IMAGES[6]];
+/** ภาพ AMD ทั่วไป (Ryzen 7/9, Athlon ฯลฯ) */
+const AMD_IMAGES = [CPU_IMAGES[0], CPU_IMAGES[1], CPU_IMAGES[6]];
 
 export function cpuPlaceholder(name?: string | null): string {
   const n = (name ?? "").toUpperCase();
   let hash = 0;
   for (let i = 0; i < n.length; i++) hash = (hash * 31 + n.charCodeAt(i)) % 100000;
-  // AMD → สลับกล่อง Ryzen สองแบบ เพื่อไม่ให้กริดซ้ำกันทั้งหน้า
-  if (/AMD|RYZEN|ATHLON|THREADRIPPER/.test(n)) return [CPU_IMAGES[0], CPU_IMAGES[1]][hash % 2];
+  // Ryzen 5 → ชุดภาพเฉพาะ 3 แบบ
+  if (/RYZEN\s*5|R5\b/.test(n)) return RYZEN5_IMAGES[hash % RYZEN5_IMAGES.length];
+  // AMD อื่น ๆ → สลับหลายแบบ เพื่อไม่ให้กริดซ้ำกันทั้งหน้า
+  if (/AMD|RYZEN|ATHLON|THREADRIPPER/.test(n)) return AMD_IMAGES[hash % AMD_IMAGES.length];
   if (/INTEL|CORE I|PENTIUM|CELERON|ULTRA|XEON/.test(n)) return CPU_IMAGES[3];
   return CPU_IMAGES[2];
 }
+
 
 
 export function isCpuProduct(category?: string | null, subcategory?: string | null, name?: string | null) {
