@@ -467,6 +467,7 @@ function ProductDetail() {
                   </button>
                 </div>
               </div>
+              <EdgeAiExplainer category={p.category as string | null | undefined} name={p.name} description={p.description} />
             </div>
 
             <div className="flex flex-col">
