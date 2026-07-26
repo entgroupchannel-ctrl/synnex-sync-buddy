@@ -44,7 +44,7 @@ import {
 } from "@/lib/pricing-helpers";
 import { CATEGORIES } from "@/lib/cart";
 import { logAudit, logAuditBulk, newSessionId } from "@/lib/pricing-audit";
-import { listPricingProducts } from "@/lib/pricing.functions";
+import { exportPricingProducts, getProductsForBulk, listPricingProducts } from "@/lib/pricing.functions";
 
 
 const LS_KEY = "ent_pricing_v2";
@@ -116,21 +116,6 @@ const SORT_OPTIONS: Array<[string, string]> = [
   ["sku_desc", "SKU Z → A"],
 ];
 
-const sortMap: Record<string, { col: string; asc: boolean }> = {
-  sku_asc: { col: "sku", asc: true },
-  sku_desc: { col: "sku", asc: false },
-  name_asc: { col: "name", asc: true },
-  name_desc: { col: "name", asc: false },
-  cost_asc: { col: "cost_price", asc: true },
-  cost_desc: { col: "cost_price", asc: false },
-  markup_asc: { col: "markup_override", asc: true },
-  markup_desc: { col: "markup_override", asc: false },
-  selling_asc: { col: "selling_price", asc: true },
-  selling_desc: { col: "selling_price", asc: false },
-  status_pending: { col: "price_approved", asc: true },
-  status_approved: { col: "price_approved", asc: false },
-  updated_desc: { col: "updated_at", asc: false },
-};
 
 function PricingProductsPage() {
   const search = Route.useSearch();
@@ -261,7 +246,7 @@ function PricingProductsPage() {
     queryFn: async () => {
       const s = search.q.trim().replace(/[%,]/g, "");
       const mk = (dist: string | null) => {
-        let qq = supabase.from("synnex_products").select("*", { count: "exact", head: true });
+        let qq = supabase.from("synnex_products").select("id", { count: "exact", head: true });
         if (dist) qq = qq.eq("distributor", dist);
         if (s) qq = qq.or(`sku.ilike.%${s}%,name.ilike.%${s}%`);
         if (search.category !== "all") qq = qq.eq("category", search.category);
@@ -281,7 +266,7 @@ function PricingProductsPage() {
     queryFn: async () => {
       const s = search.q.trim().replace(/[%,]/g, "");
       const mk = () => {
-        let qq = supabase.from("synnex_products").select("*", { count: "exact", head: true });
+        let qq = supabase.from("synnex_products").select("id", { count: "exact", head: true });
         if (s) qq = qq.or(`sku.ilike.%${s}%,name.ilike.%${s}%`);
         if (search.distributor !== "all") qq = qq.eq("distributor", search.distributor);
         if (search.category !== "all") qq = qq.eq("category", search.category);
@@ -446,11 +431,7 @@ function PricingProductsPage() {
       const auditRows: Parameters<typeof logAuditBulk>[0] = [];
       setBulkProgress({ done: 0, total: ids.length });
       for (const chunk of chunks) {
-        const { data, error } = await supabase
-          .from("synnex_products")
-          .select("id, sku, name, cost_price, price, selling_price, markup_override")
-          .in("id", chunk);
-        if (error) throw error;
+        const data = await getProductsForBulk({ data: { ids: chunk } });
         for (const row of data ?? []) {
           const r = row as {
             id: string;
@@ -556,46 +537,19 @@ function PricingProductsPage() {
       toast.error("Reset ไม่สำเร็จ", { description: e.message, duration: Infinity, closeButton: true }),
   });
 
-  // Build the same filtered query used for the grid, without .range() — for CSV export.
-  const buildFilteredQuery = () => {
-    const so = sortMap[search.sort] ?? sortMap.sku_asc;
-    let qq = supabase
-      .from("synnex_products")
-      .select(
-        "sku, name, brand, category, distributor, cost_price, price, selling_price, markup_override, price_approved, updated_at",
-        { count: "exact" },
-      )
-      .order(so.col, { ascending: so.asc, nullsFirst: false });
-    const s = search.q.trim().replace(/[%,]/g, "");
-    if (s) qq = qq.or(`sku.ilike.%${s}%,name.ilike.%${s}%`);
-    if (search.distributor !== "all") qq = qq.eq("distributor", search.distributor);
-    if (search.category !== "all") qq = qq.eq("category", search.category);
-    if (selectedBrands.length > 0) qq = qq.in("brand", selectedBrands);
-    if (search.status === "unapproved") qq = qq.or("price_approved.eq.false,selling_price.is.null");
-    else if (search.status === "zero") qq = qq.or("selling_price.is.null,selling_price.eq.0");
-    else if (search.status === "approved") qq = qq.eq("price_approved", true);
-    return qq;
-  };
-
   const runExport = async () => {
     setExporting(true);
     try {
-      // Paginate through the filtered set with .range() to avoid the 1000-row default cap.
-      const CHUNK = 1000;
-      let start = 0;
-      const all: Array<Record<string, unknown>> = [];
-      // First call also returns count
-      const first = await buildFilteredQuery().range(start, start + CHUNK - 1);
-      if (first.error) throw first.error;
-      const total = first.count ?? (first.data?.length ?? 0);
-      for (const row of first.data ?? []) all.push(row as Record<string, unknown>);
-      start += CHUNK;
-      while (start < total) {
-        const r = await buildFilteredQuery().range(start, start + CHUNK - 1);
-        if (r.error) throw r.error;
-        for (const row of r.data ?? []) all.push(row as Record<string, unknown>);
-        start += CHUNK;
-      }
+      const all = (await exportPricingProducts({
+        data: {
+          q: search.q,
+          distributor: search.distributor,
+          category: search.category,
+          status: search.status,
+          brands: selectedBrands,
+          sort: search.sort,
+        },
+      })) as Array<Record<string, unknown>>;
       const headers = [
         "SKU", "ชื่อสินค้า", "แบรนด์", "Distributor", "หมวดหมู่",
         "ราคาต้นทุน", "Markup%", "ราคาขาย", "สถานะ", "อัปเดตล่าสุด",

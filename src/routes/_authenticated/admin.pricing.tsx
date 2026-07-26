@@ -72,7 +72,7 @@ function PricingPage() {
     queryFn: async () => {
       const { count } = await supabase
         .from("synnex_products")
-        .select("*", { count: "exact", head: true })
+        .select("id", { count: "exact", head: true })
         .or("price_approved.eq.false,selling_price.is.null");
       return count ?? 0;
     },
