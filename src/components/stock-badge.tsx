@@ -25,7 +25,10 @@ export function getStockBadge(
 ):
   | { label: string; tone: keyof typeof styles }
   | null {
-  if (fulfillmentType === "by_order") return { label: "By Order ~30 วัน", tone: "blue" };
+  if (fulfillmentType === "by_order") {
+    const isAiComputer = (distributor ?? "").toUpperCase() === "PLINK-AI";
+    return { label: isAiComputer ? "By Order ~15-20 วัน" : "By Order ~30 วัน", tone: "blue" };
+  }
   const q = stockQty ?? 0;
   // Out of stock explicit
   if (stockStatus === "สินค้าหมด") return { label: "สินค้าหมด", tone: "gray" };

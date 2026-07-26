@@ -1220,7 +1220,7 @@ function HomePage() {
                       ) : (
                         <span className="text-sm text-gray-400">ติดต่อสอบถาม</span>
                       )}
-                      {byOrder && <div className="text-[11px] text-blue-700">⏱ รับสินค้าภายใน 30 วัน</div>}
+                      {byOrder && <div className="text-[11px] text-blue-700">⏱ รับสินค้าภายใน {p.distributor === "PLINK-AI" ? "15-20" : "30"} วัน</div>}
                       {priced && !byOrder && <DeliveryHint category={p.category} name={p.name} price={getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null; min_tier_price?: number | null }, tier)} />}
                       {priced ? (
                         available ? (
@@ -1300,7 +1300,7 @@ function HomePage() {
                           <div className="text-sm text-gray-400">ติดต่อสอบถาม</div>
                         )}
                         {byOrder ? (
-                          <div className="mt-1 text-[11px] font-medium text-blue-700">⏱ รับสินค้าภายใน 30 วัน</div>
+                          <div className="mt-1 text-[11px] font-medium text-blue-700">⏱ รับสินค้าภายใน {p.distributor === "PLINK-AI" ? "15-20" : "30"} วัน</div>
                         ) : (
                           <div className="mt-1 flex items-center gap-1.5">
                             <span className={`inline-block h-2 w-2 rounded-full ${ready ? "bg-green-500" : "bg-red-500"}`} />
