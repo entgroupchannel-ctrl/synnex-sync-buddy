@@ -20,6 +20,7 @@ import {
   Wind,
   Zap,
   Volume2,
+  Video,
 } from "lucide-react";
 
 // lucide-react has no Apple glyph — use the official-shaped SVG.
@@ -50,6 +51,7 @@ export const CATEGORY_ICONS: Record<string, ReactNode> = {
   "Solar & Energy": <Sun className={ic} />,
   "Smart Life": <Home className={ic} />,
   "CCTV & Security": <Camera className={ic} />,
+  "Webcam & Conference": <Video className={ic} />,
   "Speaker & Audio": <Volume2 className={ic} />,
 };
 
