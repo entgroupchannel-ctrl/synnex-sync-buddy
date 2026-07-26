@@ -24,6 +24,7 @@ import { useDynamicSeo, getRobotsForCategory } from "@/lib/dynamic-seo";
 import { DeliveryHint } from "@/components/delivery-info";
 import { StockBadge } from "@/components/stock-badge";
 import { WarrantyBadge } from "@/components/warranty-badge";
+import { RamBadge } from "@/components/ram-badge";
 import { DiscountBadgeRow } from "@/components/discount-badge";
 
 import { SpecTagsCompact } from "@/components/spec-tags";
