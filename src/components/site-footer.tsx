@@ -141,6 +141,56 @@ function PdpaSection() {
   );
 }
 
+function SecuritySection() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="mb-3 flex w-full items-center justify-between gap-2 text-left"
+      >
+        <span className="flex items-center gap-2">
+          <Lock className="h-4 w-4 text-[color:var(--brand-green)]" />
+          <span className="text-sm font-bold uppercase tracking-wide text-white">
+            มาตรฐานความปลอดภัย
+          </span>
+        </span>
+        <ChevronDown
+          className={`h-4 w-4 shrink-0 text-white/60 transition-transform ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+      <div className={`${open ? "block" : "hidden"} space-y-3`}>
+        <p className="text-[11px] leading-relaxed text-white/60">
+          โครงสร้างพื้นฐานและระบบรักษาความปลอดภัยอ้างอิงตามมาตรฐานของ Lovable และ Supabase
+        </p>
+        <div className="space-y-2.5">
+          {[
+            { icon: Lock, title: "HTTPS/TLS ทุกหน้า", desc: "เว็บไซต์โฮสต์บนแพลตฟอร์ม Lovable พร้อมเข้ารหัส TLS ตลอดเส้นทาง" },
+            { icon: Server, title: "ฐานข้อมูลบน Supabase", desc: "จัดเก็บข้อมูลบน Supabase ที่มีการเข้ารหัสขณะจัดเก็บและสำรองข้อมูลอัตโนมัติ" },
+            { icon: KeyRound, title: "การยืนยันตัวตนด้วย Supabase Auth", desc: "รหัสผ่านถูก hash ไม่เก็บเป็นข้อความธรรมดา รองรับการรีเซ็ตผ่านอีเมลที่ยืนยันแล้ว" },
+            { icon: EyeOff, title: "Row Level Security (RLS)", desc: "แยกสิทธิ์การเข้าถึงข้อมูลตามผู้ใช้ บัญชีหนึ่งเห็นได้เฉพาะคำสั่งซื้อของตนเอง" },
+            { icon: CreditCard, title: "ไม่เก็บเลขบัตรบนเซิร์ฟเวอร์", desc: "ชำระผ่าน PromptPay QR / โอนธนาคาร ระบบของเราไม่เก็บข้อมูลบัตร" },
+            { icon: FileCheck2, title: "ตรวจสอบฝั่งเซิร์ฟเวอร์", desc: "การเปลี่ยนสถานะชำระเงินและยอดคำสั่งซื้อต้องผ่านการตรวจสอบฝั่งเซิร์ฟเวอร์เท่านั้น" },
+          ].map((it) => (
+            <div key={it.title} className="flex items-start gap-2">
+              <it.icon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[color:var(--brand-green)]" />
+              <div>
+                <div className="text-[11px] font-semibold text-white">
+                  {it.title}
+                </div>
+                <div className="text-[11px] leading-relaxed text-white/55">
+                  {it.desc}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function FooterLink({
   to,
   href,
@@ -536,40 +586,8 @@ export function SiteFooter() {
             {/* PDPA — collapsible, collapsed by default */}
             <PdpaSection />
 
-            {/* Security */}
-            <div>
-              <div className="mb-3 flex items-center gap-2">
-                <Lock className="h-4 w-4 text-[color:var(--brand-green)]" />
-                <span className="text-sm font-bold uppercase tracking-wide text-white">
-                  มาตรฐานความปลอดภัย
-                </span>
-              </div>
-              <p className="mb-3 text-[11px] leading-relaxed text-white/60">
-                โครงสร้างพื้นฐานและระบบรักษาความปลอดภัยอ้างอิงตามมาตรฐานของ Lovable และ Supabase
-              </p>
-              <div className="space-y-2.5">
-                {[
-                  { icon: Lock, title: "HTTPS/TLS ทุกหน้า", desc: "เว็บไซต์โฮสต์บนแพลตฟอร์ม Lovable พร้อมเข้ารหัส TLS ตลอดเส้นทาง" },
-                  { icon: Server, title: "ฐานข้อมูลบน Supabase", desc: "จัดเก็บข้อมูลบน Supabase ที่มีการเข้ารหัสขณะจัดเก็บและสำรองข้อมูลอัตโนมัติ" },
-                  { icon: KeyRound, title: "การยืนยันตัวตนด้วย Supabase Auth", desc: "รหัสผ่านถูก hash ไม่เก็บเป็นข้อความธรรมดา รองรับการรีเซ็ตผ่านอีเมลที่ยืนยันแล้ว" },
-                  { icon: EyeOff, title: "Row Level Security (RLS)", desc: "แยกสิทธิ์การเข้าถึงข้อมูลตามผู้ใช้ บัญชีหนึ่งเห็นได้เฉพาะคำสั่งซื้อของตนเอง" },
-                  { icon: CreditCard, title: "ไม่เก็บเลขบัตรบนเซิร์ฟเวอร์", desc: "ชำระผ่าน PromptPay QR / โอนธนาคาร ระบบของเราไม่เก็บข้อมูลบัตร" },
-                  { icon: FileCheck2, title: "ตรวจสอบฝั่งเซิร์ฟเวอร์", desc: "การเปลี่ยนสถานะชำระเงินและยอดคำสั่งซื้อต้องผ่านการตรวจสอบฝั่งเซิร์ฟเวอร์เท่านั้น" },
-                ].map((it) => (
-                  <div key={it.title} className="flex items-start gap-2">
-                    <it.icon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[color:var(--brand-green)]" />
-                    <div>
-                      <div className="text-[11px] font-semibold text-white">
-                        {it.title}
-                      </div>
-                      <div className="text-[11px] leading-relaxed text-white/55">
-                        {it.desc}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+            {/* Security — collapsible, collapsed by default */}
+            <SecuritySection />
           </div>
         </div>
 
