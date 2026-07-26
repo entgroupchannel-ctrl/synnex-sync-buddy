@@ -11,6 +11,7 @@ import { ProductQrDialog } from "@/components/product-qr-dialog";
 import { toggleWishlist, isWishlisted } from "@/lib/wishlist";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { HelpChooseBanner } from "@/components/help-choose-banner";
 import { SpecTagsFull } from "@/components/spec-tags";
 import { hasSpecTags } from "@/lib/parse-spec";
 import { UsageInfoBox } from "@/components/usage-badge";
@@ -927,7 +928,7 @@ function ProductDetail() {
       </div>
 
       <div className="mx-auto max-w-7xl px-4 pb-10">
-        <HelpChooseBanner category={product?.category ?? null} />
+        <HelpChooseBanner category={p?.category ?? null} />
       </div>
 
       <SiteFooter />
