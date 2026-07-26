@@ -38,7 +38,7 @@ export function EdgeAiMegaMenu() {
       </Link>
       {open && (
         <div
-          className="absolute left-0 top-full z-50 w-[560px] rounded-xl bg-white p-5 text-slate-900 shadow-2xl ring-1 ring-slate-200"
+          className="absolute right-0 top-full z-50 w-[560px] rounded-xl bg-white p-5 text-slate-900 shadow-2xl ring-1 ring-slate-200"
           style={{ borderTop: "3px solid #10B981" }}
         >
           <Bot className="mb-3 h-5 w-5 text-[#10B981]" />
