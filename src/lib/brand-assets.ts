@@ -30,6 +30,26 @@ import EPSON from "@/assets/brands/EPSON.png.asset.json";
 import XIAOMI from "@/assets/brands/XIAOMI.png.asset.json";
 import UBIQUITI from "@/assets/brands/UBIQUITI.png.asset.json";
 
+import VIEWSONIC from "@/assets/brands/VIEWSONIC.png.asset.json";
+import ASROCK from "@/assets/brands/ASROCK.png.asset.json";
+import BROTHER from "@/assets/brands/BROTHER.png.asset.json";
+import JBL from "@/assets/brands/JBL.png.asset.json";
+import KASPERSKY from "@/assets/brands/KASPERSKY.png.asset.json";
+import TOSHIBA from "@/assets/brands/TOSHIBA.png.asset.json";
+import SYNOLOGY from "@/assets/brands/SYNOLOGY.png.asset.json";
+import QNAP from "@/assets/brands/QNAP.png.asset.json";
+import HYPERX from "@/assets/brands/HYPERX.png.asset.json";
+import COOLERMASTER from "@/assets/brands/COOLERMASTER.png.asset.json";
+import DEEPCOOL from "@/assets/brands/DEEPCOOL.png.asset.json";
+import NZXT from "@/assets/brands/NZXT.png.asset.json";
+import FUJITSU from "@/assets/brands/FUJITSU.png.asset.json";
+import SHARP from "@/assets/brands/SHARP.png.asset.json";
+import PANASONIC from "@/assets/brands/PANASONIC.png.asset.json";
+import SONY from "@/assets/brands/SONY.png.asset.json";
+import POLY from "@/assets/brands/POLY.png.asset.json";
+import FORTINET from "@/assets/brands/FORTINET.png.asset.json";
+import STEELSERIES from "@/assets/brands/STEELSERIES.png.asset.json";
+
 export const BRAND_LOGO_URLS: Record<string, string> = {
   ACER: ACER.url,
   APPLE: APPLE.url,
@@ -68,6 +88,30 @@ export const BRAND_LOGO_URLS: Record<string, string> = {
   "MI / XIAOMI": XIAOMI.url,
   UBIQUITI: UBIQUITI.url,
   UBNT: UBIQUITI.url,
+  VIEWSONIC: VIEWSONIC.url,
+  ASROCK: ASROCK.url,
+  BROTHER: BROTHER.url,
+  JBL: JBL.url,
+  KASPERSKY: KASPERSKY.url,
+  TOSHIBA: TOSHIBA.url,
+  SYNOLOGY: SYNOLOGY.url,
+  QNAP: QNAP.url,
+  HYPERX: HYPERX.url,
+  COOLERMASTER: COOLERMASTER.url,
+  DEEPCOOL: DEEPCOOL.url,
+  NZXT: NZXT.url,
+  FUJITSU: FUJITSU.url,
+  SHARP: SHARP.url,
+  PANASONIC: PANASONIC.url,
+  SONY: SONY.url,
+  POLY: POLY.url,
+  FORTINET: FORTINET.url,
+  STEELSERIES: STEELSERIES.url,
+  "COOLER MASTER": COOLERMASTER.url,
+  "VIEW SONIC": VIEWSONIC.url,
+  "AS ROCK": ASROCK.url,
+  "HYPER X": HYPERX.url,
+  "POLY / PLANTRONICS": POLY.url,
 };
 
 
