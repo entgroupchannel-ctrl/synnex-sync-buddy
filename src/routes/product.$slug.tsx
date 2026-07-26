@@ -215,17 +215,16 @@ function ProductDetail() {
     p?.category === "Smart Phone & Tablet" ||
     (p?.brand ?? "").toUpperCase() === "APPLE";
 
-  const images = p
-    ? (p.category === "Computer Set"
+  const images: string[] = !p
+    ? []
+    : p.category === "Computer Set"
       ? [computerSetPlaceholder(p.name)]
-      : [
-        p?.image_url,
-        ...(Array.isArray(p?.image_gallery) ? p?.image_gallery : []),
-      ].filter(Boolean) as string[]).filter(
-        (src, i) =>
-          i === 0 || !(hideSpecShots && /\/[5-8]\.jpg(?:\?.*)?$/i.test(src)),
-      ))
-    : [];
+      : ([p?.image_url, ...(Array.isArray(p?.image_gallery) ? p?.image_gallery : [])].filter(
+          Boolean,
+        ) as string[]).filter(
+          (src, i) => i === 0 || !(hideSpecShots && /\/[5-8]\.jpg(?:\?.*)?$/i.test(src)),
+        );
+
 
 
   useEffect(() => {
