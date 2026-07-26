@@ -460,42 +460,54 @@ export type Database = {
       distributor_contacts: {
         Row: {
           address: string | null
+          bank_accounts: Json | null
           company_name: string | null
           contact_email: string | null
           contact_name: string | null
           contact_phone: string | null
+          contacts: Json | null
           created_at: string
+          dealer_phone: string | null
           distributor: string
           id: string
           notes: string | null
           tax_id: string | null
           updated_at: string
+          website: string | null
         }
         Insert: {
           address?: string | null
+          bank_accounts?: Json | null
           company_name?: string | null
           contact_email?: string | null
           contact_name?: string | null
           contact_phone?: string | null
+          contacts?: Json | null
           created_at?: string
+          dealer_phone?: string | null
           distributor: string
           id?: string
           notes?: string | null
           tax_id?: string | null
           updated_at?: string
+          website?: string | null
         }
         Update: {
           address?: string | null
+          bank_accounts?: Json | null
           company_name?: string | null
           contact_email?: string | null
           contact_name?: string | null
           contact_phone?: string | null
+          contacts?: Json | null
           created_at?: string
+          dealer_phone?: string | null
           distributor?: string
           id?: string
           notes?: string | null
           tax_id?: string | null
           updated_at?: string
+          website?: string | null
         }
         Relationships: []
       }
@@ -1137,6 +1149,7 @@ export type Database = {
           markup_percent: number | null
           max_cost: number | null
           min_cost: number | null
+          min_profit: number | null
           rule_name: string | null
           rule_type: string | null
           target: string | null
@@ -1148,6 +1161,7 @@ export type Database = {
           markup_percent?: number | null
           max_cost?: number | null
           min_cost?: number | null
+          min_profit?: number | null
           rule_name?: string | null
           rule_type?: string | null
           target?: string | null
@@ -1159,6 +1173,7 @@ export type Database = {
           markup_percent?: number | null
           max_cost?: number | null
           min_cost?: number | null
+          min_profit?: number | null
           rule_name?: string | null
           rule_type?: string | null
           target?: string | null
@@ -2171,6 +2186,10 @@ export type Database = {
             }
             Returns: number
           }
+      calc_min_profit: {
+        Args: { p_brand: string; p_category: string; p_cost: number }
+        Returns: number
+      }
       calc_selling_price: {
         Args: {
           p_brand: string
