@@ -23,6 +23,17 @@ function pickIcon(category?: string | null, name?: string | null): { Icon: Lucid
   return { Icon: Package, color: "text-slate-300" };
 }
 
+function computerSetPlaceholder(name?: string | null): string {
+  const n = (name ?? "").toLowerCase();
+  if (/ryzen|amd/.test(n)) return "/case-placeholders/red-black.svg";
+  if (/intel|core (i|ultra)/.test(n)) {
+    let hash = 0;
+    for (let i = 0; i < n.length; i++) hash = (hash * 31 + n.charCodeAt(i)) % 1000;
+    return hash % 2 === 0 ? "/case-placeholders/black-rgb.svg" : "/case-placeholders/white-rgb.svg";
+  }
+  return "/case-placeholders/silver-minimal.svg";
+}
+
 export function ProductImage({
   src,
   alt = "",
@@ -38,6 +49,11 @@ export function ProductImage({
   useEffect(() => {
     setError(!src);
   }, [src]);
+
+  if (category === "Computer Set") {
+    const placeholder = computerSetPlaceholder(productName ?? alt);
+    return <img src={placeholder} alt={alt} loading={loading} className={className} />;
+  }
 
   if (error || !src) {
     const { Icon, color } = pickIcon(category, productName ?? alt);
