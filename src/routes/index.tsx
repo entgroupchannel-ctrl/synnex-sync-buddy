@@ -5,6 +5,9 @@ import { z } from "zod";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { supabase } from "@/integrations/supabase/client";
 import { PRODUCT_PUBLIC_COLUMNS } from "@/lib/product-columns";
+import { CompareCheckbox } from "@/components/compare-checkbox";
+import type { CompareItem } from "@/lib/compare-store";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
