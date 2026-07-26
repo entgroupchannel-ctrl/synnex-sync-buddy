@@ -40,7 +40,8 @@ export const insertOrderItems = createServerFn({ method: "POST" })
       return {
         order_id: it.order_id,
         product_sku: it.product_sku,
-        product_name: it.product_name,
+        product_name: it.product_name ?? it.product_sku,
+
         product_image_url: it.product_image_url,
         brand: m?.brand ?? null,
         category: m?.category ?? it.category ?? null,
