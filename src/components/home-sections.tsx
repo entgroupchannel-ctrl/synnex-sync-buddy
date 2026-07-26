@@ -1567,22 +1567,53 @@ export function SpeakerAudio() {
   const q = useQuery({
     queryKey: ["speaker-audio", tab],
     queryFn: async () => {
-      let qi = supabase
+      // แท็บเฉพาะ (JBL/Harman/Bluetooth/Hi-Fi) — กรองตรงตามเดิม ไม่ต้องสุ่ม เพราะลูกค้าเลือกเองแล้ว
+      if (tab !== "all") {
+        let qi = supabase
+          .from("synnex_products")
+          .select("*")
+          .eq("category", "Speaker & Audio")
+          .eq("price_approved", true)
+          .gt("selling_price", 0)
+          .order("selling_price", { ascending: true })
+          .limit(10);
+
+        if (tab === "jbl") qi = qi.eq("brand", "JBL");
+        else if (tab === "harman") qi = qi.eq("brand", "HARMAN");
+        else if (tab === "bluetooth") qi = qi.ilike("name", "%bluetooth%");
+        else if (tab === "hifi") qi = qi.or("name.ilike.%hi-end%,name.ilike.%hi-fi%");
+
+        const { data } = await qi;
+        return (data ?? []) as ProductRow[];
+      }
+
+      // แท็บ "ทั้งหมด" — ดึงมาเยอะกว่าเดิม แล้วสุ่มกระจายให้ครบทุกยี่ห้อ ไม่ให้ยี่ห้อถูกสุดยึดที่หมด
+      const { data } = await supabase
         .from("synnex_products")
         .select("*")
         .eq("category", "Speaker & Audio")
         .eq("price_approved", true)
         .gt("selling_price", 0)
-        .order("selling_price", { ascending: true })
-        .limit(10);
+        .limit(60);
 
-      if (tab === "jbl") qi = qi.eq("brand", "JBL");
-      else if (tab === "harman") qi = qi.eq("brand", "HARMAN");
-      else if (tab === "bluetooth") qi = qi.ilike("name", "%bluetooth%");
-      else if (tab === "hifi") qi = qi.or("name.ilike.%hi-end%,name.ilike.%hi-fi%");
+      const rows = (data ?? []) as ProductRow[];
+      const byBrand: Record<string, ProductRow[]> = {};
+      for (const p of rows) {
+        const key = (p.brand ?? "อื่นๆ").toUpperCase();
+        (byBrand[key] ??= []).push(p);
+      }
+      Object.values(byBrand).forEach((arr) => arr.sort(() => Math.random() - 0.5));
 
-      const { data } = await qi;
-      return (data ?? []) as ProductRow[];
+      const picked: ProductRow[] = [];
+      const brands = Object.keys(byBrand);
+      let i = 0;
+      while (picked.length < 10 && brands.some((b) => byBrand[b].length > 0)) {
+        const b = brands[i % brands.length];
+        const item = byBrand[b].shift();
+        if (item) picked.push(item);
+        i++;
+      }
+      return picked.sort(() => Math.random() - 0.5);
     },
     staleTime: 5 * 60_000,
   });
