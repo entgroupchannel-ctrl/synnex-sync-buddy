@@ -95,19 +95,18 @@ const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "application/pdf
 function OrderConfirm() {
   const { orderNumber } = Route.useParams();
 
+  const fetchOrder = useServerFn(getOrderConfirmation);
+  const submitSlip = useServerFn(submitPaymentSlip);
+
   const q = useQuery({
     queryKey: ["order-by-number", orderNumber],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("orders")
-        .select("*, order_items(*)")
-        .eq("order_number", orderNumber)
-        .maybeSingle();
-      if (error) throw error;
+      const data = await fetchOrder({ data: { orderNumber } });
       if (!data) throw notFound();
       return data as unknown as OrderRow;
     },
   });
+
 
   const order = q.data;
 
