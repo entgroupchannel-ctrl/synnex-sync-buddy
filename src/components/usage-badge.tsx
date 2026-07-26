@@ -500,14 +500,14 @@ function ProfileDetail({ p }: { p: UsageProfile }) {
             >
               sales@entgroup.co.th
             </a>
-            <a
-              href="https://line.me/R/ti/p/@entgroup"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center rounded border border-emerald-300 bg-white px-2.5 py-1 text-[12px] font-semibold text-emerald-700 hover:bg-emerald-50"
-            >
-              LINE @entgroup
-            </a>
+            <LineQrDialog>
+              <button
+                type="button"
+                className="inline-flex items-center rounded border border-emerald-300 bg-white px-2.5 py-1 text-[12px] font-semibold text-emerald-700 hover:bg-emerald-50"
+              >
+                LINE @entgroup
+              </button>
+            </LineQrDialog>
           </div>
         </div>
       )}
