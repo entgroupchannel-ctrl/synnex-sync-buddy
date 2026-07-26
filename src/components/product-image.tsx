@@ -64,6 +64,8 @@ export function ProductImage({
   loading = "lazy",
   category,
   productName,
+  ramGeneration,
+  subcategory,
 }: Props) {
   const [error, setError] = useState(!src);
 
@@ -74,6 +76,17 @@ export function ProductImage({
   if (category === "Computer Set") {
     const placeholder = computerSetPlaceholder(productName ?? alt);
     return <img src={placeholder} alt={alt} loading={loading} className={className} />;
+  }
+
+  if (category === "RAM" && (error || !src)) {
+    return (
+      <img
+        src={ramPlaceholder(ramGeneration, subcategory)}
+        alt={alt}
+        loading={loading}
+        className={className}
+      />
+    );
   }
 
   if (error || !src) {
