@@ -1280,9 +1280,26 @@ export function StorageDeals() {
         .eq("price_approved", true)
         .eq("stock_status", "พร้อมจัดส่ง")
         .gt("selling_price", 0)
-        .order("selling_price", { ascending: true })
-        .limit(10);
-      return (data ?? []) as ProductRow[];
+        .limit(60);
+
+      const rows = (data ?? []) as ProductRow[];
+      const byBrand: Record<string, ProductRow[]> = {};
+      for (const p of rows) {
+        const key = (p.brand ?? "อื่นๆ").toUpperCase();
+        (byBrand[key] ??= []).push(p);
+      }
+      Object.values(byBrand).forEach((arr) => arr.sort(() => Math.random() - 0.5));
+
+      const picked: ProductRow[] = [];
+      const brands = Object.keys(byBrand);
+      let i = 0;
+      while (picked.length < 10 && brands.some((b) => byBrand[b].length > 0)) {
+        const b = brands[i % brands.length];
+        const item = byBrand[b].shift();
+        if (item) picked.push(item);
+        i++;
+      }
+      return picked.sort(() => Math.random() - 0.5);
     },
     staleTime: 5 * 60_000,
   });
