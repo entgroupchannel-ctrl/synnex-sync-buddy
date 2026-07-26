@@ -44,6 +44,8 @@ import {
 } from "@/lib/pricing-helpers";
 import { CATEGORIES } from "@/lib/cart";
 import { logAudit, logAuditBulk, newSessionId } from "@/lib/pricing-audit";
+import { listPricingProducts } from "@/lib/pricing.functions";
+
 
 const LS_KEY = "ent_pricing_v2";
 const PAGE_SIZE_OPTIONS = [25, 50, 100, 200] as const;
