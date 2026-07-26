@@ -469,7 +469,7 @@ export function SiteFooter() {
           {/* Column 3 — About */}
           <Column title="เกี่ยวกับ ENT Group">
             <ul className="space-y-2">
-              <li><FooterLink href="https://entgroup.co.th/about">เกี่ยวกับเรา</FooterLink></li>
+              <li><FooterLink to="/about">เกี่ยวกับเรา</FooterLink></li>
               <li><FooterLink href="https://entgroup.co.th">ผลิตภัณฑ์ ENT Group</FooterLink></li>
               <li><FooterLink to="/credit-application">💳 วงเงินเครดิต B2B</FooterLink></li>
               <li><FooterLink to="/?category=Network">🏢 Corporate Solutions</FooterLink></li>
