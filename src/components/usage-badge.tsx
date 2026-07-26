@@ -1,12 +1,13 @@
-import { MemoryStick, Gamepad2, Briefcase, Video, Cpu, Monitor, Router, Server, Building2, BatteryCharging } from "lucide-react";
+import { MemoryStick, Gamepad2, Briefcase, Video, Cpu, Monitor, Router, Server, Building2, BatteryCharging, Cctv, HardDrive, Network, Siren } from "lucide-react";
 
 export type UsageProfile = {
   key: string;
   label: string;
   hint: string;
   cls: string;
-  icon: "game" | "office" | "creator" | "workstation" | "basic" | "router" | "server" | "building" | "battery" | "ram";
+  icon: "game" | "office" | "creator" | "workstation" | "basic" | "router" | "server" | "building" | "battery" | "ram" | "cctv" | "recorder" | "network" | "alarm";
 };
+
 
 const PROFILES: Record<string, UsageProfile> = {
   gaming_high: {
