@@ -50,7 +50,42 @@ import POLY from "@/assets/brands/POLY.png.asset.json";
 import FORTINET from "@/assets/brands/FORTINET.png.asset.json";
 import STEELSERIES from "@/assets/brands/STEELSERIES.png.asset.json";
 
+// โลโก้ทางการเพิ่มเติม (Wikimedia Commons SVG → PNG โปร่งใสความละเอียดสูง)
+import MICROSOFT from "@/assets/brands/MICROSOFT.png.asset.json";
+import GIGABYTE from "@/assets/brands/GIGABYTE.png.asset.json";
+import MARSHALL from "@/assets/brands/MARSHALL.png.asset.json";
+import DLINK from "@/assets/brands/DLINK.png.asset.json";
+import APC from "@/assets/brands/APC.png.asset.json";
+import SANDISK from "@/assets/brands/SANDISK.png.asset.json";
+import BLACKBERRY from "@/assets/brands/BLACKBERRY.png.asset.json";
+import AOC from "@/assets/brands/AOC.png.asset.json";
+import HYNIX from "@/assets/brands/HYNIX.png.asset.json";
+import HARMAN from "@/assets/brands/HARMAN.png.asset.json";
+import ADATA from "@/assets/brands/ADATA.png.asset.json";
+import LEXAR from "@/assets/brands/LEXAR.png.asset.json";
+import GARMIN from "@/assets/brands/GARMIN.png.asset.json";
+
 export const BRAND_LOGO_URLS: Record<string, string> = {
+  MICROSOFT: MICROSOFT.url,
+  GIGABYTE: GIGABYTE.url,
+  MARSHALL: MARSHALL.url,
+  DLINK: DLINK.url,
+  "D-LINK": DLINK.url,
+  APC: APC.url,
+  "APC BY SCHNEIDER ELECTRIC": APC.url,
+  SANDISK: SANDISK.url,
+  "SAN DISK": SANDISK.url,
+  BLACKBERRY: BLACKBERRY.url,
+  AOC: AOC.url,
+  HYNIX: HYNIX.url,
+  "SK HYNIX": HYNIX.url,
+  HARMAN: HARMAN.url,
+  "HARMAN KARDON": HARMAN.url,
+  ADATA: ADATA.url,
+  "A-DATA": ADATA.url,
+  LEXAR: LEXAR.url,
+  GARMIN: GARMIN.url,
+
   ACER: ACER.url,
   APPLE: APPLE.url,
   ASUS: ASUS.url,
