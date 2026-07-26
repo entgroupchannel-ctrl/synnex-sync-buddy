@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { UserPlus, CheckCircle2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { linkGuestOrderToAccount } from "@/lib/order-confirmation.functions";
 
 type Props = {
   orderId: string;
@@ -33,6 +35,7 @@ export function GuestSignupPrompt({ orderId, orderNumber, email, fullName, phone
   const [dismissed, setDismissed] = useState(false);
   const [done, setDone] = useState(false);
   const [emailExists, setEmailExists] = useState(false);
+  const linkOrder = useServerFn(linkGuestOrderToAccount);
 
   const mismatch = confirm.length > 0 && confirm !== password;
   const tooShort = password.length > 0 && password.length < 8;
@@ -72,10 +75,7 @@ export function GuestSignupPrompt({ orderId, orderNumber, email, fullName, phone
         toast.error("เกิดข้อผิดพลาด ลองอีกครั้ง");
         return;
       }
-      await supabase
-        .from("orders")
-        .update({ user_id: userId, customer_type: "b2c" })
-        .eq("id", orderId);
+      await linkOrder({ data: { orderNumber, userId } });
       await supabase.from("user_profiles").upsert({
         id: userId,
         user_type: "b2c",

@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { CheckCircle2, Loader2, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { bahtFmt } from "@/lib/order-helpers";
+import { getOrderPaymentStatus } from "@/lib/order-confirmation.functions";
 
 type Props = {
   orderId: string;
@@ -27,6 +29,7 @@ export function PromptPayQr({ orderId, orderNumber, amount, onPaid }: Props) {
   const [paid, setPaid] = useState(false);
   const [remaining, setRemaining] = useState<number>(15 * 60);
   const requested = useRef(false);
+  const checkPayment = useServerFn(getOrderPaymentStatus);
 
   const markPaid = () => {
     if (paid) return;
@@ -76,11 +79,7 @@ export function PromptPayQr({ orderId, orderNumber, amount, onPaid }: Props) {
   useEffect(() => {
     if (!charge || paid) return;
     const iv = setInterval(async () => {
-      const { data } = await supabase
-        .from("orders")
-        .select("payment_status")
-        .eq("id", orderId)
-        .maybeSingle();
+      const data = await checkPayment({ data: { orderId } });
       if (data?.payment_status === "paid") {
         clearInterval(iv);
         markPaid();
@@ -92,11 +91,7 @@ export function PromptPayQr({ orderId, orderNumber, amount, onPaid }: Props) {
 
   const checkNow = async () => {
     setChecking(true);
-    const { data } = await supabase
-      .from("orders")
-      .select("payment_status")
-      .eq("id", orderId)
-      .maybeSingle();
+    const data = await checkPayment({ data: { orderId } });
     setChecking(false);
     if (data?.payment_status === "paid") {
       markPaid();

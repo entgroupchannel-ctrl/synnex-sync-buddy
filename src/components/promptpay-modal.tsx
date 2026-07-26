@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { CheckCircle2, Copy, CreditCard, Landmark, Loader2, Timer, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogPortal, DialogOverlay } from "@/components/ui/dialog";
 import { bahtFmt } from "@/lib/order-helpers";
+import { getOrderPaymentStatus } from "@/lib/order-confirmation.functions";
 
 type Props = {
   orderId: string;
@@ -39,6 +41,7 @@ export function PromptPayPaymentModal({ orderId, orderNumber, amount, onPaid }: 
   const [paid, setPaid] = useState(false);
   const [remaining, setRemaining] = useState<number>(15 * 60);
   const requested = useRef(false);
+  const checkPayment = useServerFn(getOrderPaymentStatus);
 
   const markPaid = () => {
     if (paid) return;
@@ -88,11 +91,7 @@ export function PromptPayPaymentModal({ orderId, orderNumber, amount, onPaid }: 
   useEffect(() => {
     if (paid) return;
     const iv = setInterval(async () => {
-      const { data } = await supabase
-        .from("orders")
-        .select("payment_status")
-        .eq("id", orderId)
-        .maybeSingle();
+      const data = await checkPayment({ data: { orderId } });
       if (data?.payment_status === "paid") {
         clearInterval(iv);
         if (!open) setOpen(true);
@@ -105,11 +104,7 @@ export function PromptPayPaymentModal({ orderId, orderNumber, amount, onPaid }: 
 
   const checkNow = async () => {
     setChecking(true);
-    const { data } = await supabase
-      .from("orders")
-      .select("payment_status")
-      .eq("id", orderId)
-      .maybeSingle();
+    const data = await checkPayment({ data: { orderId } });
     setChecking(false);
     if (data?.payment_status === "paid") {
       markPaid();
