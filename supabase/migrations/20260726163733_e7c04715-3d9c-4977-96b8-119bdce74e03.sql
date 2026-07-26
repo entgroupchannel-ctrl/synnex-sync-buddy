@@ -1,0 +1,14 @@
+UPDATE public.synnex_products SET image_url = '/__l5e/assets-v1/73ddb5b8-2130-4496-b21d-aceca87f47d3/eset-internet-security.jpg' WHERE category='Software' AND name ILIKE 'ESET Internet Security%';
+UPDATE public.synnex_products SET image_url = '/__l5e/assets-v1/560b9194-a1d9-4fb7-b96d-3ab7968b4304/eset-nod32.jpg' WHERE category='Software' AND name ILIKE 'ESET NOD32%';
+UPDATE public.synnex_products SET image_url = '/__l5e/assets-v1/44b4fd47-49a2-4178-ab79-3d8f79300589/kaspersky-standard.jpg' WHERE category='Software' AND name ILIKE 'KASPERSKY Standard%';
+UPDATE public.synnex_products SET image_url = '/__l5e/assets-v1/10bd93c7-5115-4802-b50d-776f3e5be291/kaspersky-plus.jpg' WHERE category='Software' AND name ILIKE 'KASPERSKY Plus%';
+UPDATE public.synnex_products SET image_url = '/__l5e/assets-v1/093ca0b3-b681-4d3d-a741-7d5a93cb4354/kaspersky-premium.jpg' WHERE category='Software' AND name ILIKE 'KASPERSKY Premium%';
+UPDATE public.synnex_products SET image_url = '/__l5e/assets-v1/f1ff262f-1d94-40dd-ae32-d5746a4aa3f8/mcafee-total.jpg' WHERE category='Software' AND name ILIKE 'McAfee%';
+UPDATE public.synnex_products SET image_url = '/__l5e/assets-v1/4407ee0e-f48f-471e-9094-179a9b7c62e0/m365-family.jpg' WHERE category='Software' AND name ILIKE '%365 FAMILY%';
+UPDATE public.synnex_products SET image_url = '/__l5e/assets-v1/37db7df0-2733-45fd-abc9-f5eac2ee8571/m365-personal.jpg' WHERE category='Software' AND name ILIKE '%365 PERSONAL%';
+UPDATE public.synnex_products SET image_url = '/__l5e/assets-v1/45ec35b5-7a86-4951-9333-4cb89624c1a4/office-hb-2024.jpg' WHERE category='Software' AND name ILIKE '%OFFICE HOME & BUSINESS 2024%';
+UPDATE public.synnex_products SET image_url = '/__l5e/assets-v1/5e13ed6d-4bd7-483a-9580-b2f645a6b2c2/office-home-2024.jpg' WHERE category='Software' AND name ILIKE '%OFFICE HOME 2024%';
+UPDATE public.synnex_products SET image_url = '/__l5e/assets-v1/57f6430e-3ded-47b5-8778-7d678a3468cf/project-2024.jpg' WHERE category='Software' AND name ILIKE '%PROJECT%2024%';
+UPDATE public.synnex_products SET image_url = '/__l5e/assets-v1/070f3999-9567-4c91-b277-8ae6d93d6d21/win11-home-fpp.jpg' WHERE category='Software' AND name ILIKE 'WINDOWS 11 HOME%' AND name NOT ILIKE '%KW9-00632%';
+UPDATE public.synnex_products SET image_url = '/__l5e/assets-v1/82df2437-fd4a-4ab4-9477-abc128bc4cab/win11-pro.jpg' WHERE category='Software' AND name ILIKE 'WINDOWS 11 PRO%';
+UPDATE public.synnex_products SET image_url = '/__l5e/assets-v1/582b2c8c-0614-45ab-8483-9bcb8775e7a0/win-server-2025.jpg' WHERE category='Software' AND name ILIKE 'WINDOWS SERVER%';
