@@ -24,6 +24,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { CLEAR_STALE_BROWSE_FILTERS } from "@/lib/search-defaults";
+import { getBrandLogoUrl } from "@/lib/brand-assets";
 import type { MegaMenuConfig, MegaMenuFilter } from "@/lib/mega-menu-config";
 
 const ICONS: Record<string, LucideIcon> = {
@@ -111,7 +112,7 @@ export function CategoryMegaMenu({ config }: { config: MegaMenuConfig }) {
             {config.panelTitle}
           </div>
 
-          <div className={config.brands?.length ? "grid grid-cols-[1fr_200px] gap-5" : ""}>
+          <div className={config.brands?.length ? "grid grid-cols-[1fr_230px] gap-5" : ""}>
             <div className="grid grid-cols-2 gap-2">
               {config.items.map((it) => (
                 <Link
@@ -137,18 +138,38 @@ export function CategoryMegaMenu({ config }: { config: MegaMenuConfig }) {
                 <div className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-400">
                   {config.brandsTitle ?? "แบรนด์"}
                 </div>
-                <div className="flex flex-col gap-1">
-                  {config.brands.map((b) => (
-                    <Link
-                      key={b.brand}
-                      to="/"
-                      search={buildSearch(config.category, { brands: b.brand })}
-                      onClick={() => setOpen(false)}
-                      className="rounded px-2 py-1 text-sm text-slate-700 transition hover:bg-[#f5f5f7] hover:text-[#10B981]"
-                    >
-                      {b.label}
-                    </Link>
-                  ))}
+                <div className="grid grid-cols-2 gap-2">
+                  {config.brands.map((b) => {
+                    const logo = getBrandLogoUrl(b.brand);
+                    return (
+                      <Link
+                        key={b.brand}
+                        to="/"
+                        search={buildSearch(config.category, { brands: b.brand })}
+                        onClick={() => setOpen(false)}
+                        title={b.label}
+                        className="flex h-12 items-center justify-center rounded-lg bg-white px-2 ring-1 ring-slate-200 transition hover:ring-[#10B981] hover:shadow-sm"
+                      >
+                        {logo ? (
+                          <img
+                            src={logo}
+                            alt={`โลโก้ ${b.label}`}
+                            loading="lazy"
+                            className="max-h-6 max-w-full object-contain"
+                            onError={(e) => {
+                              const img = e.currentTarget;
+                              img.style.display = "none";
+                              img.parentElement?.insertAdjacentText("beforeend", b.label);
+                            }}
+                          />
+                        ) : (
+                          <span className="text-center text-[11px] font-semibold leading-tight text-slate-600">
+                            {b.label}
+                          </span>
+                        )}
+                      </Link>
+                    );
+                  })}
                 </div>
               </div>
             ) : null}
