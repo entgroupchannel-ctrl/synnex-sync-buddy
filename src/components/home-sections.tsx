@@ -1511,11 +1511,10 @@ export function SolarEnergy() {
 
 /* ---------- Smart Life (CCTV / Smart Home / IoT) ---------- */
 
-type SmartTab = "all" | "cctv" | "smartwatch" | "xiaomi" | "gadget";
+type SmartTab = "all" | "smartwatch" | "xiaomi" | "gadget";
 
 const SMART_TABS: { key: SmartTab; label: string }[] = [
   { key: "all", label: "ทั้งหมด" },
-  { key: "cctv", label: "📹 CCTV" },
   { key: "smartwatch", label: "⌚ Smartwatch" },
   { key: "xiaomi", label: "🏠 Xiaomi" },
   { key: "gadget", label: "🌀 Gadget" },
@@ -1536,8 +1535,7 @@ export function SmartLife() {
         .order("selling_price", { ascending: true })
         .limit(30);
 
-      if (tab === "cctv") qi = qi.in("brand", ["DAHUA", "HIKVISION"]);
-      else if (tab === "smartwatch") qi = qi.in("brand", ["SAMSUNG", "GARMIN", "HUAWEI"]);
+      if (tab === "smartwatch") qi = qi.in("brand", ["SAMSUNG", "GARMIN", "HUAWEI"]);
       else if (tab === "xiaomi") qi = qi.eq("brand", "XIAOMI");
       else if (tab === "gadget") qi = qi.in("brand", ["SOTHING", "HONEYWELL"]);
 
@@ -1778,6 +1776,7 @@ export function CorporateITSolutions() {
           [
             "and(category.eq.Network,brand.in.(CISCO,DLINK,TPLINK,UBIQUITI,FORTINET))",
             "and(category.eq.Storage,brand.in.(QNAP,SYNOLOGY))",
+            "category.eq.\"CCTV & Security\"",
             "and(category.eq.Printer,brand.in.(BROTHER,HP,RICOH,PANTUM,FUJIFILM,OKI,EPSON,CANON,XEROX))",
             "and(category.eq.PC,brand.in.(APC,SYNDOME,SUN,ETECH,VERTIV,CKT,ADVICE-UPS))",
           ].join(","),
@@ -1787,7 +1786,7 @@ export function CorporateITSolutions() {
       } else if (tab === "storage") {
         qi = qi.eq("category", "Storage").in("brand", ["QNAP", "SYNOLOGY"]);
       } else if (tab === "security") {
-        qi = qi.eq("category", "Smart Life").in("brand", ["DAHUA", "HIKVISION", "EZVIZ"]);
+        qi = qi.eq("category", "CCTV & Security");
       } else if (tab === "printer") {
         qi = qi.eq("category", "Printer").in("brand", ["BROTHER", "HP", "RICOH", "PANTUM", "FUJIFILM", "OKI"]);
       } else if (tab === "ups") {
