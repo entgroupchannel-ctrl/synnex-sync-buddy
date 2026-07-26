@@ -104,8 +104,7 @@ export function CategoryMegaMenu({ config }: { config: MegaMenuConfig }) {
       {open && (
         <div
           className="absolute top-full z-50 rounded-xl bg-white p-5 text-slate-900 shadow-2xl ring-1 ring-slate-200"
-
-          style={{ width: config.width, borderTop: "3px solid #10B981" }}
+          style={{ width: config.width, left: offset, borderTop: "3px solid #10B981" }}
         >
           <div className="mb-3 flex items-center gap-2 text-sm font-bold text-[#1d1d1f]">
             <Icon name={config.triggerIcon} className="h-4 w-4 text-[#10B981]" />
