@@ -1601,6 +1601,7 @@ export type Database = {
           markup_applied: number | null
           markup_override: number | null
           member_price: number | null
+          min_tier_price: number | null
           name: string | null
           price: number | null
           price_approved: boolean | null
@@ -1632,6 +1633,7 @@ export type Database = {
           markup_applied?: number | null
           markup_override?: number | null
           member_price?: number | null
+          min_tier_price?: number | null
           name?: string | null
           price?: number | null
           price_approved?: boolean | null
@@ -1663,6 +1665,7 @@ export type Database = {
           markup_applied?: number | null
           markup_override?: number | null
           member_price?: number | null
+          min_tier_price?: number | null
           name?: string | null
           price?: number | null
           price_approved?: boolean | null
