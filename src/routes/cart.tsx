@@ -17,6 +17,7 @@ import { getWeightBasedShippingFee } from "@/lib/shipping";
 import { CartReassurance } from "@/components/trust-signals";
 import { DeliveryZoneInfoBox } from "@/components/delivery-zone-dialog";
 import { useVolumeRules, getVolumeDiscount } from "@/lib/volume-discount";
+import { VatNoteDetailed } from "@/components/vat-note";
 
 
 export const Route = createFileRoute("/cart")({
