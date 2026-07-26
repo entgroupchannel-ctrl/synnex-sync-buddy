@@ -112,7 +112,7 @@ export function CategoryMegaMenu({ config }: { config: MegaMenuConfig }) {
             {config.panelTitle}
           </div>
 
-          <div className={config.brands?.length ? "grid grid-cols-[1fr_200px] gap-5" : ""}>
+          <div className={config.brands?.length ? "grid grid-cols-[1fr_230px] gap-5" : ""}>
             <div className="grid grid-cols-2 gap-2">
               {config.items.map((it) => (
                 <Link
