@@ -9,6 +9,7 @@ import { ProductImage } from "@/components/product-image";
 import { DiscountBadgeRow } from "@/components/discount-badge";
 import { SpecTagsCompact } from "@/components/spec-tags";
 import { hasSpecTags } from "@/lib/parse-spec";
+import { VatNote } from "@/components/vat-note";
 
 export const Route = createFileRoute("/corporate")({
   head: () => ({
