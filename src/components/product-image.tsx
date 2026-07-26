@@ -36,6 +36,25 @@ export function computerSetPlaceholder(name?: string | null): string {
   return "/case-placeholders/silver-minimal.png";
 }
 
+/** เลือกรูป placeholder ของแรมตามรุ่นและประเภท */
+export function ramPlaceholder(
+  ramGeneration?: string | null,
+  subcategory?: string | null,
+): string {
+  const isNotebook = subcategory === "RAM Notebook";
+  const gen = (ramGeneration ?? "").toUpperCase();
+  if (isNotebook) {
+    return gen === "DDR5"
+      ? "/ram-placeholders/ddr5-sodimm.png"
+      : "/ram-placeholders/ddr4-sodimm.png";
+  }
+  if (gen === "DDR5") return "/ram-placeholders/ddr5-desktop.png";
+  if (gen === "DDR4") return "/ram-placeholders/ddr4-desktop.png";
+  return "/ram-placeholders/ddr3-desktop.png";
+}
+
+
+
 export function ProductImage({
   src,
   alt = "",
