@@ -18,6 +18,7 @@ import { UsageInfoBox } from "@/components/usage-badge";
 import { CctvSpecGuide } from "@/components/cctv-spec-guide";
 import { EdgeAiSpecGuide } from "@/components/edge-ai-spec-guide";
 import { EdgeAiExplainer } from "@/components/edge-ai-explainer";
+import { ConferenceExplainer } from "@/components/conference-explainer";
 
 
 import { ProductImage, computerSetPlaceholder, upsPlaceholder, cpuPlaceholder, isCpuProduct, applePlaceholder } from "@/components/product-image";
@@ -468,6 +469,7 @@ function ProductDetail() {
                 </div>
               </div>
               <EdgeAiExplainer category={p.category as string | null | undefined} name={p.name} description={p.description} />
+              <ConferenceExplainer category={p.category as string | null | undefined} name={p.name} description={p.description} />
             </div>
 
             <div className="flex flex-col">
