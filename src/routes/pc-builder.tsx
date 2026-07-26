@@ -891,6 +891,7 @@ function SummaryPanel({
           {priceFmt.format(total)}
         </span>
       </div>
+      <VatNote className="text-right" />
       <div className="space-y-2 pt-1">
         <Button
           className="w-full bg-[color:var(--brand-green)] text-white hover:bg-emerald-600"
