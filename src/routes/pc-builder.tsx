@@ -600,7 +600,7 @@ function ProductPicker({
     return () => {
       cancelled = true;
     };
-  }, [step.key, cpuBrand, mbBrand, mbSocket, gpuBrand, ssdType, ramGen]);
+  }, [step.key, cpuBrand, mbBrand, mbSocket, gpuBrand, ssdType, ramGen, psuType]);
 
   const filtered = useMemo(() => {
     const s = q.trim().toLowerCase();
@@ -691,6 +691,19 @@ function ProductPicker({
             { value: "all", label: "ทั้งหมด" },
             { value: "sata", label: "SATA" },
             { value: "nvme", label: "NVMe / M.2" },
+          ]}
+        />
+      )}
+
+      {step.key === "psu" && (
+        <FilterTabs
+          className="mb-2"
+          value={psuType}
+          onChange={(v) => setPsuType(v as typeof psuType)}
+          options={[
+            { value: "all", label: "ทั้งหมด" },
+            { value: "psu", label: "PSU (เพาเวอร์ซัพพลาย)" },
+            { value: "case", label: "เคส (Case)" },
           ]}
         />
       )}
