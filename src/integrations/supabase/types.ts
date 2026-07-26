@@ -2451,6 +2451,35 @@ export type Database = {
         }
         Returns: number
       }
+      get_smart_recommendations: {
+        Args: { p_limit?: number; p_product_id: string }
+        Returns: {
+          b2b_price: number
+          brand: string
+          category: string
+          fulfillment_type: string
+          id: string
+          image_url: string
+          member_price: number
+          name: string
+          price: number
+          price_approved: boolean
+          reason: string
+          selling_price: number
+          sku: string
+          slug: string
+          stock_status: string
+          subcategory: string
+          tier_price_b2b: number
+          tier_price_b2b_gold: number
+          tier_price_b2b_silver: number
+          tier_price_b2c: number
+          tier_price_b2c_gold: number
+          tier_price_b2c_silver: number
+          tier_price_b2c_vip: number
+          tier_price_guest: number
+        }[]
+      }
       increment: { Args: { x: number }; Returns: number }
       is_admin_user: { Args: { _uid: string }; Returns: boolean }
       promote_staging_batch:
