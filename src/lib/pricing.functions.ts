@@ -1,13 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { buildRuleIndex, computeSellingPrice, guardAgainstPriceDrop, type PricingRuleRow } from "@/lib/pricing-calc";
 
-type Rule = {
-  id: string;
-  rule_type: string | null;
-  target: string | null;
-  markup_percent: number | null;
-  is_active: boolean | null;
-};
+type Rule = PricingRuleRow;
 
 type Product = {
   id: string;
@@ -16,6 +11,7 @@ type Product = {
   cost_price: number | null;
   price: number | null;
   markup_override: number | null;
+  selling_price: number | null;
 };
 
 export type PricingProductRow = {
@@ -37,33 +33,27 @@ export type PricingProductRow = {
 export const applyPricing = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { adminContext, roundTo10 } = await import("@/lib/pricing-admin.server");
+    const { adminContext } = await import("@/lib/pricing-admin.server");
     const db = await adminContext(context.userId);
 
     const { data: rules } = await db
       .from("pricing_rules")
-      .select("id, rule_type, target, markup_percent, is_active")
+      .select("id, rule_type, target, markup_percent, is_active, min_cost, max_cost, min_profit")
       .eq("is_active", true);
     const active = (rules ?? []) as Rule[];
-    const global = active.find((r) => r.rule_type === "global");
-    const byCat = new Map<string, number>();
-    const byBrand = new Map<string, number>();
-    for (const r of active) {
-      if (r.rule_type === "category" && r.target) byCat.set(r.target.toLowerCase(), Number(r.markup_percent ?? 0));
-      if (r.rule_type === "brand" && r.target) byBrand.set(r.target.toLowerCase(), Number(r.markup_percent ?? 0));
-    }
-    const globalPct = Number(global?.markup_percent ?? 15);
+    const ruleIndex = buildRuleIndex(active);
 
     const pageSize = 1000;
     let offset = 0;
     let updated = 0;
     let scanned = 0;
+    let guarded = 0;
     let total = 0;
 
     while (true) {
       const { data, error, count } = await db
         .from("synnex_products")
-        .select("id, brand, category, cost_price, price, markup_override", { count: "exact" })
+        .select("id, brand, category, cost_price, price, markup_override, selling_price", { count: "exact" })
         .range(offset, offset + pageSize - 1);
       if (error) throw new Error(error.message);
       if (count != null && total === 0) total = count;
@@ -74,16 +64,20 @@ export const applyPricing = createServerFn({ method: "POST" })
         scanned++;
         const cost = Number(p.cost_price ?? p.price ?? 0);
         if (!cost || cost <= 0) continue;
-        let pct: number;
-        if (p.markup_override != null) pct = Number(p.markup_override);
-        else if (p.brand && byBrand.has(p.brand.toLowerCase())) pct = byBrand.get(p.brand.toLowerCase())!;
-        else if (p.category && byCat.has(p.category.toLowerCase())) pct = byCat.get(p.category.toLowerCase())!;
-        else pct = globalPct;
 
-        const selling = roundTo10(cost * (1 + pct / 100));
+        const computed = computeSellingPrice(ruleIndex, p, cost);
+        const existing = p.selling_price != null ? Number(p.selling_price) : null;
+
+        // การ์ด: ห้าม recalculation ทำให้ราคาลดลงจากที่มีอยู่ (เช่น ราคาที่ตั้งมือไว้สูงกว่ากฎ) — ข้ามและนับไว้แทนการทับเงียบๆ
+        const { finalPrice, guarded: wasGuarded } = guardAgainstPriceDrop(computed, existing);
+        if (wasGuarded) {
+          guarded++;
+          continue;
+        }
+
         const { error: uerr } = await db
           .from("synnex_products")
-          .update({ selling_price: selling, price_approved: true })
+          .update({ selling_price: finalPrice, price_approved: true })
           .eq("id", p.id);
         if (!uerr) updated++;
       }
@@ -92,7 +86,7 @@ export const applyPricing = createServerFn({ method: "POST" })
       offset += pageSize;
     }
 
-    return { updated, scanned, total };
+    return { updated, scanned, guarded, total };
   });
 
 export const getPricingSummary = createServerFn({ method: "GET" })

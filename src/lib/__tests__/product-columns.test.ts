@@ -9,6 +9,7 @@ const FORBIDDEN = [
   "markup_applied",
   "markup_override",
   "b2b_markup_applied",
+  "min_tier_price",
 ];
 
 describe("PRODUCT_PUBLIC_COLUMNS", () => {
@@ -41,6 +42,21 @@ describe("PRODUCT_PUBLIC_COLUMNS", () => {
       "fulfillment_type",
       "created_at",
       "description",
+    ]) {
+      expect(columns).toContain(need);
+    }
+  });
+
+  it("ต้องมีคอลัมน์ราคาสำเร็จรูปครบทั้ง 8 tier (แทน min_tier_price)", () => {
+    for (const need of [
+      "tier_price_guest",
+      "tier_price_b2c",
+      "tier_price_b2c_silver",
+      "tier_price_b2c_gold",
+      "tier_price_b2c_vip",
+      "tier_price_b2b",
+      "tier_price_b2b_silver",
+      "tier_price_b2b_gold",
     ]) {
       expect(columns).toContain(need);
     }

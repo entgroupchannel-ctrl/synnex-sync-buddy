@@ -99,7 +99,31 @@ export type PricingProduct = {
   member_price?: number | null;
   b2b_price?: number | null;
   price_approved?: boolean | null;
+  /**
+   * @deprecated ไม่ถูก select จาก DB แล้ว (REVOKE SELECT ไว้แล้ว เพราะ = cost_price*1.02 ย้อนกลับหาทุนได้)
+   * เก็บไว้ในไทป์นี้เพื่อ backward-compat กับเทสต์เก่าเท่านั้น — โค้ด production ใหม่ใช้ tier_price_* แทน
+   */
   min_tier_price?: number | null;
+  // ราคาสำเร็จรูปต่อ tier ที่ DB คำนวณ+clamp กับพื้นทุนไว้แล้ว (ไม่เปิดเผยทุนตรงๆ)
+  tier_price_guest?: number | null;
+  tier_price_b2c?: number | null;
+  tier_price_b2c_silver?: number | null;
+  tier_price_b2c_gold?: number | null;
+  tier_price_b2c_vip?: number | null;
+  tier_price_b2b?: number | null;
+  tier_price_b2b_silver?: number | null;
+  tier_price_b2b_gold?: number | null;
+};
+
+const TIER_PRICE_FIELD: Record<CustomerTier, keyof PricingProduct> = {
+  guest: "tier_price_guest",
+  b2c: "tier_price_b2c",
+  b2c_silver: "tier_price_b2c_silver",
+  b2c_gold: "tier_price_b2c_gold",
+  b2c_vip: "tier_price_b2c_vip",
+  b2b: "tier_price_b2b",
+  b2b_silver: "tier_price_b2b_silver",
+  b2b_gold: "tier_price_b2b_gold",
 };
 
 function round(n: number): number {
@@ -109,11 +133,19 @@ function round(n: number): number {
 /**
  * Returns the customer-facing price for the given tier, or null when not yet approved / no base price.
  * Shop pages must show "ติดต่อสอบถาม" instead of ฿0.
+ *
+ * เลือกใช้ tier_price_* ที่ DB คำนวณ+clamp พื้นทุนไว้แล้วก่อนเสมอ (ไม่มีทุนหลุดออกมา)
+ * ตกกลับไปคำนวณเองฝั่ง client เฉพาะกรณี legacy ที่ยังส่ง min_tier_price ดิบมาเท่านั้น (เทสต์เก่า/ข้อมูลเก่า)
  */
 export function getSellingPrice(p: PricingProduct, tier: CustomerTier = "guest"): number | null {
   const selling = Number(p.selling_price ?? 0);
   if (!selling || selling <= 0) return null;
   if (selling > 70000) return null; // ราคาเกิน 70,000 → ให้ระบบขึ้น "ติดต่อสอบถาม" แทนราคา
+
+  const precomputed = p[TIER_PRICE_FIELD[tier] ?? "tier_price_guest"];
+  if (precomputed != null && Number(precomputed) > 0) {
+    return round(Number(precomputed));
+  }
 
   const memberBase = Number(p.member_price ?? 0) > 0 ? Number(p.member_price) : selling * 0.95;
   const b2bBase = Number(p.b2b_price ?? 0) > 0 ? Number(p.b2b_price) : null;

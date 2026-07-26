@@ -63,7 +63,7 @@ describe("ห้าม query คอลัมน์ต้นทุนจากโ
     const bad = walk("src")
       .filter((f) => f.endsWith(".tsx"))
       .filter((f) =>
-        /\.select\([^)]*\b(cost_price|markup_override|markup_applied|b2b_markup_applied)\b/s.test(
+        /\.select\([^)]*\b(cost_price|markup_override|markup_applied|b2b_markup_applied|min_tier_price)\b/s.test(
           stripComments(readFileSync(f, "utf8")),
         ),
       );
