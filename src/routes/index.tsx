@@ -1482,6 +1482,15 @@ function HomePage() {
           )}
 
           {(productsQuery.data?.count ?? 0) > 0 && (
+            <HelpChooseBanner
+              category={search.category !== "all" ? search.category : null}
+              className="mt-6"
+            />
+          )}
+
+
+
+          {(productsQuery.data?.count ?? 0) > 0 && (
             <div className="mt-8 flex flex-wrap items-center justify-between gap-3">
               <div className="text-sm text-slate-600">
                 {productsQuery.data!.count.toLocaleString()} รายการ · หน้า {search.page}/{totalPages}
