@@ -1873,6 +1873,7 @@ export function CorporateITSolutions() {
                   <div className="flex items-end justify-between">
                     <div className="text-base font-black text-slate-900">
                       ฿{Number(p.selling_price).toLocaleString("th-TH")}
+                      <VatNote className="font-normal" />
                     </div>
                     <div className="cursor-pointer rounded-lg bg-slate-900 p-2 transition-colors group-hover:bg-blue-600">
                       <ShoppingCart className="h-3.5 w-3.5 text-white" />
