@@ -14,6 +14,8 @@ import { CartReminderBell } from "@/components/cart-reminder-bell";
 import { DeliveryZoneDialog, DeliveryZoneBadge } from "@/components/delivery-zone-dialog";
 import { AppleMegaMenu } from "@/components/apple-mega-menu";
 import { EdgeAiMegaMenu } from "@/components/edge-ai-mega-menu";
+import { CategoryMegaMenu } from "@/components/category-mega-menu";
+import { MEGA_MENU_BY_CATEGORY } from "@/lib/mega-menu-config";
 
 
 import { useLanguage } from "@/lib/i18n";
