@@ -6,6 +6,21 @@ describe("CATEGORIES", () => {
     expect(CATEGORIES).toContain("CCTV & Security");
     expect(CATEGORIES).toContain("Smart Life");
   });
+
+  it("มีหมวด Webcam & Conference (สินค้ากลุ่มใหม่ล่าสุด)", () => {
+    expect(CATEGORIES).toContain("Webcam & Conference");
+  });
+});
+
+describe("detectCategory — เส้นทาง Webcam / Conference Cam", () => {
+  it.each([
+    "Conference Cam LOGITECH (BCC950) BLACK",
+    "Conference Cam JABRA (PanaCast 50)",
+    "Set Conference Cam LOGITECH (RALLY SYSTEM)",
+    "Webcam Logitech C920",
+  ])("ต้องแยกไปหมวด Webcam & Conference: %s", (name) => {
+    expect(detectCategory(name)).toBe("Webcam & Conference");
+  });
 });
 
 describe("detectCategory — เส้นทางกล้องวงจรปิด/CCTV", () => {
