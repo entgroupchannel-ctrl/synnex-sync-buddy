@@ -27,4 +27,4 @@ export const PRODUCT_PUBLIC_COLUMNS = [
   "fulfillment_type", // StockBadge
   "distributor",
   "created_at",       // getProductBadge (ป้าย "ใหม่")
-].join(", ");
+].join(", ") as "*"; // cast keeps supabase-js row typing (runtime = explicit column list)
