@@ -127,8 +127,9 @@ function TrustBar() {
     },
     {
       icon: ShieldCheck,
-      title: "ปลอดภัย 100%",
-      desc: "ชำระเงินผ่านระบบที่ได้มาตรฐาน",
+      title: "ชำระเงินปลอดภัย",
+      desc: "เข้ารหัส HTTPS · ไม่เก็บข้อมูลบัตรบนเซิร์ฟเวอร์",
+
     },
     {
       icon: Truck,
