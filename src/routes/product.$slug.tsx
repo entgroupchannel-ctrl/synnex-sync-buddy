@@ -16,7 +16,7 @@ import { SpecTagsFull } from "@/components/spec-tags";
 import { hasSpecTags } from "@/lib/parse-spec";
 import { UsageInfoBox } from "@/components/usage-badge";
 
-import { ProductImage, computerSetPlaceholder, upsPlaceholder, cpuPlaceholder, isCpuProduct } from "@/components/product-image";
+import { ProductImage, computerSetPlaceholder, upsPlaceholder, cpuPlaceholder, isCpuProduct, applePlaceholder } from "@/components/product-image";
 import { DeliveryInfoBox } from "@/components/delivery-info";
 import { ProtectedText } from "@/components/protected-text";
 import { ProductTrustBar, ReturnPolicyAccordion } from "@/components/trust-signals";
@@ -312,7 +312,7 @@ function ProductDetail() {
               <div className="flex flex-col gap-2">
                 {/* Main image */}
                 <div
-                  className="relative rounded-xl overflow-hidden border border-slate-100 bg-white"
+                  className={`relative rounded-xl overflow-hidden border border-slate-100 transition-colors duration-300 ${activeBackdrop}`}
                   style={{ paddingBottom: '75%' }}
                 >
                   <div className="absolute inset-0 flex items-center justify-center p-3">
@@ -326,6 +326,12 @@ function ProductDetail() {
                       }}
                     />
                   </div>
+
+                  {appleShot && (
+                    <span className="pointer-events-none absolute right-2 top-2 z-10 rounded bg-slate-900/70 px-2 py-0.5 text-[10px] font-medium text-white">
+                      ภาพแทน
+                    </span>
+                  )}
 
                   {/* Prev/Next arrows */}
                   {images.length > 1 && (
@@ -370,7 +376,7 @@ function ProductDetail() {
                       <button
                         key={i}
                         onClick={() => setActiveImg(i)}
-                        className={`shrink-0 rounded-lg overflow-hidden border-2 transition-all w-16 h-16 bg-white p-1 ${
+                        className={`shrink-0 rounded-lg overflow-hidden border-2 transition-all w-16 h-16 p-1 ${appleShot ? APPLE_BACKDROPS[i] ?? "bg-white" : "bg-white"} ${
                           i === activeImg
                             ? 'border-green-500 shadow-sm'
                             : 'border-slate-200 hover:border-slate-300 opacity-70 hover:opacity-100'
