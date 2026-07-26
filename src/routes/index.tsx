@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { z } from "zod";
@@ -65,6 +65,8 @@ import { BrandLogo } from "@/components/brand-logo";
 import { useVolumeRules, hasVolumeDiscount } from "@/lib/volume-discount";
 import entLogo from "@/assets/entgroup-logo.jpg.asset.json";
 import { VatNote } from "@/components/vat-note";
+import { HelpChooseBanner, HelpChooseInlineCard } from "@/components/help-choose-banner";
+
 
 const searchSchema = z.object({
   q: fallback(z.string(), "").default(""),
@@ -1377,14 +1379,15 @@ function HomePage() {
             </div>
           ) : (
             <div className={"grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:gap-3" + (search.category === "RAM" || search.category === "Printer" ? " lg:grid-cols-6" : " lg:grid-cols-5")}>
-              {productsQuery.data!.rows.map((p) => {
+              {productsQuery.data!.rows.map((p, gridIdx) => {
+
                 const byOrder = p.fulfillment_type === "by_order";
                 const ready = p.stock_status === "พร้อมจัดส่ง";
                 const available = ready || byOrder;
                 const slug = p.slug || p.id;
                 
                 const priced = getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null; tier_price_guest?: number | null; tier_price_b2c?: number | null; tier_price_b2c_silver?: number | null; tier_price_b2c_gold?: number | null; tier_price_b2c_vip?: number | null; tier_price_b2b?: number | null; tier_price_b2b_silver?: number | null; tier_price_b2b_gold?: number | null }, tier) != null && !!p.price_approved;
-                return (
+                const card = (
                   <div key={p.id} className="relative flex flex-col overflow-hidden rounded-lg border bg-white transition-all duration-200 hover:scale-[1.02] hover:shadow-md">
                     {!isAppleOnly && (
                       <>
@@ -1477,9 +1480,27 @@ function HomePage() {
                     </div>
                   </div>
                 );
+                return gridIdx === 9 ? (
+                  <Fragment key={p.id}>
+                    <HelpChooseInlineCard category={search.category !== "all" ? search.category : null} />
+                    {card}
+                  </Fragment>
+                ) : (
+                  card
+                );
               })}
+
             </div>
           )}
+
+          {(productsQuery.data?.count ?? 0) > 0 && (
+            <HelpChooseBanner
+              category={search.category !== "all" ? search.category : null}
+              className="mt-6"
+            />
+          )}
+
+
 
           {(productsQuery.data?.count ?? 0) > 0 && (
             <div className="mt-8 flex flex-wrap items-center justify-between gap-3">
