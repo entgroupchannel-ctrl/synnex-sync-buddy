@@ -321,6 +321,8 @@ export function SiteHeader() {
               // Edge AI Box gets a mega-menu instead of a plain link
               if (c === "Edge AI Box") {
                 items.push(<EdgeAiMegaMenu key="edge-ai-nav" />);
+              } else if (MEGA_MENU_BY_CATEGORY[c]) {
+                items.push(<CategoryMegaMenu key={c} config={MEGA_MENU_BY_CATEGORY[c]} />);
               } else {
                 items.push(
                   <Link
