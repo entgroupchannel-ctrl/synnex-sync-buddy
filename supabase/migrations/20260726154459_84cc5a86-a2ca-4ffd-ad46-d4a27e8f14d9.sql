@@ -1,0 +1,3 @@
+update public.synnex_products set image_url='/__l5e/assets-v1/8d74c0cb-c312-4491-91be-e051a3049232/ptzpro2.png' where id='40fd44cd-48b4-4e9e-9a45-d71a47731dc9';
+update public.synnex_products set image_url='/__l5e/assets-v1/4b23ac62-2bf1-4a7c-b38d-5faf9408f2ce/m300v.jpg' where id='52085d39-712a-40da-9072-f74b77ba7629';
+update public.synnex_products set image_url='/__l5e/assets-v1/d940beb0-e27b-4f94-950b-ad9ac18ec448/cbar.jpg' where id='f093c384-c381-4d23-ab5e-f828b75b6975';
