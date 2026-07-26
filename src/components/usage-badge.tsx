@@ -465,7 +465,55 @@ export function getUsageProfile(input: {
   return PROFILES.basic;
 }
 
-/** Small badge for product cards. */
+/** เนื้อหาอธิบายแบบยาว + ปุ่มติดต่อช่าง (ใช้ร่วมกันทั้ง dialog และ info box) */
+function ProfileDetail({ p }: { p: UsageProfile }) {
+  return (
+    <div className="space-y-2 text-[13px] text-slate-600">
+      <ul className="list-disc space-y-1 pl-4">
+        {p.detail?.map((d) => (
+          <li key={d}>{d}</li>
+        ))}
+      </ul>
+      {p.installer && (
+        <div className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-slate-700">
+          <div className="flex items-center gap-1.5 font-semibold text-emerald-800">
+            <Wrench className="h-4 w-4" />
+            ต้องการช่างติดตั้ง? เราจัดการให้
+          </div>
+          <p className="mt-1">
+            ENT Group เป็นสะพานเชื่อมระหว่างคุณกับทีมช่างที่มีประสบการณ์ — ช่วยประเมินขนาดระบบให้เหมาะกับค่าไฟบ้านคุณ
+            จัดหาช่าง นัดหมายวันเข้าสำรวจหน้างานและติดตั้ง รวมถึงแนะนำเรื่องเอกสารขออนุญาตการไฟฟ้า
+          </p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            <a
+              href="tel:020456104"
+              className="inline-flex items-center gap-1 rounded bg-emerald-600 px-2.5 py-1 text-[12px] font-semibold text-white hover:bg-emerald-700"
+            >
+              <Phone className="h-3.5 w-3.5" />
+              โทรปรึกษา 02-045-6104
+            </a>
+            <a
+              href="mailto:sales@entgroup.co.th"
+              className="inline-flex items-center rounded border border-emerald-300 bg-white px-2.5 py-1 text-[12px] font-semibold text-emerald-700 hover:bg-emerald-50"
+            >
+              sales@entgroup.co.th
+            </a>
+            <a
+              href="https://line.me/R/ti/p/@entgroup"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center rounded border border-emerald-300 bg-white px-2.5 py-1 text-[12px] font-semibold text-emerald-700 hover:bg-emerald-50"
+            >
+              LINE @entgroup
+            </a>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** Small badge for product cards. คลิกได้เมื่อมีคำอธิบายเพิ่มเติม */
 export function UsageBadge(props: {
   category?: string | null;
   name?: string | null;
@@ -473,19 +521,56 @@ export function UsageBadge(props: {
   price?: number | null;
   className?: string;
 }) {
+  const [open, setOpen] = useState(false);
   const p = getUsageProfile(props);
   if (!p) return null;
   const Icon = ICON[p.icon];
+  const cls = `mt-1 inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-semibold ring-1 ${p.cls} ${props.className ?? ""}`;
+
+  if (!p.detail?.length) {
+    return (
+      <span title={p.hint} className={cls}>
+        <Icon className="h-3 w-3" />
+        {p.label}
+      </span>
+    );
+  }
+
   return (
-    <span
-      title={p.hint}
-      className={`mt-1 inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-semibold ring-1 ${p.cls} ${props.className ?? ""}`}
-    >
-      <Icon className="h-3 w-3" />
-      {p.label}
-    </span>
+    <>
+      <button
+        type="button"
+        title={p.hint}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setOpen(true);
+        }}
+        className={`${cls} cursor-pointer hover:brightness-95`}
+      >
+        <Icon className="h-3 w-3" />
+        {p.label}
+        <Info className="h-3 w-3 opacity-70" />
+      </button>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent
+          className="max-h-[85vh] overflow-y-auto sm:max-w-lg"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-base">
+              <Icon className="h-4 w-4" />
+              {p.label}
+            </DialogTitle>
+            <DialogDescription>{p.hint}</DialogDescription>
+          </DialogHeader>
+          <ProfileDetail p={p} />
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
+
 
 /** Fuller explainer for the product detail page. */
 export function UsageInfoBox(props: {
