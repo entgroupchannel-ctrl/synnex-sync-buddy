@@ -15,6 +15,8 @@ export const PRODUCT_PUBLIC_COLUMNS = [
   "description",      // SpecTagsCompact ใช้ parse สเปก
   "brand",
   "category",
+  "subcategory",      // RAM Desktop / RAM Notebook
+  "ram_generation",   // DDR5 / DDR4 / DDR3L / DDR3 / DDR2 (คำนวณจาก DB)
   "image_url",
   "image_gallery",   // แกลเลอรีรูปในหน้ารายละเอียดสินค้า
   "price",

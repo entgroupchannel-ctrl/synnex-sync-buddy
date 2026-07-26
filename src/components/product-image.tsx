@@ -11,6 +11,8 @@ type Props = {
   loading?: "eager" | "lazy";
   category?: string | null;
   productName?: string | null;
+  ramGeneration?: string | null;
+  subcategory?: string | null;
 };
 
 function pickIcon(category?: string | null, name?: string | null): { Icon: LucideIcon; color: string } {
@@ -34,6 +36,25 @@ export function computerSetPlaceholder(name?: string | null): string {
   return "/case-placeholders/silver-minimal.png";
 }
 
+/** เลือกรูป placeholder ของแรมตามรุ่นและประเภท */
+export function ramPlaceholder(
+  ramGeneration?: string | null,
+  subcategory?: string | null,
+): string {
+  const isNotebook = subcategory === "RAM Notebook";
+  const gen = (ramGeneration ?? "").toUpperCase();
+  if (isNotebook) {
+    return gen === "DDR5"
+      ? "/ram-placeholders/ddr5-sodimm.png"
+      : "/ram-placeholders/ddr4-sodimm.png";
+  }
+  if (gen === "DDR5") return "/ram-placeholders/ddr5-desktop.png";
+  if (gen === "DDR4") return "/ram-placeholders/ddr4-desktop.png";
+  return "/ram-placeholders/ddr3-desktop.png";
+}
+
+
+
 export function ProductImage({
   src,
   alt = "",
@@ -43,6 +64,8 @@ export function ProductImage({
   loading = "lazy",
   category,
   productName,
+  ramGeneration,
+  subcategory,
 }: Props) {
   const [error, setError] = useState(!src);
 
@@ -53,6 +76,17 @@ export function ProductImage({
   if (category === "Computer Set") {
     const placeholder = computerSetPlaceholder(productName ?? alt);
     return <img src={placeholder} alt={alt} loading={loading} className={className} />;
+  }
+
+  if (category === "RAM" && (error || !src)) {
+    return (
+      <img
+        src={ramPlaceholder(ramGeneration, subcategory)}
+        alt={alt}
+        loading={loading}
+        className={className}
+      />
+    );
   }
 
   if (error || !src) {

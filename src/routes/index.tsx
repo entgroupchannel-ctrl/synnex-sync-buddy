@@ -24,6 +24,7 @@ import { useDynamicSeo, getRobotsForCategory } from "@/lib/dynamic-seo";
 import { DeliveryHint } from "@/components/delivery-info";
 import { StockBadge } from "@/components/stock-badge";
 import { WarrantyBadge } from "@/components/warranty-badge";
+import { RamBadge } from "@/components/ram-badge";
 import { DiscountBadgeRow } from "@/components/discount-badge";
 
 import { SpecTagsCompact } from "@/components/spec-tags";
@@ -31,7 +32,7 @@ import { hasSpecTags } from "@/lib/parse-spec";
 import { CATEGORY_ICONS, SMART_LIFE_SUBCATEGORY_ICONS } from "@/lib/category-icons";
 
 
-import { CATEGORIES, detectCategory, displayPrice, getSellingPrice, useCart, useCustomerTier } from "@/lib/cart";
+import { CATEGORIES, SUBCATEGORIES, SUBCATEGORY_LABELS, RAM_GENERATIONS, detectCategory, displayPrice, getSellingPrice, useCart, useCustomerTier } from "@/lib/cart";
 import { triggerAuthPrompt, useSupabaseUser } from "@/lib/auth-sheet";
 import {
   HeroCarousel,
@@ -67,6 +68,8 @@ const searchSchema = z.object({
   category: fallback(z.string(), "all").default("all"),
   brands: fallback(z.string(), "").default(""),
   ramSpec: fallback(z.string(), "").default(""),
+  ramType: fallback(z.string(), "").default(""),   // RAM Desktop | RAM Notebook
+  ramGen: fallback(z.string(), "").default(""),    // DDR5 | DDR4 | DDR3L | DDR3 | DDR2
   jetsonType: fallback(z.string(), "").default(""),
   min: fallback(z.number(), 0).default(0),
   max: fallback(z.number(), 100000).default(100000),
@@ -208,6 +211,8 @@ type ProductRow = {
   stock_qty: number | null;
   distributor: string | null;
   fulfillment_type: string | null;
+  subcategory?: string | null;
+  ram_generation?: string | null;
 };
 
 function useCountdown() {
@@ -384,6 +389,12 @@ function HomePage() {
           const spec = RAM_SUBCATS.find((s) => s.key === search.ramSpec);
           if (spec) q = q.or(spec.patterns.map((p) => `name.ilike."%${p}%"`).join(","));
         }
+        if (search.category === "RAM" && search.ramType) {
+          q = q.eq("subcategory", search.ramType);
+        }
+        if (search.category === "RAM" && search.ramGen) {
+          q = q.eq("ram_generation", search.ramGen);
+        }
         if (selectedBrands.length > 0) q = q.in("brand", selectedBrands);
         if (search.min > 0) q = q.gte("selling_price", search.min);
         if (search.max < PRICE_MAX) q = q.lte("selling_price", search.max);
@@ -464,6 +475,41 @@ function HomePage() {
   const isRam = search.category === "RAM";
   const isJetson = search.category === "Edge AI Box";
 
+  // นับจำนวนจริงของหมวดย่อย/รุ่นแรม เพื่อซ่อนตัวเลือกที่ไม่มีสินค้า
+  const ramFacetQ = useQuery({
+    queryKey: ["ram-facets"],
+    enabled: isRam,
+    staleTime: 5 * 60_000,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("synnex_products")
+        .select("subcategory, ram_generation")
+        .eq("category", "RAM")
+        .eq("price_approved", true)
+        .limit(1000);
+      const rows = (data ?? []) as { subcategory: string | null; ram_generation: string | null }[];
+      const byType: Record<string, number> = {};
+      const byGen: Record<string, number> = {};
+      for (const r of rows) {
+        const t = r.subcategory ?? "";
+        const g = r.ram_generation ?? "";
+        if (t) byType[t] = (byType[t] ?? 0) + 1;
+        if (g) {
+          byGen[g] = (byGen[g] ?? 0) + 1;
+          if (t) byGen[`${t}|${g}`] = (byGen[`${t}|${g}`] ?? 0) + 1;
+        }
+      }
+      return { total: rows.length, byType, byGen };
+    },
+  });
+
+  const ramGenCount = (gen: string) => {
+    const f = ramFacetQ.data;
+    if (!f) return 0;
+    return search.ramType ? (f.byGen[`${search.ramType}|${gen}`] ?? 0) : (f.byGen[gen] ?? 0);
+  };
+
+
   const toggleBrand = (b: string) => {
     const set = new Set(selectedBrands);
     if (set.has(b)) set.delete(b); else set.add(b);
@@ -475,7 +521,7 @@ function HomePage() {
   const setCategory = (c: string) => {
     // Changing category auto-clears brand/ramSpec/jetsonType filter to prevent 0-result conflicts.
     // Smart Life defaults to cheapest-first.
-    update(c === "Smart Life" ? { category: c, brands: "", ramSpec: "", jetsonType: "", sort: "price-asc" } : { category: c, brands: "", ramSpec: "", jetsonType: "" });
+    update(c === "Smart Life" ? { category: c, brands: "", ramSpec: "", ramType: "", ramGen: "", jetsonType: "", sort: "price-asc" } : { category: c, brands: "", ramSpec: "", ramType: "", ramGen: "", jetsonType: "" });
   };
 
 
@@ -641,35 +687,98 @@ function HomePage() {
       </div>
 
       {isRam && (
-        <div>
-          <h3 className="mb-3 text-sm font-bold text-[color:var(--brand-navy)]">รุ่น DDR / ความเร็ว</h3>
-          <div className="space-y-1.5">
-            {RAM_SUBCATS.map((sub) => {
-              const isSelected = search.ramSpec === sub.key;
-              return (
-                <button
-                  key={sub.key}
-                  onClick={() => update({ ramSpec: isSelected ? "" : sub.key })}
-                  className={`w-full flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors ${
-                    isSelected
-                      ? "bg-[color:var(--brand-green)] text-white font-medium"
-                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-                  }`}
-                >
-                  <span className="flex-1 text-left">{sub.label}</span>
-                  <ChevronRight className={`h-3.5 w-3.5 opacity-40 ${isSelected ? "text-white" : "text-slate-400"}`} />
-                </button>
-              );
-            })}
-            {search.ramSpec && (
-              <button
-                onClick={() => update({ ramSpec: "" })}
-                className="w-full rounded-lg px-3 py-2 text-left text-xs text-slate-400 hover:text-slate-600"
-              >
-                × ล้างตัวกรอง
-              </button>
-            )}
+        <div className="space-y-4">
+          <div>
+            <h3 className="mb-2 text-sm font-bold text-[color:var(--brand-navy)]">ประเภทแรม</h3>
+            <div className="flex flex-wrap gap-1.5">
+              {[{ key: "", label: "ทั้งหมด", n: ramFacetQ.data?.total ?? 0 }, ...SUBCATEGORIES.RAM.map((t) => ({
+                key: t,
+                label: SUBCATEGORY_LABELS[t] ?? t,
+                n: ramFacetQ.data?.byType[t] ?? 0,
+              }))].map((opt) => {
+                const isSelected = search.ramType === opt.key;
+                return (
+                  <button
+                    key={opt.key || "all"}
+                    onClick={() => update({ ramType: opt.key, ramGen: "", ramSpec: "" })}
+                    className={`rounded-lg px-2.5 py-1.5 text-xs transition-colors ${
+                      isSelected
+                        ? "bg-[color:var(--brand-green)] font-medium text-white"
+                        : "bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                    }`}
+                  >
+                    {opt.label}
+                    {opt.n > 0 && <span className="ml-1 opacity-70">({opt.n})</span>}
+                  </button>
+                );
+              })}
+            </div>
           </div>
+
+          <div>
+            <h3 className="mb-2 text-sm font-bold text-[color:var(--brand-navy)]">รุ่นแรม</h3>
+            <div className="flex flex-wrap gap-1.5">
+              <button
+                onClick={() => update({ ramGen: "", ramSpec: "" })}
+                className={`rounded-lg px-2.5 py-1.5 text-xs transition-colors ${
+                  !search.ramGen
+                    ? "bg-[color:var(--brand-green)] font-medium text-white"
+                    : "bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                }`}
+              >
+                ทั้งหมด
+              </button>
+              {RAM_GENERATIONS.filter((g) => ramGenCount(g) > 0).map((g) => {
+                const isSelected = search.ramGen === g;
+                return (
+                  <button
+                    key={g}
+                    onClick={() => update({ ramGen: isSelected ? "" : g, ramSpec: "" })}
+                    className={`rounded-lg px-2.5 py-1.5 text-xs transition-colors ${
+                      isSelected
+                        ? "bg-[color:var(--brand-green)] font-medium text-white"
+                        : "bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                    }`}
+                  >
+                    {g}
+                    <span className="ml-1 opacity-70">({ramGenCount(g)})</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {search.ramGen && (
+            <div>
+              <h3 className="mb-2 text-sm font-bold text-[color:var(--brand-navy)]">ความเร็วบัส</h3>
+              <div className="flex flex-wrap gap-1.5">
+                {RAM_SUBCATS.filter((sub) => sub.label.startsWith(search.ramGen === "DDR3L" ? "DDR3" : search.ramGen)).map((sub) => {
+                  const isSelected = search.ramSpec === sub.key;
+                  return (
+                    <button
+                      key={sub.key}
+                      onClick={() => update({ ramSpec: isSelected ? "" : sub.key })}
+                      className={`rounded-lg px-2.5 py-1.5 text-xs transition-colors ${
+                        isSelected
+                          ? "bg-[color:var(--brand-green)] font-medium text-white"
+                          : "bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                      }`}
+                    >
+                      {sub.label}
+                    </button>
+                  );
+                })}
+              </div>
+              {search.ramSpec && (
+                <button
+                  onClick={() => update({ ramSpec: "" })}
+                  className="mt-2 text-xs text-slate-400 hover:text-slate-600"
+                >
+                  × ล้างความเร็วบัส
+                </button>
+              )}
+            </div>
+          )}
         </div>
       )}
 
@@ -889,7 +998,9 @@ function HomePage() {
                         <div className="grid aspect-square place-items-center bg-white p-2">
                           <ProductImage src={p.image_url} alt={p.name ?? p.sku}
                       category={p.category as string | null}
-                      productName={p.name as string | null} />
+                      productName={p.name as string | null}
+                      ramGeneration={p.ram_generation as string | null}
+                      subcategory={p.subcategory as string | null} />
 
                         </div>
                         <div className="border-t p-2">
@@ -1112,7 +1223,7 @@ function HomePage() {
           )}
 
           {productsQuery.isLoading ? (
-            <div className={search.view === "list" ? "space-y-3" : "grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-5 lg:gap-3"}>
+            <div className={search.view === "list" ? "space-y-3" : "grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:gap-3" + (search.category === "RAM" ? " lg:grid-cols-6" : " lg:grid-cols-5")}>
               {Array.from({ length: 8 }).map((_, i) => (
                 <div key={i} className={search.view === "list" ? "h-32 animate-pulse rounded-lg bg-slate-200" : "h-80 animate-pulse rounded-lg bg-slate-200"} />
               ))}
@@ -1189,7 +1300,9 @@ function HomePage() {
                     <Link to="/product/$slug" params={{ slug }} className="grid h-28 w-28 shrink-0 place-items-center rounded-md bg-white">
                       <ProductImage src={p.image_url} alt={p.name ?? p.sku}
                       category={p.category as string | null}
-                      productName={p.name as string | null} />
+                      productName={p.name as string | null}
+                      ramGeneration={p.ram_generation as string | null}
+                      subcategory={p.subcategory as string | null} />
                     </Link>
                     <div className="flex min-w-0 flex-1 flex-col">
                       <div className="text-[11px] uppercase tracking-wide text-slate-500">{p.brand ?? (p.category || detectCategory(p.name))}</div>
@@ -1247,7 +1360,7 @@ function HomePage() {
               })}
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-5 lg:gap-3">
+            <div className={"grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:gap-3" + (search.category === "RAM" ? " lg:grid-cols-6" : " lg:grid-cols-5")}>
               {productsQuery.data!.rows.map((p) => {
                 const byOrder = p.fulfillment_type === "by_order";
                 const ready = p.stock_status === "พร้อมจัดส่ง";
@@ -1271,6 +1384,8 @@ function HomePage() {
                         alt={p.name ?? p.sku}
                       category={p.category as string | null}
                       productName={p.name as string | null}
+                      ramGeneration={p.ram_generation as string | null}
+                      subcategory={p.subcategory as string | null}
                         className="h-full w-full object-contain transition"
                         iconClassName="h-16 w-16 text-slate-300"
                       />
@@ -1280,6 +1395,7 @@ function HomePage() {
                       <Link to="/product/$slug" params={{ slug }} className="line-clamp-2 min-h-10 text-sm font-medium hover:text-[color:var(--brand-navy)]">
                         {p.name ?? p.sku}
                       </Link>
+                      <RamBadge generation={p.ram_generation} subcategory={p.subcategory} />
                       <WarrantyBadge category={p.category} name={p.name} />
                       {hasSpecTags(p.category) && <SpecTagsCompact description={p.description} />}
                       <div className="mt-auto pt-1">
