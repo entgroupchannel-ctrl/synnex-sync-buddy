@@ -21,21 +21,57 @@ type Row = {
 };
 
 const TABS = [
-  { key: "iPhone",     label: "iPhone",     pattern: "%iPhone%" },
-  { key: "MacBook",    label: "MacBook",    pattern: "%MacBook%" },
-  { key: "iPad",       label: "iPad",       pattern: "%iPad%" },
-  { key: "Mac",        label: "Mac",        pattern: "%iMac%,%Mac Mini%,%Mac Studio%" },
-  { key: "Accessories",label: "Accessories",pattern: "%AirPods%,%Watch%,%HomePod%,%Magic %,%Apple Pencil%" },
+  { key: "all",         label: "ทั้งหมด",     pattern: null },
+  { key: "iPhone",      label: "iPhone",      pattern: "%iPhone%" },
+  { key: "MacBook",     label: "MacBook",     pattern: "%MacBook%" },
+  { key: "iPad",        label: "iPad",        pattern: "%iPad%" },
+  { key: "Mac",         label: "Mac",         pattern: "%iMac%,%Mac Mini%,%Mac Studio%" },
+  { key: "Accessories", label: "Accessories", pattern: "%AirPods%,%Watch%,%HomePod%,%Magic %,%Apple Pencil%" },
 ] as const;
 
 export function AppleFeatured() {
-  const [tab, setTab] = useState<(typeof TABS)[number]["key"]>("iPhone");
+  const [tab, setTab] = useState<(typeof TABS)[number]["key"]>("all");
   const tier = useCustomerTier();
   const active = TABS.find((t) => t.key === tab)!;
 
   const q = useQuery({
     queryKey: ["apple-featured", tab],
     queryFn: async () => {
+      if (active.pattern === null) {
+        // แท็บ "ทั้งหมด" — ดึงมาเยอะกว่าเดิม แล้วสุ่มกระจายทุกประเภทสินค้า Apple แทนเรียงราคาแพงสุดก่อน
+        const { data } = await supabase
+          .from("synnex_products")
+          .select("*")
+          .or(`brand.ilike.%Apple%,name.ilike.%Apple%`)
+          .eq("price_approved", true)
+          .gt("selling_price", 0)
+          .limit(60);
+
+        const rows = (data ?? []) as Row[];
+        const buckets: Record<string, Row[]> = { iphone: [], macbook: [], ipad: [], mac: [], other: [] };
+        for (const p of rows) {
+          const n = (p.name ?? "").toLowerCase();
+          if (/iphone/.test(n)) buckets.iphone.push(p);
+          else if (/macbook/.test(n)) buckets.macbook.push(p);
+          else if (/ipad/.test(n)) buckets.ipad.push(p);
+          else if (/\bimac\b|mac mini|mac studio/.test(n)) buckets.mac.push(p);
+          else buckets.other.push(p);
+        }
+        Object.values(buckets).forEach((arr) => arr.sort(() => Math.random() - 0.5));
+
+        const picked: Row[] = [];
+        const keys = Object.keys(buckets);
+        let i = 0;
+        while (picked.length < 10 && keys.some((k) => buckets[k].length > 0)) {
+          const k = keys[i % keys.length];
+          const item = buckets[k].shift();
+          if (item) picked.push(item);
+          i++;
+        }
+        return picked.sort(() => Math.random() - 0.5);
+      }
+
+      // แท็บเฉพาะเจาะจง (iPhone/MacBook/iPad/Mac/Accessories) — กรองตรงตามเดิม ไม่ต้องสุ่ม
       const filters = active.pattern.split(",").map((p) => `name.ilike.${p}`).join(",");
       const { data } = await supabase
         .from("synnex_products")
