@@ -997,7 +997,9 @@ function HomePage() {
                         <div className="grid aspect-square place-items-center bg-white p-2">
                           <ProductImage src={p.image_url} alt={p.name ?? p.sku}
                       category={p.category as string | null}
-                      productName={p.name as string | null} />
+                      productName={p.name as string | null}
+                      ramGeneration={p.ram_generation as string | null}
+                      subcategory={p.subcategory as string | null} />
 
                         </div>
                         <div className="border-t p-2">
@@ -1297,7 +1299,9 @@ function HomePage() {
                     <Link to="/product/$slug" params={{ slug }} className="grid h-28 w-28 shrink-0 place-items-center rounded-md bg-white">
                       <ProductImage src={p.image_url} alt={p.name ?? p.sku}
                       category={p.category as string | null}
-                      productName={p.name as string | null} />
+                      productName={p.name as string | null}
+                      ramGeneration={p.ram_generation as string | null}
+                      subcategory={p.subcategory as string | null} />
                     </Link>
                     <div className="flex min-w-0 flex-1 flex-col">
                       <div className="text-[11px] uppercase tracking-wide text-slate-500">{p.brand ?? (p.category || detectCategory(p.name))}</div>
