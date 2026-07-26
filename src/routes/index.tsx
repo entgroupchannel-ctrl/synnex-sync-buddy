@@ -31,7 +31,7 @@ import { hasSpecTags } from "@/lib/parse-spec";
 import { CATEGORY_ICONS, SMART_LIFE_SUBCATEGORY_ICONS } from "@/lib/category-icons";
 
 
-import { CATEGORIES, detectCategory, displayPrice, getSellingPrice, useCart, useCustomerTier } from "@/lib/cart";
+import { CATEGORIES, SUBCATEGORIES, SUBCATEGORY_LABELS, RAM_GENERATIONS, detectCategory, displayPrice, getSellingPrice, useCart, useCustomerTier } from "@/lib/cart";
 import { triggerAuthPrompt, useSupabaseUser } from "@/lib/auth-sheet";
 import {
   HeroCarousel,
