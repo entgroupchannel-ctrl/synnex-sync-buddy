@@ -13,6 +13,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { SpecTagsFull } from "@/components/spec-tags";
 import { hasSpecTags } from "@/lib/parse-spec";
+import { UsageInfoBox } from "@/components/usage-badge";
 
 import { ProductImage, computerSetPlaceholder, upsPlaceholder, cpuPlaceholder, isCpuProduct } from "@/components/product-image";
 import { DeliveryInfoBox } from "@/components/delivery-info";
@@ -569,6 +570,7 @@ function ProductDetail() {
               {hasSpecTags(p.category as string | null | undefined) && (
                 <div className="mt-6">
                   <SpecTagsFull description={p.description} />
+                  <UsageInfoBox category={p.category as string | null | undefined} name={p.name} description={p.description} price={p.selling_price as number | null | undefined} />
                 </div>
               )}
 

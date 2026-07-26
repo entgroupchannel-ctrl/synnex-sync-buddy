@@ -9,6 +9,7 @@ import { ProductImage } from "@/components/product-image";
 import { DiscountBadgeRow } from "@/components/discount-badge";
 import { SpecTagsCompact } from "@/components/spec-tags";
 import { hasSpecTags } from "@/lib/parse-spec";
+import { UsageBadge } from "@/components/usage-badge";
 import { VatNote } from "@/components/vat-note";
 
 export const Route = createFileRoute("/corporate")({
@@ -104,6 +105,7 @@ function ProductCard({ p }: { p: Row }) {
       {hasSpecTags((p as { category?: string | null }).category) && (
         <div className="mb-1.5">
           <SpecTagsCompact description={(p as { description?: string | null }).description} />
+          <UsageBadge category={(p as { category?: string | null }).category} name={p.name} description={(p as { description?: string | null }).description} price={p.selling_price} />
         </div>
       )}
       <DiscountBadgeRow

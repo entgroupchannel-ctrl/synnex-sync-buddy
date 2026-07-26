@@ -1,0 +1,141 @@
+import { Gamepad2, Briefcase, Video, Cpu, Monitor } from "lucide-react";
+
+export type UsageProfile = {
+  key: string;
+  label: string;
+  hint: string;
+  cls: string;
+  icon: "game" | "office" | "creator" | "workstation" | "basic";
+};
+
+const PROFILES: Record<string, UsageProfile> = {
+  gaming_high: {
+    key: "gaming_high",
+    label: "เล่นเกมลื่นสุด",
+    hint: "เกมออนไลน์/AAA ระดับสูง ปรับกราฟิกสูงได้สบาย",
+    cls: "bg-violet-100 text-violet-700 ring-violet-200",
+    icon: "game",
+  },
+  gaming_mid: {
+    key: "gaming_mid",
+    label: "เล่นเกมได้ดี",
+    hint: "เกมออนไลน์ยอดนิยม เช่น Valorant / FIFA / GTA V",
+    cls: "bg-indigo-100 text-indigo-700 ring-indigo-200",
+    icon: "game",
+  },
+  creator: {
+    key: "creator",
+    label: "ตัดต่อ/กราฟิก",
+    hint: "ตัดต่อวิดีโอ 4K, Photoshop, งานกราฟิก 3D เบา ๆ",
+    cls: "bg-amber-100 text-amber-700 ring-amber-200",
+    icon: "creator",
+  },
+  workstation: {
+    key: "workstation",
+    label: "งานหนัก/มืออาชีพ",
+    hint: "เรนเดอร์ 3D, AI, งานคำนวณหนักต่อเนื่อง",
+    cls: "bg-rose-100 text-rose-700 ring-rose-200",
+    icon: "workstation",
+  },
+  office_plus: {
+    key: "office_plus",
+    label: "ทำงานออฟฟิศลื่น",
+    hint: "Office, Excel ไฟล์ใหญ่, เปิดหลายแท็บพร้อมกัน, ประชุมออนไลน์",
+    cls: "bg-emerald-100 text-emerald-700 ring-emerald-200",
+    icon: "office",
+  },
+  basic: {
+    key: "basic",
+    label: "ใช้งานทั่วไป",
+    hint: "เอกสาร, อินเทอร์เน็ต, ดูวิดีโอ, งานขาย/แคชเชียร์",
+    cls: "bg-sky-100 text-sky-700 ring-sky-200",
+    icon: "basic",
+  },
+};
+
+const ICON = {
+  game: Gamepad2,
+  office: Briefcase,
+  creator: Video,
+  workstation: Cpu,
+  basic: Monitor,
+};
+
+/** Guess what the machine is good for, from its spec text / name / price. */
+export function getUsageProfile(input: {
+  category?: string | null;
+  name?: string | null;
+  description?: string | null;
+  price?: number | null;
+}): UsageProfile | null {
+  const c = (input.category ?? "").toLowerCase();
+  if (!(c.includes("computer set") || c.includes("คอมประกอบ") || c === "pc")) return null;
+
+  const t = `${input.name ?? ""} ${input.description ?? ""}`.toLowerCase();
+  const price = input.price ?? 0;
+
+  // discrete GPU tier
+  const rtx = t.match(/rtx\s*(\d{4})/);
+  const gtx = /gtx\s*\d{3,4}/.test(t);
+  const rx = /\brx\s*\d{3,4}/.test(t);
+  const rtxNum = rtx ? Number(rtx[1]) : 0;
+
+  const workstation =
+    /threadripper|xeon|ryzen\s*9|core\s*i9|quadro|rtx\s*a\d|\ba\d{4}\b.*ada|workstation/.test(t);
+  const highGpu = rtxNum >= 4060 || /rtx\s*30[678]0|rtx\s*40[6789]0|rtx\s*50[6789]0/.test(t);
+
+  const ramMatch = t.match(/(\d{1,3})\s*gb.*(ddr|ram)/) ?? t.match(/(ddr\d)\s*(\d{1,3})\s*gb/);
+  const ram = ramMatch ? Number(ramMatch[1] ?? ramMatch[2]) : 0;
+
+  if (workstation && (highGpu || price >= 60000)) return PROFILES.workstation;
+  if (highGpu) return PROFILES.gaming_high;
+  if (rtxNum > 0 || gtx || rx) return PROFILES.gaming_mid;
+  if (/ryzen\s*7|core\s*i7|core\s*ultra\s*7|radeon\s*graphics.*ryzen\s*7/.test(t) || ram >= 32)
+    return PROFILES.creator;
+  if (/ryzen\s*5|core\s*i5|core\s*ultra\s*5/.test(t) || ram >= 16 || price >= 15000)
+    return PROFILES.office_plus;
+  return PROFILES.basic;
+}
+
+/** Small badge for product cards. */
+export function UsageBadge(props: {
+  category?: string | null;
+  name?: string | null;
+  description?: string | null;
+  price?: number | null;
+  className?: string;
+}) {
+  const p = getUsageProfile(props);
+  if (!p) return null;
+  const Icon = ICON[p.icon];
+  return (
+    <span
+      title={p.hint}
+      className={`mt-1 inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-semibold ring-1 ${p.cls} ${props.className ?? ""}`}
+    >
+      <Icon className="h-3 w-3" />
+      {p.label}
+    </span>
+  );
+}
+
+/** Fuller explainer for the product detail page. */
+export function UsageInfoBox(props: {
+  category?: string | null;
+  name?: string | null;
+  description?: string | null;
+  price?: number | null;
+}) {
+  const p = getUsageProfile(props);
+  if (!p) return null;
+  const Icon = ICON[p.icon];
+  return (
+    <div className="mt-4 rounded-lg border border-[#e2e8f0] bg-[#f8fafc] px-4 py-3 text-[13px]">
+      <div className="mb-1 flex items-center gap-2 font-semibold text-slate-900">
+        <Icon className="h-4 w-4" />
+        เครื่องนี้เหมาะกับ: {p.label}
+      </div>
+      <div className="pl-6 text-slate-600">{p.hint}</div>
+    </div>
+  );
+}
