@@ -467,6 +467,7 @@ function ProductDetail() {
                   </button>
                 </div>
               </div>
+              <EdgeAiExplainer category={p.category as string | null | undefined} name={p.name} description={p.description} />
             </div>
 
             <div className="flex flex-col">
@@ -845,7 +846,7 @@ function ProductDetail() {
 
               })()}
 
-              <EdgeAiExplainer category={p.category as string | null | undefined} name={p.name} description={p.description} />
+              
 
               {/* AEO — Spec table (structured facts) */}
               <section className="mt-6 overflow-hidden rounded-lg border" aria-label="ข้อมูลจำเพาะสินค้า">
