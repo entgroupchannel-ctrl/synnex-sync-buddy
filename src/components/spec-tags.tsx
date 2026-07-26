@@ -24,8 +24,9 @@ const ICONS_LG: Record<string, ReactNode> = {
 export function SpecTagsCompact({ description }: { description?: string | null }) {
   if (!description) return null;
   const specs = parseSpec(description)
-    .filter((s) => ["CPU", "RAM", "Storage"].includes(s.label))
-    .slice(0, 3);
+    .filter((s) => ["CPU", "RAM", "Storage", "GPU", "พอร์ต"].includes(s.label))
+    .slice(0, 4);
+
   if (!specs.length) return null;
 
   return (
