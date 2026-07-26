@@ -612,6 +612,7 @@ export function ComputerSets() {
                           สมาชิก {priceFmt.format(memberNum)}
                         </div>
                       )}
+                      {priceNum > 0 && <VatNote />}
                     </div>
                     <Button
                       disabled={!ready}
