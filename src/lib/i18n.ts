@@ -23,7 +23,7 @@ const translations: Record<Lang, Record<string, string>> = {
     "hero.badge": "ENT Group — สินค้าแท้ 100% ตั้งแต่ปี 2558",
     "hero.title_line1": "ราคา Dealer จริง",
     "hero.title_line2": "ไม่ผ่านคนกลาง",
-    "hero.sub": "Mini PC • Panel PC • IT Products จาก ENT Group IT Shop",
+    "hero.sub": "Mini PC • Panel PC • IT Products จาก ENT Group IT Retail Shop",
     "hero.cta": "ดูสินค้าทั้งหมด",
     "hero.ready_only": "เฉพาะพร้อมจัดส่ง",
 
@@ -99,7 +99,7 @@ const translations: Record<Lang, Record<string, string>> = {
     "hero.badge": "ENT Group — 100% Genuine since 2015",
     "hero.title_line1": "Real Dealer Prices",
     "hero.title_line2": "No Middleman",
-    "hero.sub": "Mini PC • Panel PC • IT Products from ENT Group IT Shop",
+    "hero.sub": "Mini PC • Panel PC • IT Products from ENT Group IT Retail Shop",
     "hero.cta": "Browse Products",
     "hero.ready_only": "In stock only",
 
