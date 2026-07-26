@@ -32,11 +32,72 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import entLogo from "@/assets/ent-logo-round.png.asset.json";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { getBrandLogoUrl } from "@/lib/brand-assets";
 import {
   PAYMENT_BADGES,
   CARRIER_BADGES,
   type FooterBadge,
 } from "@/lib/footer-badges";
+
+/* -------------------------------------------------------------- */
+/* Shop-by-brand logo strip (small, clickable)                     */
+/* -------------------------------------------------------------- */
+
+function FooterBrandLogo({ brand }: { brand: string }) {
+  const [failed, setFailed] = useState(false);
+  const src = getBrandLogoUrl(brand);
+  return (
+    <Link
+      to="/"
+      search={{ brands: brand, category: "all", page: 1 } as never}
+      title={brand}
+      aria-label={`ดูสินค้าแบรนด์ ${brand}`}
+      className="inline-flex h-9 min-w-[62px] items-center justify-center rounded-md border border-white/10 bg-white/90 px-2 transition hover:border-green-300 hover:bg-white"
+    >
+      {src && !failed ? (
+        <img
+          src={src}
+          alt={brand}
+          loading="lazy"
+          className="max-h-6 max-w-[70px] object-contain"
+          onError={() => setFailed(true)}
+        />
+      ) : (
+        <span className="text-[11px] font-bold text-[#0a1628]">{brand}</span>
+      )}
+    </Link>
+  );
+}
+
+function FooterBrandStrip() {
+  const { data } = useQuery({
+    queryKey: ["footer-brands"],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("get_brand_product_counts", { p_limit: 24 });
+      if (error) throw error;
+      return (data ?? []).map((r: { brand: string }) => r.brand);
+    },
+    staleTime: 10 * 60_000,
+  });
+
+  if (!data?.length) return null;
+
+  return (
+    <div className="border-t border-white/10 bg-[#0a1628]">
+      <div className="mx-auto max-w-7xl px-4 py-3">
+        <div className="mb-2 text-xs font-semibold text-white">แบรนด์ที่มีจำหน่าย:</div>
+        <div className="flex flex-wrap gap-2">
+          {data.map((b) => (
+            <FooterBrandLogo key={b} brand={b} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 
 /* -------------------------------------------------------------- */
 /* Small helpers                                                  */
@@ -611,6 +672,8 @@ export function SiteFooter() {
           </div>
         </div>
       </div>
+
+      <FooterBrandStrip />
 
       {/* Network sites */}
       <div className="border-t border-white/10 bg-[#0a1628]">
