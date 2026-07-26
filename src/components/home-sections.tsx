@@ -1131,6 +1131,7 @@ export function MicrosoftFeatured() {
                       สมาชิก ฿{selling.toLocaleString()} <span className="text-slate-500">(ประหยัด ฿{savings.toLocaleString()})</span>
                     </div>
                   )}
+                  <VatNote />
 
                   <Button
                     onClick={() => addToCart(p)}
