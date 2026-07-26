@@ -128,6 +128,23 @@ export function isCpuProduct(category?: string | null, subcategory?: string | nu
   return /^\s*cpu\b/i.test(name ?? "");
 }
 
+/** ภาพแทนสินค้า Apple (MacBook / iPad / Mac) สำหรับรายการที่ยังไม่มีรูปจริง */
+export function applePlaceholder(name?: string | null): string | null {
+  const n = (name ?? "").toLowerCase();
+  if (!n) return null;
+  if (/macbook\s*pro\s*16/.test(n)) return "/apple-placeholders/mbp16.jpg";
+  if (/macbook\s*pro/.test(n)) return "/apple-placeholders/mbp14.jpg";
+  if (/macbook\s*air/.test(n)) return "/apple-placeholders/mba.jpg";
+  if (/ipad\s*pro/.test(n)) return "/apple-placeholders/ipadpro.jpg";
+  if (/ipad\s*air/.test(n)) return "/apple-placeholders/ipadair.jpg";
+  if (/ipad\s*mini/.test(n)) return "/apple-placeholders/ipadmini.jpg";
+  if (/ipad/.test(n)) return "/apple-placeholders/ipad.jpg";
+  if (/mac\s*studio/.test(n)) return "/apple-placeholders/macstudio.jpg";
+  if (/mac\s*mini/.test(n)) return "/apple-placeholders/macmini.jpg";
+  return null;
+}
+
+
 
 
 export function ProductImage({
@@ -204,7 +221,23 @@ export function ProductImage({
   }
 
 
+  // สินค้า Apple ที่ยังไม่มีรูปจริง → ใช้ภาพแทนตามตระกูลสินค้า
+  if (error || !src) {
+    const apple = applePlaceholder(productName ?? alt);
+    if (apple) {
+      return (
+        <div className="relative h-full w-full">
+          <img src={apple} alt={alt} loading={loading} className={className} />
+          <span className="pointer-events-none absolute bottom-1 right-1 rounded bg-slate-900/70 px-1.5 py-0.5 text-[10px] font-medium text-white">
+            ภาพแทน
+          </span>
+        </div>
+      );
+    }
+  }
+
   if (category === "RAM" && (error || !src)) {
+
     return (
       <img
         src={ramPlaceholder(ramGeneration, subcategory)}
