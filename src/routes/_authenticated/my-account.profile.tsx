@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
@@ -120,9 +121,9 @@ function ProfilePage() {
       <div className="rounded-lg border bg-white p-6">
         <h2 className="mb-3 text-lg font-bold text-[color:var(--brand-navy)]">เปลี่ยนรหัสผ่าน</h2>
         <div className="grid gap-3 sm:max-w-md">
-          <div><Label>รหัสผ่านปัจจุบัน</Label><Input type="password" value={pw.current} onChange={(e) => setPw({ ...pw, current: e.target.value })} autoComplete="current-password" /></div>
-          <div><Label>รหัสผ่านใหม่</Label><Input type="password" value={pw.next} onChange={(e) => setPw({ ...pw, next: e.target.value })} autoComplete="new-password" /></div>
-          <div><Label>ยืนยันรหัสผ่านใหม่</Label><Input type="password" value={pw.confirm} onChange={(e) => setPw({ ...pw, confirm: e.target.value })} autoComplete="new-password" /></div>
+          <div><Label>รหัสผ่านปัจจุบัน</Label><PasswordInput value={pw.current} onChange={(e) => setPw({ ...pw, current: e.target.value })} autoComplete="current-password" /></div>
+          <div><Label>รหัสผ่านใหม่</Label><PasswordInput value={pw.next} onChange={(e) => setPw({ ...pw, next: e.target.value })} autoComplete="new-password" /></div>
+          <div><Label>ยืนยันรหัสผ่านใหม่</Label><PasswordInput value={pw.confirm} onChange={(e) => setPw({ ...pw, confirm: e.target.value })} autoComplete="new-password" /></div>
         </div>
         <Button onClick={changePassword} disabled={pwBusy} className="mt-4 bg-[color:var(--brand-navy)] hover:bg-[color:var(--brand-navy-2)]">
           {pwBusy ? "กำลังเปลี่ยน..." : "เปลี่ยนรหัสผ่าน"}

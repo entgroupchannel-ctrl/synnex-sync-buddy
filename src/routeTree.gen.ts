@@ -14,6 +14,7 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ShippingInfoRouteImport } from './routes/shipping-info'
 import { Route as ReturnsRouteImport } from './routes/returns'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PcBuilderRouteImport } from './routes/pc-builder'
 import { Route as PaymentMethodsRouteImport } from './routes/payment-methods'
@@ -89,6 +90,11 @@ const ShippingInfoRoute = ShippingInfoRouteImport.update({
 const ReturnsRoute = ReturnsRouteImport.update({
   id: '/returns',
   path: '/returns',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -386,6 +392,7 @@ export interface FileRoutesByFullPath {
   '/payment-methods': typeof PaymentMethodsRoute
   '/pc-builder': typeof PcBuilderRoute
   '/privacy': typeof PrivacyRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/returns': typeof ReturnsRoute
   '/shipping-info': typeof ShippingInfoRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -443,6 +450,7 @@ export interface FileRoutesByTo {
   '/payment-methods': typeof PaymentMethodsRoute
   '/pc-builder': typeof PcBuilderRoute
   '/privacy': typeof PrivacyRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/returns': typeof ReturnsRoute
   '/shipping-info': typeof ShippingInfoRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -500,6 +508,7 @@ export interface FileRoutesById {
   '/payment-methods': typeof PaymentMethodsRoute
   '/pc-builder': typeof PcBuilderRoute
   '/privacy': typeof PrivacyRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/returns': typeof ReturnsRoute
   '/shipping-info': typeof ShippingInfoRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -559,6 +568,7 @@ export interface FileRouteTypes {
     | '/payment-methods'
     | '/pc-builder'
     | '/privacy'
+    | '/reset-password'
     | '/returns'
     | '/shipping-info'
     | '/sitemap.xml'
@@ -616,6 +626,7 @@ export interface FileRouteTypes {
     | '/payment-methods'
     | '/pc-builder'
     | '/privacy'
+    | '/reset-password'
     | '/returns'
     | '/shipping-info'
     | '/sitemap.xml'
@@ -672,6 +683,7 @@ export interface FileRouteTypes {
     | '/payment-methods'
     | '/pc-builder'
     | '/privacy'
+    | '/reset-password'
     | '/returns'
     | '/shipping-info'
     | '/sitemap.xml'
@@ -731,6 +743,7 @@ export interface RootRouteChildren {
   PaymentMethodsRoute: typeof PaymentMethodsRoute
   PcBuilderRoute: typeof PcBuilderRoute
   PrivacyRoute: typeof PrivacyRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   ReturnsRoute: typeof ReturnsRoute
   ShippingInfoRoute: typeof ShippingInfoRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -778,6 +791,13 @@ declare module '@tanstack/react-router' {
       path: '/returns'
       fullPath: '/returns'
       preLoaderRoute: typeof ReturnsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -1299,6 +1319,7 @@ const rootRouteChildren: RootRouteChildren = {
   PaymentMethodsRoute: PaymentMethodsRoute,
   PcBuilderRoute: PcBuilderRoute,
   PrivacyRoute: PrivacyRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   ReturnsRoute: ReturnsRoute,
   ShippingInfoRoute: ShippingInfoRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
