@@ -1,0 +1,73 @@
+import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
+
+const orderNumberSchema = z.object({ orderNumber: z.string().min(3).max(64) });
+
+/** แทนที่ query ตรงจาก client — ปลอดภัยเหมือน getPublicTracking (ไม่ส่ง cost_price/distributor ออกไป) */
+export const getOrderConfirmation = createServerFn({ method: "GET" })
+  .inputValidator((data: unknown) => orderNumberSchema.parse(data))
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: order, error } = await supabaseAdmin
+      .from("orders")
+      .select(`
+        id, order_number, created_at, customer_name, customer_phone, customer_email, customer_type, user_id,
+        shipping_name, shipping_phone, shipping_address, shipping_district, shipping_province, shipping_postcode,
+        payment_method, payment_status, payment_slip_url, subtotal, cod_fee, total, status,
+        need_tax_invoice, company_name,
+        order_items(id, product_sku, product_name, product_image_url, unit_price, quantity, subtotal)
+      `)
+      .eq("order_number", data.orderNumber)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    return order ?? null;
+  });
+
+const paymentStatusSchema = z.object({ orderId: z.string().uuid() });
+export const getOrderPaymentStatus = createServerFn({ method: "GET" })
+  .inputValidator((data: unknown) => paymentStatusSchema.parse(data))
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: order } = await supabaseAdmin
+      .from("orders").select("payment_status").eq("id", data.orderId).maybeSingle();
+    return { payment_status: order?.payment_status ?? null };
+  });
+
+const submitSlipSchema = z.object({ orderNumber: z.string().min(3).max(64), path: z.string().min(3) });
+export const submitPaymentSlip = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => submitSlipSchema.parse(data))
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const sb = supabaseAdmin;
+    const { data: order, error: findErr } = await sb
+      .from("orders").select("id, status").eq("order_number", data.orderNumber).maybeSingle();
+    if (findErr) throw new Error(findErr.message);
+    if (!order) throw new Error("ไม่พบคำสั่งซื้อ");
+
+    const { error: updErr } = await sb.from("orders").update({ payment_slip_url: data.path }).eq("id", order.id);
+    if (updErr) throw new Error(updErr.message);
+
+    await sb.from("order_status_history").insert({
+      order_id: order.id, status: order.status ?? "pending",
+      note: "ลูกค้าแนบสลิปโอนเงิน", changed_by: "customer",
+    });
+    return { order_id: order.id };
+  });
+
+const linkGuestSchema = z.object({ orderNumber: z.string().min(3).max(64), userId: z.string().uuid() });
+export const linkGuestOrderToAccount = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => linkGuestSchema.parse(data))
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const sb = supabaseAdmin;
+    const { data: order, error: findErr } = await sb
+      .from("orders").select("id, user_id").eq("order_number", data.orderNumber).maybeSingle();
+    if (findErr) throw new Error(findErr.message);
+    if (!order) throw new Error("ไม่พบคำสั่งซื้อ");
+    if (order.user_id) throw new Error("ออเดอร์นี้ผูกบัญชีไปแล้ว");
+
+    const { error: updErr } = await sb.from("orders")
+      .update({ user_id: data.userId, customer_type: "b2c" }).eq("id", order.id);
+    if (updErr) throw new Error(updErr.message);
+    return { success: true };
+  });
