@@ -469,7 +469,7 @@ function ProductPicker({
       let q = supabase
         .from("synnex_products")
         .select(
-          "id, sku, slug, name, brand, category, selling_price, member_price, b2b_price, price_approved, image_url, distributor",
+          "id, sku, slug, name, brand, category, selling_price, member_price, b2b_price, min_tier_price, price_approved, image_url, distributor",
         );
 
       if (step.key !== "gpu") {

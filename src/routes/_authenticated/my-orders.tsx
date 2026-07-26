@@ -184,7 +184,7 @@ function MyOrdersPage() {
     const skus = items.map((i) => i.product_sku).filter(Boolean) as string[];
     const { data: products, error } = await supabase
       .from("synnex_products")
-      .select("sku, slug, name, image_url, distributor, selling_price, member_price, b2b_price, price_approved, stock_status")
+      .select("sku, slug, name, image_url, distributor, selling_price, member_price, b2b_price, min_tier_price, price_approved, stock_status")
       .in("sku", skus);
     if (error) return toast.error(error.message);
 

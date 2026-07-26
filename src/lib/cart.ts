@@ -99,6 +99,7 @@ export type PricingProduct = {
   member_price?: number | null;
   b2b_price?: number | null;
   price_approved?: boolean | null;
+  min_tier_price?: number | null;
 };
 
 function round(n: number): number {
@@ -116,24 +117,28 @@ export function getSellingPrice(p: PricingProduct, tier: CustomerTier = "guest")
 
   const memberBase = Number(p.member_price ?? 0) > 0 ? Number(p.member_price) : selling * 0.95;
   const b2bBase = Number(p.b2b_price ?? 0) > 0 ? Number(p.b2b_price) : null;
+  const floor = Number(p.min_tier_price ?? 0) > 0 ? Number(p.min_tier_price) : 0;
+
+  // ห้ามราคาหลังลด tier ต่ำกว่าพื้นทุน+margin ขั้นต่ำเด็ดขาด (ป้องกันขายขาดทุนอัตโนมัติ)
+  const clamp = (n: number) => (floor > 0 ? Math.max(n, floor) : n);
 
   switch (tier) {
     case "guest":
       return round(selling);
     case "b2c":
-      return round(memberBase);
+      return round(clamp(memberBase));
     case "b2c_silver":
-      return round(memberBase * 0.97);
+      return round(clamp(memberBase * 0.97));
     case "b2c_gold":
-      return round(memberBase * 0.94);
+      return round(clamp(memberBase * 0.94));
     case "b2c_vip":
-      return round(memberBase * 0.92);
+      return round(clamp(memberBase * 0.92));
     case "b2b":
-      return round(b2bBase ?? memberBase);
+      return round(clamp(b2bBase ?? memberBase));
     case "b2b_silver":
-      return round((b2bBase ?? memberBase) * 0.98);
+      return round(clamp((b2bBase ?? memberBase) * 0.98));
     case "b2b_gold":
-      return round((b2bBase ?? memberBase) * 0.95);
+      return round(clamp((b2bBase ?? memberBase) * 0.95));
     default:
       return round(selling);
   }

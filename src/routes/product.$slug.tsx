@@ -35,7 +35,7 @@ export const Route = createFileRoute("/product/$slug")({
   loader: async ({ params }) => {
     const slugOrId = params.slug;
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slugOrId);
-    const selectFields = "id, sku, slug, name, brand, category, description, image_url, image_gallery, selling_price, member_price, stock_status, price_approved";
+    const selectFields = "id, sku, slug, name, brand, category, description, image_url, image_gallery, selling_price, member_price, min_tier_price, stock_status, price_approved";
     const { data: slugProduct, error: slugError } = await supabase
       .from("synnex_products")
       .select(selectFields)
@@ -235,7 +235,7 @@ function ProductDetail() {
     try {
       const raw = localStorage.getItem("ent_recently_viewed");
       const arr: Array<{ sku: string; name: string; image?: string | null; price?: number | null; slug?: string | null }> = raw ? JSON.parse(raw) : [];
-      const price = getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier) ?? null;
+      const price = getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null; min_tier_price?: number | null }, tier) ?? null;
       const entry = { sku: p.sku, name: p.name ?? p.sku, image: p?.image_url ?? null, price, slug: p.slug ?? null };
       const next = [entry, ...arr.filter((x) => x.sku !== entry.sku)].slice(0, 8);
       localStorage.setItem("ent_recently_viewed", JSON.stringify(next));
@@ -564,7 +564,7 @@ function ProductDetail() {
 
 
 
-              {getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier) != null && !!p.price_approved && !isQuoteOnly(p.selling_price as number | null) ? (
+              {getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null; min_tier_price?: number | null }, tier) != null && !!p.price_approved && !isQuoteOnly(p.selling_price as number | null) ? (
                 <>
                   <div className="mt-6">
                     <div className="mb-2 text-sm text-slate-600">จำนวน</div>
@@ -894,7 +894,7 @@ function ProductDetail() {
                       memberPrice={(r as { member_price?: number | null }).member_price}
                       className="mt-1"
                     />
-                    <div className="mt-1 text-sm font-bold text-[color:var(--brand-orange)]">{displayPrice(r as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null }, tier)}</div>
+                    <div className="mt-1 text-sm font-bold text-[color:var(--brand-orange)]">{displayPrice(r as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null; min_tier_price?: number | null }, tier)}</div>
                   </div>
                 </Link>
               ))}
