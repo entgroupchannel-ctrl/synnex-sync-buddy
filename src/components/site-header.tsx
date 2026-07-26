@@ -13,6 +13,7 @@ import { AddToCartSheet } from "@/components/add-to-cart-sheet";
 import { CartReminderBell } from "@/components/cart-reminder-bell";
 import { DeliveryZoneDialog, DeliveryZoneBadge } from "@/components/delivery-zone-dialog";
 import { AppleMegaMenu } from "@/components/apple-mega-menu";
+import { EdgeAiMegaMenu } from "@/components/edge-ai-mega-menu";
 
 
 import { useLanguage } from "@/lib/i18n";
@@ -316,19 +317,25 @@ export function SiteHeader() {
               const active = pathname === "/" && (typeof window !== "undefined") && new URLSearchParams(window.location.search).get("category") === cat;
               const label = c === "ทั้งหมด" ? t("nav.all") : c;
               const icon = c === "ทั้งหมด" ? <LayoutGrid className="h-3.5 w-3.5" /> : CATEGORY_ICONS[c];
-              const items: React.ReactNode[] = [
-                <Link
-                  key={c}
-                  to="/"
-                  search={{ category: cat } as never}
-                  className={`inline-flex items-center gap-1.5 whitespace-nowrap px-3 py-2.5 text-sm transition hover:text-[color:var(--brand-orange)] ${
-                    active ? "text-[color:var(--brand-orange)]" : "text-white/85"
-                  }`}
-                >
-                  {icon}
-                  {label}
-                </Link>,
-              ];
+              const items: React.ReactNode[] = [];
+              // Edge AI Box gets a mega-menu instead of a plain link
+              if (c === "Edge AI Box") {
+                items.push(<EdgeAiMegaMenu key="edge-ai-nav" />);
+              } else {
+                items.push(
+                  <Link
+                    key={c}
+                    to="/"
+                    search={{ category: cat } as never}
+                    className={`inline-flex items-center gap-1.5 whitespace-nowrap px-3 py-2.5 text-sm transition hover:text-[color:var(--brand-orange)] ${
+                      active ? "text-[color:var(--brand-orange)]" : "text-white/85"
+                    }`}
+                  >
+                    {icon}
+                    {label}
+                  </Link>,
+                );
+              }
               // Insert Apple mega-menu right after "Notebook"
               if (c === "Notebook") {
                 items.push(<AppleMegaMenu key="apple-nav" />);
