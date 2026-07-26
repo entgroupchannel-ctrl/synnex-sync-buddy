@@ -71,6 +71,8 @@ import { VatNote } from "@/components/vat-note";
 import { SolarInstallBanner } from "@/components/solar-install-banner";
 import { CctvInstallBanner } from "@/components/cctv-install-banner";
 import { ConferenceInstallBanner } from "@/components/conference-install-banner";
+import { ComputerSetBanner } from "@/components/computer-set-banner";
+
 
 import { HelpChooseBanner, HelpChooseInlineCard, SupportPeopleStrip } from "@/components/help-choose-banner";
 
@@ -1205,6 +1207,9 @@ function HomePage() {
           {search.category === "CCTV & Security" && <CctvInstallBanner className="mb-4" />}
 
           {search.category === "Webcam & Conference" && <ConferenceInstallBanner className="mb-4" />}
+
+          {search.category === "Computer Set" && <ComputerSetBanner className="mb-4" />}
+
 
 
 
