@@ -11,6 +11,9 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { CompareProvider } from "../lib/compare-store";
+import { CompareBar } from "../components/compare-bar";
+
 
 function NotFoundComponent() {
   return (
