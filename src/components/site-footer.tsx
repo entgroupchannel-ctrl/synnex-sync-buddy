@@ -31,7 +31,7 @@ import {
   FileCheck2,
 } from "lucide-react";
 import { toast } from "sonner";
-import entLogo from "@/assets/entgroup-logo.jpg.asset.json";
+import entLogo from "@/assets/ent-icon.png.asset.json";
 import {
   PAYMENT_BADGES,
   CARRIER_BADGES,
@@ -598,7 +598,7 @@ export function SiteFooter() {
             <img
               src={entLogo.url}
               alt="ENT Group IT Retail Shop"
-              className="h-10 w-10 rounded-lg object-contain bg-white p-0.5"
+              className="h-10 w-10 rounded-xl object-contain"
             />
             <div>
               <div className="text-sm font-medium text-white">
