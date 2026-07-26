@@ -65,7 +65,7 @@ import { BrandLogo } from "@/components/brand-logo";
 import { useVolumeRules, hasVolumeDiscount } from "@/lib/volume-discount";
 import entLogo from "@/assets/entgroup-logo.jpg.asset.json";
 import { VatNote } from "@/components/vat-note";
-import { HelpChooseBanner, HelpChooseInlineCard } from "@/components/help-choose-banner";
+import { HelpChooseBanner, HelpChooseInlineCard, SupportPeopleStrip } from "@/components/help-choose-banner";
 
 
 const searchSchema = z.object({
