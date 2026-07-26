@@ -557,7 +557,7 @@ export function UsageBadge(props: {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent
           className="max-h-[85vh] overflow-y-auto sm:max-w-lg"
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e: ReactMouseEvent) => e.stopPropagation()}
         >
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-base">
