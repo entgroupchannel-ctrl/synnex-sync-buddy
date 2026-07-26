@@ -1014,6 +1014,7 @@ function HomePage() {
                           <ProductImage src={p.image_url} alt={p.name ?? p.sku}
                       category={p.category as string | null}
                       productName={p.name as string | null}
+                      distributor={(p as { distributor?: string | null }).distributor ?? null}
                       ramGeneration={p.ram_generation as string | null}
                       subcategory={p.subcategory as string | null} />
 
@@ -1313,6 +1314,7 @@ function HomePage() {
                       <ProductImage src={p.image_url} alt={p.name ?? p.sku}
                       category={p.category as string | null}
                       productName={p.name as string | null}
+                      distributor={(p as { distributor?: string | null }).distributor ?? null}
                       ramGeneration={p.ram_generation as string | null}
                       subcategory={p.subcategory as string | null} />
                     </Link>
@@ -1396,6 +1398,7 @@ function HomePage() {
                         alt={p.name ?? p.sku}
                       category={p.category as string | null}
                       productName={p.name as string | null}
+                      distributor={(p as { distributor?: string | null }).distributor ?? null}
                       ramGeneration={p.ram_generation as string | null}
                       subcategory={p.subcategory as string | null}
                         className="h-full w-full object-contain transition"

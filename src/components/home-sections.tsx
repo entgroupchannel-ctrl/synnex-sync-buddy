@@ -368,7 +368,8 @@ export function TodaysBestDeals() {
                 <Link to="/product/$slug" params={{ slug }} className="grid h-32 w-36 shrink-0 place-items-center bg-white p-2 lg:h-40 lg:w-full">
                   <ProductImage src={p.image_url} alt={p.name ?? p.sku}
                       category={p.category as string | null}
-                      productName={p.name as string | null} className="h-full w-full object-contain transition group-hover:scale-105" iconClassName="h-12 w-12 text-slate-300" />
+                      productName={p.name as string | null}
+                      distributor={(p as { distributor?: string | null }).distributor ?? null} className="h-full w-full object-contain transition group-hover:scale-105" iconClassName="h-12 w-12 text-slate-300" />
                 </Link>
 
                 <div className="flex min-w-0 flex-1 flex-col gap-1 border-l p-3 lg:border-l-0 lg:border-t">
@@ -456,7 +457,8 @@ export function PopularNotebooks() {
                 <Link to="/product/$slug" params={{ slug }} className="grid aspect-square place-items-center bg-white p-3">
                   <ProductImage src={p.image_url} alt={p.name ?? p.sku}
                       category={p.category as string | null}
-                      productName={p.name as string | null} className="h-full w-full object-contain transition group-hover:scale-105" iconClassName="h-16 w-16 text-slate-300" />
+                      productName={p.name as string | null}
+                      distributor={(p as { distributor?: string | null }).distributor ?? null} className="h-full w-full object-contain transition group-hover:scale-105" iconClassName="h-16 w-16 text-slate-300" />
                 </Link>
                 <div className="flex flex-1 flex-col gap-1 border-t p-3">
                   {p.brand && <div className="text-[10px] uppercase tracking-wide text-slate-500">{p.brand}</div>}
@@ -569,6 +571,7 @@ export function ComputerSets() {
                       alt={p.name ?? p.sku}
                       category={p.category as string | null}
                       productName={p.name as string | null}
+                      distributor={(p as { distributor?: string | null }).distributor ?? null}
                       className="h-full w-full object-contain transition group-hover:scale-105"
                       iconClassName="h-20 w-20 text-slate-300"
                     />
@@ -1138,6 +1141,7 @@ export function MicrosoftFeatured() {
                     alt={p.name ?? p.sku}
                       category={p.category as string | null}
                       productName={p.name as string | null}
+                      distributor={(p as { distributor?: string | null }).distributor ?? null}
                     className="h-[120px] w-[120px] object-contain transition group-hover:scale-105"
                     iconClassName="h-16 w-16 text-blue-200"
                   />
@@ -1218,6 +1222,7 @@ function CategoryGridCard({ p }: { p: ProductRow }) {
           alt={p.name ?? p.sku}
                       category={p.category as string | null}
                       productName={p.name as string | null}
+                      distributor={(p as { distributor?: string | null }).distributor ?? null}
           className="h-full w-full object-contain transition group-hover:scale-105"
           iconClassName="h-14 w-14 text-slate-300"
         />
@@ -1878,6 +1883,7 @@ export function CorporateITSolutions() {
                       src={p.image_url as string | null}
                       alt={(p.name as string | null) ?? ""}
                       productName={p.name as string | null}
+                      distributor={(p as { distributor?: string | null }).distributor ?? null}
                       category={p.category as string | null}
                       className="h-full w-full scale-125 object-cover transition-transform duration-300 group-hover:scale-135"
                     />
