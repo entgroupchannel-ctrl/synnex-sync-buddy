@@ -222,11 +222,15 @@ function ProductDetail() {
       ? [computerSetPlaceholder(p.name)]
       : p.category === "UPS" && (p.distributor ?? "").toUpperCase() === "ADVICE"
         ? [upsPlaceholder(p.name)]
-        : ([p?.image_url, ...(Array.isArray(p?.image_gallery) ? p?.image_gallery : [])].filter(
-            Boolean,
-          ) as string[]).filter(
-            (src, i) => i === 0 || !(hideSpecShots && /\/[5-8]\.jpg(?:\?.*)?$/i.test(src)),
-          );
+        : isCpuProduct(p.category, p.subcategory, p.name) &&
+            (p.distributor ?? "").toUpperCase() === "ADVICE"
+          ? [cpuPlaceholder(p.name)]
+          : ([p?.image_url, ...(Array.isArray(p?.image_gallery) ? p?.image_gallery : [])].filter(
+              Boolean,
+            ) as string[]).filter(
+              (src, i) => i === 0 || !(hideSpecShots && /\/[5-8]\.jpg(?:\?.*)?$/i.test(src)),
+            );
+
 
 
 
