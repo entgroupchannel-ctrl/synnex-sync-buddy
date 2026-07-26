@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { PRODUCT_PUBLIC_COLUMNS } from "@/lib/product-columns";
 import { imagesFirst, imagesFirstShuffled } from "@/lib/product-sort";
+import { CLEAR_STALE_BROWSE_FILTERS } from "@/lib/search-defaults";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
