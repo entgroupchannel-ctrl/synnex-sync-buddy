@@ -18,15 +18,29 @@ type Product = {
   markup_override: number | null;
 };
 
-function roundTo10(n: number) {
-  return Math.round(n / 10) * 10;
-}
+export type PricingProductRow = {
+  id: string;
+  sku: string;
+  name: string | null;
+  brand: string | null;
+  category: string | null;
+  distributor: string | null;
+  image_url: string | null;
+  cost_price: number | null;
+  price: number | null;
+  selling_price: number | null;
+  markup_override: number | null;
+  price_approved: boolean | null;
+  updated_at: string | null;
+};
 
 export const applyPricing = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { supabase } = context;
-    const { data: rules } = await supabase
+    const { adminContext, roundTo10 } = await import("@/lib/pricing-admin.server");
+    const db = await adminContext(context.userId);
+
+    const { data: rules } = await db
       .from("pricing_rules")
       .select("id, rule_type, target, markup_percent, is_active")
       .eq("is_active", true);
@@ -40,7 +54,6 @@ export const applyPricing = createServerFn({ method: "POST" })
     }
     const globalPct = Number(global?.markup_percent ?? 15);
 
-    // Fetch all products in pages of 1000
     const pageSize = 1000;
     let offset = 0;
     let updated = 0;
@@ -48,7 +61,7 @@ export const applyPricing = createServerFn({ method: "POST" })
     let total = 0;
 
     while (true) {
-      const { data, error, count } = await supabase
+      const { data, error, count } = await db
         .from("synnex_products")
         .select("id, brand, category, cost_price, price, markup_override", { count: "exact" })
         .range(offset, offset + pageSize - 1);
@@ -68,7 +81,7 @@ export const applyPricing = createServerFn({ method: "POST" })
         else pct = globalPct;
 
         const selling = roundTo10(cost * (1 + pct / 100));
-        const { error: uerr } = await supabase
+        const { error: uerr } = await db
           .from("synnex_products")
           .update({ selling_price: selling, price_approved: true })
           .eq("id", p.id);
@@ -85,15 +98,57 @@ export const applyPricing = createServerFn({ method: "POST" })
 export const getPricingSummary = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { supabase } = context;
+    const { adminContext } = await import("@/lib/pricing-admin.server");
+    const db = await adminContext(context.userId);
     const [unapproved, zero, total] = await Promise.all([
-      supabase.from("synnex_products").select("*", { count: "exact", head: true }).eq("price_approved", false),
-      supabase.from("synnex_products").select("*", { count: "exact", head: true }).or("selling_price.is.null,selling_price.eq.0"),
-      supabase.from("synnex_products").select("*", { count: "exact", head: true }),
+      db.from("synnex_products").select("id", { count: "exact", head: true }).eq("price_approved", false),
+      db.from("synnex_products").select("id", { count: "exact", head: true }).or("selling_price.is.null,selling_price.eq.0"),
+      db.from("synnex_products").select("id", { count: "exact", head: true }),
     ]);
     return {
       unapproved: unapproved.count ?? 0,
       zero: zero.count ?? 0,
       total: total.count ?? 0,
     };
+  });
+
+/** รายการสินค้าสำหรับหน้า /admin/pricing/products (อ่าน cost_price / markup_override ฝั่งเซิร์ฟเวอร์) */
+export const listPricingProducts = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: {
+    q: string;
+    distributor: string;
+    category: string;
+    status: string;
+    brands: string[];
+    sort: string;
+    page: number;
+    pageSize: number;
+  }) => input)
+  .handler(async ({ context, data: search }) => {
+    const { adminContext, SORT_MAP, ADMIN_PRODUCT_COLUMNS } = await import("@/lib/pricing-admin.server");
+    const db = await adminContext(context.userId);
+
+    const from = (search.page - 1) * search.pageSize;
+    const to = from + search.pageSize - 1;
+    const so = SORT_MAP[search.sort] ?? SORT_MAP.sku_asc;
+
+    let qq = db
+      .from("synnex_products")
+      .select(ADMIN_PRODUCT_COLUMNS as "*", { count: "exact" })
+      .order(so.col, { ascending: so.asc, nullsFirst: false })
+      .range(from, to);
+
+    const s = search.q.trim().replace(/[%,]/g, "");
+    if (s) qq = qq.or(`sku.ilike.%${s}%,name.ilike.%${s}%`);
+    if (search.distributor !== "all") qq = qq.eq("distributor", search.distributor);
+    if (search.category !== "all") qq = qq.eq("category", search.category);
+    if (search.brands.length > 0) qq = qq.in("brand", search.brands);
+    if (search.status === "unapproved") qq = qq.or("price_approved.eq.false,selling_price.is.null");
+    else if (search.status === "zero") qq = qq.or("selling_price.is.null,selling_price.eq.0");
+    else if (search.status === "approved") qq = qq.eq("price_approved", true);
+
+    const { data, error, count } = await qq;
+    if (error) throw new Error(error.message);
+    return { rows: (data ?? []) as unknown as PricingProductRow[], count: count ?? 0 };
   });
