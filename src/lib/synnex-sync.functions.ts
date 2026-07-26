@@ -2,11 +2,14 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
+const SYNC_PRODUCT_COLUMNS =
+  "id, sku, name, description, brand, category, distributor, image_url, product_url, cost_price, price, selling_price, markup_override, price_approved, stock_qty, stock_status, synced_at";
+
 export const runSynnexSync = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    // Invoke the edge function using the authenticated user's client — no
-    // service role key needed in the TanStack worker runtime.
+    const { adminContext } = await import("@/lib/pricing-admin.server");
+    await adminContext(context.userId);
     const { data, error } = await context.supabase.functions.invoke("sync-synnex", {
       body: {},
     });
@@ -24,15 +27,16 @@ export const runSynnexSync = createServerFn({ method: "POST" })
 export const getSyncStatus = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { supabase } = context;
+    const { adminContext } = await import("@/lib/pricing-admin.server");
+    const db = await adminContext(context.userId);
     const [{ data: latest }, { count }] = await Promise.all([
-      supabase
+      db
         .from("sync_logs")
-        .select("*")
+        .select("id, status, message, products_found, started_at, finished_at")
         .order("started_at", { ascending: false })
         .limit(1)
         .maybeSingle(),
-      supabase.from("synnex_products").select("*", { count: "exact", head: true }),
+      db.from("synnex_products").select("id", { count: "exact", head: true }),
     ]);
     return { latest, total: count ?? 0 };
   });
@@ -47,14 +51,15 @@ export const listProducts = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => listSchema.parse(d))
   .handler(async ({ data, context }) => {
-    const { supabase } = context;
+    const { adminContext } = await import("@/lib/pricing-admin.server");
+    const db = await adminContext(context.userId);
     const pageSize = 20;
     const from = (data.page - 1) * pageSize;
     const to = from + pageSize - 1;
 
-    let query = supabase
+    let query = db
       .from("synnex_products")
-      .select("*", { count: "exact" })
+      .select(SYNC_PRODUCT_COLUMNS, { count: "exact" })
       .order("synced_at", { ascending: false })
       .range(from, to);
 
