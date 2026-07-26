@@ -157,8 +157,8 @@ export function HelpChooseBanner({
             </a>
           </div>
         </div>
-        <div className="shrink-0">
         <div className="flex shrink-0 flex-col items-center gap-3 lg:flex-row">
+
           <img
             src={supportTeam}
             alt="ทีมงานฝ่ายบริการลูกค้า ENT Group พร้อมให้คำปรึกษา"
