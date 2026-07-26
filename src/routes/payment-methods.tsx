@@ -58,7 +58,9 @@ function PaymentMethods() {
           <p className="text-sm text-slate-700">มีคำถามเกี่ยวกับการชำระเงิน?</p>
           <div className="flex flex-wrap gap-3 justify-center mt-3">
             <a href="tel:0204561040" className="rounded-full bg-emerald-600 text-white px-4 py-2 text-sm font-medium">📞 02-045-6104</a>
-            <a href="https://line.me/R/ti/p/@entgroup" target="_blank" rel="noreferrer" className="rounded-full bg-[#06C755] text-white px-4 py-2 text-sm font-medium">💚 Line: @entgroup</a>
+            <LineQrDialog>
+              <button type="button" className="rounded-full bg-[#06C755] text-white px-4 py-2 text-sm font-medium">💚 Line: @entgroup</button>
+            </LineQrDialog>
           </div>
         </div>
       </div>
