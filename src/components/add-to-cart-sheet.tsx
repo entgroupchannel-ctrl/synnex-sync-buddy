@@ -1,26 +1,17 @@
 import { Link } from "@tanstack/react-router";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { User, Building2, X, ShoppingCart, Check } from "lucide-react";
+import { User, Building2, ShoppingCart, Check } from "lucide-react";
 import { useAuthSheetListener } from "@/lib/auth-sheet";
 
 export function AddToCartSheet() {
   const { open, item, close } = useAuthSheetListener();
   return (
-    <Sheet open={open} onOpenChange={(v) => !v && close()}>
-      <SheetContent
-        side="bottom"
-        className="mx-auto max-w-lg rounded-t-2xl border-t-4 border-[color:var(--brand-green)] p-0"
+    <Dialog open={open} onOpenChange={(v) => !v && close()}>
+      <DialogContent
+        className="max-w-lg rounded-2xl border-t-4 border-[color:var(--brand-green)] p-0"
       >
         <div className="relative p-6">
-          <button
-            onClick={close}
-            aria-label="ปิด"
-            className="absolute right-4 top-4 grid h-8 w-8 place-items-center rounded-full text-slate-400 hover:bg-slate-100"
-          >
-            <X className="h-4 w-4" />
-          </button>
-
           <div className="mb-4 flex items-center gap-3 rounded-lg bg-green-50 p-3">
             <div className="grid h-10 w-10 place-items-center rounded-full bg-[color:var(--brand-green)] text-white">
               <Check className="h-5 w-5" />
@@ -90,7 +81,7 @@ export function AddToCartSheet() {
             </div>
           </div>
         </div>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 }
