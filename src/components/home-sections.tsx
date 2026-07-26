@@ -634,62 +634,29 @@ export function ComputerSets() {
 
 /* ---------- Shop by Brand ---------- */
 
-const BRAND_DOMAINS: Record<string, string> = {
-  CISCO: "cisco.com",
-  HIKVISION: "hikvision.com",
-  SANDISK: "sandisk.com",
-  ASUS: "asus.com",
-  DAHUA: "dahuasecurity.com",
-  CORSAIR: "corsair.com",
-  HUAWEI: "huawei.com",
-  VIEWSONIC: "viewsonic.com",
-  SAMSUNG: "samsung.com",
-  SEAGATE: "seagate.com",
-  KINGSTON: "kingston.com",
-  ACER: "acer.com",
-  TPLINK: "tp-link.com",
-  AOC: "aoc.com",
-  DLINK: "dlink.com",
-  LG: "lg.com",
-  MICROSOFT: "microsoft.com",
-  DELL: "dell.com",
-  HP: "hp.com",
-  LENOVO: "lenovo.com",
-  MSI: "msi.com",
-  CANON: "canon.com",
-  APC: "apc.com",
-  NETGEAR: "netgear.com",
-  ZYXEL: "zyxel.com",
-};
 
 function BrandCardLogo({ brand }: { brand: string }) {
-  const [idx, setIdx] = useState(0);
+  const [failed, setFailed] = useState(false);
   const local = getBrandLogoUrl(brand);
-  const domain = BRAND_DOMAINS[brand];
-  const sources = local
-    ? [local]
-    : domain
-      ? [`https://unavatar.io/${domain}?fallback=false`]
-      : [];
-  const failed = idx >= sources.length;
   return (
-    <div className="mb-2 flex h-14 items-center justify-center">
-      {!failed ? (
+    <div className="mb-2 flex h-16 items-center justify-center">
+      {local && !failed ? (
         <img
-          src={sources[idx]}
+          src={local}
           alt={brand}
           loading="lazy"
-          className="max-h-14 max-w-[140px] object-contain transition group-hover:scale-105"
-          onError={() => setIdx((i) => i + 1)}
+          className="max-h-16 max-w-[170px] object-contain transition group-hover:scale-105"
+          onError={() => setFailed(true)}
         />
       ) : (
-        <span className="text-base font-black tracking-tight text-[color:var(--brand-navy)]">
+        <span className="px-2 text-center text-lg font-black leading-tight tracking-tight text-[color:var(--brand-navy)]">
           {brand}
         </span>
       )}
     </div>
   );
 }
+
 
 
 export function ShopByBrand() {
