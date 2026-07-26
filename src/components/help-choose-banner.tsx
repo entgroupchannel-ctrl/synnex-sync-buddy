@@ -219,3 +219,57 @@ export function HelpChooseInlineCard({ category }: { category?: string | null })
     </div>
   );
 }
+
+/** แถบ "ทีมงานพร้อมให้บริการ" พร้อมภาพจริง — ใช้บนหน้าแรก/หน้าอื่นๆ */
+export function SupportPeopleStrip({ className = "" }: { className?: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <section className={`overflow-hidden rounded-xl border bg-white ${className}`}>
+      <div className="grid gap-0 md:grid-cols-2">
+        <div className="grid grid-cols-2 gap-0">
+          <img
+            src={supportAgent1}
+            alt="เจ้าหน้าที่ call center ENT Group พร้อมให้คำปรึกษา"
+            loading="lazy"
+            width={1024}
+            height={768}
+            className="h-40 w-full object-cover sm:h-56"
+          />
+          <img
+            src={supportAgent2}
+            alt="ทีมซัพพอร์ตด้านเทคนิค ENT Group"
+            loading="lazy"
+            width={1024}
+            height={768}
+            className="h-40 w-full object-cover sm:h-56"
+          />
+        </div>
+        <div className="flex flex-col justify-center gap-3 p-5 sm:p-7">
+          <div className="inline-flex w-fit items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+            <HeadphonesIcon className="h-3.5 w-3.5" /> ทีมงานคนไทย พร้อมให้บริการ
+          </div>
+          <h2 className="text-xl font-bold text-slate-900 sm:text-2xl">
+            มีทีมงานตัวจริงคอยดูแลคุณทุกขั้นตอน
+          </h2>
+          <p className="text-sm text-slate-600">
+            ตั้งแต่เลือกสเปก ออกใบเสนอราคา จนถึงหลังการขาย โทรหาเราได้ทุกวันทำการ 09:00–18:00 น.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <Button asChild variant="outline" className="border-emerald-300">
+              <a href={`tel:${PHONE_TEL}`}><Phone className="mr-1.5 h-4 w-4" /> {PHONE}</a>
+            </Button>
+            <LineQrDialog>
+              <Button variant="outline" className="border-emerald-300">
+                <MessageCircle className="mr-1.5 h-4 w-4" /> LINE @njm2688e
+              </Button>
+            </LineQrDialog>
+            <Button onClick={() => setOpen(true)} className="bg-[color:var(--brand-green)] font-semibold hover:brightness-110">
+              <Send className="mr-1.5 h-4 w-4" /> ให้เราติดต่อกลับ
+            </Button>
+          </div>
+        </div>
+      </div>
+      <HelpChooseDialog open={open} onOpenChange={setOpen} />
+    </section>
+  );
+}
