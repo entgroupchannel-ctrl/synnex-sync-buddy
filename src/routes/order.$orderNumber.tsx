@@ -172,17 +172,8 @@ function OrderConfirm() {
         .from("payment-slips")
         .upload(path, file, { contentType: file.type, upsert: false });
       if (upErr) throw upErr;
-      const { error: uErr } = await supabase
-        .from("orders")
-        .update({ payment_slip_url: path })
-        .eq("id", order.id);
-      if (uErr) throw uErr;
-      await supabase.from("order_status_history").insert({
-        order_id: order.id,
-        status: order.status ?? "pending",
-        note: "ลูกค้าแนบสลิปโอนเงิน",
-        changed_by: "customer",
-      });
+      await submitSlip({ data: { orderNumber: order.order_number, path } });
+
       toast.success("อัปโหลดสำเร็จ ✓ กำลังตรวจสอบสลิปอัตโนมัติ...");
 
       // แจ้งอีเมลลูกค้าทันที ว่าได้รับสลิปแล้วกำลังตรวจสอบ (fire-and-forget)
