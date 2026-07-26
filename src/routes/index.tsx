@@ -34,6 +34,7 @@ import { CATEGORY_ICONS, SMART_LIFE_SUBCATEGORY_ICONS } from "@/lib/category-ico
 
 import { CATEGORIES, SUBCATEGORIES, SUBCATEGORY_LABELS, RAM_GENERATIONS, detectCategory, displayPrice, getSellingPrice, useCart, useCustomerTier } from "@/lib/cart";
 import { triggerAuthPrompt, useSupabaseUser } from "@/lib/auth-sheet";
+import { CLEAR_STALE_BROWSE_FILTERS } from "@/lib/search-defaults";
 import {
   HeroCarousel,
   QuickCategoryGrid,
@@ -516,7 +517,15 @@ function HomePage() {
     if (set.has(b)) set.delete(b); else set.add(b);
     // Selecting/deselecting a brand auto-clears category to prevent 0-result conflicts.
     // Smart Life keeps its category so its sub-filters stay visible.
-    update(isSmartLife ? { brands: [...set].join(",") } : { brands: [...set].join(","), category: "all" });
+    // ต้องล้าง q/min/max/ramSpec/ramGen/jetsonType/compType ด้วย ไม่ใช่แค่ category —
+    // ไม่งั้นข้อความค้นหาหรือช่วงราคาที่ตกค้างจากการเข้าชมก่อนหน้าจะไปชนกับแบรนด์ที่เพิ่งเลือก
+    // จนกลายเป็น "ไม่พบสินค้า" ทั้งที่ของมีจริง (บั๊กที่เจอจริงกับ Huawei)
+    const clearStale = CLEAR_STALE_BROWSE_FILTERS;
+    update(
+      isSmartLife
+        ? { brands: [...set].join(","), ...clearStale }
+        : { brands: [...set].join(","), category: "all", ...clearStale },
+    );
   };
 
   const setCategory = (c: string) => {
