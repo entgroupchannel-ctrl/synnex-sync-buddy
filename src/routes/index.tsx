@@ -1090,7 +1090,7 @@ function HomePage() {
 
         {/* Desktop sidebar */}
         <aside className="hidden w-64 shrink-0 lg:block">
-          <div className="sticky top-4 max-h-[calc(100vh-2rem)] overflow-y-auto rounded-lg border bg-white p-4 scrollbar-thin scrollbar-thumb-slate-200">
+          <div className="rounded-lg border bg-white p-4">
             {Filters}
           </div>
         </aside>
