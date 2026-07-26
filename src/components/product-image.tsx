@@ -122,7 +122,7 @@ export function ProductImage({
     return <img src={placeholder} alt={alt} loading={loading} className={className} />;
   }
 
-  if (category === "UPS") {
+  if (category === "UPS" && (error || !src)) {
     return (
       <div className="relative h-full w-full">
         <img
