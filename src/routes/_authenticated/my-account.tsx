@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { WorkHeader } from "@/components/work-header";
 import { WorkFooter } from "@/components/work-footer";
-import { User, MapPin, Package, Building2, CreditCard, Wallet } from "lucide-react";
+import { User, MapPin, Package, Building2, CreditCard, Wallet, Crown } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/my-account")({
   head: () => ({
@@ -33,6 +33,7 @@ function MyAccountLayout() {
     { to: "/my-account/profile", label: "ข้อมูลส่วนตัว", icon: User },
     { to: "/my-account/addresses", label: "ที่อยู่จัดส่ง", icon: MapPin },
     { to: "/my-account/orders", label: "ประวัติการสั่งซื้อ", icon: Package },
+    { to: "/my-account/membership", label: "ระดับสมาชิก", icon: Crown },
     { to: "/my-account/payment", label: "บัตรเครดิต/เดบิต", icon: Wallet },
     ...(userType === "b2b"
       ? [
