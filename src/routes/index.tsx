@@ -68,7 +68,7 @@ const searchSchema = z.object({
   category: fallback(z.string(), "all").default("all"),
   brands: fallback(z.string(), "").default(""),
   ramSpec: fallback(z.string(), "").default(""),
-  ramType: fallback(z.string(), "").default(""),   // RAM Desktop | RAM Notebook
+  sub: fallback(z.string(), "").default(""),        // ค่าใน synnex_products.subcategory
   ramGen: fallback(z.string(), "").default(""),    // DDR5 | DDR4 | DDR3L | DDR3 | DDR2
   jetsonType: fallback(z.string(), "").default(""),
   min: fallback(z.number(), 0).default(0),
@@ -389,9 +389,8 @@ function HomePage() {
           const spec = RAM_SUBCATS.find((s) => s.key === search.ramSpec);
           if (spec) q = q.or(spec.patterns.map((p) => `name.ilike."%${p}%"`).join(","));
         }
-        if (search.category === "RAM" && search.ramType) {
-          q = q.eq("subcategory", search.ramType);
-        }
+        // ใช้ได้กับทุกหมวดที่มีหมวดย่อย ไม่เฉพาะ RAM
+        if (search.sub) q = q.eq("subcategory", search.sub);
         if (search.category === "RAM" && search.ramGen) {
           q = q.eq("ram_generation", search.ramGen);
         }
@@ -476,15 +475,17 @@ function HomePage() {
   const isJetson = search.category === "Edge AI Box";
 
   // นับจำนวนจริงของหมวดย่อย/รุ่นแรม เพื่อซ่อนตัวเลือกที่ไม่มีสินค้า
+  const subOptions = SUBCATEGORIES[search.category] ?? [];
+  const hasSubs = subOptions.length > 0;
   const ramFacetQ = useQuery({
-    queryKey: ["ram-facets"],
-    enabled: isRam,
+    queryKey: ["sub-facets", search.category],
+    enabled: hasSubs,
     staleTime: 5 * 60_000,
     queryFn: async () => {
       const { data } = await supabase
         .from("synnex_products")
         .select("subcategory, ram_generation")
-        .eq("category", "RAM")
+        .eq("category", search.category)
         .eq("price_approved", true)
         .limit(1000);
       const rows = (data ?? []) as { subcategory: string | null; ram_generation: string | null }[];
@@ -506,7 +507,7 @@ function HomePage() {
   const ramGenCount = (gen: string) => {
     const f = ramFacetQ.data;
     if (!f) return 0;
-    return search.ramType ? (f.byGen[`${search.ramType}|${gen}`] ?? 0) : (f.byGen[gen] ?? 0);
+    return search.sub ? (f.byGen[`${search.sub}|${gen}`] ?? 0) : (f.byGen[gen] ?? 0);
   };
 
 
@@ -521,7 +522,7 @@ function HomePage() {
   const setCategory = (c: string) => {
     // Changing category auto-clears brand/ramSpec/jetsonType filter to prevent 0-result conflicts.
     // Smart Life defaults to cheapest-first.
-    update(c === "Smart Life" ? { category: c, brands: "", ramSpec: "", ramType: "", ramGen: "", jetsonType: "", sort: "price-asc" } : { category: c, brands: "", ramSpec: "", ramType: "", ramGen: "", jetsonType: "" });
+    update(c === "Smart Life" ? { category: c, brands: "", ramSpec: "", sub: "", ramGen: "", jetsonType: "", sort: "price-asc" } : { category: c, brands: "", ramSpec: "", sub: "", ramGen: "", jetsonType: "" });
   };
 
 
@@ -686,21 +687,21 @@ function HomePage() {
         </div>
       </div>
 
-      {isRam && (
+      {hasSubs && (
         <div className="space-y-4">
           <div>
-            <h3 className="mb-2 text-sm font-bold text-[color:var(--brand-navy)]">ประเภทแรม</h3>
+            <h3 className="mb-2 text-sm font-bold text-[color:var(--brand-navy)]">{isRam ? "ประเภทแรม" : "หมวดย่อย"}</h3>
             <div className="flex flex-wrap gap-1.5">
-              {[{ key: "", label: "ทั้งหมด", n: ramFacetQ.data?.total ?? 0 }, ...SUBCATEGORIES.RAM.map((t) => ({
+              {[{ key: "", label: "ทั้งหมด", n: ramFacetQ.data?.total ?? 0 }, ...subOptions.map((t) => ({
                 key: t,
                 label: SUBCATEGORY_LABELS[t] ?? t,
                 n: ramFacetQ.data?.byType[t] ?? 0,
               }))].map((opt) => {
-                const isSelected = search.ramType === opt.key;
+                const isSelected = search.sub === opt.key;
                 return (
                   <button
                     key={opt.key || "all"}
-                    onClick={() => update({ ramType: opt.key, ramGen: "", ramSpec: "" })}
+                    onClick={() => update({ sub: opt.key, ramGen: "", ramSpec: "" })}
                     className={`rounded-lg px-2.5 py-1.5 text-xs transition-colors ${
                       isSelected
                         ? "bg-[color:var(--brand-green)] font-medium text-white"
@@ -715,6 +716,7 @@ function HomePage() {
             </div>
           </div>
 
+          {isRam && (
           <div>
             <h3 className="mb-2 text-sm font-bold text-[color:var(--brand-navy)]">รุ่นแรม</h3>
             <div className="flex flex-wrap gap-1.5">
@@ -747,8 +749,9 @@ function HomePage() {
               })}
             </div>
           </div>
+          )}
 
-          {search.ramGen && (
+          {isRam && search.ramGen && (
             <div>
               <h3 className="mb-2 text-sm font-bold text-[color:var(--brand-navy)]">ความเร็วบัส</h3>
               <div className="flex flex-wrap gap-1.5">
@@ -1223,7 +1226,7 @@ function HomePage() {
           )}
 
           {productsQuery.isLoading ? (
-            <div className={search.view === "list" ? "space-y-3" : "grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:gap-3" + (search.category === "RAM" ? " lg:grid-cols-6" : " lg:grid-cols-5")}>
+            <div className={search.view === "list" ? "space-y-3" : "grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:gap-3" + (search.category === "RAM" || search.category === "Printer" ? " lg:grid-cols-6" : " lg:grid-cols-5")}>
               {Array.from({ length: 8 }).map((_, i) => (
                 <div key={i} className={search.view === "list" ? "h-32 animate-pulse rounded-lg bg-slate-200" : "h-80 animate-pulse rounded-lg bg-slate-200"} />
               ))}
@@ -1360,7 +1363,7 @@ function HomePage() {
               })}
             </div>
           ) : (
-            <div className={"grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:gap-3" + (search.category === "RAM" ? " lg:grid-cols-6" : " lg:grid-cols-5")}>
+            <div className={"grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:gap-3" + (search.category === "RAM" || search.category === "Printer" ? " lg:grid-cols-6" : " lg:grid-cols-5")}>
               {productsQuery.data!.rows.map((p) => {
                 const byOrder = p.fulfillment_type === "by_order";
                 const ready = p.stock_status === "พร้อมจัดส่ง";

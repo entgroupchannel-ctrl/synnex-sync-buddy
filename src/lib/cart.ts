@@ -214,12 +214,18 @@ export const CATEGORIES = [
 /** หมวดย่อยของแต่ละหมวดหลัก — คีย์ต้องตรงกับค่าใน synnex_products.category */
 export const SUBCATEGORIES: Record<string, string[]> = {
   RAM: ["RAM Desktop", "RAM Notebook"],
+  Printer: ["Slip Printer", "Laser", "Inkjet / Ink Tank", "Scanner", "3D Printer"],
 };
 
 /** ป้ายชื่อสั้นสำหรับแสดงบนเมนู */
 export const SUBCATEGORY_LABELS: Record<string, string> = {
   "RAM Desktop": "แรมคอมตั้งโต๊ะ",
   "RAM Notebook": "แรมโน้ตบุ๊ก",
+  "Slip Printer": "เครื่องพิมพ์ใบเสร็จ",
+  Laser: "เลเซอร์",
+  "Inkjet / Ink Tank": "อิงค์เจ็ท / แท็งก์",
+  Scanner: "สแกนเนอร์",
+  "3D Printer": "เครื่องพิมพ์ 3 มิติ",
 };
 
 /** รุ่นแรมเรียงจากใหม่ไปเก่า ใช้ทำตัวกรองและ badge */
