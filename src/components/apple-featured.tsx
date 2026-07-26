@@ -159,7 +159,7 @@ export function AppleFeatured() {
                   params={{ slug }}
                   className="group relative overflow-hidden rounded-2xl bg-white p-3 shadow-sm ring-1 ring-slate-100 transition hover:shadow-md"
                 >
-                  <div className="absolute right-2 top-2 flex items-center gap-1 rounded-full bg-[#1d1d1f] px-2 py-0.5 text-[10px] font-semibold text-white">
+                  <div className="absolute right-2 top-2 z-10 flex items-center gap-1 rounded-full bg-[#1d1d1f] px-2 py-0.5 text-[10px] font-semibold text-white">
                     <AppleLogo className="h-2.5 w-2.5" /> ของแท้ 100%
                   </div>
                   <div className="mb-2 grid aspect-square place-items-center overflow-hidden rounded-xl">
