@@ -1,0 +1,1 @@
+UPDATE public.synnex_products SET image_url = '/nas-placeholders/qnap-ts-433.jpg' WHERE id = '835212e4-6b8a-4242-b474-f645ea7d73a4';
