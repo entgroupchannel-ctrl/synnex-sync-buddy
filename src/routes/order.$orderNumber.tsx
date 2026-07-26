@@ -1,6 +1,9 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { getOrderConfirmation, submitPaymentSlip } from "@/lib/order-confirmation.functions";
+
 import { CheckCircle2, Copy, Package, Upload, FileCheck2, Loader2, Phone, Smartphone, MessageCircle, Mail } from "lucide-react";
 
 
@@ -95,19 +98,18 @@ const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "application/pdf
 function OrderConfirm() {
   const { orderNumber } = Route.useParams();
 
+  const fetchOrder = useServerFn(getOrderConfirmation);
+  const submitSlip = useServerFn(submitPaymentSlip);
+
   const q = useQuery({
     queryKey: ["order-by-number", orderNumber],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("orders")
-        .select("*, order_items(*)")
-        .eq("order_number", orderNumber)
-        .maybeSingle();
-      if (error) throw error;
+      const data = await fetchOrder({ data: { orderNumber } });
       if (!data) throw notFound();
       return data as unknown as OrderRow;
     },
   });
+
 
   const order = q.data;
 
@@ -170,17 +172,8 @@ function OrderConfirm() {
         .from("payment-slips")
         .upload(path, file, { contentType: file.type, upsert: false });
       if (upErr) throw upErr;
-      const { error: uErr } = await supabase
-        .from("orders")
-        .update({ payment_slip_url: path })
-        .eq("id", order.id);
-      if (uErr) throw uErr;
-      await supabase.from("order_status_history").insert({
-        order_id: order.id,
-        status: order.status ?? "pending",
-        note: "ลูกค้าแนบสลิปโอนเงิน",
-        changed_by: "customer",
-      });
+      await submitSlip({ data: { orderNumber: order.order_number, path } });
+
       toast.success("อัปโหลดสำเร็จ ✓ กำลังตรวจสอบสลิปอัตโนมัติ...");
 
       // แจ้งอีเมลลูกค้าทันที ว่าได้รับสลิปแล้วกำลังตรวจสอบ (fire-and-forget)
