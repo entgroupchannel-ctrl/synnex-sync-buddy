@@ -845,7 +845,7 @@ function ProductDetail() {
 
               })()}
 
-              <EdgeAiExplainer category={p.category as string | null | undefined} name={p.name} description={p.description} />
+              
 
               {/* AEO — Spec table (structured facts) */}
               <section className="mt-6 overflow-hidden rounded-lg border" aria-label="ข้อมูลจำเพาะสินค้า">
