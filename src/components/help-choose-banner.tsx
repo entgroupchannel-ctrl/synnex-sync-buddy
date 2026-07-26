@@ -115,7 +115,9 @@ export function HelpChooseDialog({
   );
 }
 
-/** แบนเนอร์เต็ม — วางท้ายรายการสินค้าของแต่ละหมวด */
+/** แบนเนอร์เต็ม — วางท้ายรายการสินค้าของแต่ละหมวด
+ *  ภาพทีมงานเป็น background ของ block สี่เหลี่ยมใหญ่ฝั่งขวา
+ */
 export function HelpChooseBanner({
   category,
   className = "",
@@ -126,12 +128,13 @@ export function HelpChooseBanner({
   const [open, setOpen] = useState(false);
   return (
     <section
-      className={`relative overflow-hidden rounded-xl bg-gradient-to-br from-[color:var(--brand-navy)] via-[color:var(--brand-navy-2)] to-emerald-900 p-5 text-white sm:p-7 ${className}`}
+      className={`relative overflow-hidden rounded-xl bg-gradient-to-br from-[color:var(--brand-navy)] via-[color:var(--brand-navy-2)] to-emerald-900 text-white ${className}`}
     >
       <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-emerald-400/10 blur-3xl" />
-      <div className="relative flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-        <div className="max-w-xl">
-          <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold">
+      <div className="relative grid min-h-[260px] lg:grid-cols-2">
+        {/* เนื้อหาด้านซ้าย */}
+        <div className="flex flex-col justify-center p-5 sm:p-7">
+          <div className="mb-2 inline-flex w-fit items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold">
             <HeadphonesIcon className="h-3.5 w-3.5" /> ปรึกษาฟรี ไม่มีค่าใช้จ่าย
           </div>
           <h2 className="text-lg font-bold sm:text-2xl">
@@ -156,26 +159,28 @@ export function HelpChooseBanner({
               <Mail className="h-4 w-4" /> {EMAIL}
             </a>
           </div>
-        </div>
-        <div className="flex shrink-0 flex-col items-center gap-3 lg:flex-row">
-
-          <img
-            src={supportTeam}
-            alt="ทีมงานฝ่ายบริการลูกค้า ENT Group พร้อมให้คำปรึกษา"
-            loading="lazy"
-            width={1536}
-            height={768}
-            className="hidden h-32 w-56 rounded-xl object-cover ring-2 ring-white/20 sm:block lg:h-36 lg:w-64"
-          />
-          <div className="w-full lg:w-auto">
+          <div className="mt-5 flex flex-col gap-2 sm:flex-row">
             <Button
               onClick={() => setOpen(true)}
               size="lg"
-              className="w-full bg-[color:var(--brand-green)] font-bold text-white hover:brightness-110 lg:w-auto"
+              className="bg-[color:var(--brand-green)] font-bold text-white hover:brightness-110"
             >
               <Send className="mr-2 h-4 w-4" /> ให้เราติดต่อกลับ
             </Button>
-            <p className="mt-2 text-center text-[11px] text-white/70">กรอกชื่อ · เบอร์ · LINE · อีเมล</p>
+            <p className="self-center text-[11px] text-white/70">กรอกชื่อ · เบอร์ · LINE · อีเมล</p>
+          </div>
+        </div>
+
+        {/* Block สี่เหลี่ยมใหญ่ — ภาพทีมงานเป็น background */}
+        <div
+          className="relative hidden min-h-[260px] bg-cover bg-center lg:block"
+          style={{ backgroundImage: `url(${supportTeam})` }}
+          aria-label="ทีมงานฝ่ายบริการลูกค้า ENT Group พร้อมให้คำปรึกษา"
+          role="img"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-[color:var(--brand-navy)] via-[color:var(--brand-navy)]/40 to-transparent" />
+          <div className="absolute bottom-4 right-4 rounded-lg bg-black/40 px-3 py-1.5 text-xs text-white/90 backdrop-blur-sm">
+            ทีมงาน ENT Group พร้อมให้บริการ
           </div>
         </div>
       </div>
@@ -185,65 +190,68 @@ export function HelpChooseBanner({
 }
 
 
-/** การ์ดแบบแทรกกลางกริดสินค้า */
+/** การ์ดแบบแทรกกลางกริดสินค้า — ภาพ agent เป็น background ของ block สี่เหลี่ยม */
 export function HelpChooseInlineCard({ category }: { category?: string | null }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="col-span-full flex flex-col gap-3 rounded-lg border border-emerald-200 bg-emerald-50 p-4 sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex items-center gap-3">
-        <img
-          src={supportAgent1}
-          alt="เจ้าหน้าที่ฝ่ายบริการลูกค้า ENT Group"
-          loading="lazy"
-          width={1024}
-          height={768}
-          className="h-14 w-14 shrink-0 rounded-full object-cover ring-2 ring-emerald-300"
-        />
-        <div>
-          <p className="text-sm font-bold text-slate-900">เลือกรุ่นไม่ถูก? โทรปรึกษาทีมงานได้เลย</p>
-
-          <p className="text-xs text-slate-600">
-            {PHONE} · {MOBILE} · LINE @entgroup · {EMAIL}
-          </p>
+    <div className="col-span-full overflow-hidden rounded-lg border border-emerald-200 bg-white">
+      <div className="grid md:grid-cols-5">
+        {/* Block สี่เหลี่ยมใหญ่ซ้าย — ภาพเป็น background */}
+        <div
+          className="relative min-h-[160px] bg-cover bg-top md:col-span-2"
+          style={{ backgroundImage: `url(${supportAgent1})` }}
+          aria-label="เจ้าหน้าที่ฝ่ายบริการลูกค้า ENT Group"
+          role="img"
+        >
+          <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/80 via-emerald-900/20 to-transparent md:bg-gradient-to-r" />
+          <div className="absolute bottom-3 left-3 right-3 text-white md:bottom-auto md:top-1/2 md:-translate-y-1/2">
+            <p className="text-sm font-bold">เลือกรุ่นไม่ถูก?</p>
+            <p className="text-xs text-white/90">โทรปรึกษาทีมงานได้เลย</p>
+          </div>
         </div>
-      </div>
-      <div className="flex gap-2">
-        <Button asChild variant="outline" size="sm" className="border-emerald-300 bg-white">
-          <a href={`tel:${PHONE_TEL}`}><Phone className="mr-1.5 h-4 w-4" /> โทรเลย</a>
-        </Button>
-        <Button size="sm" onClick={() => setOpen(true)} className="bg-[color:var(--brand-green)] font-semibold hover:brightness-110">
-          <Send className="mr-1.5 h-4 w-4" /> ให้เราติดต่อกลับ
-        </Button>
+
+        {/* เนื้อหาขวา */}
+        <div className="flex flex-col justify-center gap-3 p-4 md:col-span-3 md:flex-row md:items-center md:justify-between md:p-5">
+          <div>
+            <p className="text-sm font-bold text-slate-900">ให้ทีมงาน ENT Group ช่วยเลือกรุ่นให้</p>
+            <p className="text-xs text-slate-600">
+              {PHONE} · {MOBILE} · LINE @entgroup · {EMAIL}
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Button asChild variant="outline" size="sm" className="border-emerald-300 bg-white">
+              <a href={`tel:${PHONE_TEL}`}><Phone className="mr-1.5 h-4 w-4" /> โทรเลย</a>
+            </Button>
+            <Button size="sm" onClick={() => setOpen(true)} className="bg-[color:var(--brand-green)] font-semibold hover:brightness-110">
+              <Send className="mr-1.5 h-4 w-4" /> ให้เราติดต่อกลับ
+            </Button>
+          </div>
+        </div>
       </div>
       <HelpChooseDialog open={open} onOpenChange={setOpen} category={category} />
     </div>
   );
 }
 
-/** แถบ "ทีมงานพร้อมให้บริการ" พร้อมภาพจริง — ใช้บนหน้าแรก/หน้าอื่นๆ */
+/** แถบ "ทีมงานพร้อมให้บริการ" — ภาพ agent เป็น background block สี่เหลี่ยมใหญ่ */
 export function SupportPeopleStrip({ className = "" }: { className?: string }) {
   const [open, setOpen] = useState(false);
   return (
     <section className={`overflow-hidden rounded-xl border bg-white ${className}`}>
-      <div className="grid gap-0 md:grid-cols-2">
-        <div className="grid grid-cols-2 gap-0">
-          <img
-            src={supportAgent1}
-            alt="เจ้าหน้าที่ call center ENT Group พร้อมให้คำปรึกษา"
-            loading="lazy"
-            width={1024}
-            height={768}
-            className="h-40 w-full object-cover sm:h-56"
-          />
-          <img
-            src={supportAgent2}
-            alt="ทีมซัพพอร์ตด้านเทคนิค ENT Group"
-            loading="lazy"
-            width={1024}
-            height={768}
-            className="h-40 w-full object-cover sm:h-56"
-          />
+      <div className="grid gap-0 lg:grid-cols-2">
+        {/* ฝั่งซ้าย: block สี่เหลี่ยมใหญ่พร้อมภาพ background */}
+        <div className="relative min-h-[280px] bg-cover bg-center"
+          style={{ backgroundImage: `url(${supportAgent2})` }}
+          aria-label="ทีมซัพพอร์ตด้านเทคนิค ENT Group"
+          role="img"
+        >
+          <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/90 via-emerald-900/30 to-transparent lg:bg-gradient-to-r" />
+          <div className="absolute bottom-4 left-4 rounded-lg bg-black/40 px-3 py-1.5 text-xs text-white/90 backdrop-blur-sm">
+            ทีมงานคนไทย พร้อมให้บริการ
+          </div>
         </div>
+
+        {/* ฝั่งขวา: เนื้อหา */}
         <div className="flex flex-col justify-center gap-3 p-5 sm:p-7">
           <div className="inline-flex w-fit items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
             <HeadphonesIcon className="h-3.5 w-3.5" /> ทีมงานคนไทย พร้อมให้บริการ
