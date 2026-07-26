@@ -89,7 +89,57 @@ function BadgeRow({ badges }: { badges: FooterBadge[] }) {
   );
 }
 
-
+function PdpaSection() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="mb-3 flex w-full items-center justify-between gap-2 text-left"
+      >
+        <span className="flex items-center gap-2">
+          <ShieldCheck className="h-4 w-4 text-[color:var(--brand-green)]" />
+          <span className="text-sm font-bold uppercase tracking-wide text-white">
+            ข้อมูลส่วนบุคคล (PDPA)
+          </span>
+        </span>
+        <ChevronDown
+          className={`h-4 w-4 shrink-0 text-white/60 transition-transform ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+      <div className={`${open ? "block" : "hidden"} space-y-3`}>
+        <p className="text-[11px] leading-relaxed text-white/60">
+          เราปฏิบัติตาม พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562
+          โดยเก็บข้อมูลเท่าที่จำเป็นต่อการซื้อขายเท่านั้น
+        </p>
+        <div className="space-y-2">
+          {[
+            { icon: UserCheck, text: "เก็บอะไร: ชื่อ ที่อยู่จัดส่ง เบอร์โทร อีเมล และข้อมูลนิติบุคคลสำหรับออกใบกำกับภาษี" },
+            { icon: FileCheck2, text: "ใช้ทำอะไร: จัดส่งสินค้า ยืนยันคำสั่งซื้อ ออกใบกำกับภาษี และบริการหลังการขาย" },
+            { icon: EyeOff, text: "ส่งต่อให้ใคร: เฉพาะบริษัทขนส่งเพื่อนำจ่ายพัสดุ — ไม่ขายหรือให้เช่าข้อมูลแก่บุคคลที่สาม" },
+            { icon: Cookie, text: "คุกกี้: ใช้เพื่อจดจำตะกร้าสินค้าและการเข้าสู่ระบบ ไม่ใช้เพื่อโฆษณาติดตามข้ามเว็บ" },
+            { icon: Clock, text: "เก็บนานแค่ไหน: ข้อมูลคำสั่งซื้อเก็บตามที่กฎหมายบัญชี/ภาษีกำหนด แล้วลบหรือทำให้ไม่ระบุตัวตน" },
+            { icon: Trash2, text: "สิทธิของคุณ: ขอเข้าถึง แก้ไข คัดค้าน หรือลบข้อมูลได้ที่ sales@entgroup.co.th" },
+          ].map((it) => (
+            <div key={it.text} className="flex items-start gap-2">
+              <it.icon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[color:var(--brand-green)]" />
+              <span className="text-[11px] leading-relaxed text-white/70">
+                {it.text}
+              </span>
+            </div>
+          ))}
+        </div>
+        <Link
+          to="/privacy"
+          className="inline-block text-[11px] font-semibold text-[color:var(--brand-green)] hover:underline"
+        >
+          อ่านนโยบายความเป็นส่วนตัวฉบับเต็ม →
+        </Link>
+      </div>
+    </div>
+  );
+}
 
 function FooterLink({
   to,
@@ -483,59 +533,28 @@ export function SiteFooter() {
         {/* PDPA + Security */}
         <div className="border-t border-white/10">
           <div className="mx-auto grid max-w-7xl gap-8 px-4 py-8 md:grid-cols-2">
-            {/* PDPA */}
-            <div>
-              <div className="mb-3 flex items-center gap-2">
-                <ShieldCheck className="h-4 w-4 text-[color:var(--brand-green)]" />
-                <span className="text-sm font-bold uppercase tracking-wide text-white">
-                  ข้อมูลส่วนบุคคล (PDPA)
-                </span>
-              </div>
-              <p className="mb-3 text-[11px] leading-relaxed text-white/60">
-                เราปฏิบัติตาม พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562
-                โดยเก็บข้อมูลเท่าที่จำเป็นต่อการซื้อขายเท่านั้น
-              </p>
-              <div className="space-y-2">
-                {[
-                  { icon: UserCheck, text: "เก็บอะไร: ชื่อ ที่อยู่จัดส่ง เบอร์โทร อีเมล และข้อมูลนิติบุคคลสำหรับออกใบกำกับภาษี" },
-                  { icon: FileCheck2, text: "ใช้ทำอะไร: จัดส่งสินค้า ยืนยันคำสั่งซื้อ ออกใบกำกับภาษี และบริการหลังการขาย" },
-                  { icon: EyeOff, text: "ส่งต่อให้ใคร: เฉพาะบริษัทขนส่งเพื่อนำจ่ายพัสดุ — ไม่ขายหรือให้เช่าข้อมูลแก่บุคคลที่สาม" },
-                  { icon: Cookie, text: "คุกกี้: ใช้เพื่อจดจำตะกร้าสินค้าและการเข้าสู่ระบบ ไม่ใช้เพื่อโฆษณาติดตามข้ามเว็บ" },
-                  { icon: Clock, text: "เก็บนานแค่ไหน: ข้อมูลคำสั่งซื้อเก็บตามที่กฎหมายบัญชี/ภาษีกำหนด แล้วลบหรือทำให้ไม่ระบุตัวตน" },
-                  { icon: Trash2, text: "สิทธิของคุณ: ขอเข้าถึง แก้ไข คัดค้าน หรือลบข้อมูลได้ที่ sales@entgroup.co.th" },
-                ].map((it) => (
-                  <div key={it.text} className="flex items-start gap-2">
-                    <it.icon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[color:var(--brand-green)]" />
-                    <span className="text-[11px] leading-relaxed text-white/70">
-                      {it.text}
-                    </span>
-                  </div>
-                ))}
-              </div>
-              <Link
-                to="/privacy"
-                className="mt-3 inline-block text-[11px] font-semibold text-[color:var(--brand-green)] hover:underline"
-              >
-                อ่านนโยบายความเป็นส่วนตัวฉบับเต็ม →
-              </Link>
-            </div>
+            {/* PDPA — collapsible, collapsed by default */}
+            <PdpaSection />
 
             {/* Security */}
             <div>
               <div className="mb-3 flex items-center gap-2">
                 <Lock className="h-4 w-4 text-[color:var(--brand-green)]" />
                 <span className="text-sm font-bold uppercase tracking-wide text-white">
-                  ระบบรักษาความปลอดภัยของเรา
+                  มาตรฐานความปลอดภัย
                 </span>
               </div>
+              <p className="mb-3 text-[11px] leading-relaxed text-white/60">
+                โครงสร้างพื้นฐานและระบบรักษาความปลอดภัยอ้างอิงตามมาตรฐานของ Lovable และ Supabase
+              </p>
               <div className="space-y-2.5">
                 {[
-                  { icon: Lock, title: "เข้ารหัส HTTPS/TLS ทุกหน้า", desc: "ข้อมูลระหว่างเบราว์เซอร์กับเซิร์ฟเวอร์ถูกเข้ารหัสตลอดเส้นทาง" },
-                  { icon: CreditCard, title: "ไม่เก็บเลขบัตรบนเซิร์ฟเวอร์ของเรา", desc: "ชำระผ่าน PromptPay QR / โอนธนาคาร เราไม่เก็บข้อมูลบัตรใดๆ" },
-                  { icon: Server, title: "ฐานข้อมูลเข้ารหัสขณะจัดเก็บ", desc: "พร้อมสำรองข้อมูลอัตโนมัติทุกวัน" },
-                  { icon: KeyRound, title: "รหัสผ่านถูก hash ไม่เก็บเป็นข้อความธรรมดา", desc: "รองรับการรีเซ็ตรหัสผ่านผ่านอีเมลที่ยืนยันแล้ว" },
-                  { icon: EyeOff, title: "แยกสิทธิ์การเข้าถึงรายคำสั่งซื้อ", desc: "บัญชีหนึ่งเห็นได้เฉพาะคำสั่งซื้อของตนเองเท่านั้น" },
-                  { icon: FileCheck2, title: "ล็อกยอดเงินคำสั่งซื้อไม่ให้แก้ย้อนหลัง", desc: "การเปลี่ยนสถานะชำระเงินต้องผ่านระบบตรวจสอบฝั่งเซิร์ฟเวอร์เท่านั้น" },
+                  { icon: Lock, title: "HTTPS/TLS ทุกหน้า", desc: "เว็บไซต์โฮสต์บนแพลตฟอร์ม Lovable พร้อมเข้ารหัส TLS ตลอดเส้นทาง" },
+                  { icon: Server, title: "ฐานข้อมูลบน Supabase", desc: "จัดเก็บข้อมูลบน Supabase ที่มีการเข้ารหัสขณะจัดเก็บและสำรองข้อมูลอัตโนมัติ" },
+                  { icon: KeyRound, title: "การยืนยันตัวตนด้วย Supabase Auth", desc: "รหัสผ่านถูก hash ไม่เก็บเป็นข้อความธรรมดา รองรับการรีเซ็ตผ่านอีเมลที่ยืนยันแล้ว" },
+                  { icon: EyeOff, title: "Row Level Security (RLS)", desc: "แยกสิทธิ์การเข้าถึงข้อมูลตามผู้ใช้ บัญชีหนึ่งเห็นได้เฉพาะคำสั่งซื้อของตนเอง" },
+                  { icon: CreditCard, title: "ไม่เก็บเลขบัตรบนเซิร์ฟเวอร์", desc: "ชำระผ่าน PromptPay QR / โอนธนาคาร ระบบของเราไม่เก็บข้อมูลบัตร" },
+                  { icon: FileCheck2, title: "ตรวจสอบฝั่งเซิร์ฟเวอร์", desc: "การเปลี่ยนสถานะชำระเงินและยอดคำสั่งซื้อต้องผ่านการตรวจสอบฝั่งเซิร์ฟเวอร์เท่านั้น" },
                 ].map((it) => (
                   <div key={it.title} className="flex items-start gap-2">
                     <it.icon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[color:var(--brand-green)]" />
