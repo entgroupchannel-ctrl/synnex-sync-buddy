@@ -1196,6 +1196,10 @@ function HomePage() {
             </div>
           )}
 
+          {search.category === "Solar & Energy" && <SolarInstallBanner className="mb-4" />}
+
+
+
           {/* Active filter summary */}
           {hasActiveFilters && (
             <div
