@@ -211,17 +211,31 @@ export const exportPricingProducts = createServerFn({ method: "POST" })
       return qq;
     };
 
+    type ExportRow = {
+      sku: string;
+      name: string | null;
+      brand: string | null;
+      category: string | null;
+      distributor: string | null;
+      cost_price: number | null;
+      price: number | null;
+      selling_price: number | null;
+      markup_override: number | null;
+      price_approved: boolean | null;
+      updated_at: string | null;
+    };
+
     const CHUNK = 1000;
-    const all: Array<Record<string, unknown>> = [];
+    const all: ExportRow[] = [];
     const first = await build().range(0, CHUNK - 1);
     if (first.error) throw new Error(first.error.message);
-    for (const r of first.data ?? []) all.push(r as Record<string, unknown>);
+    for (const r of first.data ?? []) all.push(r as unknown as ExportRow);
     const total = first.count ?? all.length;
     let start = CHUNK;
     while (start < total) {
       const next = await build().range(start, start + CHUNK - 1);
       if (next.error) throw new Error(next.error.message);
-      for (const r of next.data ?? []) all.push(r as Record<string, unknown>);
+      for (const r of next.data ?? []) all.push(r as unknown as ExportRow);
       start += CHUNK;
     }
     return all;
