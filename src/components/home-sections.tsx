@@ -1511,11 +1511,10 @@ export function SolarEnergy() {
 
 /* ---------- Smart Life (CCTV / Smart Home / IoT) ---------- */
 
-type SmartTab = "all" | "cctv" | "smartwatch" | "xiaomi" | "gadget";
+type SmartTab = "all" | "smartwatch" | "xiaomi" | "gadget";
 
 const SMART_TABS: { key: SmartTab; label: string }[] = [
   { key: "all", label: "ทั้งหมด" },
-  { key: "cctv", label: "📹 CCTV" },
   { key: "smartwatch", label: "⌚ Smartwatch" },
   { key: "xiaomi", label: "🏠 Xiaomi" },
   { key: "gadget", label: "🌀 Gadget" },
