@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PRODUCT_PUBLIC_COLUMNS } from "@/lib/product-columns";
+import { imagesFirst, imagesFirstShuffled } from "@/lib/product-sort";
 import { ProductImage } from "@/components/product-image";
 import { getSellingPrice, useCustomerTier, priceFmt } from "@/lib/cart";
 
@@ -58,7 +59,7 @@ export function AppleFeatured() {
           else if (/\bimac\b|mac mini|mac studio/.test(n)) buckets.mac.push(p);
           else buckets.other.push(p);
         }
-        Object.values(buckets).forEach((arr) => arr.sort(() => Math.random() - 0.5));
+        Object.keys(buckets).forEach((k) => { buckets[k] = imagesFirstShuffled(buckets[k]); });
 
         const picked: Row[] = [];
         const keys = Object.keys(buckets);
@@ -69,7 +70,7 @@ export function AppleFeatured() {
           if (item) picked.push(item);
           i++;
         }
-        return picked.sort(() => Math.random() - 0.5);
+        return imagesFirstShuffled(picked);
       }
 
       // แท็บเฉพาะเจาะจง (iPhone/MacBook/iPad/Mac/Accessories) — กรองตรงตามเดิม ไม่ต้องสุ่ม
@@ -82,8 +83,8 @@ export function AppleFeatured() {
         .eq("price_approved", true)
         .gt("selling_price", 0)
         .order("selling_price", { ascending: false })
-        .limit(10);
-      return (data ?? []) as Row[];
+        .limit(30);
+      return imagesFirst((data ?? []) as Row[]).slice(0, 10);
     },
     staleTime: 5 * 60_000,
   });
