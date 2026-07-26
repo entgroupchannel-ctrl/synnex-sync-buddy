@@ -16,7 +16,7 @@ import { AppleMegaMenu } from "@/components/apple-mega-menu";
 
 
 import { useLanguage } from "@/lib/i18n";
-import entLogo from "@/assets/ent-logo.png.asset.json";
+import entLogo from "@/assets/ent-logo-round.png.asset.json";
 import {
   DropdownMenu,
   DropdownMenuTrigger,

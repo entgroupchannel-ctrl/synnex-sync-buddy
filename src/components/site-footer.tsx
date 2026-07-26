@@ -31,7 +31,7 @@ import {
   FileCheck2,
 } from "lucide-react";
 import { toast } from "sonner";
-import entLogo from "@/assets/ent-logo.png.asset.json";
+import entLogo from "@/assets/ent-logo-round.png.asset.json";
 import {
   PAYMENT_BADGES,
   CARRIER_BADGES,
