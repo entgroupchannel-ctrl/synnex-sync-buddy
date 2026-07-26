@@ -1118,7 +1118,9 @@ function QuotationDialog({
                   <span>รวม</span>
                   <span className="tabular-nums">{priceFmt.format(total)}</span>
                 </div>
+                <VatNote className="mt-1 text-right" />
               </>
+
             )}
           </div>
         </div>
