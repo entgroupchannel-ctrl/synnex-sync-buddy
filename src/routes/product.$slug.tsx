@@ -186,19 +186,18 @@ function ProductDetail() {
 
 
   const relatedQ = useQuery({
-    enabled: !!productQ.data?.category,
-    queryKey: ["related", productQ.data?.category, productQ.data?.id],
+    enabled: !!productQ.data?.id,
+    queryKey: ["smart-recommendations", productQ.data?.id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("synnex_products")
-        .select(PRODUCT_PUBLIC_COLUMNS)
-        .eq("category", productQ.data!.category!)
-        .neq("id", productQ.data!.id)
-        .limit(5);
+      const { data, error } = await supabase.rpc("get_smart_recommendations", {
+        p_product_id: productQ.data!.id,
+        p_limit: 8,
+      });
       if (error) throw error;
       return data ?? [];
     },
   });
+
 
   const p = productQ.data;
   const historyQ = usePurchaseHistoryForSku(p?.sku);
