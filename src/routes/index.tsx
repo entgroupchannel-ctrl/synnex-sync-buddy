@@ -74,6 +74,7 @@ import { ConferenceInstallBanner } from "@/components/conference-install-banner"
 import { NetworkInstallBanner } from "@/components/network-install-banner";
 import { EdgeAiBanner } from "@/components/edge-ai-banner";
 import { EdgeAiBrief } from "@/components/edge-ai-explainer";
+import { ConferenceBrief } from "@/components/conference-explainer";
 
 import { ComputerSetBanner } from "@/components/computer-set-banner";
 
@@ -1370,6 +1371,7 @@ function HomePage() {
                       {hasSpecTags(p.category) && <SpecTagsCompact description={p.description} />}
                       <UsageBadge category={p.category} name={p.name} description={p.description} price={p.selling_price} />
                       <EdgeAiBrief category={p.category} name={p.name} description={p.description} />
+                      <ConferenceBrief category={p.category} name={p.name} description={p.description} />
                       {p.description && <div className="mt-1 line-clamp-2 text-xs text-slate-500">{p.description}</div>}
                       <div className="mt-auto flex items-center gap-2 pt-1">
                         <span className={`inline-block h-2 w-2 rounded-full ${ready || byOrder ? "bg-green-500" : "bg-red-500"}`} />
@@ -1474,6 +1476,7 @@ function HomePage() {
                       {hasSpecTags(p.category) && <SpecTagsCompact description={p.description} />}
                       <UsageBadge category={p.category} name={p.name} description={p.description} price={p.selling_price} />
                       <EdgeAiBrief category={p.category} name={p.name} description={p.description} />
+                      <ConferenceBrief category={p.category} name={p.name} description={p.description} />
                       <div className="mt-auto pt-1">
                         {priced ? (
                           <>
