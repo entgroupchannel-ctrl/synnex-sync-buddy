@@ -563,8 +563,8 @@ function PricingSummaryCard() {
     queryKey: ["pricing-summary"],
     queryFn: async () => {
       const [unapproved, zero] = await Promise.all([
-        supabase.from("synnex_products").select("*", { count: "exact", head: true }).eq("price_approved", false),
-        supabase.from("synnex_products").select("*", { count: "exact", head: true }).or("selling_price.is.null,selling_price.eq.0"),
+        supabase.from("synnex_products").select("id", { count: "exact", head: true }).eq("price_approved", false),
+        supabase.from("synnex_products").select("id", { count: "exact", head: true }).or("selling_price.is.null,selling_price.eq.0"),
       ]);
       return { unapproved: unapproved.count ?? 0, zero: zero.count ?? 0 };
     },

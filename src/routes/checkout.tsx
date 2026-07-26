@@ -17,6 +17,8 @@ import { CheckoutTrustBox } from "@/components/trust-signals";
 import { OmiseCardForm } from "@/components/omise-card-form";
 import { ShippingMethodSelector } from "@/components/shipping-method-selector";
 import { getItemWeightKg, priceFmt, useCart } from "@/lib/cart";
+import { insertOrderItems } from "@/lib/order-items.functions";
+
 import { useSupabaseUser } from "@/lib/auth-sheet";
 import { bahtFmt, creditIsUsable, dueDateFrom, useCreditAccount } from "@/lib/credit";
 import {
@@ -364,36 +366,23 @@ function CheckoutPage() {
         }
       }
 
-      // ดึงข้อมูลจริงจาก synnex_products แทนการปล่อย cost_price/brand/category เป็น null
-      const skus = items.map((it) => it.sku).filter(Boolean);
-      const { data: productRows, error: prodErr } = await supabase
-        .from("synnex_products")
-        .select("sku, cost_price, brand, category")
-        .in("sku", skus);
-      if (prodErr) console.warn("[checkout] ดึง cost_price ไม่สำเร็จ จะบันทึกเป็น null ชั่วคราว", prodErr);
-
-      const productMap = new Map(
-        (productRows ?? []).map((p) => [p.sku, { cost_price: p.cost_price, brand: p.brand, category: p.category }]),
-      );
-
-      const itemRows = items.map((it) => {
-        const meta = productMap.get(it.sku);
-        return {
-          order_id: order.id,
-          product_sku: it.sku,
-          product_name: it.name,
-          product_image_url: it.image_url,
-          brand: meta?.brand ?? null,
-          category: meta?.category ?? (it as { category?: string | null }).category ?? null,
-          distributor: (it.distributor ?? "OTHER"),
-          cost_price: meta?.cost_price ?? null,
-          unit_price: it.price,
-          quantity: it.qty,
-          subtotal: it.price * it.qty,
-        };
+      // cost_price / brand / category เติมฝั่งเซิร์ฟเวอร์ ไม่ส่งออกมาที่เบราว์เซอร์
+      await insertOrderItems({
+        data: {
+          items: items.map((it) => ({
+            order_id: order.id,
+            product_sku: it.sku,
+            product_name: it.name,
+            product_image_url: it.image_url,
+            distributor: it.distributor ?? "OTHER",
+            unit_price: it.price,
+            quantity: it.qty,
+            subtotal: it.price * it.qty,
+            category: (it as { category?: string | null }).category ?? null,
+          })),
+        },
       });
-      const { error: iErr } = await supabase.from("order_items").insert(itemRows);
-      if (iErr) throw iErr;
+
 
       await supabase.from("order_status_history").insert({
         order_id: order.id,
