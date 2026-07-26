@@ -52,7 +52,7 @@ type Rule = {
 function PricingPage() {
   const qc = useQueryClient();
   const run = useServerFn(applyPricing);
-  const [progress, setProgress] = useState<{ updated: number; total: number } | null>(null);
+  const [progress, setProgress] = useState<{ updated: number; total: number; guarded: number } | null>(null);
 
   const rulesQ = useQuery({
     queryKey: ["pricing-rules"],
@@ -100,8 +100,11 @@ function PricingPage() {
   const applyMut = useMutation({
     mutationFn: async () => run(),
     onSuccess: (r) => {
-      setProgress({ updated: r.updated, total: r.total });
+      setProgress({ updated: r.updated, total: r.total, guarded: r.guarded });
       toast.success(`คำนวณราคาแล้ว ${r.updated.toLocaleString()}/${r.total.toLocaleString()} รายการ`);
+      if (r.guarded > 0) {
+        toast.info(`ข้าม ${r.guarded.toLocaleString()} รายการที่ราคาเดิมสูงกว่าราคาที่คำนวณได้ (กันไม่ให้ราคาลด)`);
+      }
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -171,6 +174,12 @@ function PricingPage() {
           {progress && (
             <div className="mt-3 rounded-md bg-emerald-50 p-3 text-sm text-emerald-900">
               คำนวณแล้ว <b>{progress.updated.toLocaleString()}</b>/<b>{progress.total.toLocaleString()}</b> รายการ
+              {progress.guarded > 0 && (
+                <>
+                  {" "}
+                  · ข้าม <b>{progress.guarded.toLocaleString()}</b> รายการ (ราคาเดิมสูงกว่า — กันไว้ไม่ให้ลด)
+                </>
+              )}
             </div>
           )}
         </section>

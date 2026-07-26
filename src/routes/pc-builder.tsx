@@ -68,6 +68,14 @@ type Product = {
   selling_price: number | null;
   member_price: number | null;
   b2b_price: number | null;
+  tier_price_guest: number | null;
+  tier_price_b2c: number | null;
+  tier_price_b2c_silver: number | null;
+  tier_price_b2c_gold: number | null;
+  tier_price_b2c_vip: number | null;
+  tier_price_b2b: number | null;
+  tier_price_b2b_silver: number | null;
+  tier_price_b2b_gold: number | null;
   price_approved: boolean | null;
   image_url: string | null;
   distributor: string | null;
@@ -475,7 +483,7 @@ function ProductPicker({
       let q = supabase
         .from("synnex_products")
         .select(
-          "id, sku, slug, name, brand, category, selling_price, member_price, b2b_price, min_tier_price, price_approved, image_url, distributor",
+          "id, sku, slug, name, brand, category, selling_price, member_price, b2b_price, tier_price_guest, tier_price_b2c, tier_price_b2c_silver, tier_price_b2c_gold, tier_price_b2c_vip, tier_price_b2b, tier_price_b2b_silver, tier_price_b2b_gold, price_approved, image_url, distributor",
         );
 
       if (step.key !== "gpu") {

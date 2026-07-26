@@ -32,7 +32,7 @@ function WishlistPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("synnex_products")
-        .select("id, sku, slug, name, brand, image_url, selling_price, member_price, min_tier_price, stock_status")
+        .select("id, sku, slug, name, brand, image_url, selling_price, member_price, stock_status")
         .in("id", ids);
       if (error) throw error;
       return data ?? [];

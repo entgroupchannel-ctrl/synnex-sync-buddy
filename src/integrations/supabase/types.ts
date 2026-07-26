@@ -47,6 +47,24 @@ export type Database = {
         }
         Relationships: []
       }
+      brand_apple_backup_20260726: {
+        Row: {
+          brand: string | null
+          id: string | null
+          sku: string | null
+        }
+        Insert: {
+          brand?: string | null
+          id?: string | null
+          sku?: string | null
+        }
+        Update: {
+          brand?: string | null
+          id?: string | null
+          sku?: string | null
+        }
+        Relationships: []
+      }
       brand_fix_backup_20260726: {
         Row: {
           backed_up_at: string
@@ -511,6 +529,111 @@ export type Database = {
         }
         Relationships: []
       }
+      dup_merge_backup_20260726: {
+        Row: {
+          b2b_markup_applied: number | null
+          b2b_price: number | null
+          brand: string | null
+          brand_name: string | null
+          category: string | null
+          cost_price: number | null
+          created_at: string | null
+          description: string | null
+          distributor: string | null
+          fulfillment_type: string | null
+          id: string | null
+          image_gallery: Json | null
+          image_url: string | null
+          markup_applied: number | null
+          markup_override: number | null
+          member_price: number | null
+          min_tier_price: number | null
+          name: string | null
+          price: number | null
+          price_approved: boolean | null
+          product_url: string | null
+          ram_generation: string | null
+          selling_price: number | null
+          sku: string | null
+          slug: string | null
+          stock: string | null
+          stock_qty: number | null
+          stock_status: string | null
+          subcategory: string | null
+          synced_at: string | null
+          updated_at: string | null
+          weight_kg: number | null
+        }
+        Insert: {
+          b2b_markup_applied?: number | null
+          b2b_price?: number | null
+          brand?: string | null
+          brand_name?: string | null
+          category?: string | null
+          cost_price?: number | null
+          created_at?: string | null
+          description?: string | null
+          distributor?: string | null
+          fulfillment_type?: string | null
+          id?: string | null
+          image_gallery?: Json | null
+          image_url?: string | null
+          markup_applied?: number | null
+          markup_override?: number | null
+          member_price?: number | null
+          min_tier_price?: number | null
+          name?: string | null
+          price?: number | null
+          price_approved?: boolean | null
+          product_url?: string | null
+          ram_generation?: string | null
+          selling_price?: number | null
+          sku?: string | null
+          slug?: string | null
+          stock?: string | null
+          stock_qty?: number | null
+          stock_status?: string | null
+          subcategory?: string | null
+          synced_at?: string | null
+          updated_at?: string | null
+          weight_kg?: number | null
+        }
+        Update: {
+          b2b_markup_applied?: number | null
+          b2b_price?: number | null
+          brand?: string | null
+          brand_name?: string | null
+          category?: string | null
+          cost_price?: number | null
+          created_at?: string | null
+          description?: string | null
+          distributor?: string | null
+          fulfillment_type?: string | null
+          id?: string | null
+          image_gallery?: Json | null
+          image_url?: string | null
+          markup_applied?: number | null
+          markup_override?: number | null
+          member_price?: number | null
+          min_tier_price?: number | null
+          name?: string | null
+          price?: number | null
+          price_approved?: boolean | null
+          product_url?: string | null
+          ram_generation?: string | null
+          selling_price?: number | null
+          sku?: string | null
+          slug?: string | null
+          stock?: string | null
+          stock_qty?: number | null
+          stock_status?: string | null
+          subcategory?: string | null
+          synced_at?: string | null
+          updated_at?: string | null
+          weight_kg?: number | null
+        }
+        Relationships: []
+      }
       email_logs: {
         Row: {
           created_at: string
@@ -554,6 +677,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      gallery_bad_backup_20260726: {
+        Row: {
+          id: string | null
+          image_gallery: Json | null
+          sku: string | null
+        }
+        Insert: {
+          id?: string | null
+          image_gallery?: Json | null
+          sku?: string | null
+        }
+        Update: {
+          id?: string | null
+          image_gallery?: Json | null
+          sku?: string | null
+        }
+        Relationships: []
+      }
+      gallery_dedup_backup_20260726: {
+        Row: {
+          id: string | null
+          image_gallery: Json | null
+          image_url: string | null
+          sku: string | null
+        }
+        Insert: {
+          id?: string | null
+          image_gallery?: Json | null
+          image_url?: string | null
+          sku?: string | null
+        }
+        Update: {
+          id?: string | null
+          image_gallery?: Json | null
+          image_url?: string | null
+          sku?: string | null
+        }
+        Relationships: []
       }
       newsletter_subscribers: {
         Row: {
@@ -1681,6 +1843,48 @@ export type Database = {
           },
         ]
       }
+      supplier_image_staging: {
+        Row: {
+          batch_id: string
+          distributor: string
+          id: string
+          image_url: string
+          model_code: string | null
+          name: string | null
+          origin_image_url: string | null
+          rehosted: boolean | null
+          retail_price: number | null
+          scraped_at: string
+          source_url: string | null
+        }
+        Insert: {
+          batch_id: string
+          distributor?: string
+          id?: string
+          image_url: string
+          model_code?: string | null
+          name?: string | null
+          origin_image_url?: string | null
+          rehosted?: boolean | null
+          retail_price?: number | null
+          scraped_at?: string
+          source_url?: string | null
+        }
+        Update: {
+          batch_id?: string
+          distributor?: string
+          id?: string
+          image_url?: string
+          model_code?: string | null
+          name?: string | null
+          origin_image_url?: string | null
+          rehosted?: boolean | null
+          retail_price?: number | null
+          scraped_at?: string
+          source_url?: string | null
+        }
+        Relationships: []
+      }
       supplier_price_staging: {
         Row: {
           batch_id: string
@@ -1821,6 +2025,14 @@ export type Database = {
           stock_status: string | null
           subcategory: string | null
           synced_at: string
+          tier_price_b2b: number | null
+          tier_price_b2b_gold: number | null
+          tier_price_b2b_silver: number | null
+          tier_price_b2c: number | null
+          tier_price_b2c_gold: number | null
+          tier_price_b2c_silver: number | null
+          tier_price_b2c_vip: number | null
+          tier_price_guest: number | null
           updated_at: string
           weight_kg: number | null
         }
@@ -1855,6 +2067,14 @@ export type Database = {
           stock_status?: string | null
           subcategory?: string | null
           synced_at?: string
+          tier_price_b2b?: number | null
+          tier_price_b2b_gold?: number | null
+          tier_price_b2b_silver?: number | null
+          tier_price_b2c?: number | null
+          tier_price_b2c_gold?: number | null
+          tier_price_b2c_silver?: number | null
+          tier_price_b2c_vip?: number | null
+          tier_price_guest?: number | null
           updated_at?: string
           weight_kg?: number | null
         }
@@ -1889,6 +2109,14 @@ export type Database = {
           stock_status?: string | null
           subcategory?: string | null
           synced_at?: string
+          tier_price_b2b?: number | null
+          tier_price_b2b_gold?: number | null
+          tier_price_b2b_silver?: number | null
+          tier_price_b2c?: number | null
+          tier_price_b2c_gold?: number | null
+          tier_price_b2c_silver?: number | null
+          tier_price_b2c_vip?: number | null
+          tier_price_guest?: number | null
           updated_at?: string
           weight_kg?: number | null
         }
@@ -2172,20 +2400,23 @@ export type Database = {
       }
     }
     Functions: {
-      calc_markup_pct:
-        | {
-            Args: { p_brand: string; p_category: string; p_override?: number }
-            Returns: number
-          }
-        | {
-            Args: {
-              p_brand: string
-              p_category: string
-              p_cost?: number
-              p_override?: number
-            }
-            Returns: number
-          }
+      apply_images_batch: {
+        Args: { p_batch_id: string; p_dry_run?: boolean }
+        Returns: {
+          การกระทำ: string
+          จำนวน: number
+          หมายเหตุ: string
+        }[]
+      }
+      calc_markup_pct: {
+        Args: {
+          p_brand: string
+          p_category: string
+          p_cost?: number
+          p_override?: number
+        }
+        Returns: number
+      }
       calc_min_profit: {
         Args: { p_brand: string; p_category: string; p_cost: number }
         Returns: number
@@ -2215,22 +2446,46 @@ export type Database = {
       }
       increment: { Args: { x: number }; Returns: number }
       is_admin_user: { Args: { _uid: string }; Returns: boolean }
-      promote_staging_batch: {
-        Args: {
-          p_auto_price?: boolean
-          p_batch_id: string
-          p_category?: string
-          p_dry_run?: boolean
-          p_subcategory?: string
-        }
-        Returns: {
-          การกระทำ: string
-          จำนวน: number
-          หมายเหตุ: string
-        }[]
-      }
+      promote_staging_batch:
+        | {
+            Args: {
+              p_auto_price?: boolean
+              p_batch_id: string
+              p_category?: string
+              p_dry_run?: boolean
+              p_name_exclude?: string
+              p_name_include?: string
+              p_subcategory?: string
+            }
+            Returns: {
+              การกระทำ: string
+              จำนวน: number
+              หมายเหตุ: string
+            }[]
+          }
+        | {
+            Args: {
+              p_auto_price?: boolean
+              p_batch_id: string
+              p_brand?: string
+              p_category?: string
+              p_dry_run?: boolean
+              p_name_exclude?: string
+              p_name_include?: string
+              p_subcategory?: string
+            }
+            Returns: {
+              การกระทำ: string
+              จำนวน: number
+              หมายเหตุ: string
+            }[]
+          }
       psych_price: { Args: { p: number }; Returns: number }
       recompute_user_order_stats: { Args: { _uid: string }; Returns: undefined }
+      set_product_gallery: {
+        Args: { p_model_code: string; p_urls: string[] }
+        Returns: number
+      }
     }
     Enums: {
       [_ in never]: never

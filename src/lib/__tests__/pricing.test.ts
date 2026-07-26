@@ -77,3 +77,41 @@ describe("getSellingPrice — กรณีขอบ", () => {
     expect(getSellingPrice({ selling_price: null }, "guest")).toBeNull();
   });
 });
+
+// A3: min_tier_price ถูกถอดออกจาก client แล้ว (REVOKE SELECT ที่ DB) —
+// production ใหม่ต้องพึ่ง tier_price_* ที่ DB คำนวณ+clamp พื้นทุนไว้แล้วแทน
+describe("getSellingPrice — ราคาสำเร็จรูปต่อ tier จาก DB (tier_price_*)", () => {
+  it("ใช้ tier_price_* ที่ DB คำนวณไว้แล้วโดยตรง แทนการคำนวณเองฝั่ง client", () => {
+    const p = {
+      selling_price: 2290,
+      member_price: 2176,
+      b2b_price: 2061,
+      tier_price_guest: 2290,
+      tier_price_b2c: 2176,
+      tier_price_b2b_gold: 1989, // ค่านี้โดน clamp ไว้แล้วฝั่ง DB
+    };
+    expect(getSellingPrice(p, "guest")).toBe(2290);
+    expect(getSellingPrice(p, "b2c")).toBe(2176);
+    expect(getSellingPrice(p, "b2b_gold")).toBe(1989);
+  });
+
+  it("tier_price_* มาก่อนเสมอ แม้จะมี min_tier_price แบบเก่าติดมาด้วย (ป้องกัน regression เผลอใช้ค่าเก่า)", () => {
+    const p = {
+      selling_price: 1000,
+      member_price: 950,
+      min_tier_price: 700, // ค่า legacy ที่ไม่ควรถูกใช้อีกต่อไปถ้ามี tier_price_* ให้แล้ว
+      tier_price_b2c: 940, // ค่าจาก DB ต้องชนะ
+    };
+    expect(getSellingPrice(p, "b2c")).toBe(940);
+  });
+
+  it("ไม่มี tier_price_* เลย (แถวเก่า/เทสต์เก่า) ต้องตกกลับไปคำนวณเองด้วย min_tier_price เหมือนเดิม", () => {
+    const p = { selling_price: 1000, member_price: 950, min_tier_price: 960 };
+    expect(getSellingPrice(p, "b2c")).toBe(960); // clamp ด้วย min_tier_price แบบเก่า
+  });
+
+  it("selling_price เกิน 70,000 ต้องคืน null แม้จะมี tier_price_* ให้ก็ตาม", () => {
+    const p = { selling_price: 80000, tier_price_guest: 80000 };
+    expect(getSellingPrice(p, "guest")).toBeNull();
+  });
+});

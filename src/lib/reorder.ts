@@ -15,7 +15,14 @@ export type FrequentItem = {
     selling_price: number | null;
     member_price: number | null;
     b2b_price: number | null;
-    min_tier_price: number | null;
+    tier_price_guest: number | null;
+    tier_price_b2c: number | null;
+    tier_price_b2c_silver: number | null;
+    tier_price_b2c_gold: number | null;
+    tier_price_b2c_vip: number | null;
+    tier_price_b2b: number | null;
+    tier_price_b2b_silver: number | null;
+    tier_price_b2b_gold: number | null;
     price_approved: boolean | null;
     stock_status: string | null;
     distributor: string | null;
@@ -89,7 +96,7 @@ export function useFrequentlyBought(limit = 6) {
       const skus = sorted.map((s) => s.product_sku);
       const { data: currents } = await supabase
         .from("synnex_products")
-        .select("id,sku,slug,name,image_url,selling_price,member_price,b2b_price,min_tier_price,price_approved,stock_status,distributor")
+        .select("id,sku,slug,name,image_url,selling_price,member_price,b2b_price,tier_price_guest,tier_price_b2c,tier_price_b2c_silver,tier_price_b2c_gold,tier_price_b2c_vip,tier_price_b2b,tier_price_b2b_silver,tier_price_b2b_gold,price_approved,stock_status,distributor")
         .in("sku", skus);
       const byS = new Map((currents ?? []).map((c) => [c.sku, c]));
       for (const row of sorted) {
@@ -101,7 +108,14 @@ export function useFrequentlyBought(limit = 6) {
               selling_price: c.selling_price,
               member_price: c.member_price,
               b2b_price: c.b2b_price,
-              min_tier_price: c.min_tier_price,
+              tier_price_guest: c.tier_price_guest,
+              tier_price_b2c: c.tier_price_b2c,
+              tier_price_b2c_silver: c.tier_price_b2c_silver,
+              tier_price_b2c_gold: c.tier_price_b2c_gold,
+              tier_price_b2c_vip: c.tier_price_b2c_vip,
+              tier_price_b2b: c.tier_price_b2b,
+              tier_price_b2b_silver: c.tier_price_b2b_silver,
+              tier_price_b2b_gold: c.tier_price_b2b_gold,
               price_approved: c.price_approved,
               stock_status: c.stock_status,
               distributor: c.distributor,

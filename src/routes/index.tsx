@@ -617,7 +617,7 @@ function HomePage() {
       sku: p.sku as string,
       slug: p.slug as string | null,
       name,
-      price: getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null; min_tier_price?: number | null }, tier) ?? 0,
+      price: getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null; tier_price_guest?: number | null; tier_price_b2c?: number | null; tier_price_b2c_silver?: number | null; tier_price_b2c_gold?: number | null; tier_price_b2c_vip?: number | null; tier_price_b2b?: number | null; tier_price_b2b_silver?: number | null; tier_price_b2b_gold?: number | null }, tier) ?? 0,
       image_url: (p.image_url as string) ?? null,
       distributor: (p.distributor as string | null) ?? null,
       category: (p.category as string | null) ?? null,
@@ -982,7 +982,7 @@ function HomePage() {
                 </div>
                 <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
                   {flashQ.data!.map((p) => {
-                    const selling = getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null; min_tier_price?: number | null }, tier) ?? 0;
+                    const selling = getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null; tier_price_guest?: number | null; tier_price_b2c?: number | null; tier_price_b2c_silver?: number | null; tier_price_b2c_gold?: number | null; tier_price_b2c_vip?: number | null; tier_price_b2b?: number | null; tier_price_b2b_silver?: number | null; tier_price_b2b_gold?: number | null }, tier) ?? 0;
                     const orig = (p as { price?: number | null }).price ?? 0;
                     const pct = orig > 0 && selling > 0 && selling < orig ? Math.round((1 - selling / orig) * 100) : 0;
                     return (
@@ -1017,11 +1017,11 @@ function HomePage() {
                           />
                           <div className="mt-1 flex items-baseline gap-1.5">
                             <div className="text-base font-black text-[color:var(--brand-orange)]">
-                              {displayPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null; min_tier_price?: number | null }, tier)}
+                              {displayPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null; tier_price_guest?: number | null; tier_price_b2c?: number | null; tier_price_b2c_silver?: number | null; tier_price_b2c_gold?: number | null; tier_price_b2c_vip?: number | null; tier_price_b2b?: number | null; tier_price_b2b_silver?: number | null; tier_price_b2b_gold?: number | null }, tier)}
                             </div>
                             {pct > 0 && <div className="text-[10px] text-slate-400 line-through">฿{orig.toLocaleString()}</div>}
                           </div>
-                          <DeliveryHint category={p.category} name={p.name} price={getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null; min_tier_price?: number | null }, tier)} />
+                          <DeliveryHint category={p.category} name={p.name} price={getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null; tier_price_guest?: number | null; tier_price_b2c?: number | null; tier_price_b2c_silver?: number | null; tier_price_b2c_gold?: number | null; tier_price_b2c_vip?: number | null; tier_price_b2b?: number | null; tier_price_b2b_silver?: number | null; tier_price_b2b_gold?: number | null }, tier)} />
                           <div className="mt-1 font-mono text-[10px] font-bold text-red-600">⏱ {countdown}</div>
                         </div>
                       </Link>
@@ -1297,7 +1297,7 @@ function HomePage() {
                 const available = ready || byOrder;
                 const slug = p.slug || p.id;
                 
-                const priced = getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null; min_tier_price?: number | null }, tier) != null && !!p.price_approved;
+                const priced = getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null; tier_price_guest?: number | null; tier_price_b2c?: number | null; tier_price_b2c_silver?: number | null; tier_price_b2c_gold?: number | null; tier_price_b2c_vip?: number | null; tier_price_b2b?: number | null; tier_price_b2b_silver?: number | null; tier_price_b2b_gold?: number | null }, tier) != null && !!p.price_approved;
                 return (
                   <div key={p.id} className="flex gap-4 rounded-lg border bg-white p-3 transition hover:shadow-md">
                     <Link to="/product/$slug" params={{ slug }} className="grid h-28 w-28 shrink-0 place-items-center rounded-md bg-white">
@@ -1329,14 +1329,14 @@ function HomePage() {
                             className="justify-end"
                           />
                           <div className="text-xl font-black text-[color:var(--brand-orange)]">
-                            {displayPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null; min_tier_price?: number | null }, tier)}
+                            {displayPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null; tier_price_guest?: number | null; tier_price_b2c?: number | null; tier_price_b2c_silver?: number | null; tier_price_b2c_gold?: number | null; tier_price_b2c_vip?: number | null; tier_price_b2b?: number | null; tier_price_b2b_silver?: number | null; tier_price_b2b_gold?: number | null }, tier)}
                           </div>
                         </>
                       ) : (
                         <span className="text-sm text-gray-400">ติดต่อสอบถาม</span>
                       )}
                       {byOrder && <div className="text-[11px] text-blue-700">⏱ รับสินค้าภายใน {p.distributor === "PLINK-AI" ? "15-20" : "30"} วัน</div>}
-                      {priced && !byOrder && <DeliveryHint category={p.category} name={p.name} price={getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null; min_tier_price?: number | null }, tier)} />}
+                      {priced && !byOrder && <DeliveryHint category={p.category} name={p.name} price={getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null; tier_price_guest?: number | null; tier_price_b2c?: number | null; tier_price_b2c_silver?: number | null; tier_price_b2c_gold?: number | null; tier_price_b2c_vip?: number | null; tier_price_b2b?: number | null; tier_price_b2b_silver?: number | null; tier_price_b2b_gold?: number | null }, tier)} />}
                       {priced ? (
                         available ? (
                           <Button onClick={() => addToCart(p as Record<string, unknown>)} className="w-full bg-[color:var(--brand-navy)] hover:bg-[color:var(--brand-navy-2)]" size="sm">
@@ -1370,7 +1370,7 @@ function HomePage() {
                 const available = ready || byOrder;
                 const slug = p.slug || p.id;
                 
-                const priced = getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null; min_tier_price?: number | null }, tier) != null && !!p.price_approved;
+                const priced = getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null; tier_price_guest?: number | null; tier_price_b2c?: number | null; tier_price_b2c_silver?: number | null; tier_price_b2c_gold?: number | null; tier_price_b2c_vip?: number | null; tier_price_b2b?: number | null; tier_price_b2b_silver?: number | null; tier_price_b2b_gold?: number | null }, tier) != null && !!p.price_approved;
                 return (
                   <div key={p.id} className="relative flex flex-col overflow-hidden rounded-lg border bg-white transition-all duration-200 hover:scale-[1.02] hover:shadow-md">
                     {!isAppleOnly && (
@@ -1411,7 +1411,7 @@ function HomePage() {
                               className="mb-0.5"
                             />
                             <div className="text-xl font-black text-[color:var(--brand-orange)]">
-                              {displayPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null; min_tier_price?: number | null }, tier)}
+                              {displayPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null; tier_price_guest?: number | null; tier_price_b2c?: number | null; tier_price_b2c_silver?: number | null; tier_price_b2c_gold?: number | null; tier_price_b2c_vip?: number | null; tier_price_b2b?: number | null; tier_price_b2b_silver?: number | null; tier_price_b2b_gold?: number | null }, tier)}
                             </div>
                           </>
                         ) : (
@@ -1425,7 +1425,7 @@ function HomePage() {
                             <span className="text-[11px] text-slate-600">{p.stock_status ?? "—"}</span>
                           </div>
                         )}
-                        {priced && !byOrder && <DeliveryHint category={p.category} name={p.name} price={getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null; min_tier_price?: number | null }, tier)} />}
+                        {priced && !byOrder && <DeliveryHint category={p.category} name={p.name} price={getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null; tier_price_guest?: number | null; tier_price_b2c?: number | null; tier_price_b2c_silver?: number | null; tier_price_b2c_gold?: number | null; tier_price_b2c_vip?: number | null; tier_price_b2b?: number | null; tier_price_b2b_silver?: number | null; tier_price_b2b_gold?: number | null }, tier)} />}
                         {search.category === "Smart Life" && hasVolumeDiscount(volumeRules, { brand: p.brand, category: p.category }) && (
                           <div className="mt-1.5 inline-flex items-center rounded-md border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[10px] font-semibold text-amber-800">
                             🏷️ ส่วนลดเมื่อซื้อเพิ่ม
