@@ -67,10 +67,21 @@ function buildSearch(category: string, filter: MegaMenuFilter = {}) {
 
 export function CategoryMegaMenu({ config }: { config: MegaMenuConfig }) {
   const [open, setOpen] = useState(false);
+  /** ตำแหน่งซ้ายของ panel เทียบกับตัว trigger — คำนวณให้อยู่ในจอเสมอ */
+  const [offset, setOffset] = useState(0);
+  const wrapRef = useRef<HTMLDivElement>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const show = () => {
     if (timer.current) clearTimeout(timer.current);
+    const el = wrapRef.current;
+    if (el && typeof window !== "undefined") {
+      const rect = el.getBoundingClientRect();
+      const margin = 12;
+      const maxLeft = window.innerWidth - config.width - margin;
+      const left = Math.max(margin, Math.min(rect.left, maxLeft));
+      setOffset(left - rect.left);
+    }
     setOpen(true);
   };
   const hide = () => {
@@ -79,7 +90,7 @@ export function CategoryMegaMenu({ config }: { config: MegaMenuConfig }) {
   };
 
   return (
-    <div className="relative" onMouseEnter={show} onMouseLeave={hide}>
+    <div ref={wrapRef} className="relative" onMouseEnter={show} onMouseLeave={hide}>
       <Link
         to="/"
         search={buildSearch(config.category)}
@@ -92,7 +103,8 @@ export function CategoryMegaMenu({ config }: { config: MegaMenuConfig }) {
 
       {open && (
         <div
-          className="absolute right-0 top-full z-50 rounded-xl bg-white p-5 text-slate-900 shadow-2xl ring-1 ring-slate-200"
+          className="absolute top-full z-50 rounded-xl bg-white p-5 text-slate-900 shadow-2xl ring-1 ring-slate-200"
+
           style={{ width: config.width, borderTop: "3px solid #10B981" }}
         >
           <div className="mb-3 flex items-center gap-2 text-sm font-bold text-[#1d1d1f]">
