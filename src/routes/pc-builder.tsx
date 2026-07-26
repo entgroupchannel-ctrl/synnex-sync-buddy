@@ -319,6 +319,7 @@ function PcBuilderPage() {
         total={total}
       />
 
+      <PcBuilderBenefitsBanner />
       <IndustrialPromoBanner compact />
       <SiteFooter />
     </div>
