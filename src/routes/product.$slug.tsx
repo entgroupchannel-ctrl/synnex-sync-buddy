@@ -186,19 +186,18 @@ function ProductDetail() {
 
 
   const relatedQ = useQuery({
-    enabled: !!productQ.data?.category,
-    queryKey: ["related", productQ.data?.category, productQ.data?.id],
+    enabled: !!productQ.data?.id,
+    queryKey: ["smart-recommendations", productQ.data?.id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("synnex_products")
-        .select(PRODUCT_PUBLIC_COLUMNS)
-        .eq("category", productQ.data!.category!)
-        .neq("id", productQ.data!.id)
-        .limit(5);
+      const { data, error } = await supabase.rpc("get_smart_recommendations", {
+        p_product_id: productQ.data!.id,
+        p_limit: 8,
+      });
       if (error) throw error;
       return data ?? [];
     },
   });
+
 
   const p = productQ.data;
   const historyQ = usePurchaseHistoryForSku(p?.sku);
@@ -916,15 +915,22 @@ function ProductDetail() {
 
         {(relatedQ.data?.length ?? 0) > 0 && (
           <div className="mt-10">
-            <h2 className="mb-3 text-lg font-bold text-[color:var(--brand-navy)]">สินค้าที่คล้ายกัน</h2>
-            <div className="grid grid-cols-3 gap-2 md:grid-cols-5 md:gap-3">
+            <h2 className="mb-1 text-lg font-bold text-[color:var(--brand-navy)]">แนะนำสำหรับคุณ</h2>
+            <p className="mb-3 text-xs text-slate-500">ระบบพยากรณ์ความต้องการลูกค้าอัจฉริยะ — ประเมินจากพฤติกรรมการซื้อจริงและสินค้าที่ใกล้เคียงกัน</p>
+            <div className="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-3">
               {relatedQ.data!.map((r) => (
                 <Link key={r.id} to="/product/$slug" params={{ slug: r.slug || r.id }} className="group flex flex-col overflow-hidden rounded-lg border bg-white p-2 transition hover:shadow-sm">
                   <div className="grid aspect-square max-h-[120px] place-items-center bg-white">
                     <ProductImage src={r.image_url} alt={r.name ?? r.sku} className="h-[110px] w-full object-contain" iconClassName="h-10 w-10 text-slate-300" />
                   </div>
                   <div className="mt-2 flex flex-col">
+                    {r.reason && (
+                      <span className="mb-1 w-fit rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700">
+                        {r.reason}
+                      </span>
+                    )}
                     <div className="text-xs line-clamp-2 min-h-8 font-medium">{r.name ?? r.sku}</div>
+
                     <DiscountBadgeRow
                       sellingPrice={(r as { selling_price?: number | null }).selling_price}
                       b2bPrice={(r as { b2b_price?: number | null }).b2b_price}
