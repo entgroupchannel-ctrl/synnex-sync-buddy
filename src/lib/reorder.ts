@@ -88,7 +88,7 @@ export function useFrequentlyBought(limit = 6) {
       const skus = sorted.map((s) => s.product_sku);
       const { data: currents } = await supabase
         .from("synnex_products")
-        .select("id,sku,slug,name,image_url,selling_price,member_price,b2b_price,price_approved,stock_status,distributor")
+        .select("id,sku,slug,name,image_url,selling_price,member_price,b2b_price,min_tier_price,price_approved,stock_status,distributor")
         .in("sku", skus);
       const byS = new Map((currents ?? []).map((c) => [c.sku, c]));
       for (const row of sorted) {

@@ -46,7 +46,7 @@ export function ReorderButton({ orderId, className }: { orderId: string; classNa
       const skus = rows.map((r) => r.product_sku);
       const { data: products } = await supabase
         .from("synnex_products")
-        .select("id,sku,slug,name,image_url,selling_price,member_price,b2b_price,price_approved,stock_status,distributor")
+        .select("id,sku,slug,name,image_url,selling_price,member_price,b2b_price,min_tier_price,price_approved,stock_status,distributor")
         .in("sku", skus);
       const map = new Map((products ?? []).map((p) => [p.sku, p]));
 
