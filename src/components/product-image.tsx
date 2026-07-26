@@ -93,10 +93,27 @@ export function upsPlaceholder(name?: string | null): string {
   for (let i = 0; i < n.length; i++) hash = (hash * 31 + n.charCodeAt(i)) % 100000;
   return [UPS_IMAGES[0], UPS_IMAGES[2], UPS_IMAGES[4]][hash % 3];
 }
+/** รูป CPU แบบ "ภาพแทน" — ใช้แทนภาพที่มีลายน้ำจากดิสทริบิวเตอร์ */
+const CPU_IMAGES = [
+  "/cpu-placeholders/cpu-1.png",
+  "/cpu-placeholders/cpu-2.png",
+  "/cpu-placeholders/cpu-3.png",
+  "/cpu-placeholders/cpu-4.png",
+];
 
+export function cpuPlaceholder(name?: string | null): string {
+  const n = (name ?? "").toUpperCase();
+  if (/AMD|RYZEN|ATHLON/.test(n)) return CPU_IMAGES[0];
+  if (/INTEL|CORE I|PENTIUM|CELERON|ULTRA/.test(n)) return CPU_IMAGES[3];
+  let hash = 0;
+  for (let i = 0; i < n.length; i++) hash = (hash * 31 + n.charCodeAt(i)) % 100000;
+  return [CPU_IMAGES[1], CPU_IMAGES[2]][hash % 2];
+}
 
-
-
+export function isCpuProduct(category?: string | null, subcategory?: string | null, name?: string | null) {
+  if (subcategory === "CPU" || category === "CPU") return true;
+  return /^\s*cpu\b/i.test(name ?? "");
+}
 
 
 
@@ -130,6 +147,26 @@ export function ProductImage({
       <div className="relative h-full w-full">
         <img
           src={upsPlaceholder(productName ?? alt)}
+          alt={alt}
+          loading={loading}
+          className={className}
+        />
+        <span className="pointer-events-none absolute bottom-1 right-1 rounded bg-slate-900/70 px-1.5 py-0.5 text-[10px] font-medium text-white">
+          ภาพแทน
+        </span>
+      </div>
+    );
+  }
+
+  // CPU จาก ADVICE มีลายน้ำในภาพต้นทาง → ใช้ภาพแทนที่สร้างไว้
+  if (
+    isCpuProduct(category, subcategory, productName ?? alt) &&
+    ((distributor ?? "").toUpperCase() === "ADVICE" || error || !src)
+  ) {
+    return (
+      <div className="relative h-full w-full">
+        <img
+          src={cpuPlaceholder(productName ?? alt)}
           alt={alt}
           loading={loading}
           className={className}
