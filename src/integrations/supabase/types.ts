@@ -2432,6 +2432,13 @@ export type Database = {
       }
       check_sync_secret: { Args: { input_secret: string }; Returns: boolean }
       cleanup_rate_limits: { Args: never; Returns: undefined }
+      get_brand_product_counts: {
+        Args: { p_limit?: number }
+        Returns: {
+          brand: string
+          product_count: number
+        }[]
+      }
       get_product_price: {
         Args: {
           p_b2b_price: number
