@@ -47,6 +47,33 @@ export type Database = {
         }
         Relationships: []
       }
+      brand_fix_backup_20260726: {
+        Row: {
+          backed_up_at: string
+          id: string
+          name: string | null
+          new_brand: string | null
+          old_brand: string | null
+          sku: string | null
+        }
+        Insert: {
+          backed_up_at?: string
+          id: string
+          name?: string | null
+          new_brand?: string | null
+          old_brand?: string | null
+          sku?: string | null
+        }
+        Update: {
+          backed_up_at?: string
+          id?: string
+          name?: string | null
+          new_brand?: string | null
+          old_brand?: string | null
+          sku?: string | null
+        }
+        Relationships: []
+      }
       cart_reminders: {
         Row: {
           cart_snapshot: Json
