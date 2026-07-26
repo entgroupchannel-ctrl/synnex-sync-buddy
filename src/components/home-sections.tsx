@@ -695,17 +695,15 @@ export function ShopByBrand() {
   const q = useQuery({
     queryKey: ["all-brands"],
     queryFn: async () => {
-      const { data } = await supabase.from("synnex_products")
-        .select("brand")
-        .not("brand", "is", null)
-        .limit(1000);
-      const map = new Map<string, number>();
-      for (const r of data ?? []) {
-        const b = (r as { brand: string | null }).brand;
-        if (!b) continue;
-        map.set(b, (map.get(b) ?? 0) + 1);
-      }
-      return [...map.entries()].sort((a, b) => b[1] - a[1]).slice(0, 25).map(([b, n]) => ({ brand: b, count: n }));
+      // เดิม select("brand").limit(1000) แล้วนับเองฝั่ง client จากตัวอย่าง 1,000 แถวแรก
+      // ทำให้แบรนด์ที่เพิ่ง onboard ใหม่ (เช่น LG, APC จาก Synnex) นับไม่ครบ
+      // เปลี่ยนเป็น RPC นับจริงทั้งตารางแทน
+      const { data, error } = await supabase.rpc("get_brand_product_counts", { p_limit: 40 });
+      if (error) throw error;
+      return (data ?? []).map((r: { brand: string; product_count: number }) => ({
+        brand: r.brand,
+        count: r.product_count,
+      }));
     },
     staleTime: 10 * 60_000,
   });
