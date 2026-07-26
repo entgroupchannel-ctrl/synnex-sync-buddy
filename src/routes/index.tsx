@@ -68,6 +68,7 @@ import { BrandLogo } from "@/components/brand-logo";
 import { useVolumeRules, hasVolumeDiscount } from "@/lib/volume-discount";
 import entLogo from "@/assets/entgroup-logo.jpg.asset.json";
 import { VatNote } from "@/components/vat-note";
+import { SolarInstallBanner } from "@/components/solar-install-banner";
 import { HelpChooseBanner, HelpChooseInlineCard, SupportPeopleStrip } from "@/components/help-choose-banner";
 
 
@@ -1195,6 +1196,10 @@ function HomePage() {
               ))}
             </div>
           )}
+
+          {search.category === "Solar & Energy" && <SolarInstallBanner className="mb-4" />}
+
+
 
           {/* Active filter summary */}
           {hasActiveFilters && (
