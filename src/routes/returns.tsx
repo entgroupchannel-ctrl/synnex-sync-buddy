@@ -5,10 +5,10 @@ import { SiteFooter } from "@/components/site-footer";
 export const Route = createFileRoute("/returns")({
   head: () => ({
     meta: [
-      { title: "การคืนสินค้า / รับประกัน — ENT Group IT Shop" },
-      { name: "description", content: "นโยบายคืนสินค้า 7 วัน เปลี่ยนสินค้าชำรุดจากโรงงานทันที — ENT Group IT Shop" },
-      { property: "og:title", content: "การคืนสินค้า / รับประกัน — ENT Group IT Shop" },
-      { property: "og:description", content: "นโยบายคืนสินค้า 7 วัน — ENT Group IT Shop" },
+      { title: "การคืนสินค้า / รับประกัน — ENT Group IT Retail Shop" },
+      { name: "description", content: "นโยบายคืนสินค้า 7 วัน เปลี่ยนสินค้าชำรุดจากโรงงานทันที — ENT Group IT Retail Shop" },
+      { property: "og:title", content: "การคืนสินค้า / รับประกัน — ENT Group IT Retail Shop" },
+      { property: "og:description", content: "นโยบายคืนสินค้า 7 วัน — ENT Group IT Retail Shop" },
     ],
   }),
   component: Returns,

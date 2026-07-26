@@ -29,9 +29,9 @@ export const Route = createFileRoute("/contact")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "ติดต่อเรา — ENT Group IT Shop" },
+      { title: "ติดต่อเรา — ENT Group IT Retail Shop" },
       { name: "description", content: "ติดต่อ ENT Group สอบถามสินค้า Mini PC, Panel PC, Industrial Computer ขอใบเสนอราคา โทร 02-045-6104 สำนักงานปากเกร็ด นนทบุรี" },
-      { property: "og:title", content: "ติดต่อเรา — ENT Group IT Shop" },
+      { property: "og:title", content: "ติดต่อเรา — ENT Group IT Retail Shop" },
       { property: "og:description", content: "ติดต่อทีมงาน ENT Group — พร้อมให้คำปรึกษาและดูแลทุกโครงการ" },
     ],
   }),

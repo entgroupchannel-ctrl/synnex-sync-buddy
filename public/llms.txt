@@ -1,8 +1,8 @@
-# ENT Group IT Shop
+# ENT Group IT Retail Shop
 
 > ร้านไอทีออนไลน์ Authorized Dealer ของ Synnex Thailand และ VST ECS Thailand จำหน่ายสินค้าไอทีราคา Dealer จริงสำหรับลูกค้าองค์กร (B2B) และผู้ใช้ทั่วไป (Consumer) พร้อมใบกำกับภาษีและรับประกันศูนย์ไทย
 
-ENT Group IT Shop is the online storefront of ENT Group Co., Ltd. (บริษัท อี เอ็น ที กรุ๊ป จำกัด), an Authorized Dealer of Synnex Thailand and VST ECS Thailand since 2015. We sell notebooks, monitors, printers, PCs, networking hardware, storage, software licenses, and IT accessories at real dealer prices to both business (B2B) and consumer (B2C) customers across Thailand.
+ENT Group IT Retail Shop is the online storefront of ENT Group Co., Ltd. (บริษัท อี เอ็น ที กรุ๊ป จำกัด), an Authorized Dealer of Synnex Thailand and VST ECS Thailand since 2015. We sell notebooks, monitors, printers, PCs, networking hardware, storage, software licenses, and IT accessories at real dealer prices to both business (B2B) and consumer (B2C) customers across Thailand.
 
 ## About
 

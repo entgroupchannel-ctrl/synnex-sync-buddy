@@ -24,9 +24,9 @@ export const Route = createFileRoute("/cart")({
   component: CartPage,
   head: () => ({
     meta: [
-      { title: "ตะกร้าสินค้า — ENT Group IT Shop" },
+      { title: "ตะกร้าสินค้า — ENT Group IT Retail Shop" },
       { name: "description", content: "ตรวจสอบสินค้าในตะกร้าและดำเนินการชำระเงิน" },
-      { property: "og:title", content: "ตะกร้าสินค้า — ENT Group IT Shop" },
+      { property: "og:title", content: "ตะกร้าสินค้า — ENT Group IT Retail Shop" },
       { property: "og:description", content: "ตรวจสอบสินค้าในตะกร้าและดำเนินการชำระเงิน" },
     ],
   }),

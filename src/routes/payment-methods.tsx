@@ -5,9 +5,9 @@ import { SiteFooter } from "@/components/site-footer";
 export const Route = createFileRoute("/payment-methods")({
   head: () => ({
     meta: [
-      { title: "วิธีชำระเงิน — ENT Group IT Shop" },
-      { name: "description", content: "ชำระเงินผ่าน PromptPay QR, โอนธนาคาร KBank / SCB — ENT Group IT Shop" },
-      { property: "og:title", content: "วิธีชำระเงิน — ENT Group IT Shop" },
+      { title: "วิธีชำระเงิน — ENT Group IT Retail Shop" },
+      { name: "description", content: "ชำระเงินผ่าน PromptPay QR, โอนธนาคาร KBank / SCB — ENT Group IT Retail Shop" },
+      { property: "og:title", content: "วิธีชำระเงิน — ENT Group IT Retail Shop" },
       { property: "og:description", content: "ชำระเงินผ่าน PromptPay QR หรือโอนธนาคาร KBank / SCB" },
     ],
   }),

@@ -13,7 +13,7 @@ import { hasSpecTags } from "@/lib/parse-spec";
 export const Route = createFileRoute("/corporate")({
   head: () => ({
     meta: [
-      { title: "Corporate IT Solutions — ENT Group IT Shop" },
+      { title: "Corporate IT Solutions — ENT Group IT Retail Shop" },
       {
         name: "description",
         content:

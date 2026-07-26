@@ -13,10 +13,10 @@ export const Route = createFileRoute("/wishlist")({
   component: WishlistPage,
   head: () => ({
     meta: [
-      { title: "รายการที่บันทึกไว้ | ENT Group IT Shop" },
-      { name: "description", content: "สินค้าที่คุณบันทึกไว้ดูทีหลังจาก ENT Group IT Shop" },
-      { property: "og:title", content: "รายการที่บันทึกไว้ | ENT Group IT Shop" },
-      { property: "og:description", content: "สินค้าที่คุณบันทึกไว้ดูทีหลังจาก ENT Group IT Shop" },
+      { title: "รายการที่บันทึกไว้ | ENT Group IT Retail Shop" },
+      { name: "description", content: "สินค้าที่คุณบันทึกไว้ดูทีหลังจาก ENT Group IT Retail Shop" },
+      { property: "og:title", content: "รายการที่บันทึกไว้ | ENT Group IT Retail Shop" },
+      { property: "og:description", content: "สินค้าที่คุณบันทึกไว้ดูทีหลังจาก ENT Group IT Retail Shop" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex, nofollow" },

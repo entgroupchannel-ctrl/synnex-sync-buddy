@@ -53,9 +53,9 @@ export const Route = createFileRoute("/checkout")({
   component: CheckoutPage,
   head: () => ({
     meta: [
-      { title: "ชำระเงิน — ENT Group IT Shop" },
+      { title: "ชำระเงิน — ENT Group IT Retail Shop" },
       { name: "description", content: "หน้ายืนยันคำสั่งซื้อ — รองรับใบกำกับภาษี, โอนเงิน และเก็บเงินปลายทาง" },
-      { property: "og:title", content: "ชำระเงิน — ENT Group IT Shop" },
+      { property: "og:title", content: "ชำระเงิน — ENT Group IT Retail Shop" },
       { property: "og:description", content: "หน้ายืนยันคำสั่งซื้อ ENT Group" },
     ],
   }),

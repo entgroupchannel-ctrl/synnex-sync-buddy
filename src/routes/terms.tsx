@@ -5,9 +5,9 @@ import { SiteFooter } from "@/components/site-footer";
 export const Route = createFileRoute("/terms")({
   head: () => ({
     meta: [
-      { title: "เงื่อนไขการใช้งาน — ENT Group IT Shop" },
+      { title: "เงื่อนไขการใช้งาน — ENT Group IT Retail Shop" },
       { name: "description", content: "เงื่อนไขและข้อกำหนดการใช้บริการเว็บไซต์ shop.entgroup.co.th" },
-      { property: "og:title", content: "เงื่อนไขการใช้งาน — ENT Group IT Shop" },
+      { property: "og:title", content: "เงื่อนไขการใช้งาน — ENT Group IT Retail Shop" },
       { property: "og:description", content: "เงื่อนไขและข้อกำหนดการใช้บริการ shop.entgroup.co.th" },
     ],
   }),

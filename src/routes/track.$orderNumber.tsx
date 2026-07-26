@@ -10,7 +10,7 @@ import { ExternalLink, Package, MapPin } from "lucide-react";
 export const Route = createFileRoute("/track/$orderNumber")({
   head: ({ params }) => ({
     meta: [
-      { title: `ติดตามพัสดุ ${params.orderNumber} — ENT Group IT Shop` },
+      { title: `ติดตามพัสดุ ${params.orderNumber} — ENT Group IT Retail Shop` },
       { name: "description", content: "ติดตามสถานะการจัดส่งพัสดุของคุณ" },
       { property: "og:title", content: `ติดตามพัสดุ ${params.orderNumber}` },
       { property: "og:description", content: "ติดตามสถานะการจัดส่งพัสดุของคุณ" },

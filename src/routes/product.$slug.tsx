@@ -59,11 +59,11 @@ export const Route = createFileRoute("/product/$slug")({
     const price = p?.selling_price ?? 0;
     const url = `https://shop.entgroup.co.th/product/${params.slug}`;
     const title = p
-      ? `${name} ราคา ฿${Number(price).toLocaleString("th-TH")} | ENT Group IT Shop`.slice(0, 70)
-      : `${name} | ENT Group IT Shop`;
+      ? `${name} ราคา ฿${Number(price).toLocaleString("th-TH")} | ENT Group IT Retail Shop`.slice(0, 70)
+      : `${name} | ENT Group IT Retail Shop`;
     const desc = p
-      ? `${name} ราคา ฿${Number(price).toLocaleString("th-TH")} ${p.stock_status === "พร้อมจัดส่ง" ? "พร้อมจัดส่ง" : "สั่งจอง"} รับประกันศูนย์ไทย จาก ENT Group IT Shop`.slice(0, 160)
-      : `รายละเอียดสินค้า ${params.slug} จาก ENT Group IT Shop`;
+      ? `${name} ราคา ฿${Number(price).toLocaleString("th-TH")} ${p.stock_status === "พร้อมจัดส่ง" ? "พร้อมจัดส่ง" : "สั่งจอง"} รับประกันศูนย์ไทย จาก ENT Group IT Retail Shop`.slice(0, 160)
+      : `รายละเอียดสินค้า ${params.slug} จาก ENT Group IT Retail Shop`;
 
     const meta = [
       { title },
@@ -118,7 +118,7 @@ export const Route = createFileRoute("/product/$slug")({
             availability: p.stock_status === "พร้อมจัดส่ง" ? "https://schema.org/InStock" : "https://schema.org/PreOrder",
             priceValidUntil: validUntil,
             url,
-            seller: { "@type": "Organization", name: "ENT Group IT Shop" },
+            seller: { "@type": "Organization", name: "ENT Group IT Retail Shop" },
           },
         }),
       });
@@ -788,7 +788,7 @@ function ProductDetail() {
                   stockLabel,
                   p.brand ? `แบรนด์ ${p.brand}` : "",
                   showSku ? `รหัสสินค้า ${decodedSku}` : "",
-                  `จำหน่ายโดย ENT Group IT Shop`,
+                  `จำหน่ายโดย ENT Group IT Retail Shop`,
                   "รับประกันศูนย์ไทย",
                 ].filter(Boolean).join(" · ");
 
@@ -838,7 +838,7 @@ function ProductDetail() {
                 const priceNum = Number(p.selling_price ?? 0);
                 const name = p.name ?? p.sku;
                 const q1 = `${name} ราคาเท่าไหร่?`;
-                const a1 = `${name} ราคา ฿${priceNum.toLocaleString("th-TH")} จาก ENT Group IT Shop`;
+                const a1 = `${name} ราคา ฿${priceNum.toLocaleString("th-TH")} จาก ENT Group IT Retail Shop`;
                 const q2 = `${name} มีสินค้าพร้อมส่งไหม?`;
                 const a2 = ready
                   ? `${name} มีสินค้าพร้อมจัดส่งทันที จัดส่งทั่วไทยผ่าน Kerry, Flash, ไปรษณีย์ไทย`

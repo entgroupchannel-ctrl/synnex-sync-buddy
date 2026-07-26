@@ -7,7 +7,7 @@ export const Route = createFileRoute("/_authenticated/my-account/membership")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "ระดับสมาชิก & สิทธิประโยชน์ — ENT Group IT Shop" },
+      { title: "ระดับสมาชิก & สิทธิประโยชน์ — ENT Group IT Retail Shop" },
       { name: "description", content: "ดูระดับสมาชิก ยอดซื้อสะสม และสิทธิประโยชน์ส่วนลดของคุณ" },
       { property: "og:title", content: "ระดับสมาชิก & สิทธิประโยชน์" },
       { property: "og:description", content: "ยิ่งซื้อเยอะ ยิ่งได้ราคาดีขึ้น" },

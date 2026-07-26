@@ -12,7 +12,7 @@ import { Building2, CheckCircle2, Clock, XCircle } from "lucide-react";
 export const Route = createFileRoute("/_authenticated/my-account/company")({
   head: () => ({
     meta: [
-      { title: "ข้อมูลบริษัท — ENT Group IT Shop" },
+      { title: "ข้อมูลบริษัท — ENT Group IT Retail Shop" },
       { name: "description", content: "จัดการข้อมูลบริษัทของคุณสำหรับใบกำกับภาษี" },
       { property: "og:title", content: "ข้อมูลบริษัท" },
       { property: "og:description", content: "ข้อมูลบริษัทสำหรับ B2B" },

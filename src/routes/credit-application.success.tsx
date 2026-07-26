@@ -12,9 +12,9 @@ export const Route = createFileRoute("/credit-application/success")({
   component: SuccessPage,
   head: () => ({
     meta: [
-      { title: "ส่งคำขอวงเงินเครดิตแล้ว — ENT Group IT Shop" },
+      { title: "ส่งคำขอวงเงินเครดิตแล้ว — ENT Group IT Retail Shop" },
       { name: "description", content: "ระบบได้รับคำขอวงเงินเครดิต B2B ของคุณแล้ว ทีมงานจะติดต่อกลับภายใน 3-5 วันทำการ" },
-      { property: "og:title", content: "ส่งคำขอวงเงินเครดิตแล้ว — ENT Group IT Shop" },
+      { property: "og:title", content: "ส่งคำขอวงเงินเครดิตแล้ว — ENT Group IT Retail Shop" },
       { property: "og:description", content: "ทีมงาน ENT Group จะติดต่อกลับภายใน 3-5 วันทำการ" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

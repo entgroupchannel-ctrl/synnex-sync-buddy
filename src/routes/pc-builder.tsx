@@ -40,7 +40,7 @@ import {
 export const Route = createFileRoute("/pc-builder")({
   head: () => ({
     meta: [
-      { title: "Config คอมพิวเตอร์เอง (DIY PC Builder) — ENT Group IT Shop" },
+      { title: "Config คอมพิวเตอร์เอง (DIY PC Builder) — ENT Group IT Retail Shop" },
       {
         name: "description",
         content:

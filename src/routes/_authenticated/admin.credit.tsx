@@ -23,7 +23,7 @@ export const Route = createFileRoute("/_authenticated/admin/credit")({
       { title: "จัดการวงเงินเครดิต B2B — Admin ENT Group" },
       { name: "description", content: "อนุมัติคำขอวงเงินเครดิต ปรับวงเงิน ระงับบัญชี และบันทึกการชำระหนี้ของลูกค้าองค์กร" },
       { property: "og:title", content: "จัดการวงเงินเครดิต B2B — Admin" },
-      { property: "og:description", content: "ระบบจัดการเครดิต B2B ของ ENT Group IT Shop" },
+      { property: "og:description", content: "ระบบจัดการเครดิต B2B ของ ENT Group IT Retail Shop" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],

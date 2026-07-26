@@ -225,7 +225,7 @@ function TrustBar() {
     {
       icon: Award,
       title: "สินค้าแท้ 100%",
-      desc: "ENT Group IT Shop",
+      desc: "ENT Group IT Retail Shop",
     },
     {
       icon: ShieldCheck,
@@ -597,12 +597,12 @@ export function SiteFooter() {
           <div className="flex items-center gap-3">
             <img
               src={entLogo.url}
-              alt="ENT Group IT Shop"
+              alt="ENT Group IT Retail Shop"
               className="h-10 w-10 rounded-lg object-contain bg-white p-0.5"
             />
             <div>
               <div className="text-sm font-medium text-white">
-                IT Shop
+                IT Retail Shop
               </div>
               <div className="text-xs text-green-300">
                 Computer for all

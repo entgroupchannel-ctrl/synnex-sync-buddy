@@ -16,7 +16,7 @@ import { OmiseCardForm } from "@/components/omise-card-form";
 
 export const Route = createFileRoute("/_authenticated/my-account/payment")({
   ssr: false,
-  head: () => ({ meta: [{ title: "บัตรเครดิต/เดบิต — ENT Group IT Shop" }] }),
+  head: () => ({ meta: [{ title: "บัตรเครดิต/เดบิต — ENT Group IT Retail Shop" }] }),
   component: PaymentMethodsPage,
 });
 

@@ -127,15 +127,15 @@ export const Route = createFileRoute("/")({
   validateSearch: zodValidator(searchSchema),
   head: () => ({
     meta: [
-      { title: "ENT Group IT Shop — ราคา Dealer จริง | สินค้าแท้ 100%" },
-      { name: "description", content: "ร้านไอทีราคา Dealer จริง สินค้าแท้ 100% จาก ENT Group IT Shop ตั้งแต่ปี 2558 สินค้ากว่า 900 รายการ ส่งทั่วไทย รับประกันศูนย์ไทย โทร 02-045-6104" },
+      { title: "ENT Group IT Retail Shop — ราคา Dealer จริง | สินค้าแท้ 100%" },
+      { name: "description", content: "ร้านไอทีราคา Dealer จริง สินค้าแท้ 100% จาก ENT Group IT Retail Shop ตั้งแต่ปี 2558 สินค้ากว่า 900 รายการ ส่งทั่วไทย รับประกันศูนย์ไทย โทร 02-045-6104" },
       { name: "keywords", content: "ราคา dealer, notebook, โน้ตบุ๊ก, คอมพิวเตอร์, IT B2B, ไอทีองค์กร, microsoft license, ENT Group, สินค้าแท้" },
       { property: "og:type", content: "website" },
-      { property: "og:title", content: "ENT Group IT Shop — ราคา Dealer จริง | สินค้าแท้ 100%" },
-      { property: "og:description", content: "ENT Group IT Shop สินค้าแท้ 100% สินค้าไอทีสำหรับองค์กรและผู้ใช้ทั่วไป ราคา Dealer จริง พร้อมใบกำกับภาษี" },
+      { property: "og:title", content: "ENT Group IT Retail Shop — ราคา Dealer จริง | สินค้าแท้ 100%" },
+      { property: "og:description", content: "ENT Group IT Retail Shop สินค้าแท้ 100% สินค้าไอทีสำหรับองค์กรและผู้ใช้ทั่วไป ราคา Dealer จริง พร้อมใบกำกับภาษี" },
       { property: "og:url", content: "https://shop.entgroup.co.th/" },
-      { name: "twitter:title", content: "ENT Group IT Shop — ราคา Dealer จริง" },
-      { name: "twitter:description", content: "ENT Group IT Shop สินค้าแท้ 100% สินค้ากว่า 900 รายการ ส่งทั่วไทย" },
+      { name: "twitter:title", content: "ENT Group IT Retail Shop — ราคา Dealer จริง" },
+      { name: "twitter:description", content: "ENT Group IT Retail Shop สินค้าแท้ 100% สินค้ากว่า 900 รายการ ส่งทั่วไทย" },
     ],
     links: [
       { rel: "canonical", href: "https://shop.entgroup.co.th/" },
@@ -152,10 +152,10 @@ export const Route = createFileRoute("/")({
           mainEntity: [
             {
               "@type": "Question",
-              name: "ENT Group IT Shop คืออะไร?",
+              name: "ENT Group IT Retail Shop คืออะไร?",
               acceptedAnswer: {
                 "@type": "Answer",
-                text: "ENT Group IT Shop คือร้านไอทีออนไลน์ในเครือบริษัท อี เอ็น ที กรุ๊ป จำกัด จำหน่ายสินค้าไอทีแท้ 100% ในราคา Dealer จริง ตั้งแต่ปี 2558",
+                text: "ENT Group IT Retail Shop คือร้านไอทีออนไลน์ในเครือบริษัท อี เอ็น ที กรุ๊ป จำกัด จำหน่ายสินค้าไอทีแท้ 100% ในราคา Dealer จริง ตั้งแต่ปี 2558",
               },
             },
             {
@@ -163,7 +163,7 @@ export const Route = createFileRoute("/")({
               name: "สินค้ามีรับประกันไหม?",
               acceptedAnswer: {
                 "@type": "Answer",
-                text: "สินค้าทุกชิ้นรับประกันโดยศูนย์บริการอย่างเป็นทางการในประเทศไทย เนื่องจากเราจำหน่ายสินค้าแท้ 100% โดยตรงจาก ENT Group IT Shop",
+                text: "สินค้าทุกชิ้นรับประกันโดยศูนย์บริการอย่างเป็นทางการในประเทศไทย เนื่องจากเราจำหน่ายสินค้าแท้ 100% โดยตรงจาก ENT Group IT Retail Shop",
               },
             },
             {
@@ -564,8 +564,8 @@ function HomePage() {
     ? {
         "@context": "https://schema.org",
         "@type": "ItemList",
-        name: `${activeCategory} — ENT Group IT Shop`,
-        description: `รายการสินค้า ${activeCategory} จาก ENT Group IT Shop สินค้าแท้ 100%`,
+        name: `${activeCategory} — ENT Group IT Retail Shop`,
+        description: `รายการสินค้า ${activeCategory} จาก ENT Group IT Retail Shop สินค้าแท้ 100%`,
         url: canonical,
         numberOfItems: totalItems,
         itemListElement: productRows.slice(0, 10).map((p, i) => ({

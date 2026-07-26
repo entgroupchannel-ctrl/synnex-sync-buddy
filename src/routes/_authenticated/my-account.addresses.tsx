@@ -12,7 +12,7 @@ import { Plus, Trash2, Star } from "lucide-react";
 export const Route = createFileRoute("/_authenticated/my-account/addresses")({
   head: () => ({
     meta: [
-      { title: "ที่อยู่จัดส่ง — ENT Group IT Shop" },
+      { title: "ที่อยู่จัดส่ง — ENT Group IT Retail Shop" },
       { name: "description", content: "จัดการที่อยู่จัดส่งของคุณ" },
       { property: "og:title", content: "ที่อยู่จัดส่ง" },
       { property: "og:description", content: "จัดการที่อยู่จัดส่ง" },

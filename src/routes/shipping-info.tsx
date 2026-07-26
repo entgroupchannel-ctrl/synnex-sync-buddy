@@ -5,9 +5,9 @@ import { SiteFooter } from "@/components/site-footer";
 export const Route = createFileRoute("/shipping-info")({
   head: () => ({
     meta: [
-      { title: "ข้อมูลการจัดส่ง — ENT Group IT Shop" },
+      { title: "ข้อมูลการจัดส่ง — ENT Group IT Retail Shop" },
       { name: "description", content: "จัดส่ง Kerry / Flash Express ทั่วไทย ฟรีค่าจัดส่งเมื่อซื้อครบตามเงื่อนไข" },
-      { property: "og:title", content: "ข้อมูลการจัดส่ง — ENT Group IT Shop" },
+      { property: "og:title", content: "ข้อมูลการจัดส่ง — ENT Group IT Retail Shop" },
       { property: "og:description", content: "จัดส่ง Kerry / Flash Express ทั่วไทย" },
     ],
   }),

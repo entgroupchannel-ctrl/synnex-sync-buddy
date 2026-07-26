@@ -5,9 +5,9 @@ import { SiteFooter } from "@/components/site-footer";
 export const Route = createFileRoute("/careers")({
   head: () => ({
     meta: [
-      { title: "ร่วมงานกับเรา — ENT Group IT Shop" },
+      { title: "ร่วมงานกับเรา — ENT Group IT Retail Shop" },
       { name: "description", content: "ร่วมงานกับ ENT Group — ตำแหน่งฝ่ายขาย IT Solutions, ช่างเทคนิค และ Logistics" },
-      { property: "og:title", content: "ร่วมงานกับเรา — ENT Group IT Shop" },
+      { property: "og:title", content: "ร่วมงานกับเรา — ENT Group IT Retail Shop" },
       { property: "og:description", content: "ร่วมงานกับ ENT Group — ตำแหน่งฝ่ายขาย, ช่างเทคนิค และ Logistics" },
     ],
   }),
