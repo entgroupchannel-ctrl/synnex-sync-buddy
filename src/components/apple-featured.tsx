@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { PRODUCT_PUBLIC_COLUMNS } from "@/lib/product-columns";
 import { ProductImage } from "@/components/product-image";
 import { getSellingPrice, useCustomerTier, priceFmt } from "@/lib/cart";
 
@@ -41,7 +42,7 @@ export function AppleFeatured() {
         // แท็บ "ทั้งหมด" — ดึงมาเยอะกว่าเดิม แล้วสุ่มกระจายทุกประเภทสินค้า Apple แทนเรียงราคาแพงสุดก่อน
         const { data } = await supabase
           .from("synnex_products")
-          .select("*")
+          .select(PRODUCT_PUBLIC_COLUMNS)
           .or(`brand.ilike.%Apple%,name.ilike.%Apple%`)
           .eq("price_approved", true)
           .gt("selling_price", 0)
@@ -75,7 +76,7 @@ export function AppleFeatured() {
       const filters = active.pattern.split(",").map((p) => `name.ilike.${p}`).join(",");
       const { data } = await supabase
         .from("synnex_products")
-        .select("*")
+        .select(PRODUCT_PUBLIC_COLUMNS)
         .or(`brand.ilike.%Apple%,name.ilike.%Apple%`)
         .or(filters)
         .eq("price_approved", true)
