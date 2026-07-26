@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { PRODUCT_PUBLIC_COLUMNS } from "@/lib/product-columns";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -331,7 +332,7 @@ export function TodaysBestDeals() {
     queryKey: ["todays-best"],
     queryFn: async () => {
       const { data } = await supabase.from("synnex_products")
-        .select("*")
+        .select(PRODUCT_PUBLIC_COLUMNS)
         .eq("price_approved", true).gt("selling_price", 0)
         .gt("selling_price", 0)
         .not("image_url", "is", null)
@@ -414,7 +415,7 @@ export function PopularNotebooks() {
     queryKey: ["popular-notebooks"],
     queryFn: async () => {
       const { data } = await supabase.from("synnex_products")
-        .select("*")
+        .select(PRODUCT_PUBLIC_COLUMNS)
         .eq("category", "Notebook")
         .eq("price_approved", true).gt("selling_price", 0)
         .gt("selling_price", 0)
@@ -514,7 +515,7 @@ export function ComputerSets() {
     queryKey: ["computer-sets"],
     queryFn: async () => {
       const { data } = await supabase.from("synnex_products")
-        .select("*")
+        .select(PRODUCT_PUBLIC_COLUMNS)
         .eq("category", "Computer Set")
         .eq("price_approved", true)
         .gt("selling_price", 0)
@@ -1066,7 +1067,7 @@ export function MicrosoftFeatured() {
     queryKey: ["software-licenses"],
     queryFn: async () => {
       const { data } = await supabase.from("synnex_products")
-        .select("*")
+        .select(PRODUCT_PUBLIC_COLUMNS)
         .eq("category", "Software")
         .eq("price_approved", true)
         .gt("selling_price", 0)
@@ -1247,7 +1248,7 @@ export function NetworkSecurity() {
     queryKey: ["network-security"],
     queryFn: async () => {
       const { data } = await supabase.from("synnex_products")
-        .select("*")
+        .select(PRODUCT_PUBLIC_COLUMNS)
         .eq("category", "Network")
         .eq("price_approved", true)
         .eq("stock_status", "พร้อมจัดส่ง")
@@ -1285,7 +1286,7 @@ export function StorageDeals() {
     queryKey: ["storage-deals"],
     queryFn: async () => {
       const { data } = await supabase.from("synnex_products")
-        .select("*")
+        .select(PRODUCT_PUBLIC_COLUMNS)
         .eq("category", "Storage")
         .eq("price_approved", true)
         .eq("stock_status", "พร้อมจัดส่ง")
@@ -1340,7 +1341,7 @@ export function ComponentsShowcase() {
     queryKey: ["components-showcase"],
     queryFn: async () => {
       const { data } = await supabase.from("synnex_products")
-        .select("*")
+        .select(PRODUCT_PUBLIC_COLUMNS)
         .in("category", ["Components", "RAM"])
         .eq("price_approved", true)
         .gt("selling_price", 0)
@@ -1402,7 +1403,7 @@ export function MacBookShowcase() {
     queryKey: ["apple-products"],
     queryFn: async () => {
       const { data } = await supabase.from("synnex_products")
-        .select("*")
+        .select(PRODUCT_PUBLIC_COLUMNS)
         .eq("distributor", "ADVICE")
         .in("category", ["Smart Phone & Tablet", "Notebook"])
         .eq("price_approved", true)
@@ -1464,7 +1465,7 @@ export function SolarEnergy() {
     queryKey: ["solar-energy"],
     queryFn: async () => {
       const { data } = await supabase.from("synnex_products")
-        .select("*")
+        .select(PRODUCT_PUBLIC_COLUMNS)
         .eq("category", "Solar & Energy")
         .eq("price_approved", true)
         .gt("selling_price", 0)
@@ -1514,7 +1515,7 @@ export function SmartLife() {
     queryFn: async () => {
       let qi = supabase
         .from("synnex_products")
-        .select("*")
+        .select(PRODUCT_PUBLIC_COLUMNS)
         .eq("category", "Smart Life")
         .eq("price_approved", true)
         .gt("selling_price", 0)
@@ -1619,7 +1620,7 @@ export function SpeakerAudio() {
       if (tab !== "all") {
         let qi = supabase
           .from("synnex_products")
-          .select("*")
+          .select(PRODUCT_PUBLIC_COLUMNS)
           .eq("category", "Speaker & Audio")
           .eq("price_approved", true)
           .gt("selling_price", 0)
@@ -1638,7 +1639,7 @@ export function SpeakerAudio() {
       // แท็บ "ทั้งหมด" — ดึงมาเยอะกว่าเดิม แล้วสุ่มกระจายให้ครบทุกยี่ห้อ ไม่ให้ยี่ห้อถูกสุดยึดที่หมด
       const { data } = await supabase
         .from("synnex_products")
-        .select("*")
+        .select(PRODUCT_PUBLIC_COLUMNS)
         .eq("category", "Speaker & Audio")
         .eq("price_approved", true)
         .gt("selling_price", 0)
@@ -1752,7 +1753,7 @@ export function CorporateITSolutions() {
     queryFn: async () => {
       let qi = supabase
         .from("synnex_products")
-        .select("*")
+        .select(PRODUCT_PUBLIC_COLUMNS)
         .eq("price_approved", true)
         .gt("selling_price", 1000)
         .order("selling_price", { ascending: true })
