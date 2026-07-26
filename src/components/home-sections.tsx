@@ -1535,8 +1535,7 @@ export function SmartLife() {
         .order("selling_price", { ascending: true })
         .limit(30);
 
-      if (tab === "cctv") qi = qi.in("brand", ["DAHUA", "HIKVISION"]);
-      else if (tab === "smartwatch") qi = qi.in("brand", ["SAMSUNG", "GARMIN", "HUAWEI"]);
+      if (tab === "smartwatch") qi = qi.in("brand", ["SAMSUNG", "GARMIN", "HUAWEI"]);
       else if (tab === "xiaomi") qi = qi.eq("brand", "XIAOMI");
       else if (tab === "gadget") qi = qi.in("brand", ["SOTHING", "HONEYWELL"]);
 
