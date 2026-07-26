@@ -19,7 +19,6 @@ import {
   Watch,
   Wind,
   Zap,
-  Shield,
   Volume2,
 } from "lucide-react";
 
@@ -50,6 +49,7 @@ export const CATEGORY_ICONS: Record<string, ReactNode> = {
   "Smart Phone & Tablet": <Smartphone className={ic} />,
   "Solar & Energy": <Sun className={ic} />,
   "Smart Life": <Home className={ic} />,
+  "CCTV & Security": <Camera className={ic} />,
   "Speaker & Audio": <Volume2 className={ic} />,
 };
 
@@ -58,10 +58,8 @@ export function getCategoryIcon(name: string): ReactNode {
 }
 
 export const SMART_LIFE_SUBCATEGORY_ICONS: Record<string, ReactNode> = {
-  "กล้องวงจรปิด (CCTV)": <Camera className={ic} />,
   "Smartwatch & Fitness": <Watch className={ic} />,
   "Smart Home / Xiaomi": <Home className={ic} />,
   "เครื่องฟอกอากาศ": <Wind className={ic} />,
   "Gadget": <Zap className={ic} />,
-  "Smart Security": <Shield className={ic} />,
 };
