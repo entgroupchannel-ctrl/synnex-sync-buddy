@@ -24,6 +24,7 @@ import solarTech from "@/assets/solar/solar-install-team.jpg";
 import cctvTech from "@/assets/cctv/cctv-install-team.jpg";
 import edgeAiTech from "@/assets/edge-ai/edge-ai-team.jpg";
 import pcTech from "@/assets/computer-set/pc-build-tech.jpg";
+import conferenceTech from "@/assets/conference/conference-install-team.jpg";
 
 const PHONE = "02-045-6104";
 const PHONE_TEL = "020456104";
@@ -60,6 +61,12 @@ const PROFILES: Record<string, Profile> = {
     title: "ต้องการช่างช่วยจัดสเปก/ประกอบคอม?",
     desc: "ช่างของเราช่วยเลือกสเปกให้ตรงงบและงานที่ใช้ ประกอบ ทดสอบ ลงระบบ พร้อมส่งถึงบ้านหรือออฟฟิศ",
     topic: "จัดสเปก/ประกอบคอมพิวเตอร์",
+  },
+  "Webcam & Conference": {
+    image: conferenceTech,
+    title: "ต้องการช่างติดตั้งชุดประชุมออนไลน์?",
+    desc: "ติดตั้งกล้อง PTZ/Conference Bar ไมค์ประชุม ปรับแต่งซอฟต์แวร์ Zoom/Teams พร้อมทดสอบระบบก่อนใช้งานจริง",
+    topic: "ชุดประชุมออนไลน์",
   },
 };
 
