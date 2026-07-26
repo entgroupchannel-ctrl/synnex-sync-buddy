@@ -241,6 +241,7 @@ export const CATEGORIES = [
   "Solar & Energy",
   "Smart Life",
   "CCTV & Security",
+  "Webcam & Conference",
   "Speaker & Audio",
 ] as const;
 
@@ -267,6 +268,7 @@ export const RAM_GENERATIONS = ["DDR5", "DDR4", "DDR3L", "DDR3", "DDR2"] as cons
 export function detectCategory(name: string | null | undefined): string {
   const n = (name || "").toLowerCase();
   if (/(กล้องวงจรปิด|ip camera|\bnvr|\bdvr\b|\bvigi\b)/i.test(n)) return "CCTV & Security";
+  if (/(conference cam|webcam|web cam)/i.test(n)) return "Webcam & Conference";
   if (/(notebook|laptop|\bnb\b)/i.test(n)) return "Notebook";
   if (/(monitor|จอ)/i.test(n)) return "Monitor";
   if (/(printer|print)/i.test(n)) return "Printer";
