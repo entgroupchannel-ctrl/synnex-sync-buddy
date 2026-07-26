@@ -33,9 +33,9 @@ export function SpecTagsCompact({ description }: { description?: string | null }
       {specs.map((s, i) => (
         <span
           key={i}
-          className="inline-flex max-w-full items-center gap-1 rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[10px] leading-tight text-slate-600"
+          className="inline-flex max-w-full items-center gap-1 rounded bg-slate-100 px-2 py-1 text-xs font-semibold leading-tight text-slate-700"
         >
-          <span className="shrink-0 text-slate-400">{ICONS[s.icon]}</span>
+          <span className="shrink-0 text-slate-500">{ICONS[s.icon]}</span>
           <span className="truncate">{s.value}</span>
         </span>
       ))}
