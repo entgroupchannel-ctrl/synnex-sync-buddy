@@ -23,7 +23,7 @@ function pickIcon(category?: string | null, name?: string | null): { Icon: Lucid
   return { Icon: Package, color: "text-slate-300" };
 }
 
-function computerSetPlaceholder(name?: string | null): string {
+export function computerSetPlaceholder(name?: string | null): string {
   const n = (name ?? "").toLowerCase();
   if (/ryzen|amd/.test(n)) return "/case-placeholders/red-black.png";
   if (/intel|core (i|ultra)/.test(n)) {
