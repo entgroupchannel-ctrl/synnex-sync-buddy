@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { CheckCircle2, Copy, CreditCard, Landmark, Loader2, Timer, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogPortal, DialogOverlay } from "@/components/ui/dialog";
 import { bahtFmt } from "@/lib/order-helpers";
+import { getOrderPaymentStatus } from "@/lib/order-confirmation.functions";
 
 type Props = {
   orderId: string;
