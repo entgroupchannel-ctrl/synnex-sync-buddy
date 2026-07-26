@@ -152,3 +152,77 @@ export const listPricingProducts = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { rows: (data ?? []) as unknown as PricingProductRow[], count: count ?? 0 };
   });
+
+/** ดึงข้อมูลสินค้าตาม id สำหรับคำนวณ markup แบบ bulk */
+export const getProductsForBulk = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { ids: string[] }) => input)
+  .handler(async ({ context, data }) => {
+    const { adminContext } = await import("@/lib/pricing-admin.server");
+    const db = await adminContext(context.userId);
+    const { data: rows, error } = await db
+      .from("synnex_products")
+      .select("id, sku, name, cost_price, price, selling_price, markup_override")
+      .in("id", data.ids);
+    if (error) throw new Error(error.message);
+    return (rows ?? []) as unknown as Array<{
+      id: string;
+      sku: string;
+      name: string | null;
+      cost_price: number | null;
+      price: number | null;
+      selling_price: number | null;
+      markup_override: number | null;
+    }>;
+  });
+
+/** ดึงข้อมูลทั้งชุดตาม filter สำหรับ export CSV */
+export const exportPricingProducts = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: {
+    q: string;
+    distributor: string;
+    category: string;
+    status: string;
+    brands: string[];
+    sort: string;
+  }) => input)
+  .handler(async ({ context, data: search }) => {
+    const { adminContext, SORT_MAP } = await import("@/lib/pricing-admin.server");
+    const db = await adminContext(context.userId);
+    const so = SORT_MAP[search.sort] ?? SORT_MAP.sku_asc;
+
+    const build = () => {
+      let qq = db
+        .from("synnex_products")
+        .select(
+          "sku, name, brand, category, distributor, cost_price, price, selling_price, markup_override, price_approved, updated_at",
+          { count: "exact" },
+        )
+        .order(so.col, { ascending: so.asc, nullsFirst: false });
+      const s = search.q.trim().replace(/[%,]/g, "");
+      if (s) qq = qq.or(`sku.ilike.%${s}%,name.ilike.%${s}%`);
+      if (search.distributor !== "all") qq = qq.eq("distributor", search.distributor);
+      if (search.category !== "all") qq = qq.eq("category", search.category);
+      if (search.brands.length > 0) qq = qq.in("brand", search.brands);
+      if (search.status === "unapproved") qq = qq.or("price_approved.eq.false,selling_price.is.null");
+      else if (search.status === "zero") qq = qq.or("selling_price.is.null,selling_price.eq.0");
+      else if (search.status === "approved") qq = qq.eq("price_approved", true);
+      return qq;
+    };
+
+    const CHUNK = 1000;
+    const all: Array<Record<string, unknown>> = [];
+    const first = await build().range(0, CHUNK - 1);
+    if (first.error) throw new Error(first.error.message);
+    for (const r of first.data ?? []) all.push(r as Record<string, unknown>);
+    const total = first.count ?? all.length;
+    let start = CHUNK;
+    while (start < total) {
+      const next = await build().range(start, start + CHUNK - 1);
+      if (next.error) throw new Error(next.error.message);
+      for (const r of next.data ?? []) all.push(r as Record<string, unknown>);
+      start += CHUNK;
+    }
+    return all;
+  });
