@@ -673,6 +673,8 @@ export function SiteFooter() {
         </div>
       </div>
 
+      <FooterBrandStrip />
+
       {/* Network sites */}
       <div className="border-t border-white/10 bg-[#0a1628]">
         <div className="mx-auto max-w-7xl px-4 py-3 flex flex-wrap items-center gap-x-2 gap-y-1">
