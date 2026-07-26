@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { PRODUCT_PUBLIC_COLUMNS } from "@/lib/product-columns";
+import { imagesFirst, imagesFirstShuffled } from "@/lib/product-sort";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -337,8 +338,8 @@ export function TodaysBestDeals() {
         .gt("selling_price", 0)
         .not("image_url", "is", null)
         .order("selling_price", { ascending: true })
-        .limit(10);
-      return (data ?? []) as ProductRow[];
+        .limit(30);
+      return imagesFirst((data ?? []) as ProductRow[]).slice(0, 10);
     },
     staleTime: 5 * 60_000,
   });
@@ -421,8 +422,8 @@ export function PopularNotebooks() {
         .gt("selling_price", 0)
         .not("image_url", "is", null)
         .order("selling_price", { ascending: true })
-        .limit(10);
-      return (data ?? []) as ProductRow[];
+        .limit(30);
+      return imagesFirst((data ?? []) as ProductRow[]).slice(0, 10);
     },
     staleTime: 5 * 60_000,
   });
@@ -520,8 +521,9 @@ export function ComputerSets() {
         .eq("price_approved", true)
         .gt("selling_price", 0)
         .order("selling_price", { ascending: true })
-        .limit(10);
-      return (data ?? []) as (ProductRow & { description: string | null })[];
+        .limit(30);
+      const rows = (data ?? []) as (ProductRow & { description: string | null })[];
+      return imagesFirst(rows).slice(0, 10);
     },
     staleTime: 5 * 60_000,
   });
@@ -1072,7 +1074,7 @@ export function MicrosoftFeatured() {
         .eq("price_approved", true)
         .gt("selling_price", 0)
         .order("selling_price", { ascending: true });
-      return (data ?? []) as ProductRow[];
+      return imagesFirst((data ?? []) as ProductRow[]);
     },
     staleTime: 5 * 60_000,
   });
@@ -1299,7 +1301,7 @@ export function StorageDeals() {
         const key = (p.brand ?? "อื่นๆ").toUpperCase();
         (byBrand[key] ??= []).push(p);
       }
-      Object.values(byBrand).forEach((arr) => arr.sort(() => Math.random() - 0.5));
+      Object.keys(byBrand).forEach((k) => { byBrand[k] = imagesFirstShuffled(byBrand[k]); });
 
       const picked: ProductRow[] = [];
       const brands = Object.keys(byBrand);
@@ -1310,7 +1312,7 @@ export function StorageDeals() {
         if (item) picked.push(item);
         i++;
       }
-      return picked.sort(() => Math.random() - 0.5);
+      return imagesFirstShuffled(picked);
     },
     staleTime: 5 * 60_000,
   });
@@ -1359,7 +1361,7 @@ export function ComponentsShowcase() {
         else buckets.other.push(p);
       }
       // สุ่มลำดับในแต่ละกลุ่มก่อน กันได้ของราคาถูกสุดซ้ำหน้าเดิมทุกครั้ง
-      Object.values(buckets).forEach((arr) => arr.sort(() => Math.random() - 0.5));
+      Object.keys(buckets).forEach((k) => { buckets[k] = imagesFirstShuffled(buckets[k]); });
 
       // หยิบวนทีละกลุ่มจนครบ 10 ชิ้น ให้กระจายทุกประเภทเท่าที่มีของ
       const picked: ProductRow[] = [];
@@ -1372,7 +1374,7 @@ export function ComponentsShowcase() {
         i++;
       }
       // สลับลำดับการแสดงผลสุดท้ายอีกที ไม่ให้เรียงเป็นกลุ่มๆ ติดกัน
-      return picked.sort(() => Math.random() - 0.5);
+      return imagesFirstShuffled(picked);
     },
     staleTime: 5 * 60_000,
   });
@@ -1421,7 +1423,7 @@ export function MacBookShowcase() {
         else if (/\bmac\b|mac mini|mac studio|imac/.test(n)) buckets.mac.push(p);
         else buckets.other.push(p);
       }
-      Object.values(buckets).forEach((arr) => arr.sort(() => Math.random() - 0.5));
+      Object.keys(buckets).forEach((k) => { buckets[k] = imagesFirstShuffled(buckets[k]); });
 
       const picked: ProductRow[] = [];
       const keys = Object.keys(buckets);
@@ -1432,7 +1434,7 @@ export function MacBookShowcase() {
         if (item) picked.push(item);
         i++;
       }
-      return picked.sort(() => Math.random() - 0.5);
+      return imagesFirstShuffled(picked);
     },
     staleTime: 5 * 60_000,
   });
@@ -1520,7 +1522,7 @@ export function SmartLife() {
         .eq("price_approved", true)
         .gt("selling_price", 0)
         .order("selling_price", { ascending: true })
-        .limit(10);
+        .limit(30);
 
       if (tab === "cctv") qi = qi.in("brand", ["DAHUA", "HIKVISION"]);
       else if (tab === "smartwatch") qi = qi.in("brand", ["SAMSUNG", "GARMIN", "HUAWEI"]);
@@ -1528,7 +1530,7 @@ export function SmartLife() {
       else if (tab === "gadget") qi = qi.in("brand", ["SOTHING", "HONEYWELL"]);
 
       const { data } = await qi;
-      return (data ?? []) as ProductRow[];
+      return imagesFirst((data ?? []) as ProductRow[]).slice(0, 10);
     },
     staleTime: 5 * 60_000,
   });
@@ -1625,7 +1627,7 @@ export function SpeakerAudio() {
           .eq("price_approved", true)
           .gt("selling_price", 0)
           .order("selling_price", { ascending: true })
-          .limit(10);
+          .limit(30);
 
         if (tab === "jbl") qi = qi.eq("brand", "JBL");
         else if (tab === "harman") qi = qi.eq("brand", "HARMAN");
@@ -1633,7 +1635,7 @@ export function SpeakerAudio() {
         else if (tab === "hifi") qi = qi.or("name.ilike.%hi-end%,name.ilike.%hi-fi%");
 
         const { data } = await qi;
-        return (data ?? []) as ProductRow[];
+        return imagesFirst((data ?? []) as ProductRow[]).slice(0, 10);
       }
 
       // แท็บ "ทั้งหมด" — ดึงมาเยอะกว่าเดิม แล้วสุ่มกระจายให้ครบทุกยี่ห้อ ไม่ให้ยี่ห้อถูกสุดยึดที่หมด
@@ -1651,7 +1653,7 @@ export function SpeakerAudio() {
         const key = (p.brand ?? "อื่นๆ").toUpperCase();
         (byBrand[key] ??= []).push(p);
       }
-      Object.values(byBrand).forEach((arr) => arr.sort(() => Math.random() - 0.5));
+      Object.keys(byBrand).forEach((k) => { byBrand[k] = imagesFirstShuffled(byBrand[k]); });
 
       const picked: ProductRow[] = [];
       const brands = Object.keys(byBrand);
@@ -1662,7 +1664,7 @@ export function SpeakerAudio() {
         if (item) picked.push(item);
         i++;
       }
-      return picked.sort(() => Math.random() - 0.5);
+      return imagesFirstShuffled(picked);
     },
     staleTime: 5 * 60_000,
   });
@@ -1757,7 +1759,7 @@ export function CorporateITSolutions() {
         .eq("price_approved", true)
         .gt("selling_price", 1000)
         .order("selling_price", { ascending: true })
-        .limit(10);
+        .limit(30);
 
       if (tab === "all") {
         qi = qi.or(
@@ -1781,7 +1783,7 @@ export function CorporateITSolutions() {
       }
 
       const { data } = await qi;
-      return (data ?? []) as (ProductRow & { b2b_price?: number | null })[];
+      return imagesFirst((data ?? []) as (ProductRow & { b2b_price?: number | null })[]).slice(0, 10);
     },
 
     staleTime: 5 * 60_000,
