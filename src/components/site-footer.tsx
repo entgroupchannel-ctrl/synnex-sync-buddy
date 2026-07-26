@@ -18,32 +18,75 @@ import {
   Mail as MailIcon,
   CheckCircle2,
   Loader2,
+  Lock,
+  KeyRound,
+  Server,
+  EyeOff,
+  UserCheck,
+  Cookie,
+  Trash2,
+  Clock,
+  FileCheck2,
 } from "lucide-react";
 import { toast } from "sonner";
 import entLogo from "@/assets/entgroup-logo.jpg.asset.json";
+import {
+  PAYMENT_BADGES,
+  CARRIER_BADGES,
+  type FooterBadge,
+} from "@/lib/footer-badges";
 
 /* -------------------------------------------------------------- */
 /* Small helpers                                                  */
 /* -------------------------------------------------------------- */
 
-function PillList({ items }: { items: string[] }) {
+function BrandBadge({ badge }: { badge: FooterBadge }) {
+  const [broken, setBroken] = useState(false);
+  const showLogo = Boolean(badge.logoUrl) && !broken;
+
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-[11px] font-medium ${
+        badge.comingSoon ? "opacity-50 grayscale" : ""
+      }`}
+      style={{
+        borderColor: "rgba(255,255,255,0.3)",
+        color: "rgba(255,255,255,0.8)",
+      }}
+    >
+      {showLogo ? (
+        <img
+          src={badge.logoUrl}
+          alt={badge.label}
+          loading="lazy"
+          onError={() => setBroken(true)}
+          className="h-5 w-auto max-w-[54px] object-contain"
+        />
+      ) : (
+        <>
+          <badge.icon className="h-3.5 w-3.5 shrink-0 text-[color:var(--brand-green)]" />
+          <span className="whitespace-nowrap">{badge.label}</span>
+        </>
+      )}
+      {badge.comingSoon && (
+        <span className="rounded bg-white/15 px-1 py-0.5 text-[9px] leading-none text-white/70">
+          เร็วๆ นี้
+        </span>
+      )}
+    </span>
+  );
+}
+
+function BadgeRow({ badges }: { badges: FooterBadge[] }) {
   return (
     <div className="flex flex-wrap gap-1.5">
-      {items.map((label) => (
-        <span
-          key={label}
-          className="rounded-md border px-2.5 py-1 text-[11px] font-medium"
-          style={{
-            borderColor: "rgba(255,255,255,0.3)",
-            color: "rgba(255,255,255,0.8)",
-          }}
-        >
-          {label}
-        </span>
+      {badges.map((b) => (
+        <BrandBadge key={b.label} badge={b} />
       ))}
     </div>
   );
 }
+
 
 
 function FooterLink({
