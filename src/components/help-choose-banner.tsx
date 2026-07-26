@@ -190,10 +190,18 @@ export function HelpChooseInlineCard({ category }: { category?: string | null })
   const [open, setOpen] = useState(false);
   return (
     <div className="col-span-full flex flex-col gap-3 rounded-lg border border-emerald-200 bg-emerald-50 p-4 sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex items-start gap-3">
-        <HeadphonesIcon className="mt-0.5 h-5 w-5 shrink-0 text-[color:var(--brand-green)]" />
+      <div className="flex items-center gap-3">
+        <img
+          src={supportAgent1}
+          alt="เจ้าหน้าที่ฝ่ายบริการลูกค้า ENT Group"
+          loading="lazy"
+          width={1024}
+          height={768}
+          className="h-14 w-14 shrink-0 rounded-full object-cover ring-2 ring-emerald-300"
+        />
         <div>
           <p className="text-sm font-bold text-slate-900">เลือกรุ่นไม่ถูก? โทรปรึกษาทีมงานได้เลย</p>
+
           <p className="text-xs text-slate-600">
             {PHONE} · {MOBILE} · LINE @njm2688e · {EMAIL}
           </p>
