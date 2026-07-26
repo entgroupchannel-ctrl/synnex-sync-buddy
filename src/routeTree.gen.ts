@@ -41,6 +41,7 @@ import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authentic
 import { Route as AuthenticatedMyAccountProfileRouteImport } from './routes/_authenticated/my-account.profile'
 import { Route as AuthenticatedMyAccountPaymentRouteImport } from './routes/_authenticated/my-account.payment'
 import { Route as AuthenticatedMyAccountOrdersRouteImport } from './routes/_authenticated/my-account.orders'
+import { Route as AuthenticatedMyAccountMembershipRouteImport } from './routes/_authenticated/my-account.membership'
 import { Route as AuthenticatedMyAccountCreditRouteImport } from './routes/_authenticated/my-account.credit'
 import { Route as AuthenticatedMyAccountCompanyRouteImport } from './routes/_authenticated/my-account.company'
 import { Route as AuthenticatedMyAccountAddressesRouteImport } from './routes/_authenticated/my-account.addresses'
@@ -228,6 +229,12 @@ const AuthenticatedMyAccountOrdersRoute =
     path: '/orders',
     getParentRoute: () => AuthenticatedMyAccountRoute,
   } as any)
+const AuthenticatedMyAccountMembershipRoute =
+  AuthenticatedMyAccountMembershipRouteImport.update({
+    id: '/membership',
+    path: '/membership',
+    getParentRoute: () => AuthenticatedMyAccountRoute,
+  } as any)
 const AuthenticatedMyAccountCreditRoute =
   AuthenticatedMyAccountCreditRouteImport.update({
     id: '/credit',
@@ -403,6 +410,7 @@ export interface FileRoutesByFullPath {
   '/my-account/addresses': typeof AuthenticatedMyAccountAddressesRoute
   '/my-account/company': typeof AuthenticatedMyAccountCompanyRoute
   '/my-account/credit': typeof AuthenticatedMyAccountCreditRoute
+  '/my-account/membership': typeof AuthenticatedMyAccountMembershipRoute
   '/my-account/orders': typeof AuthenticatedMyAccountOrdersRoute
   '/my-account/payment': typeof AuthenticatedMyAccountPaymentRoute
   '/my-account/profile': typeof AuthenticatedMyAccountProfileRoute
@@ -456,6 +464,7 @@ export interface FileRoutesByTo {
   '/my-account/addresses': typeof AuthenticatedMyAccountAddressesRoute
   '/my-account/company': typeof AuthenticatedMyAccountCompanyRoute
   '/my-account/credit': typeof AuthenticatedMyAccountCreditRoute
+  '/my-account/membership': typeof AuthenticatedMyAccountMembershipRoute
   '/my-account/orders': typeof AuthenticatedMyAccountOrdersRoute
   '/my-account/payment': typeof AuthenticatedMyAccountPaymentRoute
   '/my-account/profile': typeof AuthenticatedMyAccountProfileRoute
@@ -513,6 +522,7 @@ export interface FileRoutesById {
   '/_authenticated/my-account/addresses': typeof AuthenticatedMyAccountAddressesRoute
   '/_authenticated/my-account/company': typeof AuthenticatedMyAccountCompanyRoute
   '/_authenticated/my-account/credit': typeof AuthenticatedMyAccountCreditRoute
+  '/_authenticated/my-account/membership': typeof AuthenticatedMyAccountMembershipRoute
   '/_authenticated/my-account/orders': typeof AuthenticatedMyAccountOrdersRoute
   '/_authenticated/my-account/payment': typeof AuthenticatedMyAccountPaymentRoute
   '/_authenticated/my-account/profile': typeof AuthenticatedMyAccountProfileRoute
@@ -570,6 +580,7 @@ export interface FileRouteTypes {
     | '/my-account/addresses'
     | '/my-account/company'
     | '/my-account/credit'
+    | '/my-account/membership'
     | '/my-account/orders'
     | '/my-account/payment'
     | '/my-account/profile'
@@ -623,6 +634,7 @@ export interface FileRouteTypes {
     | '/my-account/addresses'
     | '/my-account/company'
     | '/my-account/credit'
+    | '/my-account/membership'
     | '/my-account/orders'
     | '/my-account/payment'
     | '/my-account/profile'
@@ -679,6 +691,7 @@ export interface FileRouteTypes {
     | '/_authenticated/my-account/addresses'
     | '/_authenticated/my-account/company'
     | '/_authenticated/my-account/credit'
+    | '/_authenticated/my-account/membership'
     | '/_authenticated/my-account/orders'
     | '/_authenticated/my-account/payment'
     | '/_authenticated/my-account/profile'
@@ -943,6 +956,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMyAccountOrdersRouteImport
       parentRoute: typeof AuthenticatedMyAccountRoute
     }
+    '/_authenticated/my-account/membership': {
+      id: '/_authenticated/my-account/membership'
+      path: '/membership'
+      fullPath: '/my-account/membership'
+      preLoaderRoute: typeof AuthenticatedMyAccountMembershipRouteImport
+      parentRoute: typeof AuthenticatedMyAccountRoute
+    }
     '/_authenticated/my-account/credit': {
       id: '/_authenticated/my-account/credit'
       path: '/credit'
@@ -1194,6 +1214,7 @@ interface AuthenticatedMyAccountRouteChildren {
   AuthenticatedMyAccountAddressesRoute: typeof AuthenticatedMyAccountAddressesRoute
   AuthenticatedMyAccountCompanyRoute: typeof AuthenticatedMyAccountCompanyRoute
   AuthenticatedMyAccountCreditRoute: typeof AuthenticatedMyAccountCreditRoute
+  AuthenticatedMyAccountMembershipRoute: typeof AuthenticatedMyAccountMembershipRoute
   AuthenticatedMyAccountOrdersRoute: typeof AuthenticatedMyAccountOrdersRoute
   AuthenticatedMyAccountPaymentRoute: typeof AuthenticatedMyAccountPaymentRoute
   AuthenticatedMyAccountProfileRoute: typeof AuthenticatedMyAccountProfileRoute
@@ -1205,6 +1226,8 @@ const AuthenticatedMyAccountRouteChildren: AuthenticatedMyAccountRouteChildren =
     AuthenticatedMyAccountAddressesRoute: AuthenticatedMyAccountAddressesRoute,
     AuthenticatedMyAccountCompanyRoute: AuthenticatedMyAccountCompanyRoute,
     AuthenticatedMyAccountCreditRoute: AuthenticatedMyAccountCreditRoute,
+    AuthenticatedMyAccountMembershipRoute:
+      AuthenticatedMyAccountMembershipRoute,
     AuthenticatedMyAccountOrdersRoute: AuthenticatedMyAccountOrdersRoute,
     AuthenticatedMyAccountPaymentRoute: AuthenticatedMyAccountPaymentRoute,
     AuthenticatedMyAccountProfileRoute: AuthenticatedMyAccountProfileRoute,
