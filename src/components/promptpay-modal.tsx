@@ -205,14 +205,14 @@ export function PromptPayPaymentModal({ orderId, orderNumber, amount, onPaid }: 
                       <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-3 text-left text-sm">
                         <div className="mb-2 font-semibold text-slate-800">📸 หลังโอนเงินแล้ว แจ้งสลิปได้ที่</div>
                         <div className="flex flex-wrap gap-2">
-                          <a
-                            href="https://line.me/R/ti/p/@entgroup"
-                            target="_blank"
-                            rel="noreferrer"
-                            className="flex items-center gap-1.5 rounded-full bg-[#06C755] px-4 py-2 text-sm font-medium text-white"
-                          >
-                            💚 Line: @entgroup
-                          </a>
+                          <LineQrDialog>
+                            <button
+                              type="button"
+                              className="flex items-center gap-1.5 rounded-full bg-[#06C755] px-4 py-2 text-sm font-medium text-white"
+                            >
+                              💚 Line: @entgroup
+                            </button>
+                          </LineQrDialog>
                           <a
                             href="mailto:sales@entgroup.co.th"
                             className="flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm"
