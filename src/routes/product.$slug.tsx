@@ -20,6 +20,7 @@ import { EdgeAiSpecGuide } from "@/components/edge-ai-spec-guide";
 import { EdgeAiExplainer } from "@/components/edge-ai-explainer";
 import { ConferenceExplainer } from "@/components/conference-explainer";
 import { CctvExplainer } from "@/components/cctv-explainer";
+import { SolarExplainer } from "@/components/solar-explainer";
 
 
 import { ProductImage, computerSetPlaceholder, upsPlaceholder, cpuPlaceholder, isCpuProduct, applePlaceholder } from "@/components/product-image";
@@ -472,6 +473,7 @@ function ProductDetail() {
               <EdgeAiExplainer category={p.category as string | null | undefined} name={p.name} description={p.description} />
               <ConferenceExplainer category={p.category as string | null | undefined} name={p.name} description={p.description} />
               <CctvExplainer category={p.category as string | null | undefined} name={p.name} description={p.description} />
+              <SolarExplainer category={p.category as string | null | undefined} name={p.name} description={p.description} />
             </div>
 
             <div className="flex flex-col">
