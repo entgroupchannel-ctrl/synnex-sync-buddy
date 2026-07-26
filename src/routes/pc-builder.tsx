@@ -464,6 +464,7 @@ function ProductPicker({
   const [gpuBrand, setGpuBrand] = useState<"all" | "nvidia" | "amd">("all");
   const [ssdType, setSsdType] = useState<"all" | "sata" | "nvme">("all");
   const [ramGen, setRamGen] = useState<"all" | "ddr5" | "ddr4" | "ddr3">("all");
+  const [psuType, setPsuType] = useState<"all" | "psu" | "case">("all");
 
 
   useEffect(() => {
@@ -549,18 +550,39 @@ function ProductPicker({
           break;
         }
         case "psu": {
-          q = q
-            .eq("category", "Storage")
-            .or("name.ilike.%Case%,name.ilike.%FRAME%,name.ilike.%Chassis%,name.ilike.%Tower%,sku.ilike.%FRAME%")
-            .not("name", "ilike", "%SSD%")
-            .not("name", "ilike", "%DDR%")
-            .not("name", "ilike", "%RAM%")
-            .eq("price_approved", true)
-            .gt("selling_price", 0);
-          limit = 20;
+          // PSU จริงอยู่หมวด Accessories (เช่น CORSAIR CX/HX) — เคสอยู่หมวด Storage
+          q = q.eq("price_approved", true).gt("selling_price", 0);
+          if (psuType === "psu") {
+            q = q
+              .eq("category", "Accessories")
+              .or("name.ilike.%Power Supply%,name.ilike.%80 PLUS%,name.ilike.%80+%")
+              .not("name", "ilike", "%UPS%")
+              .not("name", "ilike", "%สำรองไฟ%");
+          } else if (psuType === "case") {
+            q = q
+              .eq("category", "Storage")
+              .or("name.ilike.%Case%,name.ilike.%FRAME%,name.ilike.%Chassis%,name.ilike.%Tower%,sku.ilike.%FRAME%")
+              .not("name", "ilike", "%SSD%")
+              .not("name", "ilike", "%DDR%")
+              .not("name", "ilike", "%RAM%");
+          } else {
+            q = q
+              .in("category", ["Accessories", "Storage"])
+              .or(
+                "name.ilike.%Power Supply%,name.ilike.%80 PLUS%,name.ilike.%80+%,name.ilike.%Case%,name.ilike.%FRAME%,name.ilike.%Chassis%,name.ilike.%Tower%",
+              )
+              .not("name", "ilike", "%SSD%")
+              .not("name", "ilike", "%DDR%")
+              .not("name", "ilike", "%RAM%")
+              .not("name", "ilike", "%UPS%")
+              .not("name", "ilike", "%สำรองไฟ%")
+              .not("name", "ilike", "%ลำโพง%");
+          }
+          limit = 40;
           break;
         }
       }
+
 
       const { data, error } = await q
         .order("selling_price", { ascending: true })
@@ -578,7 +600,7 @@ function ProductPicker({
     return () => {
       cancelled = true;
     };
-  }, [step.key, cpuBrand, mbBrand, mbSocket, gpuBrand, ssdType, ramGen]);
+  }, [step.key, cpuBrand, mbBrand, mbSocket, gpuBrand, ssdType, ramGen, psuType]);
 
   const filtered = useMemo(() => {
     const s = q.trim().toLowerCase();
@@ -669,6 +691,19 @@ function ProductPicker({
             { value: "all", label: "ทั้งหมด" },
             { value: "sata", label: "SATA" },
             { value: "nvme", label: "NVMe / M.2" },
+          ]}
+        />
+      )}
+
+      {step.key === "psu" && (
+        <FilterTabs
+          className="mb-2"
+          value={psuType}
+          onChange={(v) => setPsuType(v as typeof psuType)}
+          options={[
+            { value: "all", label: "ทั้งหมด" },
+            { value: "psu", label: "PSU (เพาเวอร์ซัพพลาย)" },
+            { value: "case", label: "เคส (Case)" },
           ]}
         />
       )}
