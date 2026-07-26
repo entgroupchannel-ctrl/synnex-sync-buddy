@@ -24,6 +24,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { CLEAR_STALE_BROWSE_FILTERS } from "@/lib/search-defaults";
+import { getBrandLogoUrl } from "@/lib/brand-assets";
 import type { MegaMenuConfig, MegaMenuFilter } from "@/lib/mega-menu-config";
 
 const ICONS: Record<string, LucideIcon> = {
