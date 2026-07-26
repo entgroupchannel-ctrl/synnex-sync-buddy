@@ -576,7 +576,7 @@ function ProductPicker({
     return () => {
       cancelled = true;
     };
-  }, [step.key, cpuBrand, mbBrand, mbSocket, gpuBrand, ssdType]);
+  }, [step.key, cpuBrand, mbBrand, mbSocket, gpuBrand, ssdType, ramGen]);
 
   const filtered = useMemo(() => {
     const s = q.trim().toLowerCase();
@@ -643,7 +643,22 @@ function ProductPicker({
         </>
       )}
 
+      {step.key === "ram" && (
+        <FilterTabs
+          className="mb-2"
+          value={ramGen}
+          onChange={(v) => setRamGen(v as typeof ramGen)}
+          options={[
+            { value: "all", label: "ทั้งหมด" },
+            { value: "ddr5", label: "DDR5" },
+            { value: "ddr4", label: "DDR4" },
+            { value: "ddr3", label: "DDR3" },
+          ]}
+        />
+      )}
+
       {step.key === "ssd" && (
+
         <FilterTabs
           className="mb-2"
           value={ssdType}
