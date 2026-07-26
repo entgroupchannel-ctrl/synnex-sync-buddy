@@ -1,19 +1,25 @@
-## สิ่งที่ตรวจพบ
+## เป้าหมาย
+แก้ dialog ที่ปรากฏตอนกด "ใส่ตะกร้า" ให้อยู่กึ่งกลางจอ แทนที่จะเลื่อนขึ้นมาจากด้านล่าง
 
-- ในโค้ดหน้า `admin.purchase-orders.$poId.tsx` มีปุ่ม "ส่งอีเมลถึง Supplier" (พร้อม Dialog กรอกผู้รับ/หัวข้อ/เนื้อหา) อยู่แล้ว
-- แต่เมื่อตรวจ DOM ของหน้าที่คุณเปิดอยู่จริง (`/admin/purchase-orders/8eeb91d7-...`) กลับไม่มีปุ่มนี้ และไม่มีปุ่ม "สร้าง PDF ใหม่" / "เปิด PDF ล่าสุด" / "ดาวน์โหลด" ด้วย — มีแต่ปุ่ม "เปิด PDF" แบบเก่า
+## สาเหตุปัจจุบัน
+- `src/components/add-to-cart-sheet.tsx` ใช้ `<Sheet side="bottom">` ทำให้ panel ติดขอบล่าง
+- ตาม screenshot ที่แนบมา เนื้อหาของ dialog ถูกตัด/ดูอึดอัดเมื่ออยู่ด้านล่าง
 
-แปลว่าเบราว์เซอร์ยังรันบันเดิลเวอร์ชันก่อนหน้า ไม่ใช่ปุ่มหาย
+## แผนการแก้ไข
+1. แก้ไข `src/components/add-to-cart-sheet.tsx`
+   - เปลี่ยน import จาก `Sheet`, `SheetContent` เป็น `Dialog`, `DialogContent` (จาก `@/components/ui/dialog`)
+   - เปลี่ยนโครงสร้าง JSX จาก `<Sheet><SheetContent>...</SheetContent></Sheet>` เป็น `<Dialog><DialogContent>...</DialogContent></Dialog>`
+   - เก็บ props `open` / `onOpenChange` ไว้เหมือนเดิม
+   - ปรับ className ของ content ให้เป็น dialog กลางจอ พร้อม rounded-2xl และ border-top สี brand-green คงเดิม
+   - ลบปุ่มปิด custom ด้านใน (ใช้ DialogPrimitive.Close ที่มากับ DialogContent ได้เลย) หรือเก็บไว้ก็ได้ถ้าต้องการปิดแบบเดิม
+   - รักษาเนื้อหาและลิงก์ทั้งหมดไม่ให้เปลี่ยน
 
-## แผนดำเนินการ
+2. ตรวจสอบการใช้งาน
+   - รัน type-check (`tsgo --noEmit` หรือ `bunx tsc --noEmit`)
+   - รัน regression tests ที่มีอยู่
+   - ใช้ Playwright เปิดหน้าแรก กด "ใส่ตะกร้า" ตรวจสอบว่า dialog อยู่กึ่งกลางจอและปิดได้
 
-1. บังคับให้ preview โหลดโค้ดล่าสุด (flush HMR / รีสตาร์ท dev server) แล้วตรวจ DOM ซ้ำว่าปุ่ม "ส่งอีเมลถึง Supplier" ปรากฏ
-2. ถ้ายังไม่ขึ้น ให้ไล่หาสาเหตุจริง เช่น มีไฟล์ route ซ้ำ/route เก่าถูก match แทน หรือ error ตอน build ของไฟล์นี้
-3. เมื่อปุ่มขึ้นแล้ว ทดสอบกดเปิด Dialog และยิง `send-po-email` หนึ่งครั้งกับ PO ตัวอย่าง เพื่อยืนยันว่าอีเมลส่งได้และสถานะ PO เปลี่ยนเป็น "ส่งแล้ว"
-4. เสริมความชัดเจนของ UI เล็กน้อย: ถ้า distributor ยังไม่มีอีเมลติดต่อ ให้แสดงข้อความเตือนพร้อมลิงก์ไปหน้า "ข้อมูล Distributor"
-
-## รายละเอียดเชิงเทคนิค
-
-- ไฟล์หลัก: `src/routes/_authenticated/admin.purchase-orders.$poId.tsx`
-- Edge function ที่เกี่ยวข้อง: `supabase/functions/send-po-email` (deploy แล้ว, ใช้คีย์ `RESEND_API_KEY_Synex`)
-- ไม่มีการแก้ schema ฐานข้อมูล
+## ขอบเขต
+- ไม่เปลี่ยน logic ของ `useAuthSheetListener` หรือ `triggerAuthPrompt`
+- ไม่เปลี่ยนเนื้อหา/ข้อความภายใน dialog
+- ไม่กระทบ flow อื่น เช่น ตะกร้า หรือหน้า auth
