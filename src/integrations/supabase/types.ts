@@ -2167,6 +2167,39 @@ export type Database = {
         }
         Relationships: []
       }
+      urgent_contact_requests: {
+        Row: {
+          admin_note: string | null
+          cart_items: Json
+          contact_method: string
+          contact_value: string
+          created_at: string
+          customer_name: string
+          id: string
+          status: string
+        }
+        Insert: {
+          admin_note?: string | null
+          cart_items?: Json
+          contact_method: string
+          contact_value: string
+          created_at?: string
+          customer_name: string
+          id?: string
+          status?: string
+        }
+        Update: {
+          admin_note?: string | null
+          cart_items?: Json
+          contact_method?: string
+          contact_value?: string
+          created_at?: string
+          customer_name?: string
+          id?: string
+          status?: string
+        }
+        Relationships: []
+      }
       user_addresses: {
         Row: {
           address_line: string | null
