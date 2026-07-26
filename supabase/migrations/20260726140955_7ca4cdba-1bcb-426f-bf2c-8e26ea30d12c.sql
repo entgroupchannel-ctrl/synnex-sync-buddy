@@ -1,0 +1,1 @@
+update public.synnex_products set image_url = '/__l5e/assets-v1/cd16d0a2-9d85-4dd7-a69f-5df062270d27/airpods-max-skyblue.jpg' where id = 'bf03817d-5cae-4d5d-ac3f-61da8e238f06';
