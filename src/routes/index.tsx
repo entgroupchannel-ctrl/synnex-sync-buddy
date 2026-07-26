@@ -1199,6 +1199,8 @@ function HomePage() {
 
           {search.category === "Solar & Energy" && <SolarInstallBanner className="mb-4" />}
 
+          {search.category === "CCTV & Security" && <CctvInstallBanner className="mb-4" />}
+
 
 
           {/* Active filter summary */}
