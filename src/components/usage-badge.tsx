@@ -1,11 +1,11 @@
-import { Gamepad2, Briefcase, Video, Cpu, Monitor, Router, Server, Building2, BatteryCharging } from "lucide-react";
+import { MemoryStick, Gamepad2, Briefcase, Video, Cpu, Monitor, Router, Server, Building2, BatteryCharging } from "lucide-react";
 
 export type UsageProfile = {
   key: string;
   label: string;
   hint: string;
   cls: string;
-  icon: "game" | "office" | "creator" | "workstation" | "basic" | "router" | "server" | "building" | "battery";
+  icon: "game" | "office" | "creator" | "workstation" | "basic" | "router" | "server" | "building" | "battery" | "ram";
 };
 
 const PROFILES: Record<string, UsageProfile> = {
@@ -91,6 +91,47 @@ const UPS_PROFILES: Record<string, UsageProfile> = {
   },
 };
 
+const RAM_PROFILES: Record<string, UsageProfile> = {
+  ram_basic: {
+    key: "ram_basic",
+    label: "พอสำหรับงานเอกสาร",
+    hint: "4-8GB — เอกสาร, เว็บ, ดูวิดีโอ หรือใช้อัปเกรดเครื่องเก่าให้ลื่นขึ้น",
+    cls: "bg-sky-100 text-sky-700 ring-sky-200",
+    icon: "ram",
+  },
+  ram_office: {
+    key: "ram_office",
+    label: "ทำงานออฟฟิศลื่น",
+    hint: "16GB — Excel ไฟล์ใหญ่, เปิดหลายแท็บ, ประชุมออนไลน์ และเล่นเกมทั่วไปได้",
+    cls: "bg-emerald-100 text-emerald-700 ring-emerald-200",
+    icon: "ram",
+  },
+  ram_gaming: {
+    key: "ram_gaming",
+    label: "เล่นเกม/ตัดต่อ",
+    hint: "32GB — เกมสเปกสูง, ตัดต่อวิดีโอ, งานกราฟิก และเปิดหลายโปรแกรมพร้อมกัน",
+    cls: "bg-indigo-100 text-indigo-700 ring-indigo-200",
+    icon: "ram",
+  },
+  ram_pro: {
+    key: "ram_pro",
+    label: "งานหนัก/มืออาชีพ",
+    hint: "64GB ขึ้นไป — เรนเดอร์ 3D, งาน AI, Virtual Machine, เซิร์ฟเวอร์",
+    cls: "bg-rose-100 text-rose-700 ring-rose-200",
+    icon: "ram",
+  },
+};
+
+function getRamProfile(t: string): UsageProfile | null {
+  const m = t.match(/(\d{1,3})\s*gb/);
+  const gb = m ? Number(m[1]) : 0;
+  if (!gb) return null;
+  if (gb >= 64) return RAM_PROFILES.ram_pro;
+  if (gb >= 32) return RAM_PROFILES.ram_gaming;
+  if (gb >= 16) return RAM_PROFILES.ram_office;
+  return RAM_PROFILES.ram_basic;
+}
+
 const ICON = {
   game: Gamepad2,
   office: Briefcase,
@@ -101,6 +142,7 @@ const ICON = {
   server: Server,
   building: Building2,
   battery: BatteryCharging,
+  ram: MemoryStick,
 };
 
 function getUpsProfile(t: string): UsageProfile {
@@ -125,6 +167,9 @@ export function getUsageProfile(input: {
   price?: number | null;
 }): UsageProfile | null {
   const c = (input.category ?? "").toLowerCase();
+  if (c === "ram" || c.includes("ram ")) {
+    return getRamProfile(`${input.name ?? ""} ${input.description ?? ""}`.toLowerCase());
+  }
   if (c.includes("ups") || /\bups\b/.test((input.name ?? "").toLowerCase())) {
     return getUpsProfile(`${input.name ?? ""} ${input.description ?? ""}`.toLowerCase());
   }
