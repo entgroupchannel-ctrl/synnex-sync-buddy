@@ -350,6 +350,7 @@ function CartPage() {
                 <span>{t("cart.total")}</span>
                 <span>{priceFmt.format(Math.max(0, total - volume.total) + cheapestFee)}</span>
               </div>
+              <VatNoteDetailed className="mt-3" />
 
               {hasMixedCart ? (
                 <div className="mt-4 rounded-lg border border-orange-200 bg-orange-50 p-4">
