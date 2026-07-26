@@ -13,6 +13,7 @@ type Props = {
   productName?: string | null;
   ramGeneration?: string | null;
   subcategory?: string | null;
+  distributor?: string | null;
 };
 
 function pickIcon(category?: string | null, name?: string | null): { Icon: LucideIcon; color: string } {
