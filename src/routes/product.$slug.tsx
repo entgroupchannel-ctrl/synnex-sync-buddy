@@ -12,7 +12,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { SpecTagsFull } from "@/components/spec-tags";
 import { hasSpecTags } from "@/lib/parse-spec";
-import { IndustrialPromoBanner } from "@/components/industrial-promo-banner";
+
 import { ProductImage, computerSetPlaceholder } from "@/components/product-image";
 import { DeliveryInfoBox } from "@/components/delivery-info";
 import { ProductTrustBar, ReturnPolicyAccordion } from "@/components/trust-signals";
@@ -914,7 +914,7 @@ function ProductDetail() {
           </div>
         )}
       </div>
-      <IndustrialPromoBanner compact />
+      
       <SiteFooter />
     </div>
   );
