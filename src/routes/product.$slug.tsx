@@ -508,6 +508,7 @@ function ProductDetail() {
                         )}
                       </div>
                     )}
+                    <VatNote size="md" className="mt-1" />
                     <div className="mt-2 flex flex-wrap gap-2">
                       <B2BBadgeLarge
                         sellingPrice={p.selling_price as number | null}
