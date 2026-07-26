@@ -782,7 +782,7 @@ export function ShopByBrand() {
                 type="button"
                 onClick={() => onPick(brand)}
                 aria-pressed={active}
-                className={`group flex h-[100px] min-w-[140px] shrink-0 flex-col items-center justify-center rounded-lg border-2 px-5 py-3 transition hover:shadow-md ${
+                className={`group flex h-[132px] min-w-[172px] shrink-0 flex-col items-center justify-center rounded-lg border-2 px-5 py-3 transition hover:shadow-md ${
                   active
                     ? "border-[color:var(--brand-green)] bg-[color:var(--brand-green)]/5 ring-2 ring-[color:var(--brand-green)]/20"
                     : "border-slate-200 bg-white hover:border-[color:var(--brand-green)]"
