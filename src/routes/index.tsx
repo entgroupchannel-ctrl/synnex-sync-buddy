@@ -1206,6 +1206,9 @@ function HomePage() {
 
           {search.category === "Webcam & Conference" && <ConferenceInstallBanner className="mb-4" />}
 
+          {search.category === "Computer Set" && <ComputerSetBanner className="mb-4" />}
+
+
 
 
 
