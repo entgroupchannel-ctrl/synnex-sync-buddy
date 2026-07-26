@@ -472,6 +472,41 @@ function HomePage() {
   const isRam = search.category === "RAM";
   const isJetson = search.category === "Edge AI Box";
 
+  // นับจำนวนจริงของหมวดย่อย/รุ่นแรม เพื่อซ่อนตัวเลือกที่ไม่มีสินค้า
+  const ramFacetQ = useQuery({
+    queryKey: ["ram-facets"],
+    enabled: isRam,
+    staleTime: 5 * 60_000,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("synnex_products")
+        .select("subcategory, ram_generation")
+        .eq("category", "RAM")
+        .eq("price_approved", true)
+        .limit(1000);
+      const rows = (data ?? []) as { subcategory: string | null; ram_generation: string | null }[];
+      const byType: Record<string, number> = {};
+      const byGen: Record<string, number> = {};
+      for (const r of rows) {
+        const t = r.subcategory ?? "";
+        const g = r.ram_generation ?? "";
+        if (t) byType[t] = (byType[t] ?? 0) + 1;
+        if (g) {
+          byGen[g] = (byGen[g] ?? 0) + 1;
+          if (t) byGen[`${t}|${g}`] = (byGen[`${t}|${g}`] ?? 0) + 1;
+        }
+      }
+      return { total: rows.length, byType, byGen };
+    },
+  });
+
+  const ramGenCount = (gen: string) => {
+    const f = ramFacetQ.data;
+    if (!f) return 0;
+    return search.ramType ? (f.byGen[`${search.ramType}|${gen}`] ?? 0) : (f.byGen[gen] ?? 0);
+  };
+
+
   const toggleBrand = (b: string) => {
     const set = new Set(selectedBrands);
     if (set.has(b)) set.delete(b); else set.add(b);
