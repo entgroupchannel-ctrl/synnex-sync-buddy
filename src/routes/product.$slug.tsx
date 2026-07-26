@@ -819,8 +819,14 @@ function ProductDetail() {
               <section className="mt-6 overflow-hidden rounded-lg border" aria-label="ข้อมูลจำเพาะสินค้า">
                 <table className="w-full text-sm">
                   <tbody>
+                    {showSku && (
+                      <tr className="border-b last:border-0">
+                        <th className="w-40 bg-slate-50 p-3 text-left font-medium text-slate-600">รุ่น / Model</th>
+                        <td className="p-3 text-slate-800"><ProtectedText text={decodedSku} /></td>
+                      </tr>
+                    )}
                     {[
-                      ...(showSku ? [["รุ่น / Model", decodedSku]] : []),
+
                       ["แบรนด์", p.brand ?? "—"],
                       ...(Number(p.selling_price ?? 0) > 0
                         ? [["ราคา", `฿${Number(p.selling_price ?? 0).toLocaleString("th-TH")}`]]
