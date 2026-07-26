@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { z } from "zod";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { supabase } from "@/integrations/supabase/client";
+import { PRODUCT_PUBLIC_COLUMNS } from "@/lib/product-columns";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -336,7 +337,7 @@ function HomePage() {
     queryFn: async () => {
       const { data } = await supabase
         .from("synnex_products")
-        .select("*")
+        .select(PRODUCT_PUBLIC_COLUMNS)
         .eq("stock_status", "พร้อมจัดส่ง")
         .eq("price_approved", true)
         .gt("selling_price", 0)
@@ -399,13 +400,13 @@ function HomePage() {
 
       // Explicit fulfillment filter
       if (search.fulfill === "stock") {
-        const q = applyCommon(table().select("*", { count: "exact" })).eq("stock_status", "พร้อมจัดส่ง").range(from, to);
+        const q = applyCommon(table().select(PRODUCT_PUBLIC_COLUMNS, { count: "exact" })).eq("stock_status", "พร้อมจัดส่ง").range(from, to);
         const { data, error, count } = await (q as unknown as Promise<Result>);
         if (error) throw error;
         return { rows: (data ?? []) as ProductRow[], count: count ?? 0 };
       }
       if (search.fulfill === "by_order") {
-        const q = applyCommon(table().select("*", { count: "exact" })).eq("fulfillment_type", "by_order").range(from, to);
+        const q = applyCommon(table().select(PRODUCT_PUBLIC_COLUMNS, { count: "exact" })).eq("fulfillment_type", "by_order").range(from, to);
         const { data, error, count } = await (q as unknown as Promise<Result>);
         if (error) throw error;
         return { rows: (data ?? []) as ProductRow[], count: count ?? 0 };
@@ -413,16 +414,16 @@ function HomePage() {
 
       // ready toggle keeps its stricter meaning: only in-stock stock items
       if (search.ready) {
-        const q = applyCommon(table().select("*", { count: "exact" })).eq("stock_status", "พร้อมจัดส่ง").eq("fulfillment_type", "stock").range(from, to);
+        const q = applyCommon(table().select(PRODUCT_PUBLIC_COLUMNS, { count: "exact" })).eq("stock_status", "พร้อมจัดส่ง").eq("fulfillment_type", "stock").range(from, to);
         const { data, error, count } = await (q as unknown as Promise<Result>);
         if (error) throw error;
         return { rows: (data ?? []) as ProductRow[], count: count ?? 0 };
       }
 
       // Default: three tiers — in-stock → by_order → out-of-stock
-      const inCountRes = await (applyCommon(table().select("*", { count: "exact", head: true })).eq("stock_status", "พร้อมจัดส่ง") as unknown as Promise<Result>);
-      const byoCountRes = await (applyCommon(table().select("*", { count: "exact", head: true })).eq("fulfillment_type", "by_order") as unknown as Promise<Result>);
-      const outCountRes = await (applyCommon(table().select("*", { count: "exact", head: true })).eq("stock_status", "สินค้าหมด") as unknown as Promise<Result>);
+      const inCountRes = await (applyCommon(table().select("id", { count: "exact", head: true })).eq("stock_status", "พร้อมจัดส่ง") as unknown as Promise<Result>);
+      const byoCountRes = await (applyCommon(table().select("id", { count: "exact", head: true })).eq("fulfillment_type", "by_order") as unknown as Promise<Result>);
+      const outCountRes = await (applyCommon(table().select("id", { count: "exact", head: true })).eq("stock_status", "สินค้าหมด") as unknown as Promise<Result>);
       const inCount = inCountRes.count ?? 0;
       const byoCount = byoCountRes.count ?? 0;
       const outCount = outCountRes.count ?? 0;
@@ -431,7 +432,7 @@ function HomePage() {
       // Tier 1: in-stock
       if (from < inCount) {
         const t1To = Math.min(to, inCount - 1);
-        const r = await (applyCommon(table().select("*")).eq("stock_status", "พร้อมจัดส่ง").range(from, t1To) as unknown as Promise<Result>);
+        const r = await (applyCommon(table().select(PRODUCT_PUBLIC_COLUMNS)).eq("stock_status", "พร้อมจัดส่ง").range(from, t1To) as unknown as Promise<Result>);
         if (r.error) throw r.error;
         rows.push(...(r.data ?? []));
       }
@@ -440,7 +441,7 @@ function HomePage() {
         const t2From = Math.max(0, from - inCount);
         const t2To = Math.min(to - inCount, byoCount - 1);
         if (t2From <= t2To) {
-          const r = await (applyCommon(table().select("*")).eq("fulfillment_type", "by_order").range(t2From, t2To) as unknown as Promise<Result>);
+          const r = await (applyCommon(table().select(PRODUCT_PUBLIC_COLUMNS)).eq("fulfillment_type", "by_order").range(t2From, t2To) as unknown as Promise<Result>);
           if (r.error) throw r.error;
           rows.push(...(r.data ?? []));
         }
@@ -449,7 +450,7 @@ function HomePage() {
       if (to >= inCount + byoCount && outCount > 0) {
         const t3From = Math.max(0, from - inCount - byoCount);
         const t3To = to - inCount - byoCount;
-        const r = await (applyCommon(table().select("*")).eq("stock_status", "สินค้าหมด").eq("fulfillment_type", "stock").range(t3From, t3To) as unknown as Promise<Result>);
+        const r = await (applyCommon(table().select(PRODUCT_PUBLIC_COLUMNS)).eq("stock_status", "สินค้าหมด").eq("fulfillment_type", "stock").range(t3From, t3To) as unknown as Promise<Result>);
         if (r.error) throw r.error;
         rows.push(...(r.data ?? []));
       }

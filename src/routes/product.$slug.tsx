@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { PRODUCT_PUBLIC_COLUMNS } from "@/lib/product-columns";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
@@ -35,7 +36,7 @@ export const Route = createFileRoute("/product/$slug")({
   loader: async ({ params }) => {
     const slugOrId = params.slug;
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slugOrId);
-    const selectFields = "id, sku, slug, name, brand, category, description, image_url, image_gallery, selling_price, member_price, min_tier_price, stock_status, price_approved";
+    const selectFields = PRODUCT_PUBLIC_COLUMNS;
     const { data: slugProduct, error: slugError } = await supabase
       .from("synnex_products")
       .select(selectFields)
@@ -160,14 +161,14 @@ function ProductDetail() {
       const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug);
       let { data, error } = await supabase
         .from("synnex_products")
-        .select("*")
+        .select(PRODUCT_PUBLIC_COLUMNS)
         .eq("slug", slug)
         .eq("price_approved", true)
         .maybeSingle();
       if (!data && isUuid) {
         const r = await supabase
           .from("synnex_products")
-          .select("*")
+          .select(PRODUCT_PUBLIC_COLUMNS)
           .eq("id", slug)
           .eq("price_approved", true)
           .maybeSingle();
@@ -185,7 +186,7 @@ function ProductDetail() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("synnex_products")
-        .select("*")
+        .select(PRODUCT_PUBLIC_COLUMNS)
         .eq("category", productQ.data!.category!)
         .neq("id", productQ.data!.id)
         .limit(5);
