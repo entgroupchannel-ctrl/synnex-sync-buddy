@@ -378,31 +378,22 @@ export function SiteFooter() {
 
           {/* Column 4 — Payment */}
           <Column title="วิธีการชำระเงิน / Payment">
-            <PillList
-              items={[
-                "โอนเงิน",
-                "PromptPay",
-                "KBank",
-                "SCB",
-                "Mastercard",
-                "COD",
-              ]}
-            />
+            <BadgeRow badges={PAYMENT_BADGES} />
             <p className="mt-3 text-[11px] text-white/50">
-              * บัตรเครดิต/เดบิต เร็วๆ นี้
+              ปัจจุบันรองรับ PromptPay QR และโอนผ่านธนาคาร ·{" "}
+              <Link
+                to="/payment-methods"
+                className="underline hover:text-[color:var(--brand-green)]"
+              >
+                ดูรายละเอียด
+              </Link>
             </p>
           </Column>
 
           {/* Column 5 — Shipping */}
           <Column title="บริการจัดส่ง / Delivery">
-            <PillList
-              items={[
-                "Kerry Express",
-                "Flash Express",
-                "ไปรษณีย์ไทย",
-                "SCG Express",
-              ]}
-            />
+            <BadgeRow badges={CARRIER_BADGES} />
+
             <p className="mt-3 text-[11px] text-white/60">
               จัดส่งทั่วประเทศไทย ครอบคลุมทุกพื้นที่
             </p>
