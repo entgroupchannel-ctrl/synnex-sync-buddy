@@ -16,6 +16,8 @@ import { SpecTagsFull } from "@/components/spec-tags";
 import { hasSpecTags } from "@/lib/parse-spec";
 import { UsageInfoBox } from "@/components/usage-badge";
 import { CctvSpecGuide } from "@/components/cctv-spec-guide";
+import { EdgeAiSpecGuide } from "@/components/edge-ai-spec-guide";
+
 
 import { ProductImage, computerSetPlaceholder, upsPlaceholder, cpuPlaceholder, isCpuProduct, applePlaceholder } from "@/components/product-image";
 import { DeliveryInfoBox } from "@/components/delivery-info";
