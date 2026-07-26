@@ -36,6 +36,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { VatNote } from "@/components/vat-note";
 
 export const Route = createFileRoute("/pc-builder")({
   head: () => ({
