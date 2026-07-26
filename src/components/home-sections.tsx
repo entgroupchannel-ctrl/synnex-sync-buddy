@@ -1314,7 +1314,7 @@ export function ComponentsShowcase() {
     queryFn: async () => {
       const { data } = await supabase.from("synnex_products")
         .select("*")
-        .eq("category", "Components")
+        .in("category", ["Components", "RAM"])
         .eq("price_approved", true)
         .gt("selling_price", 0)
         .order("selling_price", { ascending: true })
