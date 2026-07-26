@@ -103,12 +103,14 @@ const CPU_IMAGES = [
 
 export function cpuPlaceholder(name?: string | null): string {
   const n = (name ?? "").toUpperCase();
-  if (/AMD|RYZEN|ATHLON/.test(n)) return CPU_IMAGES[0];
-  if (/INTEL|CORE I|PENTIUM|CELERON|ULTRA/.test(n)) return CPU_IMAGES[3];
   let hash = 0;
   for (let i = 0; i < n.length; i++) hash = (hash * 31 + n.charCodeAt(i)) % 100000;
-  return [CPU_IMAGES[1], CPU_IMAGES[2]][hash % 2];
+  // AMD → สลับกล่อง Ryzen สองแบบ เพื่อไม่ให้กริดซ้ำกันทั้งหน้า
+  if (/AMD|RYZEN|ATHLON|THREADRIPPER/.test(n)) return [CPU_IMAGES[0], CPU_IMAGES[1]][hash % 2];
+  if (/INTEL|CORE I|PENTIUM|CELERON|ULTRA|XEON/.test(n)) return CPU_IMAGES[3];
+  return CPU_IMAGES[2];
 }
+
 
 export function isCpuProduct(category?: string | null, subcategory?: string | null, name?: string | null) {
   if (subcategory === "CPU" || category === "CPU") return true;
