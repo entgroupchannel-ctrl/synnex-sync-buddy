@@ -67,6 +67,8 @@ const searchSchema = z.object({
   category: fallback(z.string(), "all").default("all"),
   brands: fallback(z.string(), "").default(""),
   ramSpec: fallback(z.string(), "").default(""),
+  ramType: fallback(z.string(), "").default(""),   // RAM Desktop | RAM Notebook
+  ramGen: fallback(z.string(), "").default(""),    // DDR5 | DDR4 | DDR3L | DDR3 | DDR2
   jetsonType: fallback(z.string(), "").default(""),
   min: fallback(z.number(), 0).default(0),
   max: fallback(z.number(), 100000).default(100000),
