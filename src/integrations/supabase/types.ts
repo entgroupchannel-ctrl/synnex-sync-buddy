@@ -993,11 +993,25 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "pc_builder_quotes_cpu_id_fkey"
+            columns: ["cpu_id"]
+            isOneToOne: false
+            referencedRelation: "v_price_review"
+            referencedColumns: ["product_id"]
+          },
+          {
             foreignKeyName: "pc_builder_quotes_gpu_id_fkey"
             columns: ["gpu_id"]
             isOneToOne: false
             referencedRelation: "synnex_products"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pc_builder_quotes_gpu_id_fkey"
+            columns: ["gpu_id"]
+            isOneToOne: false
+            referencedRelation: "v_price_review"
+            referencedColumns: ["product_id"]
           },
           {
             foreignKeyName: "pc_builder_quotes_mb_id_fkey"
@@ -1007,11 +1021,25 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "pc_builder_quotes_mb_id_fkey"
+            columns: ["mb_id"]
+            isOneToOne: false
+            referencedRelation: "v_price_review"
+            referencedColumns: ["product_id"]
+          },
+          {
             foreignKeyName: "pc_builder_quotes_os_id_fkey"
             columns: ["os_id"]
             isOneToOne: false
             referencedRelation: "synnex_products"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pc_builder_quotes_os_id_fkey"
+            columns: ["os_id"]
+            isOneToOne: false
+            referencedRelation: "v_price_review"
+            referencedColumns: ["product_id"]
           },
           {
             foreignKeyName: "pc_builder_quotes_psu_case_id_fkey"
@@ -1021,8 +1049,29 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "pc_builder_quotes_psu_case_id_fkey"
+            columns: ["psu_case_id"]
+            isOneToOne: false
+            referencedRelation: "v_price_review"
+            referencedColumns: ["product_id"]
+          },
+          {
             foreignKeyName: "pc_builder_quotes_ram_id_fkey"
             columns: ["ram_id"]
+            isOneToOne: false
+            referencedRelation: "synnex_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pc_builder_quotes_ram_id_fkey"
+            columns: ["ram_id"]
+            isOneToOne: false
+            referencedRelation: "v_price_review"
+            referencedColumns: ["product_id"]
+          },
+          {
+            foreignKeyName: "pc_builder_quotes_ssd_id_fkey"
+            columns: ["ssd_id"]
             isOneToOne: false
             referencedRelation: "synnex_products"
             referencedColumns: ["id"]
@@ -1031,8 +1080,8 @@ export type Database = {
             foreignKeyName: "pc_builder_quotes_ssd_id_fkey"
             columns: ["ssd_id"]
             isOneToOne: false
-            referencedRelation: "synnex_products"
-            referencedColumns: ["id"]
+            referencedRelation: "v_price_review"
+            referencedColumns: ["product_id"]
           },
         ]
       }
@@ -1086,6 +1135,8 @@ export type Database = {
           id: string
           is_active: boolean | null
           markup_percent: number | null
+          max_cost: number | null
+          min_cost: number | null
           rule_name: string | null
           rule_type: string | null
           target: string | null
@@ -1095,6 +1146,8 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           markup_percent?: number | null
+          max_cost?: number | null
+          min_cost?: number | null
           rule_name?: string | null
           rule_type?: string | null
           target?: string | null
@@ -1104,6 +1157,8 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           markup_percent?: number | null
+          max_cost?: number | null
+          min_cost?: number | null
           rule_name?: string | null
           rule_type?: string | null
           target?: string | null
@@ -1373,7 +1428,35 @@ export type Database = {
             referencedRelation: "synnex_products"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "quote_requests_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "v_price_review"
+            referencedColumns: ["product_id"]
+          },
         ]
+      }
+      ram_nb_approve_backup_20260726: {
+        Row: {
+          id: string | null
+          price_approved: boolean | null
+          selling_price: number | null
+          sku: string | null
+        }
+        Insert: {
+          id?: string | null
+          price_approved?: boolean | null
+          selling_price?: number | null
+          sku?: string | null
+        }
+        Update: {
+          id?: string | null
+          price_approved?: boolean | null
+          selling_price?: number | null
+          sku?: string | null
+        }
+        Relationships: []
       }
       rate_limits: {
         Row: {
@@ -1583,6 +1666,57 @@ export type Database = {
           },
         ]
       }
+      supplier_price_staging: {
+        Row: {
+          batch_id: string
+          cost_price: number | null
+          distributor: string
+          id: string
+          in_stock: boolean | null
+          match_key: string
+          name: string
+          product_url: string | null
+          raw: Json | null
+          scraped_at: string
+          source_url: string | null
+          srp: number | null
+          supplier_code: string | null
+          warranty: string | null
+        }
+        Insert: {
+          batch_id: string
+          cost_price?: number | null
+          distributor: string
+          id?: string
+          in_stock?: boolean | null
+          match_key: string
+          name: string
+          product_url?: string | null
+          raw?: Json | null
+          scraped_at?: string
+          source_url?: string | null
+          srp?: number | null
+          supplier_code?: string | null
+          warranty?: string | null
+        }
+        Update: {
+          batch_id?: string
+          cost_price?: number | null
+          distributor?: string
+          id?: string
+          in_stock?: boolean | null
+          match_key?: string
+          name?: string
+          product_url?: string | null
+          raw?: Json | null
+          scraped_at?: string
+          source_url?: string | null
+          srp?: number | null
+          supplier_code?: string | null
+          warranty?: string | null
+        }
+        Relationships: []
+      }
       sync_credentials: {
         Row: {
           created_at: string
@@ -1663,12 +1797,14 @@ export type Database = {
           price: number | null
           price_approved: boolean | null
           product_url: string | null
+          ram_generation: string | null
           selling_price: number | null
           sku: string
           slug: string | null
           stock: string | null
           stock_qty: number | null
           stock_status: string | null
+          subcategory: string | null
           synced_at: string
           updated_at: string
           weight_kg: number | null
@@ -1695,12 +1831,14 @@ export type Database = {
           price?: number | null
           price_approved?: boolean | null
           product_url?: string | null
+          ram_generation?: string | null
           selling_price?: number | null
           sku: string
           slug?: string | null
           stock?: string | null
           stock_qty?: number | null
           stock_status?: string | null
+          subcategory?: string | null
           synced_at?: string
           updated_at?: string
           weight_kg?: number | null
@@ -1727,12 +1865,14 @@ export type Database = {
           price?: number | null
           price_approved?: boolean | null
           product_url?: string | null
+          ram_generation?: string | null
           selling_price?: number | null
           sku?: string
           slug?: string | null
           stock?: string | null
           stock_qty?: number | null
           stock_status?: string | null
+          subcategory?: string | null
           synced_at?: string
           updated_at?: string
           weight_kg?: number | null
@@ -1972,9 +2112,74 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      v_price_review: {
+        Row: {
+          batch_id: string | null
+          brand: string | null
+          category: string | null
+          distributor: string | null
+          in_stock: boolean | null
+          markup_pct: number | null
+          match_key: string | null
+          price_approved: boolean | null
+          product_id: string | null
+          scraped_at: string | null
+          source_url: string | null
+          staging_name: string | null
+          subcategory: string | null
+          ทุนเดิม: number | null
+          ทุนเปลี่ยน_pct: number | null
+          ทุนใหม่: number | null
+          ธง_คีย์มีขยะ: boolean | null
+          ธง_ทุนสูงกว่าราคาขาย: boolean | null
+          ธง_ราคาจะลดลง: boolean | null
+          มาร์จิ้นปัจจุบัน_pct: number | null
+          ราคาขายที่คำนวณได้: number | null
+          ราคาขายปัจจุบัน: number | null
+          สถานะ: string | null
+        }
+        Relationships: []
+      }
+      v_price_review_summary: {
+        Row: {
+          batch_id: string | null
+          distributor: string | null
+          ทั้งหมด: number | null
+          ทุนเปลี่ยนเฉลี่ย_pct: number | null
+          ธง_ขายขาดทุน: number | null
+          ธง_คีย์มีขยะ: number | null
+          ธง_ราคาจะลดลง: number | null
+          เวลาที่ดึง: string | null
+          สินค้าเดิม: number | null
+          สินค้าใหม่: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
+      calc_markup_pct:
+        | {
+            Args: { p_brand: string; p_category: string; p_override?: number }
+            Returns: number
+          }
+        | {
+            Args: {
+              p_brand: string
+              p_category: string
+              p_cost?: number
+              p_override?: number
+            }
+            Returns: number
+          }
+      calc_selling_price: {
+        Args: {
+          p_brand: string
+          p_category: string
+          p_cost: number
+          p_override?: number
+        }
+        Returns: number
+      }
       check_sync_secret: { Args: { input_secret: string }; Returns: boolean }
       cleanup_rate_limits: { Args: never; Returns: undefined }
       get_product_price: {
@@ -1991,6 +2196,20 @@ export type Database = {
       }
       increment: { Args: { x: number }; Returns: number }
       is_admin_user: { Args: { _uid: string }; Returns: boolean }
+      promote_staging_batch: {
+        Args: {
+          p_auto_price?: boolean
+          p_batch_id: string
+          p_category?: string
+          p_dry_run?: boolean
+          p_subcategory?: string
+        }
+        Returns: {
+          การกระทำ: string
+          จำนวน: number
+          หมายเหตุ: string
+        }[]
+      }
       psych_price: { Args: { p: number }; Returns: number }
       recompute_user_order_stats: { Args: { _uid: string }; Returns: undefined }
     }
