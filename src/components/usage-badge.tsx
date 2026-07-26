@@ -424,6 +424,10 @@ export function getUsageProfile(input: {
   if (c.includes("webcam") || c.includes("conference")) {
     return getCamProfile(`${input.name ?? ""} ${input.description ?? ""}`.toLowerCase());
   }
+  if (c.includes("solar") || c.includes("energy")) {
+    return getSolarProfile(`${input.name ?? ""} ${input.description ?? ""}`.toLowerCase());
+  }
+
 
   if (c === "ram" || c.includes("ram ")) {
     return getRamProfile(`${input.name ?? ""} ${input.description ?? ""}`.toLowerCase());
