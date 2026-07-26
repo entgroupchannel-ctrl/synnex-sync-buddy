@@ -153,7 +153,7 @@ export function SiteHeader() {
             <img
               src={entLogo.url}
               alt="ENT Group"
-              className="h-10 w-10 rounded-md bg-white object-contain p-0.5 shadow-sm sm:h-11 sm:w-11"
+              className="h-10 w-10 rounded-xl object-contain shadow-sm sm:h-11 sm:w-11"
             />
             <div className="hidden sm:block">
               <div className="text-sm font-medium text-white">IT Retail Shop</div>
