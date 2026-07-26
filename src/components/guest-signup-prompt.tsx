@@ -35,6 +35,7 @@ export function GuestSignupPrompt({ orderId, orderNumber, email, fullName, phone
   const [dismissed, setDismissed] = useState(false);
   const [done, setDone] = useState(false);
   const [emailExists, setEmailExists] = useState(false);
+  const linkOrder = useServerFn(linkGuestOrderToAccount);
 
   const mismatch = confirm.length > 0 && confirm !== password;
   const tooShort = password.length > 0 && password.length < 8;

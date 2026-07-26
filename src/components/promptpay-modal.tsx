@@ -41,6 +41,7 @@ export function PromptPayPaymentModal({ orderId, orderNumber, amount, onPaid }: 
   const [paid, setPaid] = useState(false);
   const [remaining, setRemaining] = useState<number>(15 * 60);
   const requested = useRef(false);
+  const checkPayment = useServerFn(getOrderPaymentStatus);
 
   const markPaid = () => {
     if (paid) return;
