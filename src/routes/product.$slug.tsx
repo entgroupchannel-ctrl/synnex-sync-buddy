@@ -17,6 +17,7 @@ import { hasSpecTags } from "@/lib/parse-spec";
 import { UsageInfoBox } from "@/components/usage-badge";
 import { CctvSpecGuide } from "@/components/cctv-spec-guide";
 import { EdgeAiSpecGuide } from "@/components/edge-ai-spec-guide";
+import { EdgeAiExplainer } from "@/components/edge-ai-explainer";
 
 
 import { ProductImage, computerSetPlaceholder, upsPlaceholder, cpuPlaceholder, isCpuProduct, applePlaceholder } from "@/components/product-image";
@@ -843,6 +844,8 @@ function ProductDetail() {
                 );
 
               })()}
+
+              <EdgeAiExplainer category={p.category as string | null | undefined} name={p.name} description={p.description} />
 
               {/* AEO — Spec table (structured facts) */}
               <section className="mt-6 overflow-hidden rounded-lg border" aria-label="ข้อมูลจำเพาะสินค้า">
