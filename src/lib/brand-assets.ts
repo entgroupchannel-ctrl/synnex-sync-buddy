@@ -13,6 +13,22 @@ import RAZER from "@/assets/brands/RAZER.png.asset.json";
 import TKS from "@/assets/brands/TKS.png.asset.json";
 import TPLINK from "@/assets/brands/TPLINK.png.asset.json";
 import WD from "@/assets/brands/WD.png.asset.json";
+// โลโก้แบรนด์เพิ่มเติม (เวกเตอร์ต้นฉบับจาก Simple Icons → เรนเดอร์เป็น PNG โปร่งใส สีจริงของแบรนด์)
+import CISCO from "@/assets/brands/CISCO.png.asset.json";
+import CORSAIR from "@/assets/brands/CORSAIR.png.asset.json";
+import HUAWEI from "@/assets/brands/HUAWEI.png.asset.json";
+import SAMSUNG from "@/assets/brands/SAMSUNG.png.asset.json";
+import SEAGATE from "@/assets/brands/SEAGATE.png.asset.json";
+import LG from "@/assets/brands/LG.png.asset.json";
+import DELL from "@/assets/brands/DELL.png.asset.json";
+import MSI from "@/assets/brands/MSI.png.asset.json";
+import NETGEAR from "@/assets/brands/NETGEAR.png.asset.json";
+import INTEL from "@/assets/brands/INTEL.png.asset.json";
+import AMD from "@/assets/brands/AMD.png.asset.json";
+import NVIDIA from "@/assets/brands/NVIDIA.png.asset.json";
+import EPSON from "@/assets/brands/EPSON.png.asset.json";
+import XIAOMI from "@/assets/brands/XIAOMI.png.asset.json";
+import UBIQUITI from "@/assets/brands/UBIQUITI.png.asset.json";
 
 export const BRAND_LOGO_URLS: Record<string, string> = {
   ACER: ACER.url,
@@ -34,7 +50,26 @@ export const BRAND_LOGO_URLS: Record<string, string> = {
   "TP-LINK": TPLINK.url,
   WD: WD.url,
   "WESTERN DIGITAL": WD.url,
+  CISCO: CISCO.url,
+  CORSAIR: CORSAIR.url,
+  HUAWEI: HUAWEI.url,
+  SAMSUNG: SAMSUNG.url,
+  SEAGATE: SEAGATE.url,
+  LG: LG.url,
+  DELL: DELL.url,
+  MSI: MSI.url,
+  "MSI GAMING": MSI.url,
+  NETGEAR: NETGEAR.url,
+  INTEL: INTEL.url,
+  AMD: AMD.url,
+  NVIDIA: NVIDIA.url,
+  EPSON: EPSON.url,
+  XIAOMI: XIAOMI.url,
+  "MI / XIAOMI": XIAOMI.url,
+  UBIQUITI: UBIQUITI.url,
+  UBNT: UBIQUITI.url,
 };
+
 
 export function getBrandLogoUrl(brand: string | null | undefined): string | null {
   if (!brand) return null;

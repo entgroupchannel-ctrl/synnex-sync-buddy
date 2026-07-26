@@ -673,23 +673,24 @@ function BrandCardLogo({ brand }: { brand: string }) {
       : [];
   const failed = idx >= sources.length;
   return (
-    <div className="mb-2 flex h-10 items-center justify-center">
+    <div className="mb-2 flex h-14 items-center justify-center">
       {!failed ? (
         <img
           src={sources[idx]}
           alt={brand}
           loading="lazy"
-          className="max-h-8 max-w-[96px] object-contain transition group-hover:scale-105"
+          className="max-h-14 max-w-[140px] object-contain transition group-hover:scale-105"
           onError={() => setIdx((i) => i + 1)}
         />
       ) : (
-        <span className="text-sm font-black tracking-tight text-[color:var(--brand-navy)]">
+        <span className="text-base font-black tracking-tight text-[color:var(--brand-navy)]">
           {brand}
         </span>
       )}
     </div>
   );
 }
+
 
 export function ShopByBrand() {
   const q = useQuery({
