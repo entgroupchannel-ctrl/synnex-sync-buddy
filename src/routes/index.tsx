@@ -386,6 +386,12 @@ function HomePage() {
           const spec = RAM_SUBCATS.find((s) => s.key === search.ramSpec);
           if (spec) q = q.or(spec.patterns.map((p) => `name.ilike."%${p}%"`).join(","));
         }
+        if (search.category === "RAM" && search.ramType) {
+          q = q.eq("subcategory", search.ramType);
+        }
+        if (search.category === "RAM" && search.ramGen) {
+          q = q.eq("ram_generation", search.ramGen);
+        }
         if (selectedBrands.length > 0) q = q.in("brand", selectedBrands);
         if (search.min > 0) q = q.gte("selling_price", search.min);
         if (search.max < PRICE_MAX) q = q.lte("selling_price", search.max);
@@ -477,7 +483,7 @@ function HomePage() {
   const setCategory = (c: string) => {
     // Changing category auto-clears brand/ramSpec/jetsonType filter to prevent 0-result conflicts.
     // Smart Life defaults to cheapest-first.
-    update(c === "Smart Life" ? { category: c, brands: "", ramSpec: "", jetsonType: "", sort: "price-asc" } : { category: c, brands: "", ramSpec: "", jetsonType: "" });
+    update(c === "Smart Life" ? { category: c, brands: "", ramSpec: "", ramType: "", ramGen: "", jetsonType: "", sort: "price-asc" } : { category: c, brands: "", ramSpec: "", ramType: "", ramGen: "", jetsonType: "" });
   };
 
 
