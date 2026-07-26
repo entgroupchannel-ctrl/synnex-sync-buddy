@@ -74,6 +74,27 @@ function isSlipPrinter(subcategory?: string | null, name?: string | null) {
   return /slip|ใบเสร็จ|receipt|thermal|tm-t\d|pos printer/i.test(name ?? "");
 }
 
+/** รูป UPS แบบ "ภาพแทน" (generated) — เลือกตามขนาด VA และชื่อรุ่นแบบคงที่ */
+const UPS_IMAGES = [
+  "/ups-placeholders/ups-1.png",
+  "/ups-placeholders/ups-2.png",
+  "/ups-placeholders/ups-3.png",
+  "/ups-placeholders/ups-4.png",
+  "/ups-placeholders/ups-5.png",
+];
+
+export function upsPlaceholder(name?: string | null): string {
+  const n = (name ?? "").toUpperCase();
+  const va = Number(n.match(/(\d{3,5})\s*VA/)?.[1] ?? 0);
+  if (va >= 3000) return UPS_IMAGES[3];
+  if (va >= 1500) return UPS_IMAGES[1];
+  let hash = 0;
+  for (let i = 0; i < n.length; i++) hash = (hash * 31 + n.charCodeAt(i)) % 100000;
+  return [UPS_IMAGES[0], UPS_IMAGES[2], UPS_IMAGES[4]][hash % 3];
+}
+
+
+
 
 
 
@@ -100,6 +121,23 @@ export function ProductImage({
     const placeholder = computerSetPlaceholder(productName ?? alt);
     return <img src={placeholder} alt={alt} loading={loading} className={className} />;
   }
+
+  if (category === "UPS") {
+    return (
+      <div className="relative h-full w-full">
+        <img
+          src={upsPlaceholder(productName ?? alt)}
+          alt={alt}
+          loading={loading}
+          className={className}
+        />
+        <span className="pointer-events-none absolute bottom-1 right-1 rounded bg-slate-900/70 px-1.5 py-0.5 text-[10px] font-medium text-white">
+          ภาพแทน
+        </span>
+      </div>
+    );
+  }
+
 
   if ((error || !src) && isSlipPrinter(subcategory, productName ?? alt)) {
     return (
