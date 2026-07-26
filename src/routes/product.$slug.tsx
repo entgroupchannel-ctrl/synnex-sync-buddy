@@ -599,6 +599,8 @@ function ProductDetail() {
                   <SpecTagsFull description={p.description} />
                   <UsageInfoBox category={p.category as string | null | undefined} name={p.name} description={p.description} price={p.selling_price as number | null | undefined} />
                   <CctvSpecGuide category={p.category as string | null | undefined} name={p.name} description={p.description} />
+                  <EdgeAiSpecGuide category={p.category as string | null | undefined} name={p.name} description={p.description} />
+
                 </div>
               )}
 
