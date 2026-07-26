@@ -18,7 +18,9 @@ import { UsageInfoBox } from "@/components/usage-badge";
 
 import { ProductImage, computerSetPlaceholder, upsPlaceholder, cpuPlaceholder, isCpuProduct } from "@/components/product-image";
 import { DeliveryInfoBox } from "@/components/delivery-info";
+import { ProtectedText } from "@/components/protected-text";
 import { ProductTrustBar, ReturnPolicyAccordion } from "@/components/trust-signals";
+
 import { WarrantyBadge } from "@/components/warranty-badge";
 import { StockBadge } from "@/components/stock-badge";
 
