@@ -925,8 +925,13 @@ function ProductDetail() {
           </div>
         )}
       </div>
-      
+
+      <div className="mx-auto max-w-7xl px-4 pb-10">
+        <HelpChooseBanner category={product?.category ?? null} />
+      </div>
+
       <SiteFooter />
+
     </div>
   );
 }
