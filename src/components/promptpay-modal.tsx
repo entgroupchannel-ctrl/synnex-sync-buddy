@@ -91,11 +91,7 @@ export function PromptPayPaymentModal({ orderId, orderNumber, amount, onPaid }: 
   useEffect(() => {
     if (paid) return;
     const iv = setInterval(async () => {
-      const { data } = await supabase
-        .from("orders")
-        .select("payment_status")
-        .eq("id", orderId)
-        .maybeSingle();
+      const data = await checkPayment({ data: { orderId } });
       if (data?.payment_status === "paid") {
         clearInterval(iv);
         if (!open) setOpen(true);
@@ -108,11 +104,7 @@ export function PromptPayPaymentModal({ orderId, orderNumber, amount, onPaid }: 
 
   const checkNow = async () => {
     setChecking(true);
-    const { data } = await supabase
-      .from("orders")
-      .select("payment_status")
-      .eq("id", orderId)
-      .maybeSingle();
+    const data = await checkPayment({ data: { orderId } });
     setChecking(false);
     if (data?.payment_status === "paid") {
       markPaid();

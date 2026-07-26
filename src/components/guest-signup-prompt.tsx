@@ -75,10 +75,7 @@ export function GuestSignupPrompt({ orderId, orderNumber, email, fullName, phone
         toast.error("เกิดข้อผิดพลาด ลองอีกครั้ง");
         return;
       }
-      await supabase
-        .from("orders")
-        .update({ user_id: userId, customer_type: "b2c" })
-        .eq("id", orderId);
+      await linkOrder({ data: { orderNumber, userId } });
       await supabase.from("user_profiles").upsert({
         id: userId,
         user_type: "b2c",

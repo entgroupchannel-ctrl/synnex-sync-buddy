@@ -79,11 +79,7 @@ export function PromptPayQr({ orderId, orderNumber, amount, onPaid }: Props) {
   useEffect(() => {
     if (!charge || paid) return;
     const iv = setInterval(async () => {
-      const { data } = await supabase
-        .from("orders")
-        .select("payment_status")
-        .eq("id", orderId)
-        .maybeSingle();
+      const data = await checkPayment({ data: { orderId } });
       if (data?.payment_status === "paid") {
         clearInterval(iv);
         markPaid();
@@ -95,11 +91,7 @@ export function PromptPayQr({ orderId, orderNumber, amount, onPaid }: Props) {
 
   const checkNow = async () => {
     setChecking(true);
-    const { data } = await supabase
-      .from("orders")
-      .select("payment_status")
-      .eq("id", orderId)
-      .maybeSingle();
+    const data = await checkPayment({ data: { orderId } });
     setChecking(false);
     if (data?.payment_status === "paid") {
       markPaid();
