@@ -18,6 +18,11 @@ import {
 import { toast } from "sonner";
 import { LineQrDialog } from "@/components/line-qr-dialog";
 import { Phone, Mail, MessageCircle, HeadphonesIcon, Send } from "lucide-react";
+import supportAgent1 from "@/assets/support-agent-1.jpg";
+import supportAgent2 from "@/assets/support-agent-2.jpg";
+import supportTeam from "@/assets/support-team.jpg";
+
+export const SUPPORT_PHOTOS = { agent1: supportAgent1, agent2: supportAgent2, team: supportTeam };
 
 const PHONE = "02-045-6104";
 const PHONE_TEL = "020456104";
