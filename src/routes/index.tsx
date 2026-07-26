@@ -5,6 +5,9 @@ import { z } from "zod";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { supabase } from "@/integrations/supabase/client";
 import { PRODUCT_PUBLIC_COLUMNS } from "@/lib/product-columns";
+import { CompareCheckbox } from "@/components/compare-checkbox";
+import type { CompareItem } from "@/lib/compare-store";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -1326,6 +1329,16 @@ function HomePage() {
                     <div className="flex min-w-0 flex-1 flex-col">
                       <div className="text-[11px] uppercase tracking-wide text-slate-500">{p.brand ?? (p.category || detectCategory(p.name))}</div>
                       <Link to="/product/$slug" params={{ slug }} className="line-clamp-2 text-sm font-semibold hover:text-[color:var(--brand-navy)]">{p.name ?? p.sku}</Link>
+                      <div className="mt-1">
+                        <CompareCheckbox
+                          item={{
+                            id: p.id, sku: p.sku, slug: p.slug ?? null, name: p.name ?? null,
+                            image_url: p.image_url ?? null, selling_price: p.selling_price ?? null,
+                            category: p.category ?? null, brand: p.brand ?? null,
+                          } as CompareItem}
+                        />
+                      </div>
+
                       <WarrantyBadge category={p.category} name={p.name} />
                       {hasSpecTags(p.category) && <SpecTagsCompact description={p.description} />}
                       <UsageBadge category={p.category} name={p.name} description={p.description} price={p.selling_price} />
@@ -1418,6 +1431,16 @@ function HomePage() {
                       <Link to="/product/$slug" params={{ slug }} className="line-clamp-2 min-h-10 text-sm font-medium hover:text-[color:var(--brand-navy)]">
                         {p.name ?? p.sku}
                       </Link>
+                      <div>
+                        <CompareCheckbox
+                          item={{
+                            id: p.id, sku: p.sku, slug: p.slug ?? null, name: p.name ?? null,
+                            image_url: p.image_url ?? null, selling_price: p.selling_price ?? null,
+                            category: p.category ?? null, brand: p.brand ?? null,
+                          } as CompareItem}
+                        />
+                      </div>
+
                       <RamBadge generation={p.ram_generation} subcategory={p.subcategory} />
                       <WarrantyBadge category={p.category} name={p.name} />
                       {hasSpecTags(p.category) && <SpecTagsCompact description={p.description} />}

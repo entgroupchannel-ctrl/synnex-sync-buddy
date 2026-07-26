@@ -18,7 +18,9 @@ import { UsageInfoBox } from "@/components/usage-badge";
 
 import { ProductImage, computerSetPlaceholder, upsPlaceholder, cpuPlaceholder, isCpuProduct } from "@/components/product-image";
 import { DeliveryInfoBox } from "@/components/delivery-info";
+import { ProtectedText } from "@/components/protected-text";
 import { ProductTrustBar, ReturnPolicyAccordion } from "@/components/trust-signals";
+
 import { WarrantyBadge } from "@/components/warranty-badge";
 import { StockBadge } from "@/components/stock-badge";
 
@@ -450,7 +452,12 @@ function ProductDetail() {
             <div className="flex flex-col">
               {p.brand && <div className="mb-1 inline-flex w-fit rounded bg-slate-100 px-2 py-0.5 text-xs font-bold text-slate-700">{p.brand}</div>}
               <h1 className="text-2xl font-bold text-slate-900 md:text-3xl">{p.name ?? decodedSku}</h1>
-              {showSku && <div className="mt-1 text-sm text-slate-500">SKU / Model: {decodedSku}</div>}
+              {showSku && (
+                <div className="mt-1 text-sm text-slate-500">
+                  SKU / Model: <ProtectedText text={decodedSku} />
+                </div>
+              )}
+
 
               {(() => {
                 const pr = computeProductPrice(p as PricingProduct, tier, qty);
@@ -819,8 +826,14 @@ function ProductDetail() {
               <section className="mt-6 overflow-hidden rounded-lg border" aria-label="ข้อมูลจำเพาะสินค้า">
                 <table className="w-full text-sm">
                   <tbody>
+                    {showSku && (
+                      <tr className="border-b last:border-0">
+                        <th className="w-40 bg-slate-50 p-3 text-left font-medium text-slate-600">รุ่น / Model</th>
+                        <td className="p-3 text-slate-800"><ProtectedText text={decodedSku} /></td>
+                      </tr>
+                    )}
                     {[
-                      ...(showSku ? [["รุ่น / Model", decodedSku]] : []),
+
                       ["แบรนด์", p.brand ?? "—"],
                       ...(Number(p.selling_price ?? 0) > 0
                         ? [["ราคา", `฿${Number(p.selling_price ?? 0).toLocaleString("th-TH")}`]]
