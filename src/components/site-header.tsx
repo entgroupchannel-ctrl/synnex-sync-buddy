@@ -13,6 +13,7 @@ import { AddToCartSheet } from "@/components/add-to-cart-sheet";
 import { CartReminderBell } from "@/components/cart-reminder-bell";
 import { DeliveryZoneDialog, DeliveryZoneBadge } from "@/components/delivery-zone-dialog";
 import { AppleMegaMenu } from "@/components/apple-mega-menu";
+import { EdgeAiMegaMenu } from "@/components/edge-ai-mega-menu";
 
 
 import { useLanguage } from "@/lib/i18n";
