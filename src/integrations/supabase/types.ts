@@ -116,6 +116,36 @@ export type Database = {
         }
         Relationships: []
       }
+      category_fix_backup_20260726: {
+        Row: {
+          backed_up_at: string
+          id: string
+          name: string | null
+          new_category: string | null
+          old_category: string | null
+          reason: string | null
+          sku: string | null
+        }
+        Insert: {
+          backed_up_at?: string
+          id: string
+          name?: string | null
+          new_category?: string | null
+          old_category?: string | null
+          reason?: string | null
+          sku?: string | null
+        }
+        Update: {
+          backed_up_at?: string
+          id?: string
+          name?: string | null
+          new_category?: string | null
+          old_category?: string | null
+          reason?: string | null
+          sku?: string | null
+        }
+        Relationships: []
+      }
       credit_accounts: {
         Row: {
           application_id: string | null
