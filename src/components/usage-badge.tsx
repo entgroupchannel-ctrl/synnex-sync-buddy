@@ -494,6 +494,7 @@ export function UsageInfoBox(props: {
   description?: string | null;
   price?: number | null;
 }) {
+  const [open, setOpen] = useState(false);
   const p = getUsageProfile(props);
   if (!p) return null;
   const Icon = ICON[p.icon];
@@ -501,9 +502,69 @@ export function UsageInfoBox(props: {
     <div className="mt-4 rounded-lg border border-[#e2e8f0] bg-[#f8fafc] px-4 py-3 text-[13px]">
       <div className="mb-1 flex items-center gap-2 font-semibold text-slate-900">
         <Icon className="h-4 w-4" />
-        เครื่องนี้เหมาะกับ: {p.label}
+        เหมาะกับ: {p.label}
       </div>
       <div className="pl-6 text-slate-600">{p.hint}</div>
+
+      {p.detail?.length ? (
+        <>
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            className="ml-6 mt-2 inline-flex items-center gap-1 text-[12px] font-semibold text-emerald-700 hover:underline"
+          >
+            {open ? "ย่อคำอธิบาย" : "ดูคำอธิบายเพิ่มเติม"}
+            <ChevronDown className={`h-3.5 w-3.5 transition-transform ${open ? "rotate-180" : ""}`} />
+          </button>
+
+          {open && (
+            <div className="ml-6 mt-2 space-y-2 border-l-2 border-emerald-200 pl-3 text-slate-600">
+              <ul className="list-disc space-y-1 pl-4">
+                {p.detail.map((d) => (
+                  <li key={d}>{d}</li>
+                ))}
+              </ul>
+
+              {p.installer && (
+                <div className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-slate-700">
+                  <div className="flex items-center gap-1.5 font-semibold text-emerald-800">
+                    <Wrench className="h-4 w-4" />
+                    ต้องการช่างติดตั้ง? เราจัดการให้
+                  </div>
+                  <p className="mt-1">
+                    ENT Group เป็นสะพานเชื่อมระหว่างคุณกับทีมช่างโซลาร์ที่มีประสบการณ์ — ช่วยประเมินขนาดระบบให้เหมาะกับค่าไฟบ้านคุณ
+                    จัดหาช่าง นัดหมายวันเข้าสำรวจหน้างานและติดตั้ง รวมถึงแนะนำเรื่องเอกสารขออนุญาตการไฟฟ้า
+                  </p>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    <a
+                      href="tel:021147974"
+                      className="inline-flex items-center gap-1 rounded bg-emerald-600 px-2.5 py-1 text-[12px] font-semibold text-white hover:bg-emerald-700"
+                    >
+                      <Phone className="h-3.5 w-3.5" />
+                      โทรปรึกษา 02-114-7974
+                    </a>
+                    <a
+                      href="mailto:sales@entgroup.co.th"
+                      className="inline-flex items-center rounded border border-emerald-300 bg-white px-2.5 py-1 text-[12px] font-semibold text-emerald-700 hover:bg-emerald-50"
+                    >
+                      sales@entgroup.co.th
+                    </a>
+                    <a
+                      href="https://line.me/R/ti/p/@entgroup"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center rounded border border-emerald-300 bg-white px-2.5 py-1 text-[12px] font-semibold text-emerald-700 hover:bg-emerald-50"
+                    >
+                      LINE @entgroup
+                    </a>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </>
+      ) : null}
     </div>
   );
 }
+
