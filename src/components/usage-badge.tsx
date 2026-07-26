@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { MemoryStick, Gamepad2, Briefcase, Video, Cpu, Monitor, Router, Server, Building2, BatteryCharging, Cctv, HardDrive, Network, Siren, Sun, Cable, ChevronDown, Phone, Wrench } from "lucide-react";
+import { MemoryStick, Gamepad2, Briefcase, Video, Cpu, Monitor, Router, Server, Building2, BatteryCharging, Cctv, HardDrive, Network, Siren, Sun, Cable, ChevronDown, Phone, Wrench, Info } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import type { MouseEvent as ReactMouseEvent } from "react";
 
 export type UsageProfile = {
   key: string;
