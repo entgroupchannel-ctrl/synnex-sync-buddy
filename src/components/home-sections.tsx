@@ -1408,9 +1408,30 @@ export function MacBookShowcase() {
         .eq("price_approved", true)
         .gt("selling_price", 0)
         .or("name.ilike.%Apple%,name.ilike.%iPhone%,name.ilike.%iPad%,name.ilike.%MacBook%,name.ilike.%AirPods%,name.ilike.%Apple Watch%")
-        .order("selling_price", { ascending: false })
-        .limit(10);
-      return (data ?? []) as ProductRow[];
+        .limit(60);
+
+      const rows = (data ?? []) as ProductRow[];
+      const buckets: Record<string, ProductRow[]> = { iphone: [], macbook: [], ipad: [], mac: [], other: [] };
+      for (const p of rows) {
+        const n = (p.name ?? "").toLowerCase();
+        if (/iphone/.test(n)) buckets.iphone.push(p);
+        else if (/macbook/.test(n)) buckets.macbook.push(p);
+        else if (/ipad/.test(n)) buckets.ipad.push(p);
+        else if (/\bmac\b|mac mini|mac studio|imac/.test(n)) buckets.mac.push(p);
+        else buckets.other.push(p);
+      }
+      Object.values(buckets).forEach((arr) => arr.sort(() => Math.random() - 0.5));
+
+      const picked: ProductRow[] = [];
+      const keys = Object.keys(buckets);
+      let i = 0;
+      while (picked.length < 10 && keys.some((k) => buckets[k].length > 0)) {
+        const k = keys[i % keys.length];
+        const item = buckets[k].shift();
+        if (item) picked.push(item);
+        i++;
+      }
+      return picked.sort(() => Math.random() - 0.5);
     },
     staleTime: 5 * 60_000,
   });
