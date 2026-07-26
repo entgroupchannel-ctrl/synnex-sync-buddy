@@ -1218,7 +1218,7 @@ function HomePage() {
           )}
 
           {productsQuery.isLoading ? (
-            <div className={search.view === "list" ? "space-y-3" : "grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-5 lg:gap-3"}>
+            <div className={search.view === "list" ? "space-y-3" : "grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:gap-3" + (search.category === "RAM" ? " lg:grid-cols-6" : " lg:grid-cols-5")}>
               {Array.from({ length: 8 }).map((_, i) => (
                 <div key={i} className={search.view === "list" ? "h-32 animate-pulse rounded-lg bg-slate-200" : "h-80 animate-pulse rounded-lg bg-slate-200"} />
               ))}
@@ -1353,7 +1353,7 @@ function HomePage() {
               })}
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-5 lg:gap-3">
+            <div className={"grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:gap-3" + (search.category === "RAM" ? " lg:grid-cols-6" : " lg:grid-cols-5")}>
               {productsQuery.data!.rows.map((p) => {
                 const byOrder = p.fulfillment_type === "by_order";
                 const ready = p.stock_status === "พร้อมจัดส่ง";
