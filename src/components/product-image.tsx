@@ -158,6 +158,26 @@ export function ProductImage({
     );
   }
 
+  // CPU จาก ADVICE มีลายน้ำในภาพต้นทาง → ใช้ภาพแทนที่สร้างไว้
+  if (
+    isCpuProduct(category, subcategory, productName ?? alt) &&
+    ((distributor ?? "").toUpperCase() === "ADVICE" || error || !src)
+  ) {
+    return (
+      <div className="relative h-full w-full">
+        <img
+          src={cpuPlaceholder(productName ?? alt)}
+          alt={alt}
+          loading={loading}
+          className={className}
+        />
+        <span className="pointer-events-none absolute bottom-1 right-1 rounded bg-slate-900/70 px-1.5 py-0.5 text-[10px] font-medium text-white">
+          ภาพแทน
+        </span>
+      </div>
+    );
+  }
+
 
   if ((error || !src) && isSlipPrinter(subcategory, productName ?? alt)) {
     return (
