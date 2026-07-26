@@ -1081,9 +1081,6 @@ function HomePage() {
 
           {/* Storage Deals */}
           <StorageDeals />
-
-          {/* Shop by Brand */}
-          <ShopByBrand />
         </>
       )}
 
