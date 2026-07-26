@@ -43,6 +43,7 @@ import { WarrantyBadge } from "@/components/warranty-badge";
 import { DiscountBadgeRow } from "@/components/discount-badge";
 import { SpecTagsCompact } from "@/components/spec-tags";
 import { hasSpecTags } from "@/lib/parse-spec";
+import { UsageBadge } from "@/components/usage-badge";
 
 
 /* ---------- Hero Carousel (compact, split layout) ---------- */
@@ -383,6 +384,7 @@ export function TodaysBestDeals() {
                   {hasSpecTags(p.category as string | null | undefined) && (
                     <SpecTagsCompact description={(p as { description?: string | null }).description} />
                   )}
+                  <UsageBadge category={p.category as string | null | undefined} name={p.name as string | null | undefined} description={(p as { description?: string | null }).description} price={p.selling_price as number | null | undefined} />
                   <div className="flex flex-wrap items-center gap-1">
                     {freeShip && <Badge className="inline-flex items-center gap-1 bg-green-100 text-[10px] text-green-700 hover:bg-green-100"><Truck className="h-3 w-3" /> ฟรีจัดส่ง</Badge>}
                     <StockBadge stockQty={p.stock_qty as number | null | undefined} fulfillmentType={p.fulfillment_type as string | null | undefined} stockStatus={p.stock_status as string | null | undefined} distributor={(p as { distributor?: string | null }).distributor} />
@@ -467,6 +469,7 @@ export function PopularNotebooks() {
                   {hasSpecTags(p.category as string | null | undefined) && (
                     <SpecTagsCompact description={(p as { description?: string | null }).description} />
                   )}
+                  <UsageBadge category={p.category as string | null | undefined} name={p.name as string | null | undefined} description={(p as { description?: string | null }).description} price={p.selling_price as number | null | undefined} />
                   <div className="mt-auto text-lg font-black text-[color:var(--brand-orange)]">{displayPrice(p, tier)}</div>
                   <UrgencyIndicator index={idx} />
 
@@ -1209,6 +1212,7 @@ function CategoryGridCard({ p }: { p: ProductRow }) {
         {hasSpecTags(p.category as string | null | undefined) && (
           <SpecTagsCompact description={(p as { description?: string | null }).description} />
         )}
+        <UsageBadge category={p.category as string | null | undefined} name={p.name as string | null | undefined} description={(p as { description?: string | null }).description} price={p.selling_price as number | null | undefined} />
         <div className="mt-auto text-lg font-black text-[color:var(--brand-orange)]">
           {displayPrice(p, tier)}
         </div>
