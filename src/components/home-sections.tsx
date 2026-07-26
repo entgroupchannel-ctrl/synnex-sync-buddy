@@ -50,6 +50,7 @@ import { hasSpecTags } from "@/lib/parse-spec";
 import promoClearance from "@/assets/promo-clearance.jpg";
 import promoGaming from "@/assets/promo-gaming.jpg";
 import promoBusiness from "@/assets/promo-business.jpg";
+import { VatNote } from "@/components/vat-note";
 
 type Trust = { icon: typeof Flame; title: string; sub: string };
 
