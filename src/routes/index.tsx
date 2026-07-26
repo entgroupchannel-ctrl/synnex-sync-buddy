@@ -1451,7 +1451,7 @@ function HomePage() {
                         </div>
                       </>
                     )}
-                    <div className="absolute left-2 top-2 z-20"><WishlistButton productId={p.id} productName={p.name} size="sm" /></div>
+                    <div className="absolute right-2 top-11 z-20"><WishlistButton productId={p.id} productName={p.name} size="sm" /></div>
                     <Link to="/product/$slug" params={{ slug }} className="grid aspect-square place-items-center bg-white p-3">
                       <ProductImage
                         src={p.image_url}
