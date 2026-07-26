@@ -220,7 +220,7 @@ function ProductDetail() {
     p?.category === "Smart Phone & Tablet" ||
     (p?.brand ?? "").toUpperCase() === "APPLE";
 
-  const images: string[] = !p
+  const baseImages: string[] = !p
     ? []
     : p.category === "Computer Set"
       ? [computerSetPlaceholder(p.name)]
@@ -234,6 +234,17 @@ function ProductDetail() {
             ) as string[]).filter(
               (src, i) => i === 0 || !(hideSpecShots && /\/[5-8]\.jpg(?:\?.*)?$/i.test(src)),
             );
+
+  // Apple-style fallback: ภาพแทนตระกูลสินค้า + พื้นหลังสไตล์ Apple 3 แบบ
+  const appleShot = baseImages.length === 0 ? applePlaceholder(p?.name) : null;
+  const APPLE_BACKDROPS = [
+    "bg-gradient-to-b from-white via-slate-50 to-slate-100",
+    "bg-gradient-to-br from-slate-100 via-slate-200 to-slate-300",
+    "bg-gradient-to-br from-slate-800 via-slate-900 to-black",
+  ];
+  const images: string[] = appleShot ? [appleShot, appleShot, appleShot] : baseImages;
+  const activeBackdrop = appleShot ? APPLE_BACKDROPS[activeImg] ?? APPLE_BACKDROPS[0] : "bg-white";
+
 
 
 
