@@ -949,6 +949,9 @@ function HomePage() {
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <SiteHeader />
 
+      {/* Shop by Brand — placed right after nav for discoverability */}
+      <ShopByBrand />
+
       {!filterMode && (
         <>
           {/* Quick category icons */}
@@ -1078,9 +1081,6 @@ function HomePage() {
 
           {/* Storage Deals */}
           <StorageDeals />
-
-          {/* Shop by Brand */}
-          <ShopByBrand />
         </>
       )}
 
