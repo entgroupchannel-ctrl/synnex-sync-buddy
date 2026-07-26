@@ -1,3 +1,4 @@
+import { LineQrDialog } from "@/components/line-qr-dialog";
 import { useState } from "react";
 import { MemoryStick, Gamepad2, Briefcase, Video, Cpu, Monitor, Router, Server, Building2, BatteryCharging, Cctv, HardDrive, Network, Siren, Sun, Cable, ChevronDown, Phone, Wrench, Info } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -500,14 +501,14 @@ function ProfileDetail({ p }: { p: UsageProfile }) {
             >
               sales@entgroup.co.th
             </a>
-            <a
-              href="https://line.me/R/ti/p/@entgroup"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center rounded border border-emerald-300 bg-white px-2.5 py-1 text-[12px] font-semibold text-emerald-700 hover:bg-emerald-50"
-            >
-              LINE @entgroup
-            </a>
+            <LineQrDialog>
+              <button
+                type="button"
+                className="inline-flex items-center rounded border border-emerald-300 bg-white px-2.5 py-1 text-[12px] font-semibold text-emerald-700 hover:bg-emerald-50"
+              >
+                LINE @entgroup
+              </button>
+            </LineQrDialog>
           </div>
         </div>
       )}
@@ -636,14 +637,14 @@ export function UsageInfoBox(props: {
                     >
                       sales@entgroup.co.th
                     </a>
-                    <a
-                      href="https://line.me/R/ti/p/@entgroup"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center rounded border border-emerald-300 bg-white px-2.5 py-1 text-[12px] font-semibold text-emerald-700 hover:bg-emerald-50"
-                    >
-                      LINE @entgroup
-                    </a>
+                    <LineQrDialog>
+                      <button
+                        type="button"
+                        className="inline-flex items-center rounded border border-emerald-300 bg-white px-2.5 py-1 text-[12px] font-semibold text-emerald-700 hover:bg-emerald-50"
+                      >
+                        LINE @entgroup
+                      </button>
+                    </LineQrDialog>
                   </div>
                 </div>
               )}
