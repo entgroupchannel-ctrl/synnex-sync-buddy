@@ -18,32 +18,77 @@ import {
   Mail as MailIcon,
   CheckCircle2,
   Loader2,
+  Lock,
+  CreditCard,
+
+  KeyRound,
+  Server,
+  EyeOff,
+  UserCheck,
+  Cookie,
+  Trash2,
+  Clock,
+  FileCheck2,
 } from "lucide-react";
 import { toast } from "sonner";
 import entLogo from "@/assets/entgroup-logo.jpg.asset.json";
+import {
+  PAYMENT_BADGES,
+  CARRIER_BADGES,
+  type FooterBadge,
+} from "@/lib/footer-badges";
 
 /* -------------------------------------------------------------- */
 /* Small helpers                                                  */
 /* -------------------------------------------------------------- */
 
-function PillList({ items }: { items: string[] }) {
+function BrandBadge({ badge }: { badge: FooterBadge }) {
+  const [broken, setBroken] = useState(false);
+  const showLogo = Boolean(badge.logoUrl) && !broken;
+
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-[11px] font-medium ${
+        badge.comingSoon ? "opacity-50 grayscale" : ""
+      }`}
+      style={{
+        borderColor: "rgba(255,255,255,0.3)",
+        color: "rgba(255,255,255,0.8)",
+      }}
+    >
+      {showLogo ? (
+        <img
+          src={badge.logoUrl}
+          alt={badge.label}
+          loading="lazy"
+          onError={() => setBroken(true)}
+          className="h-5 w-auto max-w-[54px] object-contain"
+        />
+      ) : (
+        <>
+          <badge.icon className="h-3.5 w-3.5 shrink-0 text-[color:var(--brand-green)]" />
+          <span className="whitespace-nowrap">{badge.label}</span>
+        </>
+      )}
+      {badge.comingSoon && (
+        <span className="rounded bg-white/15 px-1 py-0.5 text-[9px] leading-none text-white/70">
+          เร็วๆ นี้
+        </span>
+      )}
+    </span>
+  );
+}
+
+function BadgeRow({ badges }: { badges: FooterBadge[] }) {
   return (
     <div className="flex flex-wrap gap-1.5">
-      {items.map((label) => (
-        <span
-          key={label}
-          className="rounded-md border px-2.5 py-1 text-[11px] font-medium"
-          style={{
-            borderColor: "rgba(255,255,255,0.3)",
-            color: "rgba(255,255,255,0.8)",
-          }}
-        >
-          {label}
-        </span>
+      {badges.map((b) => (
+        <BrandBadge key={b.label} badge={b} />
       ))}
     </div>
   );
 }
+
 
 
 function FooterLink({
@@ -84,8 +129,9 @@ function TrustBar() {
     },
     {
       icon: ShieldCheck,
-      title: "ปลอดภัย 100%",
-      desc: "ชำระเงินผ่านระบบที่ได้มาตรฐาน",
+      title: "ชำระเงินปลอดภัย",
+      desc: "เข้ารหัส HTTPS · ไม่เก็บข้อมูลบัตรบนเซิร์ฟเวอร์",
+
     },
     {
       icon: Truck,
@@ -335,31 +381,22 @@ export function SiteFooter() {
 
           {/* Column 4 — Payment */}
           <Column title="วิธีการชำระเงิน / Payment">
-            <PillList
-              items={[
-                "โอนเงิน",
-                "PromptPay",
-                "KBank",
-                "SCB",
-                "Mastercard",
-                "COD",
-              ]}
-            />
+            <BadgeRow badges={PAYMENT_BADGES} />
             <p className="mt-3 text-[11px] text-white/50">
-              * บัตรเครดิต/เดบิต เร็วๆ นี้
+              ปัจจุบันรองรับ PromptPay QR และโอนผ่านธนาคาร ·{" "}
+              <Link
+                to="/payment-methods"
+                className="underline hover:text-[color:var(--brand-green)]"
+              >
+                ดูรายละเอียด
+              </Link>
             </p>
           </Column>
 
           {/* Column 5 — Shipping */}
           <Column title="บริการจัดส่ง / Delivery">
-            <PillList
-              items={[
-                "Kerry Express",
-                "Flash Express",
-                "ไปรษณีย์ไทย",
-                "SCG Express",
-              ]}
-            />
+            <BadgeRow badges={CARRIER_BADGES} />
+
             <p className="mt-3 text-[11px] text-white/60">
               จัดส่งทั่วประเทศไทย ครอบคลุมทุกพื้นที่
             </p>
@@ -443,7 +480,82 @@ export function SiteFooter() {
           </Column>
         </div>
 
+        {/* PDPA + Security */}
+        <div className="border-t border-white/10">
+          <div className="mx-auto grid max-w-7xl gap-8 px-4 py-8 md:grid-cols-2">
+            {/* PDPA */}
+            <div>
+              <div className="mb-3 flex items-center gap-2">
+                <ShieldCheck className="h-4 w-4 text-[color:var(--brand-green)]" />
+                <span className="text-sm font-bold uppercase tracking-wide text-white">
+                  ข้อมูลส่วนบุคคล (PDPA)
+                </span>
+              </div>
+              <p className="mb-3 text-[11px] leading-relaxed text-white/60">
+                เราปฏิบัติตาม พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562
+                โดยเก็บข้อมูลเท่าที่จำเป็นต่อการซื้อขายเท่านั้น
+              </p>
+              <div className="space-y-2">
+                {[
+                  { icon: UserCheck, text: "เก็บอะไร: ชื่อ ที่อยู่จัดส่ง เบอร์โทร อีเมล และข้อมูลนิติบุคคลสำหรับออกใบกำกับภาษี" },
+                  { icon: FileCheck2, text: "ใช้ทำอะไร: จัดส่งสินค้า ยืนยันคำสั่งซื้อ ออกใบกำกับภาษี และบริการหลังการขาย" },
+                  { icon: EyeOff, text: "ส่งต่อให้ใคร: เฉพาะบริษัทขนส่งเพื่อนำจ่ายพัสดุ — ไม่ขายหรือให้เช่าข้อมูลแก่บุคคลที่สาม" },
+                  { icon: Cookie, text: "คุกกี้: ใช้เพื่อจดจำตะกร้าสินค้าและการเข้าสู่ระบบ ไม่ใช้เพื่อโฆษณาติดตามข้ามเว็บ" },
+                  { icon: Clock, text: "เก็บนานแค่ไหน: ข้อมูลคำสั่งซื้อเก็บตามที่กฎหมายบัญชี/ภาษีกำหนด แล้วลบหรือทำให้ไม่ระบุตัวตน" },
+                  { icon: Trash2, text: "สิทธิของคุณ: ขอเข้าถึง แก้ไข คัดค้าน หรือลบข้อมูลได้ที่ sales@entgroup.co.th" },
+                ].map((it) => (
+                  <div key={it.text} className="flex items-start gap-2">
+                    <it.icon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[color:var(--brand-green)]" />
+                    <span className="text-[11px] leading-relaxed text-white/70">
+                      {it.text}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <Link
+                to="/privacy"
+                className="mt-3 inline-block text-[11px] font-semibold text-[color:var(--brand-green)] hover:underline"
+              >
+                อ่านนโยบายความเป็นส่วนตัวฉบับเต็ม →
+              </Link>
+            </div>
+
+            {/* Security */}
+            <div>
+              <div className="mb-3 flex items-center gap-2">
+                <Lock className="h-4 w-4 text-[color:var(--brand-green)]" />
+                <span className="text-sm font-bold uppercase tracking-wide text-white">
+                  ระบบรักษาความปลอดภัยของเรา
+                </span>
+              </div>
+              <div className="space-y-2.5">
+                {[
+                  { icon: Lock, title: "เข้ารหัส HTTPS/TLS ทุกหน้า", desc: "ข้อมูลระหว่างเบราว์เซอร์กับเซิร์ฟเวอร์ถูกเข้ารหัสตลอดเส้นทาง" },
+                  { icon: CreditCard, title: "ไม่เก็บเลขบัตรบนเซิร์ฟเวอร์ของเรา", desc: "ชำระผ่าน PromptPay QR / โอนธนาคาร เราไม่เก็บข้อมูลบัตรใดๆ" },
+                  { icon: Server, title: "ฐานข้อมูลเข้ารหัสขณะจัดเก็บ", desc: "พร้อมสำรองข้อมูลอัตโนมัติทุกวัน" },
+                  { icon: KeyRound, title: "รหัสผ่านถูก hash ไม่เก็บเป็นข้อความธรรมดา", desc: "รองรับการรีเซ็ตรหัสผ่านผ่านอีเมลที่ยืนยันแล้ว" },
+                  { icon: EyeOff, title: "แยกสิทธิ์การเข้าถึงรายคำสั่งซื้อ", desc: "บัญชีหนึ่งเห็นได้เฉพาะคำสั่งซื้อของตนเองเท่านั้น" },
+                  { icon: FileCheck2, title: "ล็อกยอดเงินคำสั่งซื้อไม่ให้แก้ย้อนหลัง", desc: "การเปลี่ยนสถานะชำระเงินต้องผ่านระบบตรวจสอบฝั่งเซิร์ฟเวอร์เท่านั้น" },
+                ].map((it) => (
+                  <div key={it.title} className="flex items-start gap-2">
+                    <it.icon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[color:var(--brand-green)]" />
+                    <div>
+                      <div className="text-[11px] font-semibold text-white">
+                        {it.title}
+                      </div>
+                      <div className="text-[11px] leading-relaxed text-white/55">
+                        {it.desc}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Brand strip */}
+
         <div className="mx-auto max-w-7xl border-t border-white/10 px-4 py-4">
           <div className="flex items-center gap-3">
             <img
