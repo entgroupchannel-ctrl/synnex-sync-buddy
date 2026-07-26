@@ -16,6 +16,8 @@ import { SpecTagsFull } from "@/components/spec-tags";
 import { hasSpecTags } from "@/lib/parse-spec";
 import { UsageInfoBox } from "@/components/usage-badge";
 import { CctvSpecGuide } from "@/components/cctv-spec-guide";
+import { EdgeAiSpecGuide } from "@/components/edge-ai-spec-guide";
+
 
 import { ProductImage, computerSetPlaceholder, upsPlaceholder, cpuPlaceholder, isCpuProduct, applePlaceholder } from "@/components/product-image";
 import { DeliveryInfoBox } from "@/components/delivery-info";
@@ -597,6 +599,8 @@ function ProductDetail() {
                   <SpecTagsFull description={p.description} />
                   <UsageInfoBox category={p.category as string | null | undefined} name={p.name} description={p.description} price={p.selling_price as number | null | undefined} />
                   <CctvSpecGuide category={p.category as string | null | undefined} name={p.name} description={p.description} />
+                  <EdgeAiSpecGuide category={p.category as string | null | undefined} name={p.name} description={p.description} />
+
                 </div>
               )}
 

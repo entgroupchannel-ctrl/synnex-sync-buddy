@@ -72,6 +72,8 @@ import { SolarInstallBanner } from "@/components/solar-install-banner";
 import { CctvInstallBanner } from "@/components/cctv-install-banner";
 import { ConferenceInstallBanner } from "@/components/conference-install-banner";
 import { NetworkInstallBanner } from "@/components/network-install-banner";
+import { EdgeAiBanner } from "@/components/edge-ai-banner";
+
 import { ComputerSetBanner } from "@/components/computer-set-banner";
 
 
@@ -1210,6 +1212,9 @@ function HomePage() {
           {search.category === "Webcam & Conference" && <ConferenceInstallBanner className="mb-4" />}
 
           {search.category === "Network" && <NetworkInstallBanner className="mb-4" />}
+
+          {search.category === "Edge AI Box" && <EdgeAiBanner className="mb-4" />}
+
 
           {search.category === "Computer Set" && <ComputerSetBanner className="mb-4" />}
 
