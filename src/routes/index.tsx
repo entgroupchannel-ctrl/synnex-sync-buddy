@@ -1383,6 +1383,8 @@ function HomePage() {
                         alt={p.name ?? p.sku}
                       category={p.category as string | null}
                       productName={p.name as string | null}
+                      ramGeneration={p.ram_generation as string | null}
+                      subcategory={p.subcategory as string | null}
                         className="h-full w-full object-contain transition"
                         iconClassName="h-16 w-16 text-slate-300"
                       />
@@ -1392,6 +1394,7 @@ function HomePage() {
                       <Link to="/product/$slug" params={{ slug }} className="line-clamp-2 min-h-10 text-sm font-medium hover:text-[color:var(--brand-navy)]">
                         {p.name ?? p.sku}
                       </Link>
+                      <RamBadge generation={p.ram_generation} subcategory={p.subcategory} />
                       <WarrantyBadge category={p.category} name={p.name} />
                       {hasSpecTags(p.category) && <SpecTagsCompact description={p.description} />}
                       <div className="mt-auto pt-1">
