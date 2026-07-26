@@ -294,9 +294,13 @@ export function getUsageProfile(input: {
   price?: number | null;
 }): UsageProfile | null {
   const c = (input.category ?? "").toLowerCase();
+  if (c.includes("cctv") || c.includes("security")) {
+    return getCctvProfile(`${input.name ?? ""} ${input.description ?? ""}`.toLowerCase());
+  }
   if (c.includes("webcam") || c.includes("conference")) {
     return getCamProfile(`${input.name ?? ""} ${input.description ?? ""}`.toLowerCase());
   }
+
   if (c === "ram" || c.includes("ram ")) {
     return getRamProfile(`${input.name ?? ""} ${input.description ?? ""}`.toLowerCase());
   }
