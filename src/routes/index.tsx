@@ -1480,7 +1480,16 @@ function HomePage() {
                     </div>
                   </div>
                 );
+                return gridIdx === 9 ? (
+                  <Fragment key={p.id}>
+                    <HelpChooseInlineCard category={search.category !== "all" ? search.category : null} />
+                    {card}
+                  </Fragment>
+                ) : (
+                  card
+                );
               })}
+
             </div>
           )}
 
