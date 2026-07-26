@@ -214,30 +214,22 @@ function PricingProductsPage() {
   const productsQ = useQuery({
     queryKey: ["pricing-products-v3", search],
     queryFn: async () => {
-      const from = (search.page - 1) * search.pageSize;
-      const to = from + search.pageSize - 1;
-      const so = sortMap[search.sort] ?? sortMap.sku_asc;
-      let qq = supabase
-        .from("synnex_products")
-        .select(
-          "id, sku, name, brand, category, distributor, image_url, cost_price, price, selling_price, markup_override, price_approved, updated_at",
-          { count: "exact" },
-        )
-        .order(so.col, { ascending: so.asc, nullsFirst: false })
-        .range(from, to);
-      const s = search.q.trim().replace(/[%,]/g, "");
-      if (s) qq = qq.or(`sku.ilike.%${s}%,name.ilike.%${s}%`);
-      if (search.distributor !== "all") qq = qq.eq("distributor", search.distributor);
-      if (search.category !== "all") qq = qq.eq("category", search.category);
-      if (selectedBrands.length > 0) qq = qq.in("brand", selectedBrands);
-      if (search.status === "unapproved") qq = qq.or("price_approved.eq.false,selling_price.is.null");
-      else if (search.status === "zero") qq = qq.or("selling_price.is.null,selling_price.eq.0");
-      else if (search.status === "approved") qq = qq.eq("price_approved", true);
-      const { data, error, count } = await qq;
-      if (error) throw error;
-      return { rows: (data ?? []) as Product[], count: count ?? 0 };
+      const res = await listPricingProducts({
+        data: {
+          q: search.q,
+          distributor: search.distributor,
+          category: search.category,
+          status: search.status,
+          brands: selectedBrands,
+          sort: search.sort,
+          page: search.page,
+          pageSize: search.pageSize,
+        },
+      });
+      return { rows: res.rows as Product[], count: res.count };
     },
   });
+
 
   const rulesQ = useQuery({
     queryKey: ["pricing-rules-idx"],
