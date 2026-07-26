@@ -61,6 +61,20 @@ const ICON = {
   basic: Monitor,
 };
 
+function getUpsProfile(t: string): UsageProfile {
+  const va = Number(
+    (t.match(/(\d{3,5})\s*va/) ?? t.match(/(\d(?:\.\d)?)\s*kva/))?.[1]?.replace(/^(\d(?:\.\d)?)$/, (m) =>
+      String(Number(m) * 1000),
+    ) ?? 0,
+  );
+  const online = /online|true\s*online|double\s*conversion/.test(t);
+  if (online || va >= 3000) return UPS_PROFILES.ups_server;
+  if (va >= 1500) return UPS_PROFILES.ups_office;
+  if (va >= 1000) return UPS_PROFILES.ups_pc_gaming;
+  if (va > 0 && va < 800) return UPS_PROFILES.ups_small;
+  return UPS_PROFILES.ups_pc;
+}
+
 /** Guess what the machine is good for, from its spec text / name / price. */
 export function getUsageProfile(input: {
   category?: string | null;
@@ -69,7 +83,11 @@ export function getUsageProfile(input: {
   price?: number | null;
 }): UsageProfile | null {
   const c = (input.category ?? "").toLowerCase();
+  if (c.includes("ups") || /\bups\b/.test((input.name ?? "").toLowerCase())) {
+    return getUpsProfile(`${input.name ?? ""} ${input.description ?? ""}`.toLowerCase());
+  }
   if (!(c.includes("computer set") || c.includes("คอมประกอบ") || c === "pc")) return null;
+
 
   const t = `${input.name ?? ""} ${input.description ?? ""}`.toLowerCase();
   const price = input.price ?? 0;
