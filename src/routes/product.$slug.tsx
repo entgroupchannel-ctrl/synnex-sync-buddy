@@ -14,7 +14,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SpecTagsFull } from "@/components/spec-tags";
 import { hasSpecTags } from "@/lib/parse-spec";
 
-import { ProductImage, computerSetPlaceholder } from "@/components/product-image";
+import { ProductImage, computerSetPlaceholder, upsPlaceholder } from "@/components/product-image";
 import { DeliveryInfoBox } from "@/components/delivery-info";
 import { ProductTrustBar, ReturnPolicyAccordion } from "@/components/trust-signals";
 import { WarrantyBadge } from "@/components/warranty-badge";
@@ -220,11 +220,13 @@ function ProductDetail() {
     ? []
     : p.category === "Computer Set"
       ? [computerSetPlaceholder(p.name)]
-      : ([p?.image_url, ...(Array.isArray(p?.image_gallery) ? p?.image_gallery : [])].filter(
-          Boolean,
-        ) as string[]).filter(
-          (src, i) => i === 0 || !(hideSpecShots && /\/[5-8]\.jpg(?:\?.*)?$/i.test(src)),
-        );
+      : p.category === "UPS" && (p.distributor ?? "").toUpperCase() === "ADVICE"
+        ? [upsPlaceholder(p.name)]
+        : ([p?.image_url, ...(Array.isArray(p?.image_gallery) ? p?.image_gallery : [])].filter(
+            Boolean,
+          ) as string[]).filter(
+            (src, i) => i === 0 || !(hideSpecShots && /\/[5-8]\.jpg(?:\?.*)?$/i.test(src)),
+          );
 
 
 
