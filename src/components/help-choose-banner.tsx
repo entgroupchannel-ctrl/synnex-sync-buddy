@@ -149,7 +149,7 @@ export function HelpChooseBanner({
             </a>
             <LineQrDialog>
               <button type="button" className="inline-flex items-center gap-1.5 rounded-lg bg-white/10 px-3 py-2 font-semibold hover:bg-white/20">
-                <MessageCircle className="h-4 w-4" /> LINE @njm2688e
+                <MessageCircle className="h-4 w-4" /> LINE @entgroup
               </button>
             </LineQrDialog>
             <a href={`mailto:${EMAIL}`} className="inline-flex items-center gap-1.5 rounded-lg bg-white/10 px-3 py-2 font-semibold hover:bg-white/20">
@@ -203,7 +203,7 @@ export function HelpChooseInlineCard({ category }: { category?: string | null })
           <p className="text-sm font-bold text-slate-900">เลือกรุ่นไม่ถูก? โทรปรึกษาทีมงานได้เลย</p>
 
           <p className="text-xs text-slate-600">
-            {PHONE} · {MOBILE} · LINE @njm2688e · {EMAIL}
+            {PHONE} · {MOBILE} · LINE @entgroup · {EMAIL}
           </p>
         </div>
       </div>
@@ -260,7 +260,7 @@ export function SupportPeopleStrip({ className = "" }: { className?: string }) {
             </Button>
             <LineQrDialog>
               <Button variant="outline" className="border-emerald-300">
-                <MessageCircle className="mr-1.5 h-4 w-4" /> LINE @njm2688e
+                <MessageCircle className="mr-1.5 h-4 w-4" /> LINE @entgroup
               </Button>
             </LineQrDialog>
             <Button onClick={() => setOpen(true)} className="bg-[color:var(--brand-green)] font-semibold hover:brightness-110">
