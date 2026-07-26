@@ -220,11 +220,13 @@ function ProductDetail() {
     ? []
     : p.category === "Computer Set"
       ? [computerSetPlaceholder(p.name)]
-      : ([p?.image_url, ...(Array.isArray(p?.image_gallery) ? p?.image_gallery : [])].filter(
-          Boolean,
-        ) as string[]).filter(
-          (src, i) => i === 0 || !(hideSpecShots && /\/[5-8]\.jpg(?:\?.*)?$/i.test(src)),
-        );
+      : p.category === "UPS" && (p.distributor ?? "").toUpperCase() === "ADVICE"
+        ? [upsPlaceholder(p.name)]
+        : ([p?.image_url, ...(Array.isArray(p?.image_gallery) ? p?.image_gallery : [])].filter(
+            Boolean,
+          ) as string[]).filter(
+            (src, i) => i === 0 || !(hideSpecShots && /\/[5-8]\.jpg(?:\?.*)?$/i.test(src)),
+          );
 
 
 
