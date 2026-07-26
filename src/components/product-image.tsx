@@ -101,6 +101,18 @@ export function ProductImage({
     return <img src={placeholder} alt={alt} loading={loading} className={className} />;
   }
 
+  if ((error || !src) && isSlipPrinter(subcategory, productName ?? alt)) {
+    return (
+      <img
+        src={slipPrinterPlaceholder(productName ?? alt)}
+        alt={alt}
+        loading={loading}
+        className={className}
+      />
+    );
+  }
+
+
   if (category === "RAM" && (error || !src)) {
     return (
       <img
