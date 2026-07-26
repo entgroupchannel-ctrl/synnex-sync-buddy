@@ -110,8 +110,9 @@ const STEPS: StepDef[] = [
     icon: MemoryStick,
     title: "RAM (Memory)",
     short: "RAM",
-    category: "Components",
-    matches: ["%RAM%", "%DDR%", "%Memory%"],
+    category: "RAM",
+    matches: ["%DDR5%", "%DDR4%", "%DDR3%"],
+
   },
   {
     key: "ssd",
@@ -460,6 +461,8 @@ function ProductPicker({
   const [mbSocket, setMbSocket] = useState<"all" | "am5" | "am4" | "lga1851" | "lga1700">("all");
   const [gpuBrand, setGpuBrand] = useState<"all" | "nvidia" | "amd">("all");
   const [ssdType, setSsdType] = useState<"all" | "sata" | "nvme">("all");
+  const [ramGen, setRamGen] = useState<"all" | "ddr5" | "ddr4" | "ddr3">("all");
+
 
   useEffect(() => {
     let cancelled = false;
@@ -501,26 +504,15 @@ function ProductPicker({
           break;
         }
         case "ram": {
-          q = q
-            .eq("category", "Storage")
-            .or("name.ilike.%DDR4%,name.ilike.%DDR5%,name.ilike.%DDR3%,name.ilike.%Corsair%,name.ilike.%Kingston%,name.ilike.%G.Skill%,name.ilike.%Crucial%,sku.ilike.CMK%,sku.ilike.CMH%,sku.ilike.CMG%")
-            .not("name", "ilike", "%SSD%")
-            .not("name", "ilike", "%NVMe%")
-            .not("name", "ilike", "%Case%")
-            .not("name", "ilike", "%FRAME%")
-            .not("name", "ilike", "%Mainboard%")
-            .not("name", "ilike", "%PRO H%")
-            .not("name", "ilike", "%PRO B%")
-            .not("name", "ilike", "%PRO-B%")
-            .not("name", "ilike", "%PRO-H%")
-            .not("sku", "ilike", "%H610%")
-            .not("sku", "ilike", "%B760%")
-            .eq("price_approved", true)
-            .gt("selling_price", 0)
-            .order("selling_price", { ascending: true })
-            .limit(20);
+          // หมวด "RAM" เป็นหมวดของแรมโดยเฉพาะ — ห้ามกลับไปใช้ category "Storage" + ILIKE ชื่อยี่ห้อ
+          q = q.eq("category", "RAM");
+          if (ramGen === "ddr5") q = q.ilike("name", "%DDR5%");
+          else if (ramGen === "ddr4") q = q.ilike("name", "%DDR4%");
+          else if (ramGen === "ddr3") q = q.ilike("name", "%DDR3%");
+          limit = ramGen === "all" ? 120 : 50;
           break;
         }
+
         case "ssd":
           q = q
             .eq("category", "Storage")
@@ -584,7 +576,7 @@ function ProductPicker({
     return () => {
       cancelled = true;
     };
-  }, [step.key, cpuBrand, mbBrand, mbSocket, gpuBrand, ssdType]);
+  }, [step.key, cpuBrand, mbBrand, mbSocket, gpuBrand, ssdType, ramGen]);
 
   const filtered = useMemo(() => {
     const s = q.trim().toLowerCase();
@@ -651,7 +643,22 @@ function ProductPicker({
         </>
       )}
 
+      {step.key === "ram" && (
+        <FilterTabs
+          className="mb-2"
+          value={ramGen}
+          onChange={(v) => setRamGen(v as typeof ramGen)}
+          options={[
+            { value: "all", label: "ทั้งหมด" },
+            { value: "ddr5", label: "DDR5" },
+            { value: "ddr4", label: "DDR4" },
+            { value: "ddr3", label: "DDR3" },
+          ]}
+        />
+      )}
+
       {step.key === "ssd" && (
+
         <FilterTabs
           className="mb-2"
           value={ssdType}
