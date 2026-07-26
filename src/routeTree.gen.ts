@@ -20,6 +20,7 @@ import { Route as PaymentMethodsRouteImport } from './routes/payment-methods'
 import { Route as HowToOrderRouteImport } from './routes/how-to-order'
 import { Route as CorporateRouteImport } from './routes/corporate'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as CompareRouteImport } from './routes/compare'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as CareersRouteImport } from './routes/careers'
@@ -118,6 +119,11 @@ const CorporateRoute = CorporateRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompareRoute = CompareRouteImport.update({
+  id: '/compare',
+  path: '/compare',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CheckoutRoute = CheckoutRouteImport.update({
@@ -373,6 +379,7 @@ export interface FileRoutesByFullPath {
   '/careers': typeof CareersRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
+  '/compare': typeof CompareRoute
   '/contact': typeof ContactRoute
   '/corporate': typeof CorporateRoute
   '/how-to-order': typeof HowToOrderRoute
@@ -429,6 +436,7 @@ export interface FileRoutesByTo {
   '/careers': typeof CareersRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
+  '/compare': typeof CompareRoute
   '/contact': typeof ContactRoute
   '/corporate': typeof CorporateRoute
   '/how-to-order': typeof HowToOrderRoute
@@ -485,6 +493,7 @@ export interface FileRoutesById {
   '/careers': typeof CareersRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
+  '/compare': typeof CompareRoute
   '/contact': typeof ContactRoute
   '/corporate': typeof CorporateRoute
   '/how-to-order': typeof HowToOrderRoute
@@ -543,6 +552,7 @@ export interface FileRouteTypes {
     | '/careers'
     | '/cart'
     | '/checkout'
+    | '/compare'
     | '/contact'
     | '/corporate'
     | '/how-to-order'
@@ -599,6 +609,7 @@ export interface FileRouteTypes {
     | '/careers'
     | '/cart'
     | '/checkout'
+    | '/compare'
     | '/contact'
     | '/corporate'
     | '/how-to-order'
@@ -654,6 +665,7 @@ export interface FileRouteTypes {
     | '/careers'
     | '/cart'
     | '/checkout'
+    | '/compare'
     | '/contact'
     | '/corporate'
     | '/how-to-order'
@@ -712,6 +724,7 @@ export interface RootRouteChildren {
   CareersRoute: typeof CareersRoute
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
+  CompareRoute: typeof CompareRoute
   ContactRoute: typeof ContactRoute
   CorporateRoute: typeof CorporateRoute
   HowToOrderRoute: typeof HowToOrderRoute
@@ -807,6 +820,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/compare': {
+      id: '/compare'
+      path: '/compare'
+      fullPath: '/compare'
+      preLoaderRoute: typeof CompareRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/checkout': {
@@ -1272,6 +1292,7 @@ const rootRouteChildren: RootRouteChildren = {
   CareersRoute: CareersRoute,
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
+  CompareRoute: CompareRoute,
   ContactRoute: ContactRoute,
   CorporateRoute: CorporateRoute,
   HowToOrderRoute: HowToOrderRoute,
