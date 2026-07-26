@@ -763,6 +763,17 @@ function ProductDetail() {
                 </div>
               )}
 
+              {/* Edge AI Box / PLINK-AI project terms */}
+              {p.distributor === "PLINK-AI" && (
+                <div className="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">
+                  <div className="font-semibold">⏱ ระยะเวลาส่งมอบโดยประมาณ 15-20 วัน — เหมาะสำหรับงานโครงการ</div>
+                  <ul className="mt-2 space-y-1 text-[13px]">
+                    <li>• สั่งจองต้องวางมัดจำอย่างน้อย 70% ของราคาสินค้า</li>
+                    <li>• รับส่วนลดเพิ่ม 1% เมื่อชำระเงินสดเต็มจำนวน</li>
+                    <li>• ทีมงานจะติดต่อยืนยันรายละเอียดและกำหนดส่งมอบก่อนดำเนินการทุกครั้ง</li>
+                  </ul>
+                </div>
+              )}
 
               {/* AEO — Answer-Ready Summary (for AI answer engines & voice search) */}
               {(() => {
