@@ -111,6 +111,7 @@ export function ProductImage({
   productName,
   ramGeneration,
   subcategory,
+  distributor,
 }: Props) {
   const [error, setError] = useState(!src);
 
@@ -123,7 +124,8 @@ export function ProductImage({
     return <img src={placeholder} alt={alt} loading={loading} className={className} />;
   }
 
-  if (category === "UPS" && (error || !src)) {
+  // UPS จาก ADVICE ใช้ภาพแทนที่สร้างไว้ ส่วน SYNNEX ใช้ภาพจริง
+  if (category === "UPS" && ((distributor ?? "").toUpperCase() === "ADVICE" || error || !src)) {
     return (
       <div className="relative h-full w-full">
         <img
