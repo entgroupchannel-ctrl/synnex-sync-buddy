@@ -63,6 +63,7 @@ import { FrequentlyBought } from "@/components/frequently-bought";
 import { BrandLogo } from "@/components/brand-logo";
 import { useVolumeRules, hasVolumeDiscount } from "@/lib/volume-discount";
 import entLogo from "@/assets/entgroup-logo.jpg.asset.json";
+import { VatNote } from "@/components/vat-note";
 
 const searchSchema = z.object({
   q: fallback(z.string(), "").default(""),
@@ -1340,6 +1341,7 @@ function HomePage() {
                           <div className="text-xl font-black text-[color:var(--brand-orange)]">
                             {displayPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null; tier_price_guest?: number | null; tier_price_b2c?: number | null; tier_price_b2c_silver?: number | null; tier_price_b2c_gold?: number | null; tier_price_b2c_vip?: number | null; tier_price_b2b?: number | null; tier_price_b2b_silver?: number | null; tier_price_b2b_gold?: number | null }, tier)}
                           </div>
+                          <VatNote className="text-right" />
                         </>
                       ) : (
                         <span className="text-sm text-gray-400">ติดต่อสอบถาม</span>
@@ -1423,7 +1425,9 @@ function HomePage() {
                             <div className="text-xl font-black text-[color:var(--brand-orange)]">
                               {displayPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null; tier_price_guest?: number | null; tier_price_b2c?: number | null; tier_price_b2c_silver?: number | null; tier_price_b2c_gold?: number | null; tier_price_b2c_vip?: number | null; tier_price_b2b?: number | null; tier_price_b2b_silver?: number | null; tier_price_b2b_gold?: number | null }, tier)}
                             </div>
+                            <VatNote />
                           </>
+
                         ) : (
                           <div className="text-sm text-gray-400">ติดต่อสอบถาม</div>
                         )}

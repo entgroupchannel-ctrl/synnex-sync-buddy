@@ -9,6 +9,7 @@ import { ProductImage } from "@/components/product-image";
 import { DiscountBadgeRow } from "@/components/discount-badge";
 import { SpecTagsCompact } from "@/components/spec-tags";
 import { hasSpecTags } from "@/lib/parse-spec";
+import { VatNote } from "@/components/vat-note";
 
 export const Route = createFileRoute("/corporate")({
   head: () => ({
@@ -114,6 +115,7 @@ function ProductCard({ p }: { p: Row }) {
       <div className="flex items-end justify-between">
         <div className="text-sm font-black text-slate-900">
           ฿{Number(p.selling_price).toLocaleString("th-TH")}
+          <VatNote className="font-normal" />
         </div>
         <div className="cursor-pointer rounded-lg bg-slate-900 p-2 transition-colors group-hover:bg-blue-600">
           <ShoppingCart className="h-3.5 w-3.5 text-white" />

@@ -1,16 +1,25 @@
-แก้ไข `src/components/product-image.tsx` บรรทัด 125 ให้แสดง placeholder ของหมวด UPS เฉพาะเมื่อไม่มีรูปภาพจริงหรือโหลดรูปไม่สำเร็จเท่านั้น
+## เป้าหมาย
+ระบุให้ชัดทุกจุดที่แสดงราคาว่า **"ราคาไม่รวม VAT 7%"** โดยไม่เปลี่ยนวิธีคำนวณยอดเงินใดๆ (ยอดในตะกร้า/เช็คเอาต์ยังคำนวณเหมือนเดิม)
 
-```text
-ก่อนแก้:
-  if (category === "UPS") { ...always render placeholder... }
+## สิ่งที่จะทำ
 
-หลังแก้:
-  if (category === "UPS" && (error || !src)) { ...render placeholder only when no real image... }
-```
+1. **สร้างคอมโพเนนต์กลาง** `src/components/vat-note.tsx`
+   - `<VatNote />` — ข้อความเล็กสีเทา "ราคาไม่รวม VAT 7%"
+   - รองรับขนาด `sm` (ใต้ราคาในการ์ดสินค้า) และ `md` (หน้ารายละเอียด/สรุปยอด)
+   - ใช้ข้อความมาตรฐานเดียวกันทั้งเว็บ ผูกกับ `VAT_NOTES` ที่มีอยู่แล้วใน `src/lib/order-helpers.ts`
 
-ผลลัพธ์: สินค้าหมวด UPS ที่มี `image_url` จริงจะแสดงรูปจริงแทนที่จะถูกบังด้วย placeholder "ภาพแทน" ตลอดเวลา
+2. **จุดที่จะใส่**
+   - การ์ดสินค้าในหน้าแรก/หมวดหมู่ (`src/routes/index.tsx`, `src/components/home-sections.tsx`, `src/routes/corporate.tsx`) — บรรทัดเล็กใต้ราคา
+   - หน้ารายละเอียดสินค้า `src/routes/product.$slug.tsx` — ใต้ราคาหลัก
+   - ตะกร้า `src/routes/cart.tsx` — ใต้กล่องสรุปยอด
+   - เช็คเอาต์ `src/routes/checkout.tsx` — ใต้ "ยอดรวมทั้งสิ้น"
+   - PC Builder (`src/routes/pc-builder.tsx`) และกล่องใบเสนอราคา — ใต้ยอดรวม
+   - Dialog ใส่ตะกร้า `src/components/add-to-cart-sheet.tsx`
 
-ขั้นตอน:
-1. แก้ไขเงื่อนไขบรรทัด 125 ตาม diff ที่แนบมา
-2. รัน type-check และ tests เพื่อยืนยันว่าไม่มี regression
-3. ตรวจสอบ preview หน้ารายการสินค้าหมวด UPS ว่ารูปจริงปรากฏ
+3. **หมายเหตุเพิ่มเติมสำหรับนิติบุคคล**
+   ในตะกร้า/เช็คเอาต์ เพิ่มบรรทัดรองว่า "นิติบุคคลสามารถขอใบกำกับภาษีได้ — VAT 7% จะคิดเพิ่มในใบแจ้งหนี้" (ใช้ข้อความจาก `VAT_NOTES` เดิม)
+
+## รายละเอียดทางเทคนิค
+- เป็นงานฝั่ง presentation ล้วน ไม่แตะ `useCart`, `getSellingPrice`, `pricing-calc` หรือ schema
+- ใช้ token สีเดิม (`text-muted-foreground` / โทน slate ที่ใช้อยู่) ไม่ hardcode สีใหม่
+- ในการ์ดสินค้าที่พื้นที่จำกัด ใช้ตัวอักษรขนาด `text-[10px]` เพื่อไม่ให้เลย์เอาต์เพี้ยน

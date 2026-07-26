@@ -30,6 +30,7 @@ import { LineQrDialog } from "@/components/line-qr-dialog";
 import { ShippingMethodSelector } from "@/components/shipping-method-selector";
 import { useVolumeRules, rulesForProduct, tierQtyLabel, tierDiscountLabel } from "@/lib/volume-discount";
 import { DeliveryZoneInfoBox } from "@/components/delivery-zone-dialog";
+import { VatNote } from "@/components/vat-note";
 
 export const Route = createFileRoute("/product/$slug")({
   ssr: false,
@@ -507,6 +508,7 @@ function ProductDetail() {
                         )}
                       </div>
                     )}
+                    <VatNote size="md" className="mt-1" />
                     <div className="mt-2 flex flex-wrap gap-2">
                       <B2BBadgeLarge
                         sellingPrice={p.selling_price as number | null}
