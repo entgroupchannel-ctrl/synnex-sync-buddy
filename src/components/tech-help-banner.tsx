@@ -62,6 +62,12 @@ const PROFILES: Record<string, Profile> = {
     desc: "ช่างของเราช่วยเลือกสเปกให้ตรงงบและงานที่ใช้ ประกอบ ทดสอบ ลงระบบ พร้อมส่งถึงบ้านหรือออฟฟิศ",
     topic: "จัดสเปก/ประกอบคอมพิวเตอร์",
   },
+  "Webcam & Conference": {
+    image: conferenceTech,
+    title: "ต้องการช่างติดตั้งชุดประชุมออนไลน์?",
+    desc: "ติดตั้งกล้อง PTZ/Conference Bar ไมค์ประชุม ปรับแต่งซอฟต์แวร์ Zoom/Teams พร้อมทดสอบระบบก่อนใช้งานจริง",
+    topic: "ชุดประชุมออนไลน์",
+  },
 };
 
 export function hasTechHelpBanner(category?: string | null) {
