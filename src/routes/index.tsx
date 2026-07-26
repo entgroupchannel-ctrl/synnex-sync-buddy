@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { z } from "zod";
@@ -1387,7 +1387,7 @@ function HomePage() {
                 const slug = p.slug || p.id;
                 
                 const priced = getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null; tier_price_guest?: number | null; tier_price_b2c?: number | null; tier_price_b2c_silver?: number | null; tier_price_b2c_gold?: number | null; tier_price_b2c_vip?: number | null; tier_price_b2b?: number | null; tier_price_b2b_silver?: number | null; tier_price_b2b_gold?: number | null }, tier) != null && !!p.price_approved;
-                return (
+                const card = (
                   <div key={p.id} className="relative flex flex-col overflow-hidden rounded-lg border bg-white transition-all duration-200 hover:scale-[1.02] hover:shadow-md">
                     {!isAppleOnly && (
                       <>
