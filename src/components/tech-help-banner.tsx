@@ -25,6 +25,7 @@ import cctvTech from "@/assets/cctv/cctv-install-team.jpg";
 import edgeAiTech from "@/assets/edge-ai/edge-ai-team.jpg";
 import pcTech from "@/assets/computer-set/pc-build-tech.jpg";
 import conferenceTech from "@/assets/conference/conference-install-team.jpg";
+import networkTech from "@/assets/network/network-install-team.jpg";
 
 const PHONE = "02-045-6104";
 const PHONE_TEL = "020456104";
@@ -68,7 +69,14 @@ const PROFILES: Record<string, Profile> = {
     desc: "ติดตั้งกล้อง PTZ/Conference Bar ไมค์ประชุม ปรับแต่งซอฟต์แวร์ Zoom/Teams พร้อมทดสอบระบบก่อนใช้งานจริง",
     topic: "ชุดประชุมออนไลน์",
   },
+  Network: {
+    image: networkTech,
+    title: "ต้องการช่างวางระบบเครือข่ายองค์กร?",
+    desc: "วิศวกรเครือข่ายของเราสำรวจหน้างาน ออกแบบผัง VLAN เดินสาย ติดตั้งและตั้งค่า Switch/Router/Firewall/Access Point แบรนด์องค์กร เช่น Huawei, Cisco, Aruba, Fortinet พร้อมดูแลต่อเนื่อง",
+    topic: "ระบบเครือข่ายองค์กร",
+  },
 };
+
 
 export function hasTechHelpBanner(category?: string | null) {
   return !!category && category in PROFILES;

@@ -33,6 +33,7 @@ import { DiscountBadgeRow } from "@/components/discount-badge";
 import { SpecTagsCompact } from "@/components/spec-tags";
 import { hasSpecTags } from "@/lib/parse-spec";
 import { UsageBadge } from "@/components/usage-badge";
+import { NetworkProBadge } from "@/components/network-explainer";
 import { CATEGORY_ICONS, SMART_LIFE_SUBCATEGORY_ICONS } from "@/lib/category-icons";
 
 
@@ -1375,6 +1376,7 @@ function HomePage() {
                       <WarrantyBadge category={p.category} name={p.name} />
                       {hasSpecTags(p.category) && <SpecTagsCompact description={p.description} />}
                       <UsageBadge category={p.category} name={p.name} description={p.description} price={p.selling_price} />
+                      <NetworkProBadge category={p.category} brand={p.brand} name={p.name} className="mt-1 w-fit" />
                       <EdgeAiBrief category={p.category} name={p.name} description={p.description} />
                       <ConferenceBrief category={p.category} name={p.name} description={p.description} />
                       <CctvBrief category={p.category} name={p.name} description={p.description} />
@@ -1484,6 +1486,7 @@ function HomePage() {
                       <WarrantyBadge category={p.category} name={p.name} />
                       {hasSpecTags(p.category) && <SpecTagsCompact description={p.description} />}
                       <UsageBadge category={p.category} name={p.name} description={p.description} price={p.selling_price} />
+                      <NetworkProBadge category={p.category} brand={p.brand} name={p.name} className="mt-1 w-fit" />
                       <EdgeAiBrief category={p.category} name={p.name} description={p.description} />
                       <ConferenceBrief category={p.category} name={p.name} description={p.description} />
                       <CctvBrief category={p.category} name={p.name} description={p.description} />
