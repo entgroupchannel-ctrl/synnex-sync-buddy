@@ -60,7 +60,10 @@ export function parseSpec(description?: string | null): SpecItem[] {
       specs.push({ icon: "Package", label: "OS", value: part });
     } else if (p.includes("office") || p.includes("m365")) {
       specs.push({ icon: "FileText", label: "Office", value: part });
+    } else if (/usb|hdmi|type-c|displayport|\bdp\b|lan|rj-?45|vga port/i.test(p)) {
+      specs.push({ icon: "Package", label: "พอร์ต", value: part });
     }
+
   }
 
   return specs.slice(0, 6);
