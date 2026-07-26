@@ -1,0 +1,2 @@
+UPDATE public.synnex_products SET image_url = '/__l5e/assets-v1/d73c6a6c-3a25-4316-b19c-37d60153089e/win-server-2022.jpg' WHERE category='Software' AND name ILIKE '%Windows Server 2022%';
+UPDATE public.synnex_products SET image_url = '/__l5e/assets-v1/45ec35b5-7a86-4951-9333-4cb89624c1a4/office-hb-2024.jpg' WHERE category='Software' AND name ILIKE 'Office Home and Business 2024%';
