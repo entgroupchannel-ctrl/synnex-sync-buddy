@@ -89,7 +89,57 @@ function BadgeRow({ badges }: { badges: FooterBadge[] }) {
   );
 }
 
-
+function PdpaSection() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="mb-3 flex w-full items-center justify-between gap-2 text-left"
+      >
+        <span className="flex items-center gap-2">
+          <ShieldCheck className="h-4 w-4 text-[color:var(--brand-green)]" />
+          <span className="text-sm font-bold uppercase tracking-wide text-white">
+            ข้อมูลส่วนบุคคล (PDPA)
+          </span>
+        </span>
+        <ChevronDown
+          className={`h-4 w-4 shrink-0 text-white/60 transition-transform ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+      <div className={`${open ? "block" : "hidden"} space-y-3`}>
+        <p className="text-[11px] leading-relaxed text-white/60">
+          เราปฏิบัติตาม พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562
+          โดยเก็บข้อมูลเท่าที่จำเป็นต่อการซื้อขายเท่านั้น
+        </p>
+        <div className="space-y-2">
+          {[
+            { icon: UserCheck, text: "เก็บอะไร: ชื่อ ที่อยู่จัดส่ง เบอร์โทร อีเมล และข้อมูลนิติบุคคลสำหรับออกใบกำกับภาษี" },
+            { icon: FileCheck2, text: "ใช้ทำอะไร: จัดส่งสินค้า ยืนยันคำสั่งซื้อ ออกใบกำกับภาษี และบริการหลังการขาย" },
+            { icon: EyeOff, text: "ส่งต่อให้ใคร: เฉพาะบริษัทขนส่งเพื่อนำจ่ายพัสดุ — ไม่ขายหรือให้เช่าข้อมูลแก่บุคคลที่สาม" },
+            { icon: Cookie, text: "คุกกี้: ใช้เพื่อจดจำตะกร้าสินค้าและการเข้าสู่ระบบ ไม่ใช้เพื่อโฆษณาติดตามข้ามเว็บ" },
+            { icon: Clock, text: "เก็บนานแค่ไหน: ข้อมูลคำสั่งซื้อเก็บตามที่กฎหมายบัญชี/ภาษีกำหนด แล้วลบหรือทำให้ไม่ระบุตัวตน" },
+            { icon: Trash2, text: "สิทธิของคุณ: ขอเข้าถึง แก้ไข คัดค้าน หรือลบข้อมูลได้ที่ sales@entgroup.co.th" },
+          ].map((it) => (
+            <div key={it.text} className="flex items-start gap-2">
+              <it.icon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[color:var(--brand-green)]" />
+              <span className="text-[11px] leading-relaxed text-white/70">
+                {it.text}
+              </span>
+            </div>
+          ))}
+        </div>
+        <Link
+          to="/privacy"
+          className="inline-block text-[11px] font-semibold text-[color:var(--brand-green)] hover:underline"
+        >
+          อ่านนโยบายความเป็นส่วนตัวฉบับเต็ม →
+        </Link>
+      </div>
+    </div>
+  );
+}
 
 function FooterLink({
   to,
