@@ -53,6 +53,29 @@ export function ramPlaceholder(
   return "/ram-placeholders/ddr3-desktop.png";
 }
 
+const SLIP_PRINTER_IMAGES = [
+  "/printer-placeholders/slip-front.png",
+  "/printer-placeholders/slip-plain.png",
+  "/printer-placeholders/slip-receipt.png",
+  "/printer-placeholders/slip-roll.png",
+  "/printer-placeholders/slip-ports.png",
+];
+
+/** เลือกรูป placeholder เครื่องพิมพ์ใบเสร็จแบบคงที่ตามชื่อสินค้า */
+export function slipPrinterPlaceholder(name?: string | null): string {
+  const n = (name ?? "").toLowerCase();
+  let hash = 0;
+  for (let i = 0; i < n.length; i++) hash = (hash * 31 + n.charCodeAt(i)) % 100000;
+  return SLIP_PRINTER_IMAGES[hash % SLIP_PRINTER_IMAGES.length];
+}
+
+function isSlipPrinter(subcategory?: string | null, name?: string | null) {
+  if (subcategory === "Slip Printer") return true;
+  return /slip|ใบเสร็จ|receipt|thermal|tm-t\d|pos printer/i.test(name ?? "");
+}
+
+
+
 
 
 export function ProductImage({
@@ -77,6 +100,18 @@ export function ProductImage({
     const placeholder = computerSetPlaceholder(productName ?? alt);
     return <img src={placeholder} alt={alt} loading={loading} className={className} />;
   }
+
+  if ((error || !src) && isSlipPrinter(subcategory, productName ?? alt)) {
+    return (
+      <img
+        src={slipPrinterPlaceholder(productName ?? alt)}
+        alt={alt}
+        loading={loading}
+        className={className}
+      />
+    );
+  }
+
 
   if (category === "RAM" && (error || !src)) {
     return (
