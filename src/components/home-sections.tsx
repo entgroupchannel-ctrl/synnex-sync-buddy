@@ -729,9 +729,17 @@ export function ShopByBrand() {
     else set.add(brand);
     navigate({
       to: "/",
-      // Selecting/deselecting a brand auto-clears the category to prevent
-      // 0-result conflicts between category × brand filters.
-      search: (prev: Record<string, unknown>) => ({ ...prev, brands: [...set].join(","), category: "all", page: 1 }),
+      // เลือก/เอาแบรนด์ออก ต้องล้างตัวกรองอื่นที่อาจตกค้างมาจากการเข้าชม/ค้นหาก่อนหน้าด้วย
+      // ไม่ใช่แค่ category — เคยเจอบั๊กจริง: ค้นหา "AirPods" ไว้ก่อน แล้วมากด Huawei ในนี้
+      // ตัวอักษรค้นหาเก่ายังติดค้างอยู่ กลายเป็นกรอง "แบรนด์ Huawei" ซ้อนกับ "ชื่อมี AirPods"
+      // พร้อมกัน (ไม่มีสินค้าไหนตรงทั้งสองเงื่อนไข) เลยเห็น "ไม่พบสินค้า" ทั้งที่ของมีจริง
+      search: (prev: Record<string, unknown>) => ({
+        ...prev,
+        brands: [...set].join(","),
+        category: "all",
+        ...CLEAR_STALE_BROWSE_FILTERS,
+        page: 1,
+      }),
       replace: true,
     });
     // wait for DOM update after navigation
@@ -741,7 +749,7 @@ export function ShopByBrand() {
   const clearBrands = () => {
     navigate({
       to: "/",
-      search: (prev: Record<string, unknown>) => ({ ...prev, brands: "", page: 1 }),
+      search: (prev: Record<string, unknown>) => ({ ...prev, brands: "", q: "", page: 1 }),
       replace: true,
     });
     requestAnimationFrame(() => setTimeout(scrollToGrid, 50));
