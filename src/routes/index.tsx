@@ -684,35 +684,98 @@ function HomePage() {
       </div>
 
       {isRam && (
-        <div>
-          <h3 className="mb-3 text-sm font-bold text-[color:var(--brand-navy)]">รุ่น DDR / ความเร็ว</h3>
-          <div className="space-y-1.5">
-            {RAM_SUBCATS.map((sub) => {
-              const isSelected = search.ramSpec === sub.key;
-              return (
-                <button
-                  key={sub.key}
-                  onClick={() => update({ ramSpec: isSelected ? "" : sub.key })}
-                  className={`w-full flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors ${
-                    isSelected
-                      ? "bg-[color:var(--brand-green)] text-white font-medium"
-                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-                  }`}
-                >
-                  <span className="flex-1 text-left">{sub.label}</span>
-                  <ChevronRight className={`h-3.5 w-3.5 opacity-40 ${isSelected ? "text-white" : "text-slate-400"}`} />
-                </button>
-              );
-            })}
-            {search.ramSpec && (
-              <button
-                onClick={() => update({ ramSpec: "" })}
-                className="w-full rounded-lg px-3 py-2 text-left text-xs text-slate-400 hover:text-slate-600"
-              >
-                × ล้างตัวกรอง
-              </button>
-            )}
+        <div className="space-y-4">
+          <div>
+            <h3 className="mb-2 text-sm font-bold text-[color:var(--brand-navy)]">ประเภทแรม</h3>
+            <div className="flex flex-wrap gap-1.5">
+              {[{ key: "", label: "ทั้งหมด", n: ramFacetQ.data?.total ?? 0 }, ...SUBCATEGORIES.RAM.map((t) => ({
+                key: t,
+                label: SUBCATEGORY_LABELS[t] ?? t,
+                n: ramFacetQ.data?.byType[t] ?? 0,
+              }))].map((opt) => {
+                const isSelected = search.ramType === opt.key;
+                return (
+                  <button
+                    key={opt.key || "all"}
+                    onClick={() => update({ ramType: opt.key, ramGen: "", ramSpec: "" })}
+                    className={`rounded-lg px-2.5 py-1.5 text-xs transition-colors ${
+                      isSelected
+                        ? "bg-[color:var(--brand-green)] font-medium text-white"
+                        : "bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                    }`}
+                  >
+                    {opt.label}
+                    {opt.n > 0 && <span className="ml-1 opacity-70">({opt.n})</span>}
+                  </button>
+                );
+              })}
+            </div>
           </div>
+
+          <div>
+            <h3 className="mb-2 text-sm font-bold text-[color:var(--brand-navy)]">รุ่นแรม</h3>
+            <div className="flex flex-wrap gap-1.5">
+              <button
+                onClick={() => update({ ramGen: "", ramSpec: "" })}
+                className={`rounded-lg px-2.5 py-1.5 text-xs transition-colors ${
+                  !search.ramGen
+                    ? "bg-[color:var(--brand-green)] font-medium text-white"
+                    : "bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                }`}
+              >
+                ทั้งหมด
+              </button>
+              {RAM_GENERATIONS.filter((g) => ramGenCount(g) > 0).map((g) => {
+                const isSelected = search.ramGen === g;
+                return (
+                  <button
+                    key={g}
+                    onClick={() => update({ ramGen: isSelected ? "" : g, ramSpec: "" })}
+                    className={`rounded-lg px-2.5 py-1.5 text-xs transition-colors ${
+                      isSelected
+                        ? "bg-[color:var(--brand-green)] font-medium text-white"
+                        : "bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                    }`}
+                  >
+                    {g}
+                    <span className="ml-1 opacity-70">({ramGenCount(g)})</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {search.ramGen && (
+            <div>
+              <h3 className="mb-2 text-sm font-bold text-[color:var(--brand-navy)]">ความเร็วบัส</h3>
+              <div className="flex flex-wrap gap-1.5">
+                {RAM_SUBCATS.filter((sub) => sub.label.startsWith(search.ramGen === "DDR3L" ? "DDR3" : search.ramGen)).map((sub) => {
+                  const isSelected = search.ramSpec === sub.key;
+                  return (
+                    <button
+                      key={sub.key}
+                      onClick={() => update({ ramSpec: isSelected ? "" : sub.key })}
+                      className={`rounded-lg px-2.5 py-1.5 text-xs transition-colors ${
+                        isSelected
+                          ? "bg-[color:var(--brand-green)] font-medium text-white"
+                          : "bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                      }`}
+                    >
+                      {sub.label}
+                    </button>
+                  );
+                })}
+              </div>
+              {search.ramSpec && (
+                <button
+                  onClick={() => update({ ramSpec: "" })}
+                  className="mt-2 text-xs text-slate-400 hover:text-slate-600"
+                >
+                  × ล้างความเร็วบัส
+                </button>
+              )}
+            </div>
+          )}
         </div>
       )}
 
