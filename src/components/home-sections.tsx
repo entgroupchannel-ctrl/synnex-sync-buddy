@@ -1192,11 +1192,11 @@ function CategoryGridCard({ p }: { p: ProductRow }) {
           distributor={(p as { distributor?: string | null }).distributor}
         />
       </div>
-      <Link to="/product/$slug" params={{ slug }} className="grid aspect-square place-items-center bg-gradient-to-br from-slate-50 to-slate-100 p-1.5">
+      <Link to="/product/$slug" params={{ slug }} className="aspect-square overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100">
         <ProductImage
           src={p.image_url}
           alt={p.name ?? p.sku}
-          className="h-full w-full object-contain transition group-hover:scale-110"
+          className="h-full w-full scale-125 object-cover transition duration-300 group-hover:scale-135"
           iconClassName="h-16 w-16 text-slate-300"
         />
       </Link>
