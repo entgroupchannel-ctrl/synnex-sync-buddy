@@ -1071,6 +1071,9 @@ function HomePage() {
           {/* Speaker & Audio */}
           <SpeakerAudio />
 
+          {/* ทีมงานพร้อมให้บริการ */}
+          <SupportPeopleStrip />
+
           {/* Corporate IT Solutions — B2B */}
           <CorporateITSolutions />
 
