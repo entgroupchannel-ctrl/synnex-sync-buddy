@@ -122,6 +122,46 @@ const RAM_PROFILES: Record<string, UsageProfile> = {
   },
 };
 
+const CAM_PROFILES: Record<string, UsageProfile> = {
+  cam_personal: {
+    key: "cam_personal",
+    label: "ประชุมส่วนตัว/โต๊ะทำงาน",
+    hint: "เว็บแคมติดหน้าจอ สำหรับใช้คนเดียว — Zoom / Teams / Google Meet, เรียนออนไลน์, ไลฟ์",
+    cls: "bg-sky-100 text-sky-700 ring-sky-200",
+    icon: "creator",
+  },
+  cam_huddle: {
+    key: "cam_huddle",
+    label: "ห้องประชุมเล็ก 2-6 คน",
+    hint: "กล้อง+ไมค์+ลำโพงในตัว ตั้งบนโต๊ะ เก็บเสียงรอบทิศ เหมาะกับห้อง Huddle Room",
+    cls: "bg-emerald-100 text-emerald-700 ring-emerald-200",
+    icon: "office",
+  },
+  cam_medium: {
+    key: "cam_medium",
+    label: "ห้องประชุมกลาง 6-12 คน",
+    hint: "มุมกว้าง ซูมได้ พร้อมไมค์แยก/รีโมท เหมาะกับห้องประชุมมาตรฐานขององค์กร",
+    cls: "bg-indigo-100 text-indigo-700 ring-indigo-200",
+    icon: "building",
+  },
+  cam_large: {
+    key: "cam_large",
+    label: "ห้องประชุมใหญ่/ห้องอบรม",
+    hint: "กล้อง PTZ หรือชุด Room System ซูมไกล หมุน-ก้ม-เงยได้ รองรับผู้เข้าประชุมจำนวนมาก",
+    cls: "bg-rose-100 text-rose-700 ring-rose-200",
+    icon: "server",
+  },
+};
+
+function getCamProfile(t: string): UsageProfile {
+  if (/ptz|rally|room\s*system|group\b|sm210|panacast\s*50/.test(t)) return CAM_PROFILES.cam_large;
+  if (/meetup|panacast|conference|bcc950|\bcam\b.*(บาร์|bar)/.test(t)) {
+    if (/meetup|bcc950|panacast\s*40/.test(t)) return CAM_PROFILES.cam_huddle;
+    return CAM_PROFILES.cam_medium;
+  }
+  return CAM_PROFILES.cam_personal;
+}
+
 function getRamProfile(t: string): UsageProfile | null {
   const m = t.match(/(\d{1,3})\s*gb/);
   const gb = m ? Number(m[1]) : 0;
@@ -131,6 +171,7 @@ function getRamProfile(t: string): UsageProfile | null {
   if (gb >= 16) return RAM_PROFILES.ram_office;
   return RAM_PROFILES.ram_basic;
 }
+
 
 const ICON = {
   game: Gamepad2,
