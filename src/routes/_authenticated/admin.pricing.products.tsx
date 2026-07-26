@@ -502,10 +502,8 @@ function PricingProductsPage() {
   const resetBulkMut = useMutation({
     mutationFn: async (ids: string[]) => {
       const sessionId = newSessionId();
-      const { data: before } = await supabase
-        .from("synnex_products")
-        .select("id, sku, name, selling_price, markup_override")
-        .in("id", ids);
+      const before = await getProductsForBulk({ data: { ids } });
+
       const { error } = await supabase
         .from("synnex_products")
         .update({ selling_price: null, price_approved: false, markup_override: null })
