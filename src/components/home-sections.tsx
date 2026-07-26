@@ -1830,13 +1830,13 @@ export function CorporateITSolutions() {
                   params={{ slug }}
                   className="group cursor-pointer rounded-2xl border border-slate-200 bg-white p-4 transition-all duration-200 hover:border-blue-300 hover:shadow-lg"
                 >
-                  <div className="mb-3 grid aspect-square place-items-center overflow-hidden rounded-xl border border-slate-100 bg-slate-50">
+                  <div className="mb-3 aspect-square overflow-hidden rounded-xl border border-slate-100 bg-gradient-to-br from-slate-50 to-slate-100">
                     <ProductImage
                       src={p.image_url as string | null}
                       alt={(p.name as string | null) ?? ""}
                       productName={p.name as string | null}
                       category={p.category as string | null}
-                      className="max-h-[110px] w-full object-contain transition-transform duration-300 group-hover:scale-105"
+                      className="h-full w-full scale-125 object-cover transition-transform duration-300 group-hover:scale-135"
                     />
                   </div>
                   <div className="mb-1.5 inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5">
