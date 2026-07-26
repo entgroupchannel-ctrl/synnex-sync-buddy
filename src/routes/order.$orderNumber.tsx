@@ -1,6 +1,9 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { getOrderConfirmation, submitPaymentSlip } from "@/lib/order-confirmation.functions";
+
 import { CheckCircle2, Copy, Package, Upload, FileCheck2, Loader2, Phone, Smartphone, MessageCircle, Mail } from "lucide-react";
 
 
