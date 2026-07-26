@@ -910,6 +910,7 @@ function CheckoutPage() {
             <div className="flex justify-between text-xl font-black text-[color:var(--brand-orange)]">
               <span>รวม</span><span>{priceFmt.format(grandTotal)}</span>
             </div>
+            <VatNoteDetailed />
             <Button type="submit" disabled={submitting || items.length === 0} className="w-full bg-[color:var(--brand-orange)] font-bold hover:bg-[color:var(--brand-orange-dark)]" size="lg">
               {submitting ? (<><Loader2 className="mr-2 h-4 w-4 animate-spin" /> กำลังส่ง...</>) : "ยืนยันคำสั่งซื้อ"}
             </Button>
