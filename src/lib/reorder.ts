@@ -15,6 +15,7 @@ export type FrequentItem = {
     selling_price: number | null;
     member_price: number | null;
     b2b_price: number | null;
+    min_tier_price: number | null;
     price_approved: boolean | null;
     stock_status: string | null;
     distributor: string | null;
@@ -100,6 +101,7 @@ export function useFrequentlyBought(limit = 6) {
               selling_price: c.selling_price,
               member_price: c.member_price,
               b2b_price: c.b2b_price,
+              min_tier_price: c.min_tier_price,
               price_approved: c.price_approved,
               stock_status: c.stock_status,
               distributor: c.distributor,
