@@ -1,11 +1,11 @@
-import { Gamepad2, Briefcase, Video, Cpu, Monitor } from "lucide-react";
+import { Gamepad2, Briefcase, Video, Cpu, Monitor, Router, Server, Building2, BatteryCharging } from "lucide-react";
 
 export type UsageProfile = {
   key: string;
   label: string;
   hint: string;
   cls: string;
-  icon: "game" | "office" | "creator" | "workstation" | "basic";
+  icon: "game" | "office" | "creator" | "workstation" | "basic" | "router" | "server" | "building" | "battery";
 };
 
 const PROFILES: Record<string, UsageProfile> = {
@@ -53,12 +53,54 @@ const PROFILES: Record<string, UsageProfile> = {
   },
 };
 
+const UPS_PROFILES: Record<string, UsageProfile> = {
+  ups_small: {
+    key: "ups_small",
+    label: "เหมาะกับเราเตอร์/กล้องวงจรปิด",
+    hint: "สำรองไฟอุปกรณ์เล็ก เช่น Router, กล้อง CCTV, NVR — ใช้งานต่อได้ราว 15-30 นาที",
+    cls: "bg-sky-100 text-sky-700 ring-sky-200",
+    icon: "router",
+  },
+  ups_pc: {
+    key: "ups_pc",
+    label: "เหมาะกับคอมพิวเตอร์ 1 เครื่อง",
+    hint: "คอมออฟฟิศ + จอ 1 ชุด — มีเวลาเซฟงานและปิดเครื่องอย่างปลอดภัย ราว 10-15 นาที",
+    cls: "bg-emerald-100 text-emerald-700 ring-emerald-200",
+    icon: "battery",
+  },
+  ups_pc_gaming: {
+    key: "ups_pc_gaming",
+    label: "เหมาะกับคอมเล่นเกม/เครื่องแรง",
+    hint: "คอมสเปกสูงมีการ์ดจอแยก หรือคอม + จอ 2 ตัว — สำรองไฟราว 10-15 นาที",
+    cls: "bg-indigo-100 text-indigo-700 ring-indigo-200",
+    icon: "battery",
+  },
+  ups_office: {
+    key: "ups_office",
+    label: "เหมาะกับหลายเครื่อง/จุดขาย",
+    hint: "คอมหลายเครื่อง, เครื่อง POS, เครื่องพิมพ์ใบเสร็จ หรือชุดอุปกรณ์เครือข่ายในออฟฟิศ",
+    cls: "bg-amber-100 text-amber-700 ring-amber-200",
+    icon: "building",
+  },
+  ups_server: {
+    key: "ups_server",
+    label: "เหมาะกับเซิร์ฟเวอร์/ห้อง IT",
+    hint: "เซิร์ฟเวอร์, ตู้ Rack, ระบบที่ต้องเปิด 24 ชม. — ไฟนิ่งสม่ำเสมอ ป้องกันไฟตกไฟกระชาก",
+    cls: "bg-rose-100 text-rose-700 ring-rose-200",
+    icon: "server",
+  },
+};
+
 const ICON = {
   game: Gamepad2,
   office: Briefcase,
   creator: Video,
   workstation: Cpu,
   basic: Monitor,
+  router: Router,
+  server: Server,
+  building: Building2,
+  battery: BatteryCharging,
 };
 
 function getUpsProfile(t: string): UsageProfile {
