@@ -30,6 +30,7 @@ import { LineQrDialog } from "@/components/line-qr-dialog";
 import { ShippingMethodSelector } from "@/components/shipping-method-selector";
 import { useVolumeRules, rulesForProduct, tierQtyLabel, tierDiscountLabel } from "@/lib/volume-discount";
 import { DeliveryZoneInfoBox } from "@/components/delivery-zone-dialog";
+import { VatNote } from "@/components/vat-note";
 
 export const Route = createFileRoute("/product/$slug")({
   ssr: false,
