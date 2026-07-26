@@ -5,6 +5,8 @@ import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -100,10 +102,28 @@ function AuthPage() {
   );
 }
 
+const REMEMBER_EMAIL_KEY = "auth:rememberedEmail";
+
 function SignInForm({ redirectTo }: { redirectTo: string }) {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(() => {
+    try {
+      return window.localStorage.getItem(REMEMBER_EMAIL_KEY) ?? "";
+    } catch {
+      return "";
+    }
+  });
   const [password, setPassword] = useState("");
+  const [remember, setRemember] = useState(() => {
+    try {
+      return !!window.localStorage.getItem(REMEMBER_EMAIL_KEY);
+    } catch {
+      return false;
+    }
+  });
   const [busy, setBusy] = useState(false);
+  const [mode, setMode] = useState<"signin" | "forgot">("signin");
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotBusy, setForgotBusy] = useState(false);
   const navigate = useNavigate();
 
   const onSubmit = async (e: React.FormEvent) => {
@@ -114,6 +134,13 @@ function SignInForm({ redirectTo }: { redirectTo: string }) {
     if (error) {
       toast.error(error.message);
       return;
+    }
+    // จำแค่ "อีเมล" ไว้เพื่อ prefill ครั้งหน้า — ไม่เก็บรหัสผ่านเองฝั่ง client
+    try {
+      if (remember) window.localStorage.setItem(REMEMBER_EMAIL_KEY, email);
+      else window.localStorage.removeItem(REMEMBER_EMAIL_KEY);
+    } catch {
+      // localStorage ใช้ไม่ได้ (เช่น private mode) ไม่ critical ข้ามไป
     }
     toast.success("เข้าสู่ระบบสำเร็จ");
     let dest = redirectTo;
@@ -128,15 +155,72 @@ function SignInForm({ redirectTo }: { redirectTo: string }) {
     navigate({ to: dest as never, replace: true });
   };
 
+  const onForgotSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setForgotBusy(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail, {
+      redirectTo: window.location.origin + "/auth/callback",
+    });
+    setForgotBusy(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("ส่งลิงก์รีเซ็ตรหัสผ่านไปที่อีเมลแล้ว กรุณาตรวจสอบกล่องจดหมาย (รวมถึงถังขยะ/สแปม)", { duration: 6000 });
+    setMode("signin");
+  };
+
+  if (mode === "forgot") {
+    return (
+      <form onSubmit={onForgotSubmit} className="space-y-4">
+        <p className="text-xs text-slate-500">กรอกอีเมลที่ใช้สมัครสมาชิก เราจะส่งลิงก์สำหรับตั้งรหัสผ่านใหม่ไปให้</p>
+        <div>
+          <Label htmlFor="fp-email">อีเมล</Label>
+          <Input
+            id="fp-email"
+            type="email"
+            required
+            autoComplete="email"
+            value={forgotEmail}
+            onChange={(e) => setForgotEmail(e.target.value)}
+          />
+        </div>
+        <Button type="submit" disabled={forgotBusy} className="w-full bg-[color:var(--brand-navy)] hover:bg-[color:var(--brand-navy-2)]">
+          {forgotBusy ? "กำลังส่ง..." : "ส่งลิงก์รีเซ็ตรหัสผ่าน"}
+        </Button>
+        <button
+          type="button"
+          onClick={() => setMode("signin")}
+          className="w-full text-center text-xs text-slate-500 underline underline-offset-2 hover:text-slate-800"
+        >
+          กลับไปหน้าเข้าสู่ระบบ
+        </button>
+      </form>
+    );
+  }
+
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div>
         <Label htmlFor="si-email">อีเมล</Label>
-        <Input id="si-email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+        <Input id="si-email" type="email" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
       </div>
       <div>
         <Label htmlFor="si-pass">รหัสผ่าน</Label>
-        <Input id="si-pass" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+        <PasswordInput id="si-pass" required autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
+      </div>
+      <div className="flex items-center justify-between">
+        <label className="flex items-center gap-2 text-xs text-slate-600">
+          <Checkbox checked={remember} onCheckedChange={(v) => setRemember(!!v)} />
+          จดจำอีเมลของฉัน
+        </label>
+        <button
+          type="button"
+          onClick={() => { setForgotEmail(email); setMode("forgot"); }}
+          className="text-xs font-medium text-[color:var(--brand-navy)] underline underline-offset-2 hover:text-[color:var(--brand-orange)]"
+        >
+          ลืมรหัสผ่าน?
+        </button>
       </div>
       <Button type="submit" disabled={busy} className="w-full bg-[color:var(--brand-navy)] hover:bg-[color:var(--brand-navy-2)]">
         {busy ? "กำลังเข้าสู่ระบบ..." : "เข้าสู่ระบบ"}
@@ -206,11 +290,11 @@ function SignUpB2CForm() {
       <div className="grid gap-3 sm:grid-cols-2">
         <div>
           <Label>รหัสผ่าน * (≥ 8 ตัว)</Label>
-          <Input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required minLength={8} />
+          <PasswordInput autoComplete="new-password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required minLength={8} />
         </div>
         <div>
           <Label>ยืนยันรหัสผ่าน *</Label>
-          <Input type="password" value={form.confirm} onChange={(e) => setForm({ ...form, confirm: e.target.value })} required minLength={8} />
+          <PasswordInput autoComplete="new-password" value={form.confirm} onChange={(e) => setForm({ ...form, confirm: e.target.value })} required minLength={8} />
         </div>
       </div>
       <Button type="submit" disabled={busy} className="w-full bg-[color:var(--brand-navy)] hover:bg-[color:var(--brand-navy-2)]">
@@ -329,7 +413,7 @@ function SignUpB2BForm() {
       </div>
       <div>
         <Label>รหัสผ่าน * (≥ 8 ตัว)</Label>
-        <Input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required minLength={8} />
+        <PasswordInput autoComplete="new-password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required minLength={8} />
       </div>
       <div>
         <Label className="mb-2 block">ต้องการใบกำกับภาษี</Label>
