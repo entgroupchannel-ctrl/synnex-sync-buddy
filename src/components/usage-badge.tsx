@@ -1,11 +1,16 @@
-import { MemoryStick, Gamepad2, Briefcase, Video, Cpu, Monitor, Router, Server, Building2, BatteryCharging, Cctv, HardDrive, Network, Siren } from "lucide-react";
+import { useState } from "react";
+import { MemoryStick, Gamepad2, Briefcase, Video, Cpu, Monitor, Router, Server, Building2, BatteryCharging, Cctv, HardDrive, Network, Siren, Sun, Cable, ChevronDown, Phone, Wrench } from "lucide-react";
 
 export type UsageProfile = {
   key: string;
   label: string;
   hint: string;
   cls: string;
-  icon: "game" | "office" | "creator" | "workstation" | "basic" | "router" | "server" | "building" | "battery" | "ram" | "cctv" | "recorder" | "network" | "alarm";
+  icon: "game" | "office" | "creator" | "workstation" | "basic" | "router" | "server" | "building" | "battery" | "ram" | "cctv" | "recorder" | "network" | "alarm" | "solar" | "cable";
+  /** Longer explainer bullets shown when the user clicks "ดูเพิ่มเติม". */
+  detail?: string[];
+  /** Show the "หาช่างติดตั้งให้" call-to-action. */
+  installer?: boolean;
 };
 
 
