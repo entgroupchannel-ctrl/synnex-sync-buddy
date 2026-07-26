@@ -1,12 +1,13 @@
-import { MemoryStick, Gamepad2, Briefcase, Video, Cpu, Monitor, Router, Server, Building2, BatteryCharging } from "lucide-react";
+import { MemoryStick, Gamepad2, Briefcase, Video, Cpu, Monitor, Router, Server, Building2, BatteryCharging, Cctv, HardDrive, Network, Siren } from "lucide-react";
 
 export type UsageProfile = {
   key: string;
   label: string;
   hint: string;
   cls: string;
-  icon: "game" | "office" | "creator" | "workstation" | "basic" | "router" | "server" | "building" | "battery" | "ram";
+  icon: "game" | "office" | "creator" | "workstation" | "basic" | "router" | "server" | "building" | "battery" | "ram" | "cctv" | "recorder" | "network" | "alarm";
 };
+
 
 const PROFILES: Record<string, UsageProfile> = {
   gaming_high: {
@@ -173,6 +174,86 @@ function getRamProfile(t: string): UsageProfile | null {
 }
 
 
+const CCTV_PROFILES: Record<string, UsageProfile> = {
+  cctv_indoor: {
+    key: "cctv_indoor",
+    label: "กล้องในบ้าน/ในร้าน",
+    hint: "กล้องโดม/ทรงกลม ติดเพดานในอาคาร มุมมองกว้าง เหมาะกับบ้าน ร้านค้า ออฟฟิศ",
+    cls: "bg-sky-100 text-sky-700 ring-sky-200",
+    icon: "cctv",
+  },
+  cctv_outdoor: {
+    key: "cctv_outdoor",
+    label: "กล้องนอกอาคาร กันน้ำ",
+    hint: "กล้องกระบอก (Bullet) มาตรฐานกันน้ำ IP67 มองไกล เหมาะกับรั้ว ลานจอดรถ หน้าร้าน",
+    cls: "bg-emerald-100 text-emerald-700 ring-emerald-200",
+    icon: "cctv",
+  },
+  cctv_night_color: {
+    key: "cctv_night_color",
+    label: "กลางคืนเห็นภาพสี",
+    hint: "ColorVu / WizColor มีไฟส่องสว่างในตัว กลางคืนได้ภาพสีชัด เห็นสีเสื้อ สีรถ ป้ายทะเบียน",
+    cls: "bg-amber-100 text-amber-700 ring-amber-200",
+    icon: "cctv",
+  },
+  cctv_smart: {
+    key: "cctv_smart",
+    label: "แจ้งเตือนอัจฉริยะ/ซูมได้",
+    hint: "AcuSense / WizSense แยกคน-รถออกจากสัตว์และใบไม้ ลดแจ้งเตือนหลอก บางรุ่นปรับซูมได้",
+    cls: "bg-indigo-100 text-indigo-700 ring-indigo-200",
+    icon: "cctv",
+  },
+  cctv_nvr_small: {
+    key: "cctv_nvr_small",
+    label: "เครื่องบันทึก 4-8 กล้อง",
+    hint: "สำหรับบ้านหรือร้านขนาดเล็ก ติดกล้องราว 4-8 ตัว ดูย้อนหลังผ่านมือถือได้",
+    cls: "bg-violet-100 text-violet-700 ring-violet-200",
+    icon: "recorder",
+  },
+  cctv_nvr_large: {
+    key: "cctv_nvr_large",
+    label: "เครื่องบันทึก 16 กล้องขึ้นไป",
+    hint: "สำหรับอาคาร โรงงาน หรือหลายสาขา รองรับกล้องจำนวนมากและฮาร์ดดิสก์หลายลูก",
+    cls: "bg-rose-100 text-rose-700 ring-rose-200",
+    icon: "recorder",
+  },
+  cctv_switch: {
+    key: "cctv_switch",
+    label: "สวิตช์ PoE จ่ายไฟให้กล้อง",
+    hint: "ต่อกล้อง IP ได้หลายตัวด้วยสาย LAN เส้นเดียว จ่ายทั้งไฟและสัญญาณ ไม่ต้องเดินปลั๊กที่กล้อง",
+    cls: "bg-teal-100 text-teal-700 ring-teal-200",
+    icon: "network",
+  },
+  cctv_monitor: {
+    key: "cctv_monitor",
+    label: "จอ/อุปกรณ์ห้องมอนิเตอร์",
+    hint: "จอแสดงภาพหรืออุปกรณ์ควบคุมสำหรับห้อง Control Room เปิดดูต่อเนื่อง 24 ชั่วโมง",
+    cls: "bg-slate-100 text-slate-700 ring-slate-200",
+    icon: "basic",
+  },
+  cctv_alarm: {
+    key: "cctv_alarm",
+    label: "อุปกรณ์แจ้งเตือน/กันขโมย",
+    hint: "ไซเรน เซ็นเซอร์ หรืออุปกรณ์เสริมระบบรักษาความปลอดภัย แจ้งเตือนเมื่อมีผู้บุกรุก",
+    cls: "bg-orange-100 text-orange-700 ring-orange-200",
+    icon: "alarm",
+  },
+};
+
+function getCctvProfile(t: string): UsageProfile {
+  if (/siren|ไซเรน|alarm|sensor|detector|กันขโมย/.test(t)) return CCTV_PROFILES.cctv_alarm;
+  if (/\bnvr\b|\bdvr\b|\bxvr\b|digital video recorder|network video recorder|ds-7\d|ids-7\d/.test(t)) {
+    const ch = Number(t.match(/(\d{1,2})\s*ch/)?.[1] ?? t.match(/-7(\d)(\d\d)/)?.[0]?.slice(2, 4) ?? 0);
+    return ch >= 16 ? CCTV_PROFILES.cctv_nvr_large : CCTV_PROFILES.cctv_nvr_small;
+  }
+  if (/\bpoe\b.*(switch|สวิตช์)|switch.*\bpoe\b|ds-3e1|-8gt-|-4et2gt/.test(t)) return CCTV_PROFILES.cctv_switch;
+  if (/monitor|display|จอ\s|ds-d\d|video wall|decoder/.test(t)) return CCTV_PROFILES.cctv_monitor;
+  if (/colorvu|wizcolor|dual-?light|white light|full-?color/.test(t)) return CCTV_PROFILES.cctv_night_color;
+  if (/acusense|wizsense|ptz|izs|varifocal|2\.8-12/.test(t)) return CCTV_PROFILES.cctv_smart;
+  if (/bullet|hfw|กระบอก|ip67|outdoor/.test(t)) return CCTV_PROFILES.cctv_outdoor;
+  return CCTV_PROFILES.cctv_indoor;
+}
+
 const ICON = {
   game: Gamepad2,
   office: Briefcase,
@@ -184,7 +265,12 @@ const ICON = {
   building: Building2,
   battery: BatteryCharging,
   ram: MemoryStick,
+  cctv: Cctv,
+  recorder: HardDrive,
+  network: Network,
+  alarm: Siren,
 };
+
 
 function getUpsProfile(t: string): UsageProfile {
   const va = Number(
@@ -208,9 +294,13 @@ export function getUsageProfile(input: {
   price?: number | null;
 }): UsageProfile | null {
   const c = (input.category ?? "").toLowerCase();
+  if (c.includes("cctv") || c.includes("security")) {
+    return getCctvProfile(`${input.name ?? ""} ${input.description ?? ""}`.toLowerCase());
+  }
   if (c.includes("webcam") || c.includes("conference")) {
     return getCamProfile(`${input.name ?? ""} ${input.description ?? ""}`.toLowerCase());
   }
+
   if (c === "ram" || c.includes("ram ")) {
     return getRamProfile(`${input.name ?? ""} ${input.description ?? ""}`.toLowerCase());
   }
