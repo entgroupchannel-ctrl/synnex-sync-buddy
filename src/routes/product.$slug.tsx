@@ -934,11 +934,11 @@ function ProductDetail() {
           <div className="mt-10">
             <h2 className="mb-1 text-lg font-bold text-[color:var(--brand-navy)]">แนะนำสำหรับคุณ</h2>
             <p className="mb-3 text-xs text-slate-500">ระบบพยากรณ์ความต้องการลูกค้าอัจฉริยะ — ประเมินจากพฤติกรรมการซื้อจริงและสินค้าที่ใกล้เคียงกัน</p>
-            <div className="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-3">
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
               {relatedQ.data!.map((r) => (
                 <Link key={r.id} to="/product/$slug" params={{ slug: r.slug || r.id }} className="group flex flex-col overflow-hidden rounded-lg border bg-white p-2 transition hover:shadow-sm">
-                  <div className="grid aspect-square max-h-[120px] place-items-center bg-white">
-                    <ProductImage src={r.image_url} alt={r.name ?? r.sku} className="h-[110px] w-full object-contain" iconClassName="h-10 w-10 text-slate-300" />
+                  <div className="grid aspect-square max-h-[150px] place-items-center bg-white md:max-h-[190px]">
+                    <ProductImage src={r.image_url} alt={r.name ?? r.sku} className="h-[140px] w-full object-contain md:h-[180px]" iconClassName="h-12 w-12 text-slate-300 md:h-14 md:w-14" />
                   </div>
                   <div className="mt-2 flex flex-col">
                     {r.reason && (
