@@ -24,6 +24,7 @@ import solarTech from "@/assets/solar/solar-install-team.jpg";
 import cctvTech from "@/assets/cctv/cctv-install-team.jpg";
 import edgeAiTech from "@/assets/edge-ai/edge-ai-team.jpg";
 import pcTech from "@/assets/computer-set/pc-build-tech.jpg";
+import conferenceTech from "@/assets/conference/conference-install-team.jpg";
 
 const PHONE = "02-045-6104";
 const PHONE_TEL = "020456104";
