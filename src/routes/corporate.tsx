@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Building2, Wifi, Printer, BatteryCharging, HardDrive, ShoppingCart, CreditCard, Laptop, Monitor } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { PRODUCT_PUBLIC_COLUMNS } from "@/lib/product-columns";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { ProductImage } from "@/components/product-image";
@@ -52,7 +53,7 @@ function useCorpQuery(
     queryFn: async () => {
       let q = supabase
         .from("synnex_products")
-        .select("*")
+        .select(PRODUCT_PUBLIC_COLUMNS)
         .eq("category", category)
         .in("brand", brands)
         .eq("price_approved", true)

@@ -16,6 +16,7 @@ export const PRODUCT_PUBLIC_COLUMNS = [
   "brand",
   "category",
   "image_url",
+  "image_gallery",   // แกลเลอรีรูปในหน้ารายละเอียดสินค้า
   "price",
   "selling_price",
   "member_price",     // getSellingPrice + getProductBadge
