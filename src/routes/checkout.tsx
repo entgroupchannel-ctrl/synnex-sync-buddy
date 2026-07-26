@@ -33,6 +33,7 @@ import {
   SHIPPING_METHOD_LABEL,
   useShippingMethod,
 } from "@/lib/shipping-method";
+import { VatNoteDetailed } from "@/components/vat-note";
 
 // Thai provinces excluding BKK metro (which are listed under "free shipping" optgroup)
 const THAI_PROVINCES: string[] = [
