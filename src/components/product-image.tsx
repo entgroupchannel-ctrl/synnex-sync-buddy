@@ -29,7 +29,7 @@ function computerSetPlaceholder(name?: string | null): string {
   if (/intel|core (i|ultra)/.test(n)) {
     let hash = 0;
     for (let i = 0; i < n.length; i++) hash = (hash * 31 + n.charCodeAt(i)) % 1000;
-    return hash % 2 === 0 ? "/case-placeholders/black-rgb.svg" : "/case-placeholders/white-rgb.png";
+    return hash % 2 === 0 ? "/case-placeholders/black-rgb.png" : "/case-placeholders/white-rgb.png";
   }
   return "/case-placeholders/silver-minimal.png";
 }
