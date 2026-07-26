@@ -1431,6 +1431,16 @@ function HomePage() {
                       <Link to="/product/$slug" params={{ slug }} className="line-clamp-2 min-h-10 text-sm font-medium hover:text-[color:var(--brand-navy)]">
                         {p.name ?? p.sku}
                       </Link>
+                      <div>
+                        <CompareCheckbox
+                          item={{
+                            id: p.id, sku: p.sku, slug: p.slug ?? null, name: p.name ?? null,
+                            image_url: p.image_url ?? null, selling_price: p.selling_price ?? null,
+                            category: p.category ?? null, brand: p.brand ?? null,
+                          } as CompareItem}
+                        />
+                      </div>
+
                       <RamBadge generation={p.ram_generation} subcategory={p.subcategory} />
                       <WarrantyBadge category={p.category} name={p.name} />
                       {hasSpecTags(p.category) && <SpecTagsCompact description={p.description} />}
