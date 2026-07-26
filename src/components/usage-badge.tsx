@@ -208,12 +208,16 @@ export function getUsageProfile(input: {
   price?: number | null;
 }): UsageProfile | null {
   const c = (input.category ?? "").toLowerCase();
+  if (c.includes("webcam") || c.includes("conference")) {
+    return getCamProfile(`${input.name ?? ""} ${input.description ?? ""}`.toLowerCase());
+  }
   if (c === "ram" || c.includes("ram ")) {
     return getRamProfile(`${input.name ?? ""} ${input.description ?? ""}`.toLowerCase());
   }
   if (c.includes("ups") || /\bups\b/.test((input.name ?? "").toLowerCase())) {
     return getUpsProfile(`${input.name ?? ""} ${input.description ?? ""}`.toLowerCase());
   }
+
   if (!(c.includes("computer set") || c.includes("คอมประกอบ") || c === "pc")) return null;
 
 
