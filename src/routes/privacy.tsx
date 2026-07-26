@@ -5,9 +5,9 @@ import { SiteFooter } from "@/components/site-footer";
 export const Route = createFileRoute("/privacy")({
   head: () => ({
     meta: [
-      { title: "นโยบายความเป็นส่วนตัว (PDPA) — ENT Group IT Shop" },
-      { name: "description", content: "นโยบายคุ้มครองข้อมูลส่วนบุคคลตาม พ.ร.บ. PDPA พ.ศ. 2562 — ENT Group IT Shop" },
-      { property: "og:title", content: "นโยบายความเป็นส่วนตัว (PDPA) — ENT Group IT Shop" },
+      { title: "นโยบายความเป็นส่วนตัว (PDPA) — ENT Group IT Retail Shop" },
+      { name: "description", content: "นโยบายคุ้มครองข้อมูลส่วนบุคคลตาม พ.ร.บ. PDPA พ.ศ. 2562 — ENT Group IT Retail Shop" },
+      { property: "og:title", content: "นโยบายความเป็นส่วนตัว (PDPA) — ENT Group IT Retail Shop" },
       { property: "og:description", content: "นโยบายคุ้มครองข้อมูลส่วนบุคคลตาม PDPA" },
     ],
   }),

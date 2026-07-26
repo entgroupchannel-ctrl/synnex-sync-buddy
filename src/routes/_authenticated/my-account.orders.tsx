@@ -12,7 +12,7 @@ import { FrequentlyBought } from "@/components/frequently-bought";
 export const Route = createFileRoute("/_authenticated/my-account/orders")({
   head: () => ({
     meta: [
-      { title: "ประวัติการสั่งซื้อ — ENT Group IT Shop" },
+      { title: "ประวัติการสั่งซื้อ — ENT Group IT Retail Shop" },
       { name: "description", content: "ประวัติคำสั่งซื้อของคุณ" },
       { property: "og:title", content: "ประวัติการสั่งซื้อ" },
       { property: "og:description", content: "ดูประวัติคำสั่งซื้อทั้งหมด" },

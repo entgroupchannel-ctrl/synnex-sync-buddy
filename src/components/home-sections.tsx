@@ -101,7 +101,7 @@ export function HeroCarousel({ onBrowse, onReady }: { onBrowse: () => void; onRe
   }, [paused, promos.length]);
 
   const trust: Trust[] = [
-    { icon: ShieldCheck, title: "สินค้าแท้ 100%", sub: "ENT Group IT Shop" },
+    { icon: ShieldCheck, title: "สินค้าแท้ 100%", sub: "ENT Group IT Retail Shop" },
     { icon: Building2,   title: "8,000+ องค์กร", sub: "ไว้วางใจ ENT Group" },
     { icon: Truck,       title: "พร้อมส่งจากไทย", sub: "1-3 วันทั่วประเทศ" },
   ];
@@ -120,7 +120,7 @@ export function HeroCarousel({ onBrowse, onReady }: { onBrowse: () => void; onRe
         <div className="flex flex-col justify-center">
           <div className="mb-3 inline-flex w-fit items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-medium text-white backdrop-blur">
             <Flame className="h-3.5 w-3.5 text-[color:var(--brand-orange)]" />
-            สินค้าแท้ 100% • ENT Group IT Shop
+            สินค้าแท้ 100% • ENT Group IT Retail Shop
           </div>
           <h1 className="text-2xl font-black leading-tight text-white md:text-4xl">
             ราคา Dealer จริง <span className="text-[color:var(--brand-orange)]">พร้อมส่งจากสต๊อกไทย</span>

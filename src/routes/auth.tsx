@@ -25,10 +25,10 @@ export const Route = createFileRoute("/auth")({
   validateSearch: zodValidator(searchSchema),
   head: () => ({
     meta: [
-      { title: "เข้าสู่ระบบ / สมัครสมาชิก — ENT Group IT Shop" },
-      { name: "description", content: "เข้าสู่ระบบหรือสมัครสมาชิก ENT Group IT Shop สำหรับลูกค้าทั่วไปและองค์กร" },
-      { property: "og:title", content: "เข้าสู่ระบบ — ENT Group IT Shop" },
-      { property: "og:description", content: "สมัครสมาชิกลูกค้าทั่วไปหรือองค์กร (B2B) ที่ ENT Group IT Shop" },
+      { title: "เข้าสู่ระบบ / สมัครสมาชิก — ENT Group IT Retail Shop" },
+      { name: "description", content: "เข้าสู่ระบบหรือสมัครสมาชิก ENT Group IT Retail Shop สำหรับลูกค้าทั่วไปและองค์กร" },
+      { property: "og:title", content: "เข้าสู่ระบบ — ENT Group IT Retail Shop" },
+      { property: "og:description", content: "สมัครสมาชิกลูกค้าทั่วไปหรือองค์กร (B2B) ที่ ENT Group IT Retail Shop" },
     ],
   }),
   component: AuthPage,
@@ -61,7 +61,7 @@ function AuthPage() {
         <div className="overflow-hidden rounded-2xl border bg-white shadow-sm">
           <div className="border-b bg-[color:var(--brand-navy)] px-6 py-5 text-white">
             <h1 className="text-xl font-black">เข้าสู่ระบบ / สมัครสมาชิก</h1>
-            <p className="mt-1 text-sm text-white/80">ENT Group IT Shop</p>
+            <p className="mt-1 text-sm text-white/80">ENT Group IT Retail Shop</p>
           </div>
 
           <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)} className="p-4 md:p-6">

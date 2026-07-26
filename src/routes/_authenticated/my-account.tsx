@@ -8,10 +8,10 @@ import { User, MapPin, Package, Building2, CreditCard, Wallet, Crown } from "luc
 export const Route = createFileRoute("/_authenticated/my-account")({
   head: () => ({
     meta: [
-      { title: "บัญชีของฉัน — ENT Group IT Shop" },
+      { title: "บัญชีของฉัน — ENT Group IT Retail Shop" },
       { name: "description", content: "จัดการบัญชี ข้อมูลส่วนตัว ที่อยู่ และประวัติการสั่งซื้อของคุณ" },
       { property: "og:title", content: "บัญชีของฉัน" },
-      { property: "og:description", content: "จัดการบัญชี ENT Group IT Shop" },
+      { property: "og:description", content: "จัดการบัญชี ENT Group IT Retail Shop" },
     ],
   }),
   component: MyAccountLayout,

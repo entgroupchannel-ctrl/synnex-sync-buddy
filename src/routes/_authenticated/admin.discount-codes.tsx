@@ -18,7 +18,7 @@ export const Route = createFileRoute("/_authenticated/admin/discount-codes")({
   head: () => ({
     meta: [
       { title: "จัดการโค้ดส่วนลด — ENT Group Admin" },
-      { name: "description", content: "สร้างและจัดการโค้ดส่วนลดของ ENT Group IT Shop" },
+      { name: "description", content: "สร้างและจัดการโค้ดส่วนลดของ ENT Group IT Retail Shop" },
       { property: "og:title", content: "จัดการโค้ดส่วนลด — ENT Group Admin" },
       { property: "og:description", content: "ระบบจัดการโค้ดส่วนลด สำหรับผู้ดูแลระบบ" },
     ],

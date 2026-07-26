@@ -22,13 +22,13 @@ export const Route = createFileRoute("/credit-application/")({
   component: CreditApplicationPage,
   head: () => ({
     meta: [
-      { title: "สมัครวงเงินเครดิต B2B — ENT Group IT Shop" },
+      { title: "สมัครวงเงินเครดิต B2B — ENT Group IT Retail Shop" },
       {
         name: "description",
         content:
           "สมัครวงเงินเครดิตสำหรับองค์กร หน่วยงานราชการ และรัฐวิสาหกิจ วงเงินสูงสุด ฿5,000,000 เครดิต 30-90 วัน อนุมัติภายใน 3-5 วันทำการ",
       },
-      { property: "og:title", content: "สมัครวงเงินเครดิต B2B — ENT Group IT Shop" },
+      { property: "og:title", content: "สมัครวงเงินเครดิต B2B — ENT Group IT Retail Shop" },
       { property: "og:description", content: "วงเงินเครดิตสำหรับองค์กร เครดิต 30-90 วัน อนุมัติไว" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

@@ -11,9 +11,9 @@ export const Route = createFileRoute("/_authenticated/my-account/credit")({
   component: CreditPage,
   head: () => ({
     meta: [
-      { title: "วงเงินเครดิต B2B — ENT Group IT Shop" },
+      { title: "วงเงินเครดิต B2B — ENT Group IT Retail Shop" },
       { name: "description", content: "ดูวงเงินเครดิตคงเหลือ เงื่อนไขการชำระ และประวัติธุรกรรมเครดิตขององค์กรคุณ" },
-      { property: "og:title", content: "วงเงินเครดิต B2B — ENT Group IT Shop" },
+      { property: "og:title", content: "วงเงินเครดิต B2B — ENT Group IT Retail Shop" },
       { property: "og:description", content: "จัดการวงเงินเครดิตองค์กรกับ ENT Group" },
     ],
   }),

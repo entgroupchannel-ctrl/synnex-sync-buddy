@@ -10,7 +10,7 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/_authenticated/my-account/profile")({
   head: () => ({
     meta: [
-      { title: "ข้อมูลส่วนตัว — ENT Group IT Shop" },
+      { title: "ข้อมูลส่วนตัว — ENT Group IT Retail Shop" },
       { name: "description", content: "จัดการข้อมูลส่วนตัวและรหัสผ่านของคุณ" },
       { property: "og:title", content: "ข้อมูลส่วนตัว" },
       { property: "og:description", content: "จัดการข้อมูลส่วนตัว" },

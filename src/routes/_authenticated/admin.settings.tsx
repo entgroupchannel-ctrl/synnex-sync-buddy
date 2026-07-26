@@ -107,7 +107,7 @@ function Field({ label, value }: { label: string; value: string }) {
 function StoreInfo() {
   return (
     <Card>
-      <Field label="ชื่อร้าน" value="ENT Group IT Shop" />
+      <Field label="ชื่อร้าน" value="ENT Group IT Retail Shop" />
       <Field label="Tagline" value="Authorized Dealer — Synnex & VST ECS" />
       <Field label="โทร" value="02-045-6104, 095-739-1053, 084-046-1315" />
       <Field label="Fax" value="02-045-6105" />

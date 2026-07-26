@@ -5,10 +5,10 @@ import { SiteFooter } from "@/components/site-footer";
 export const Route = createFileRoute("/how-to-order")({
   head: () => ({
     meta: [
-      { title: "วิธีสั่งซื้อสินค้า — ENT Group IT Shop" },
-      { name: "description", content: "ขั้นตอนสั่งซื้อสินค้าไอทีจาก ENT Group IT Shop — เลือกสินค้า ชำระเงิน และรับสินค้าอย่างปลอดภัย" },
-      { property: "og:title", content: "วิธีสั่งซื้อสินค้า — ENT Group IT Shop" },
-      { property: "og:description", content: "ขั้นตอนสั่งซื้อสินค้าไอทีจาก ENT Group IT Shop" },
+      { title: "วิธีสั่งซื้อสินค้า — ENT Group IT Retail Shop" },
+      { name: "description", content: "ขั้นตอนสั่งซื้อสินค้าไอทีจาก ENT Group IT Retail Shop — เลือกสินค้า ชำระเงิน และรับสินค้าอย่างปลอดภัย" },
+      { property: "og:title", content: "วิธีสั่งซื้อสินค้า — ENT Group IT Retail Shop" },
+      { property: "og:description", content: "ขั้นตอนสั่งซื้อสินค้าไอทีจาก ENT Group IT Retail Shop" },
     ],
   }),
   component: HowToOrder,
@@ -28,7 +28,7 @@ function HowToOrder() {
       <SiteHeader />
       <div className="max-w-3xl mx-auto px-4 py-12">
         <h1 className="text-3xl font-bold mb-2 text-[color:var(--brand-navy)]">วิธีสั่งซื้อสินค้า</h1>
-        <p className="text-slate-600 mb-8">ขั้นตอนการสั่งซื้อสินค้าจาก ENT Group IT Shop</p>
+        <p className="text-slate-600 mb-8">ขั้นตอนการสั่งซื้อสินค้าจาก ENT Group IT Retail Shop</p>
 
         <div className="space-y-4">
           {STEPS.map(({ step, title, desc }) => (

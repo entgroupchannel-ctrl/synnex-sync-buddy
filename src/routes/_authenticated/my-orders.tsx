@@ -30,9 +30,9 @@ export const Route = createFileRoute("/_authenticated/my-orders")({
   component: MyOrdersPage,
   head: () => ({
     meta: [
-      { title: "คำสั่งซื้อของฉัน — ENT Group IT Shop" },
-      { name: "description", content: "ประวัติและสถานะคำสั่งซื้อของคุณกับ ENT Group IT Shop" },
-      { property: "og:title", content: "คำสั่งซื้อของฉัน — ENT Group IT Shop" },
+      { title: "คำสั่งซื้อของฉัน — ENT Group IT Retail Shop" },
+      { name: "description", content: "ประวัติและสถานะคำสั่งซื้อของคุณกับ ENT Group IT Retail Shop" },
+      { property: "og:title", content: "คำสั่งซื้อของฉัน — ENT Group IT Retail Shop" },
       { property: "og:description", content: "ติดตามคำสั่งซื้อ ชำระเงิน และซื้อซ้ำได้ในหน้าเดียว" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -375,7 +375,7 @@ function OrderCard({
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b bg-slate-50 px-4 py-2.5">
         <div className="flex min-w-0 items-center gap-2">
           <ShoppingBag className="h-4 w-4 shrink-0 text-[color:var(--brand-navy)]" />
-          <span className="truncate text-sm font-semibold text-[color:var(--brand-navy)]">ENT Group IT Shop</span>
+          <span className="truncate text-sm font-semibold text-[color:var(--brand-navy)]">ENT Group IT Retail Shop</span>
           <a
             href="https://line.me/R/ti/p/@entgroup"
             target="_blank"

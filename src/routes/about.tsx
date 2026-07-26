@@ -10,7 +10,7 @@ export const Route = createFileRoute("/about")({
       { name: "description", content: "บริษัท อี เอ็น ที กรุ๊ป จำกัด ผู้ให้บริการโซลูชันไอทีครบวงจร สินค้าแท้ 100% ราคา Dealer จริง B2B และ Consumer พร้อมใบกำกับภาษีและรับประกันศูนย์ไทย" },
       { property: "og:type", content: "website" },
       { property: "og:title", content: "About ENT Group — Authorized IT Dealer Thailand" },
-      { property: "og:description", content: "ENT Group IT Shop สินค้าแท้ 100% ราคา Dealer จริง สำหรับองค์กรและผู้ใช้ทั่วไป" },
+      { property: "og:description", content: "ENT Group IT Retail Shop สินค้าแท้ 100% ราคา Dealer จริง สำหรับองค์กรและผู้ใช้ทั่วไป" },
       { property: "og:url", content: "https://shop.entgroup.co.th/about" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "About ENT Group — Authorized IT Dealer Thailand" },
@@ -22,7 +22,7 @@ export const Route = createFileRoute("/about")({
         children: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "AboutPage",
-          name: "About ENT Group IT Shop",
+          name: "About ENT Group IT Retail Shop",
           url: "https://shop.entgroup.co.th/about",
           about: {
             "@type": "Organization",
@@ -80,7 +80,7 @@ function AboutPage() {
           <h2 className="text-2xl font-black text-[color:var(--brand-navy)] md:text-3xl">ทำไมต้องซื้อกับ ENT Group</h2>
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             {[
-              { icon: ShieldCheck, title: "สินค้าแท้ 100%", desc: "สินค้าทุกชิ้นจาก ENT Group IT Shop ได้รับการรับประกันศูนย์ไทย มั่นใจได้ทั้งเรื่องราคาและความแท้" },
+              { icon: ShieldCheck, title: "สินค้าแท้ 100%", desc: "สินค้าทุกชิ้นจาก ENT Group IT Retail Shop ได้รับการรับประกันศูนย์ไทย มั่นใจได้ทั้งเรื่องราคาและความแท้" },
               { icon: CheckCircle2, title: "รับประกันศูนย์ไทยทุกชิ้น", desc: "สินค้าทุกรายการรับประกันโดยศูนย์บริการอย่างเป็นทางการในประเทศไทย" },
               { icon: Truck, title: "จัดส่งทั่วประเทศ", desc: "Kerry Express, Flash Express, ไปรษณีย์ไทย, SCG, NIM, J&T ค่าจัดส่งเริ่ม ฿35" },
               { icon: Building2, title: "รองรับทั้ง B2B และ Consumer", desc: "ราคา Dealer สำหรับองค์กร ประหยัดสูงสุด 10% ออกใบเสนอราคาและใบกำกับภาษีเต็มรูปแบบ" },
