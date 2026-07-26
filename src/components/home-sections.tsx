@@ -1191,8 +1191,9 @@ function CategoryGridCard({ p }: { p: ProductRow }) {
           distributor={(p as { distributor?: string | null }).distributor}
         />
       </div>
-      <div className="absolute right-2 top-2 z-20"><WishlistButton productId={p.id} productName={p.name} size="sm" /></div>
-                <Link to="/product/$slug" params={{ slug }} className="grid aspect-square place-items-center bg-white p-3">
+      <div className="absolute right-2 top-11 z-20"><WishlistButton productId={p.id} productName={p.name} size="sm" /></div>
+      <Link to="/product/$slug" params={{ slug }} className="grid aspect-square place-items-center bg-white p-3">
+
         <ProductImage
           src={p.image_url}
           alt={p.name ?? p.sku}
