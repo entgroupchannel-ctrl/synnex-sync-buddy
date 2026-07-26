@@ -14,7 +14,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SpecTagsFull } from "@/components/spec-tags";
 import { hasSpecTags } from "@/lib/parse-spec";
 
-import { ProductImage, computerSetPlaceholder, upsPlaceholder } from "@/components/product-image";
+import { ProductImage, computerSetPlaceholder, upsPlaceholder, cpuPlaceholder, isCpuProduct } from "@/components/product-image";
 import { DeliveryInfoBox } from "@/components/delivery-info";
 import { ProductTrustBar, ReturnPolicyAccordion } from "@/components/trust-signals";
 import { WarrantyBadge } from "@/components/warranty-badge";
@@ -222,11 +222,15 @@ function ProductDetail() {
       ? [computerSetPlaceholder(p.name)]
       : p.category === "UPS" && (p.distributor ?? "").toUpperCase() === "ADVICE"
         ? [upsPlaceholder(p.name)]
-        : ([p?.image_url, ...(Array.isArray(p?.image_gallery) ? p?.image_gallery : [])].filter(
-            Boolean,
-          ) as string[]).filter(
-            (src, i) => i === 0 || !(hideSpecShots && /\/[5-8]\.jpg(?:\?.*)?$/i.test(src)),
-          );
+        : isCpuProduct(p.category, p.subcategory, p.name) &&
+            (p.distributor ?? "").toUpperCase() === "ADVICE"
+          ? [cpuPlaceholder(p.name)]
+          : ([p?.image_url, ...(Array.isArray(p?.image_gallery) ? p?.image_gallery : [])].filter(
+              Boolean,
+            ) as string[]).filter(
+              (src, i) => i === 0 || !(hideSpecShots && /\/[5-8]\.jpg(?:\?.*)?$/i.test(src)),
+            );
+
 
 
 
