@@ -450,7 +450,12 @@ function ProductDetail() {
             <div className="flex flex-col">
               {p.brand && <div className="mb-1 inline-flex w-fit rounded bg-slate-100 px-2 py-0.5 text-xs font-bold text-slate-700">{p.brand}</div>}
               <h1 className="text-2xl font-bold text-slate-900 md:text-3xl">{p.name ?? decodedSku}</h1>
-              {showSku && <div className="mt-1 text-sm text-slate-500">SKU / Model: {decodedSku}</div>}
+              {showSku && (
+                <div className="mt-1 text-sm text-slate-500">
+                  SKU / Model: <ProtectedText text={decodedSku} />
+                </div>
+              )}
+
 
               {(() => {
                 const pr = computeProductPrice(p as PricingProduct, tier, qty);
