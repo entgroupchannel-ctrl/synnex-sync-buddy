@@ -1379,7 +1379,8 @@ function HomePage() {
             </div>
           ) : (
             <div className={"grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:gap-3" + (search.category === "RAM" || search.category === "Printer" ? " lg:grid-cols-6" : " lg:grid-cols-5")}>
-              {productsQuery.data!.rows.map((p) => {
+              {productsQuery.data!.rows.map((p, gridIdx) => {
+
                 const byOrder = p.fulfillment_type === "by_order";
                 const ready = p.stock_status === "พร้อมจัดส่ง";
                 const available = ready || byOrder;
