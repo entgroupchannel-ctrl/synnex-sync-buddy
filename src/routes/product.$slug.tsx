@@ -22,6 +22,7 @@ import { ConferenceExplainer } from "@/components/conference-explainer";
 import { CctvExplainer } from "@/components/cctv-explainer";
 import { SolarExplainer } from "@/components/solar-explainer";
 import { ComputerSetExplainer } from "@/components/computer-set-explainer";
+import { TechHelpBanner } from "@/components/tech-help-banner";
 
 
 import { ProductImage, computerSetPlaceholder, upsPlaceholder, cpuPlaceholder, isCpuProduct, applePlaceholder } from "@/components/product-image";
@@ -476,6 +477,7 @@ function ProductDetail() {
               <CctvExplainer category={p.category as string | null | undefined} name={p.name} description={p.description} />
               <SolarExplainer category={p.category as string | null | undefined} name={p.name} description={p.description} />
               <ComputerSetExplainer category={p.category as string | null | undefined} name={p.name} description={p.description} />
+              <TechHelpBanner category={p.category as string | null | undefined} productName={p.name} />
             </div>
 
             <div className="flex flex-col">
