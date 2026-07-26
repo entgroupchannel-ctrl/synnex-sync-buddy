@@ -54,7 +54,7 @@ import {
 import { AppleFeatured } from "@/components/apple-featured";
 import { PcBuilderLanding } from "@/components/pc-builder-landing";
 import { IndustrialComputer } from "@/components/industrial-computer";
-import { IndustrialPromoBanner } from "@/components/industrial-promo-banner";
+
 
 import { FrequentlyBought } from "@/components/frequently-bought";
 import { BrandLogo } from "@/components/brand-logo";
@@ -848,8 +848,6 @@ function HomePage() {
             onReady={() => update({ ready: true })}
           />
 
-          {/* Promo banner → Industrial Computer (entgroup.co.th) */}
-          <IndustrialPromoBanner />
 
 
 

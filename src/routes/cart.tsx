@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Minus, Plus, Trash2, Package, ArrowLeft, ShoppingCart, ShoppingBag, Truck, ClipboardList, PartyPopper, Lightbulb, FileText } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
-import { IndustrialPromoBanner } from "@/components/industrial-promo-banner";
+
 import { ProductImage } from "@/components/product-image";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -388,7 +388,7 @@ function CartPage() {
           </div>
         )}
       </div>
-      <IndustrialPromoBanner compact />
+      
       <SiteFooter />
     </div>
   );
