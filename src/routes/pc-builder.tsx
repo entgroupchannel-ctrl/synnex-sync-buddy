@@ -561,23 +561,32 @@ function ProductPicker({
           } else if (psuType === "case") {
             q = q
               .eq("category", "Storage")
-              .or("name.ilike.%Case%,name.ilike.%FRAME%,name.ilike.%Chassis%,name.ilike.%Tower%,sku.ilike.%FRAME%")
+              .or("name.ilike.%Case%,name.ilike.%FRAME%,name.ilike.%Chassis%,sku.ilike.%FRAME%")
               .not("name", "ilike", "%SSD%")
               .not("name", "ilike", "%DDR%")
-              .not("name", "ilike", "%RAM%");
+              .not("name", "ilike", "%RAM%")
+              .not("name", "ilike", "%Com PC%")
+              .not("name", "ilike", "%Pro Tower%")
+              .not("name", "ilike", "%IdeaCentre%")
+              .not("name", "ilike", "%ThinkCentre%");
           } else {
             q = q
               .in("category", ["Accessories", "Storage"])
               .or(
-                "name.ilike.%Power Supply%,name.ilike.%80 PLUS%,name.ilike.%80+%,name.ilike.%Case%,name.ilike.%FRAME%,name.ilike.%Chassis%,name.ilike.%Tower%",
+                "name.ilike.%Power Supply%,name.ilike.%80 PLUS%,name.ilike.%80+%,name.ilike.%Case%,name.ilike.%FRAME%,name.ilike.%Chassis%",
               )
               .not("name", "ilike", "%SSD%")
               .not("name", "ilike", "%DDR%")
               .not("name", "ilike", "%RAM%")
               .not("name", "ilike", "%UPS%")
               .not("name", "ilike", "%สำรองไฟ%")
-              .not("name", "ilike", "%ลำโพง%");
+              .not("name", "ilike", "%ลำโพง%")
+              .not("name", "ilike", "%Com PC%")
+              .not("name", "ilike", "%Pro Tower%")
+              .not("name", "ilike", "%IdeaCentre%")
+              .not("name", "ilike", "%ThinkCentre%");
           }
+
           limit = 40;
           break;
         }
