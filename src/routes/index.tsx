@@ -77,6 +77,7 @@ import { EdgeAiBrief } from "@/components/edge-ai-explainer";
 import { ConferenceBrief } from "@/components/conference-explainer";
 import { CctvBrief } from "@/components/cctv-explainer";
 import { SolarBrief } from "@/components/solar-explainer";
+import { ComputerSetBrief } from "@/components/computer-set-explainer";
 
 import { ComputerSetBanner } from "@/components/computer-set-banner";
 
@@ -1376,6 +1377,7 @@ function HomePage() {
                       <ConferenceBrief category={p.category} name={p.name} description={p.description} />
                       <CctvBrief category={p.category} name={p.name} description={p.description} />
                       <SolarBrief category={p.category} name={p.name} description={p.description} />
+                      <ComputerSetBrief category={p.category} name={p.name} description={p.description} />
                       {p.description && <div className="mt-1 line-clamp-2 text-xs text-slate-500">{p.description}</div>}
                       <div className="mt-auto flex items-center gap-2 pt-1">
                         <span className={`inline-block h-2 w-2 rounded-full ${ready || byOrder ? "bg-green-500" : "bg-red-500"}`} />
@@ -1483,6 +1485,7 @@ function HomePage() {
                       <ConferenceBrief category={p.category} name={p.name} description={p.description} />
                       <CctvBrief category={p.category} name={p.name} description={p.description} />
                       <SolarBrief category={p.category} name={p.name} description={p.description} />
+                      <ComputerSetBrief category={p.category} name={p.name} description={p.description} />
                       <div className="mt-auto pt-1">
                         {priced ? (
                           <>
