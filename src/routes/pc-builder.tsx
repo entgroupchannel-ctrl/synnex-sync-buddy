@@ -22,6 +22,7 @@ import { useCart, priceFmt, getSellingPrice, useCustomerTier } from "@/lib/cart"
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { IndustrialPromoBanner } from "@/components/industrial-promo-banner";
+import { PcBuilderBenefitsBanner } from "@/components/pc-builder-benefits-banner";
 import { ProductImage } from "@/components/product-image";
 import { LineQrDialog } from "@/components/line-qr-dialog";
 import { Button } from "@/components/ui/button";
@@ -318,6 +319,7 @@ function PcBuilderPage() {
         total={total}
       />
 
+      <PcBuilderBenefitsBanner />
       <IndustrialPromoBanner compact />
       <SiteFooter />
     </div>
