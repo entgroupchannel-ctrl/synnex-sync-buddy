@@ -144,7 +144,7 @@ export function applePlaceholder(name?: string | null): string | null {
   return null;
 }
 
-/** ภาพประกอบแผงโซลาร์ (AI generated) สำหรับสินค้าที่ยังไม่มีรูปจริง */
+/** ภาพประกอบการโฆษณาแผงโซลาร์ สำหรับสินค้าที่ยังไม่มีรูปจริง */
 export function solarPanelPlaceholder(name?: string | null): string | null {
   const n = (name ?? "").toLowerCase();
   if (!n) return null;
@@ -235,7 +235,7 @@ export function ProductImage({
   }
 
 
-  // แผงโซลาร์ที่ยังไม่มีรูปจริง → ใช้ภาพประกอบ (AI generated)
+  // แผงโซลาร์ที่ยังไม่มีรูปจริง → ใช้ภาพประกอบการโฆษณา
   if (error || !src) {
     const solar = solarPanelPlaceholder(productName ?? alt);
     if (solar) {
@@ -243,7 +243,7 @@ export function ProductImage({
         <div className="relative h-full w-full">
           <img src={solar} alt={alt} loading={loading} className={className} />
           <span className="pointer-events-none absolute bottom-1 right-1 rounded bg-slate-900/70 px-1.5 py-0.5 text-[10px] font-medium text-white">
-            ภาพประกอบ (AI)
+            ภาพประกอบการโฆษณา
           </span>
         </div>
       );

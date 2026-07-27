@@ -29,6 +29,7 @@ import { StockBadge } from "@/components/stock-badge";
 import { WarrantyBadge } from "@/components/warranty-badge";
 import { RamBadge } from "@/components/ram-badge";
 import { DiscountBadgeRow } from "@/components/discount-badge";
+import { QuoteBadge } from "@/components/quote-badge";
 
 import { SpecTagsCompact } from "@/components/spec-tags";
 import { hasSpecTags } from "@/lib/parse-spec";
@@ -1407,7 +1408,7 @@ function HomePage() {
                           <VatNote className="text-right" />
                         </>
                       ) : (
-                        <span className="text-sm text-gray-400">ติดต่อสอบถาม</span>
+                        <QuoteBadge sellingPrice={p.selling_price} fulfillmentType={p.fulfillment_type} />
                       )}
                       {byOrder && <div className="text-[11px] text-blue-700">⏱ รับสินค้าภายใน {p.distributor === "PLINK-AI" ? "15-20" : "30"} วัน</div>}
                       {priced && !byOrder && <DeliveryHint category={p.category} name={p.name} price={getSellingPrice(p as { selling_price?: number | null; member_price?: number | null; b2b_price?: number | null; tier_price_guest?: number | null; tier_price_b2c?: number | null; tier_price_b2c_silver?: number | null; tier_price_b2c_gold?: number | null; tier_price_b2c_vip?: number | null; tier_price_b2b?: number | null; tier_price_b2b_silver?: number | null; tier_price_b2b_gold?: number | null }, tier)} />}
@@ -1511,7 +1512,7 @@ function HomePage() {
                           </>
 
                         ) : (
-                          <div className="text-sm text-gray-400">ติดต่อสอบถาม</div>
+                          <QuoteBadge sellingPrice={p.selling_price} fulfillmentType={p.fulfillment_type} />
                         )}
                         {byOrder ? (
                           <div className="mt-1 text-[11px] font-medium text-blue-700">⏱ รับสินค้าภายใน {p.distributor === "PLINK-AI" ? "15-20" : "30"} วัน</div>
