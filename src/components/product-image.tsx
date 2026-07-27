@@ -2,6 +2,12 @@ import { useEffect, useState } from "react";
 import { Cpu, MemoryStick, HardDrive, CircuitBoard, Fan, Package } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
+import tapoA201Asset from "@/assets/solar-placeholders/tapo-a201.jpg.asset.json";
+import vigiSp6020Asset from "@/assets/solar-placeholders/vigi-sp6020.jpg.asset.json";
+import vigiSp9030Asset from "@/assets/solar-placeholders/vigi-sp9030.jpg.asset.json";
+import longi650Asset from "@/assets/solar-placeholders/longi-650w.jpg.asset.json";
+import longi645Asset from "@/assets/solar-placeholders/longi-645w.jpg.asset.json";
+
 type Props = {
   src?: string | null;
   alt?: string;
