@@ -26,7 +26,7 @@ import { TechHelpBanner } from "@/components/tech-help-banner";
 import { NetworkExplainer } from "@/components/network-explainer";
 
 
-import { ProductImage, computerSetPlaceholder, upsPlaceholder, cpuPlaceholder, isCpuProduct, applePlaceholder } from "@/components/product-image";
+import { ProductImage, computerSetPlaceholder, upsPlaceholder, cpuPlaceholder, isCpuProduct, applePlaceholder, solarPanelPlaceholder } from "@/components/product-image";
 import { DeliveryInfoBox } from "@/components/delivery-info";
 import { ProtectedText } from "@/components/protected-text";
 import { ProductTrustBar, ReturnPolicyAccordion } from "@/components/trust-signals";
