@@ -5,6 +5,8 @@ Disallow: /cart
 Disallow: /checkout
 Disallow: /auth
 Disallow: /auth/callback
+Disallow: /reset-password
+Disallow: /compare
 Disallow: /my-account
 Disallow: /my-orders
 Disallow: /order/

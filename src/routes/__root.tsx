@@ -113,7 +113,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
               alternateName: "ENT Group IT Retail Shop",
               url: "https://shop.entgroup.co.th",
               logo: "https://shop.entgroup.co.th/favicon.png",
-              description: "ENT Group IT Retail Shop สินค้าแท้ 100% จำหน่ายสินค้าไอทีราคา Dealer รับประกันศูนย์ไทย",
+              description: "ENT Group IT Retail Shop จำหน่ายสินค้าไอทีแบรนด์เนมแท้ 100% ราคา Dealer จริง Authorized Dealer ของ Synnex Thailand และ VST ECS Thailand พร้อมทีมช่างติดตั้งบริการระบบโซลาร์เซลล์ กล้องวงจรปิด Edge AI และห้องประชุม รับประกันศูนย์ไทยทุกชิ้น",
               foundingDate: "2015",
               taxID: "0135558013167",
               address: {
