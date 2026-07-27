@@ -144,6 +144,20 @@ export function applePlaceholder(name?: string | null): string | null {
   return null;
 }
 
+/** ภาพประกอบแผงโซลาร์ (AI generated) สำหรับสินค้าที่ยังไม่มีรูปจริง */
+export function solarPanelPlaceholder(name?: string | null): string | null {
+  const n = (name ?? "").toLowerCase();
+  if (!n) return null;
+  if (/a201/.test(n)) return "/solar-placeholders/tapo-a201.jpg";
+  if (/sp6020/.test(n)) return "/solar-placeholders/vigi-sp6020.jpg";
+  if (/sp9030/.test(n)) return "/solar-placeholders/vigi-sp9030.jpg";
+  if (/longi|hi-?mo|lr7|lr8/.test(n)) {
+    if (/650/.test(n)) return "/solar-placeholders/longi-650w.jpg";
+    return "/solar-placeholders/longi-645w.jpg";
+  }
+  return null;
+}
+
 
 
 
@@ -220,6 +234,21 @@ export function ProductImage({
     );
   }
 
+
+  // แผงโซลาร์ที่ยังไม่มีรูปจริง → ใช้ภาพประกอบ (AI generated)
+  if (error || !src) {
+    const solar = solarPanelPlaceholder(productName ?? alt);
+    if (solar) {
+      return (
+        <div className="relative h-full w-full">
+          <img src={solar} alt={alt} loading={loading} className={className} />
+          <span className="pointer-events-none absolute bottom-1 right-1 rounded bg-slate-900/70 px-1.5 py-0.5 text-[10px] font-medium text-white">
+            ภาพประกอบ (AI)
+          </span>
+        </div>
+      );
+    }
+  }
 
   // สินค้า Apple ที่ยังไม่มีรูปจริง → ใช้ภาพแทนตามตระกูลสินค้า
   if (error || !src) {
