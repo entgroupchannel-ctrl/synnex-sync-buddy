@@ -90,8 +90,9 @@ export const Route = createFileRoute("/sitemap.xml")({
         }
 
         for (const c of CATEGORY_PATHS) {
+          const priority = INSTALL_SERVICE_CATEGORIES.has(c) ? "0.9" : "0.8";
           urls.push(
-            `  <url>\n    <loc>${BASE_URL}/?category=${encodeURIComponent(c)}</loc>\n    <changefreq>daily</changefreq>\n    <priority>0.8</priority>\n  </url>`,
+            `  <url>\n    <loc>${BASE_URL}/?category=${encodeURIComponent(c)}</loc>\n    <changefreq>daily</changefreq>\n    <priority>${priority}</priority>\n  </url>`,
           );
         }
 
