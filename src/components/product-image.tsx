@@ -154,12 +154,12 @@ export function applePlaceholder(name?: string | null): string | null {
 export function solarPanelPlaceholder(name?: string | null): string | null {
   const n = (name ?? "").toLowerCase();
   if (!n) return null;
-  if (/a201/.test(n)) return "/solar-placeholders/tapo-a201.jpg";
-  if (/sp6020/.test(n)) return "/solar-placeholders/vigi-sp6020.jpg";
-  if (/sp9030/.test(n)) return "/solar-placeholders/vigi-sp9030.jpg";
+  if (/a201/.test(n)) return tapoA201Asset.url;
+  if (/sp6020/.test(n)) return vigiSp6020Asset.url;
+  if (/sp9030/.test(n)) return vigiSp9030Asset.url;
   if (/longi|hi-?mo|lr7|lr8/.test(n)) {
-    if (/650/.test(n)) return "/solar-placeholders/longi-650w.jpg";
-    return "/solar-placeholders/longi-645w.jpg";
+    if (/650/.test(n)) return longi650Asset.url;
+    return longi645Asset.url;
   }
   return null;
 }
