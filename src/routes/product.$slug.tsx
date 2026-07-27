@@ -230,6 +230,7 @@ function ProductDetail() {
     p?.category === "Smart Phone & Tablet" ||
     (p?.brand ?? "").toUpperCase() === "APPLE";
 
+  const solarPlaceholder = p ? solarPanelPlaceholder(p.name) : null;
   const baseImages: string[] = !p
     ? []
     : p.category === "Computer Set"
@@ -239,11 +240,13 @@ function ProductDetail() {
         : isCpuProduct(p.category, p.subcategory, p.name) &&
             (p.distributor ?? "").toUpperCase() === "ADVICE"
           ? [cpuPlaceholder(p.name)]
-          : ([p?.image_url, ...(Array.isArray(p?.image_gallery) ? p?.image_gallery : [])].filter(
-              Boolean,
-            ) as string[]).filter(
-              (src, i) => i === 0 || !(hideSpecShots && /\/[5-8]\.jpg(?:\?.*)?$/i.test(src)),
-            );
+          : p.category === "Solar & Energy" && !p?.image_url && (!Array.isArray(p?.image_gallery) || p.image_gallery.length === 0) && solarPlaceholder
+            ? [solarPlaceholder]
+            : ([p?.image_url, ...(Array.isArray(p?.image_gallery) ? p?.image_gallery : [])].filter(
+                Boolean,
+              ) as string[]).filter(
+                (src, i) => i === 0 || !(hideSpecShots && /\/[5-8]\.jpg(?:\?.*)?$/i.test(src)),
+              );
 
   // Apple-style fallback: ภาพแทนตระกูลสินค้า + พื้นหลังสไตล์ Apple 3 แบบ
   const appleShot = baseImages.length === 0 ? applePlaceholder(p?.name) : null;
