@@ -26,7 +26,7 @@ import { TechHelpBanner } from "@/components/tech-help-banner";
 import { NetworkExplainer } from "@/components/network-explainer";
 
 
-import { ProductImage, computerSetPlaceholder, upsPlaceholder, cpuPlaceholder, isCpuProduct, applePlaceholder } from "@/components/product-image";
+import { ProductImage, computerSetPlaceholder, upsPlaceholder, cpuPlaceholder, isCpuProduct, applePlaceholder, solarPanelPlaceholder } from "@/components/product-image";
 import { DeliveryInfoBox } from "@/components/delivery-info";
 import { ProtectedText } from "@/components/protected-text";
 import { ProductTrustBar, ReturnPolicyAccordion } from "@/components/trust-signals";
@@ -230,6 +230,7 @@ function ProductDetail() {
     p?.category === "Smart Phone & Tablet" ||
     (p?.brand ?? "").toUpperCase() === "APPLE";
 
+  const solarPlaceholder = p ? solarPanelPlaceholder(p.name) : null;
   const baseImages: string[] = !p
     ? []
     : p.category === "Computer Set"
@@ -239,11 +240,13 @@ function ProductDetail() {
         : isCpuProduct(p.category, p.subcategory, p.name) &&
             (p.distributor ?? "").toUpperCase() === "ADVICE"
           ? [cpuPlaceholder(p.name)]
-          : ([p?.image_url, ...(Array.isArray(p?.image_gallery) ? p?.image_gallery : [])].filter(
-              Boolean,
-            ) as string[]).filter(
-              (src, i) => i === 0 || !(hideSpecShots && /\/[5-8]\.jpg(?:\?.*)?$/i.test(src)),
-            );
+          : p.category === "Solar & Energy" && !p?.image_url && (!Array.isArray(p?.image_gallery) || p.image_gallery.length === 0) && solarPlaceholder
+            ? [solarPlaceholder]
+            : ([p?.image_url, ...(Array.isArray(p?.image_gallery) ? p?.image_gallery : [])].filter(
+                Boolean,
+              ) as string[]).filter(
+                (src, i) => i === 0 || !(hideSpecShots && /\/[5-8]\.jpg(?:\?.*)?$/i.test(src)),
+              );
 
   // Apple-style fallback: ภาพแทนตระกูลสินค้า + พื้นหลังสไตล์ Apple 3 แบบ
   const appleShot = baseImages.length === 0 ? applePlaceholder(p?.name) : null;
@@ -254,6 +257,10 @@ function ProductDetail() {
   ];
   const images: string[] = appleShot ? [appleShot, appleShot, appleShot] : baseImages;
   const activeBackdrop = appleShot ? APPLE_BACKDROPS[activeImg] ?? APPLE_BACKDROPS[0] : "bg-white";
+  const isSolarPlaceholder =
+    p?.category === "Solar & Energy" &&
+    images[activeImg] &&
+    /\/(longi|tapo|vigi)-/.test(images[activeImg]);
 
 
 
@@ -340,6 +347,12 @@ function ProductDetail() {
                   {appleShot && (
                     <span className="pointer-events-none absolute right-2 top-2 z-10 rounded bg-slate-900/70 px-2 py-0.5 text-[10px] font-medium text-white">
                       ภาพแทน
+                    </span>
+                  )}
+
+                  {isSolarPlaceholder && (
+                    <span className="pointer-events-none absolute right-2 top-2 z-10 rounded bg-slate-900/70 px-2 py-0.5 text-[10px] font-medium text-white">
+                      ภาพประกอบการโฆษณา
                     </span>
                   )}
 
