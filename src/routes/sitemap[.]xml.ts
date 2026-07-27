@@ -7,19 +7,50 @@ const BASE_URL = "https://shop.entgroup.co.th";
 const STATIC_PATHS: { path: string; changefreq: string; priority: string }[] = [
   { path: "/", changefreq: "daily", priority: "1.0" },
   { path: "/about", changefreq: "monthly", priority: "0.8" },
+  { path: "/corporate", changefreq: "monthly", priority: "0.8" },
   { path: "/contact", changefreq: "monthly", priority: "0.6" },
+  { path: "/credit-application", changefreq: "monthly", priority: "0.6" },
+  { path: "/how-to-order", changefreq: "monthly", priority: "0.5" },
+  { path: "/payment-methods", changefreq: "monthly", priority: "0.4" },
+  { path: "/shipping-info", changefreq: "monthly", priority: "0.4" },
+  { path: "/returns", changefreq: "monthly", priority: "0.4" },
+  { path: "/pc-builder", changefreq: "weekly", priority: "0.6" },
+  { path: "/careers", changefreq: "monthly", priority: "0.3" },
+  { path: "/terms", changefreq: "yearly", priority: "0.2" },
+  { path: "/privacy", changefreq: "yearly", priority: "0.2" },
 ];
 
+// รายการหมวดหมู่จริงทั้งหมด — ต้องตรงกับ CATEGORIES ใน src/lib/cart.ts เสมอ
 const CATEGORY_PATHS = [
   "Notebook",
   "Monitor",
   "Printer",
   "PC",
+  "UPS",
+  "Computer Set",
+  "Components",
+  "RAM",
+  "Edge AI Box",
   "Software",
+  "Accessories",
   "Network",
   "Storage",
-  "Accessories",
+  "Smart Phone & Tablet",
+  "Solar & Energy",
+  "Smart Life",
+  "CCTV & Security",
+  "Webcam & Conference",
+  "Speaker & Audio",
 ];
+
+// หมวดที่มีบริการช่างติดตั้ง — จุดขายหลัก
+const INSTALL_SERVICE_CATEGORIES = new Set([
+  "Solar & Energy",
+  "CCTV & Security",
+  "Edge AI Box",
+  "Computer Set",
+  "Webcam & Conference",
+]);
 
 function esc(s: string) {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;");
@@ -59,8 +90,9 @@ export const Route = createFileRoute("/sitemap.xml")({
         }
 
         for (const c of CATEGORY_PATHS) {
+          const priority = INSTALL_SERVICE_CATEGORIES.has(c) ? "0.9" : "0.8";
           urls.push(
-            `  <url>\n    <loc>${BASE_URL}/?category=${encodeURIComponent(c)}</loc>\n    <changefreq>daily</changefreq>\n    <priority>0.8</priority>\n  </url>`,
+            `  <url>\n    <loc>${BASE_URL}/?category=${encodeURIComponent(c)}</loc>\n    <changefreq>daily</changefreq>\n    <priority>${priority}</priority>\n  </url>`,
           );
         }
 

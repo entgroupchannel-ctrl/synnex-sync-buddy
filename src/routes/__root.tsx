@@ -113,7 +113,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
               alternateName: "ENT Group IT Retail Shop",
               url: "https://shop.entgroup.co.th",
               logo: "https://shop.entgroup.co.th/favicon.png",
-              description: "ENT Group IT Retail Shop สินค้าแท้ 100% จำหน่ายสินค้าไอทีราคา Dealer รับประกันศูนย์ไทย",
+              description: "ENT Group IT Retail Shop จำหน่ายสินค้าไอทีแบรนด์เนมแท้ 100% ราคา Dealer จริง Authorized Dealer ของ Synnex Thailand และ VST ECS Thailand พร้อมทีมช่างติดตั้งบริการระบบโซลาร์เซลล์ กล้องวงจรปิด Edge AI และห้องประชุม รับประกันศูนย์ไทยทุกชิ้น",
               foundingDate: "2015",
               taxID: "0135558013167",
               address: {
@@ -157,6 +157,58 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
                 },
               ],
               paymentAccepted: "Cash, Bank Transfer, PromptPay, COD",
+              areaServed: { "@type": "Country", name: "Thailand" },
+              hasOfferCatalog: {
+                "@type": "OfferCatalog",
+                name: "บริการติดตั้งโดยทีมช่างเทคนิค",
+                itemListElement: [
+                  {
+                    "@type": "Offer",
+                    itemOffered: {
+                      "@type": "Service",
+                      name: "ติดตั้งระบบโซลาร์เซลล์",
+                      serviceType: "Solar panel installation",
+                      areaServed: { "@type": "Country", name: "Thailand" },
+                    },
+                  },
+                  {
+                    "@type": "Offer",
+                    itemOffered: {
+                      "@type": "Service",
+                      name: "ติดตั้งกล้องวงจรปิด CCTV",
+                      serviceType: "CCTV installation",
+                      areaServed: { "@type": "Country", name: "Thailand" },
+                    },
+                  },
+                  {
+                    "@type": "Offer",
+                    itemOffered: {
+                      "@type": "Service",
+                      name: "ติดตั้งและ Config ระบบ Edge AI",
+                      serviceType: "Edge AI system integration",
+                      areaServed: { "@type": "Country", name: "Thailand" },
+                    },
+                  },
+                  {
+                    "@type": "Offer",
+                    itemOffered: {
+                      "@type": "Service",
+                      name: "ประกอบและติดตั้งคอมพิวเตอร์",
+                      serviceType: "Custom PC build service",
+                      areaServed: { "@type": "Country", name: "Thailand" },
+                    },
+                  },
+                  {
+                    "@type": "Offer",
+                    itemOffered: {
+                      "@type": "Service",
+                      name: "ติดตั้งระบบ Conference Room",
+                      serviceType: "Conference room installation",
+                      areaServed: { "@type": "Country", name: "Thailand" },
+                    },
+                  },
+                ],
+              },
             },
             {
               "@type": "WebSite",
