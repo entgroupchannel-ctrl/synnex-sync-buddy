@@ -386,8 +386,11 @@ function HomePage() {
       type AnyQ = { eq: (...a: unknown[]) => AnyQ; neq: (...a: unknown[]) => AnyQ; gt: (...a: unknown[]) => AnyQ; gte: (...a: unknown[]) => AnyQ; lte: (...a: unknown[]) => AnyQ; in: (...a: unknown[]) => AnyQ; or: (...a: unknown[]) => AnyQ; order: (...a: unknown[]) => AnyQ; range: (...a: unknown[]) => AnyQ };
       const applyCommon = (qi: unknown): AnyQ => {
         let q = qi as AnyQ;
-        // สินค้า PLINK-AI ไม่มีราคาแสดง (ต้องขอใบเสนอราคา) จึงยกเว้นให้ผ่านแม้ selling_price = 0
-        q = q.eq("price_approved", true).or("selling_price.gt.0,distributor.eq.PLINK-AI");
+        // สินค้าที่ไม่มีราคาตายตัว (ต้องขอใบเสนอราคา) ยกเว้นให้ผ่านแม้ selling_price = 0:
+        // เดิมเช็คเฉพาะ distributor=PLINK-AI ตัวเดียว แต่สินค้าโครงการจาก distributor อื่น
+        // (เช่น แผงโซลาร์ Longi สำหรับงานโครงการ) ก็ใช้ pattern เดียวกัน (by_order + price=0)
+        // จึงต้องรับทุก by_order+price=0 ไม่ใช่แค่ PLINK-AI ไม่งั้นสินค้าจะไม่โชว์ที่ไหนเลย
+        q = q.eq("price_approved", true).or("selling_price.gt.0,distributor.eq.PLINK-AI,fulfillment_type.eq.by_order");
         if (s) q = q.or(`name.ilike.%${s}%,sku.ilike.%${s}%,brand.ilike.%${s}%,description.ilike.%${s}%`);
         if (search.category !== "all") {
           if (search.category === "Edge AI Box") {
