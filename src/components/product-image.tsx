@@ -235,6 +235,21 @@ export function ProductImage({
   }
 
 
+  // แผงโซลาร์ที่ยังไม่มีรูปจริง → ใช้ภาพประกอบ (AI generated)
+  if (error || !src) {
+    const solar = solarPanelPlaceholder(productName ?? alt);
+    if (solar) {
+      return (
+        <div className="relative h-full w-full">
+          <img src={solar} alt={alt} loading={loading} className={className} />
+          <span className="pointer-events-none absolute bottom-1 right-1 rounded bg-slate-900/70 px-1.5 py-0.5 text-[10px] font-medium text-white">
+            ภาพประกอบ (AI)
+          </span>
+        </div>
+      );
+    }
+  }
+
   // สินค้า Apple ที่ยังไม่มีรูปจริง → ใช้ภาพแทนตามตระกูลสินค้า
   if (error || !src) {
     const apple = applePlaceholder(productName ?? alt);
