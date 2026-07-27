@@ -257,6 +257,10 @@ function ProductDetail() {
   ];
   const images: string[] = appleShot ? [appleShot, appleShot, appleShot] : baseImages;
   const activeBackdrop = appleShot ? APPLE_BACKDROPS[activeImg] ?? APPLE_BACKDROPS[0] : "bg-white";
+  const isSolarPlaceholder =
+    p?.category === "Solar & Energy" &&
+    images[activeImg] &&
+    /\/(longi|tapo|vigi)-/.test(images[activeImg]);
 
 
 
