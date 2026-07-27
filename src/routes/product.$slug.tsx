@@ -350,6 +350,12 @@ function ProductDetail() {
                     </span>
                   )}
 
+                  {isSolarPlaceholder && (
+                    <span className="pointer-events-none absolute right-2 top-2 z-10 rounded bg-slate-900/70 px-2 py-0.5 text-[10px] font-medium text-white">
+                      ภาพประกอบการโฆษณา
+                    </span>
+                  )}
+
                   {/* Prev/Next arrows */}
                   {images.length > 1 && (
                     <>
