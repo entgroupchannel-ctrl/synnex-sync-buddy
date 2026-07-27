@@ -18,6 +18,8 @@ import { CartReassurance } from "@/components/trust-signals";
 import { DeliveryZoneInfoBox } from "@/components/delivery-zone-dialog";
 import { useVolumeRules, getVolumeDiscount } from "@/lib/volume-discount";
 import { VatNoteDetailed } from "@/components/vat-note";
+import { UrgentContactButton } from "@/components/urgent-contact-button";
+
 
 
 export const Route = createFileRoute("/cart")({
@@ -230,7 +232,13 @@ function CartPage() {
                       สินค้าที่ต้องจัดหาเพิ่ม (By Order)
                     </div>
                     <div className="mt-1">ใช้เวลาประมาณ 30 วันทำการ ทีมงานจะติดต่อยืนยันรายละเอียดกับคุณก่อนดำเนินการทุกครั้ง — ไม่กระทบสินค้าพร้อมส่งรายการอื่นในตะกร้า</div>
+                    <div className="mt-2">
+                      <UrgentContactButton
+                        items={byOrderItems.map((it) => ({ sku: it.sku, name: it.name, qty: it.qty }))}
+                      />
+                    </div>
                   </div>
+
                   {byOrderItems.map((it) => {
                     const displaySku = safeDisplaySku(it.sku);
                     const itemByOrder = true;

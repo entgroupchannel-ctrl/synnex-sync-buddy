@@ -27,6 +27,8 @@ import {
   ExternalLink,
   FileOutput,
   Building2,
+  Inbox,
+
 
   LogOut,
   Menu,
@@ -132,6 +134,8 @@ const NAV: NavGroup[] = [
     items: [
       { label: "ลูกค้าทั้งหมด", to: "/admin/customers", icon: Users },
       { label: "รอ Approve B2B", href: "/admin/customers?status=pending", icon: UserCheck },
+      { label: "ลีดลูกค้า (ขอราคา/ติดต่อด่วน)", to: "/admin/leads", icon: Inbox },
+
       { label: "คำขอวงเงินเครดิต", to: "/admin/credit-applications", icon: CreditCard },
       { label: "จัดการเครดิต B2B", to: "/admin/credit", icon: CreditCard },
       { label: "Newsletter", to: "/admin/newsletter", icon: Mail },
