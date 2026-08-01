@@ -24,6 +24,7 @@ import { SolarExplainer } from "@/components/solar-explainer";
 import { ComputerSetExplainer } from "@/components/computer-set-explainer";
 import { TechHelpBanner } from "@/components/tech-help-banner";
 import { IndustrialCrossPromoBanner } from "@/components/industrial-cross-promo-banner";
+import { IndustrialAdBanner } from "@/components/industrial-ads-banner";
 
 import { NetworkExplainer } from "@/components/network-explainer";
 
