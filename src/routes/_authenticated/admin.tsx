@@ -154,7 +154,10 @@ const NAV: NavGroup[] = [
   {
     header: "Marketplace",
     icon: ShoppingBag,
-    items: [{ label: "Shopee Integration", to: "/admin/shopee", icon: ShoppingBag }],
+    items: [
+      { label: "Shopee Integration", to: "/admin/shopee", icon: ShoppingBag },
+      { label: "Ginee Integration", to: "/admin/ginee", icon: ShoppingBag },
+    ],
   },
 
   {

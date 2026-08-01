@@ -56,6 +56,7 @@ import { Route as AuthenticatedAdminPricingRouteImport } from './routes/_authent
 import { Route as AuthenticatedAdminOrdersRouteImport } from './routes/_authenticated/admin.orders'
 import { Route as AuthenticatedAdminNewsletterRouteImport } from './routes/_authenticated/admin.newsletter'
 import { Route as AuthenticatedAdminLeadsRouteImport } from './routes/_authenticated/admin.leads'
+import { Route as AuthenticatedAdminGineeRouteImport } from './routes/_authenticated/admin.ginee'
 import { Route as AuthenticatedAdminFlashDealsRouteImport } from './routes/_authenticated/admin.flash-deals'
 import { Route as AuthenticatedAdminDistributorContactsRouteImport } from './routes/_authenticated/admin.distributor-contacts'
 import { Route as AuthenticatedAdminDiscountCodesRouteImport } from './routes/_authenticated/admin.discount-codes'
@@ -318,6 +319,11 @@ const AuthenticatedAdminLeadsRoute = AuthenticatedAdminLeadsRouteImport.update({
   path: '/leads',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedAdminGineeRoute = AuthenticatedAdminGineeRouteImport.update({
+  id: '/ginee',
+  path: '/ginee',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
 const AuthenticatedAdminFlashDealsRoute =
   AuthenticatedAdminFlashDealsRouteImport.update({
     id: '/flash-deals',
@@ -427,6 +433,7 @@ export interface FileRoutesByFullPath {
   '/admin/discount-codes': typeof AuthenticatedAdminDiscountCodesRoute
   '/admin/distributor-contacts': typeof AuthenticatedAdminDistributorContactsRoute
   '/admin/flash-deals': typeof AuthenticatedAdminFlashDealsRoute
+  '/admin/ginee': typeof AuthenticatedAdminGineeRoute
   '/admin/leads': typeof AuthenticatedAdminLeadsRoute
   '/admin/newsletter': typeof AuthenticatedAdminNewsletterRoute
   '/admin/orders': typeof AuthenticatedAdminOrdersRouteWithChildren
@@ -485,6 +492,7 @@ export interface FileRoutesByTo {
   '/admin/discount-codes': typeof AuthenticatedAdminDiscountCodesRoute
   '/admin/distributor-contacts': typeof AuthenticatedAdminDistributorContactsRoute
   '/admin/flash-deals': typeof AuthenticatedAdminFlashDealsRoute
+  '/admin/ginee': typeof AuthenticatedAdminGineeRoute
   '/admin/leads': typeof AuthenticatedAdminLeadsRoute
   '/admin/newsletter': typeof AuthenticatedAdminNewsletterRoute
   '/admin/orders': typeof AuthenticatedAdminOrdersRouteWithChildren
@@ -547,6 +555,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/discount-codes': typeof AuthenticatedAdminDiscountCodesRoute
   '/_authenticated/admin/distributor-contacts': typeof AuthenticatedAdminDistributorContactsRoute
   '/_authenticated/admin/flash-deals': typeof AuthenticatedAdminFlashDealsRoute
+  '/_authenticated/admin/ginee': typeof AuthenticatedAdminGineeRoute
   '/_authenticated/admin/leads': typeof AuthenticatedAdminLeadsRoute
   '/_authenticated/admin/newsletter': typeof AuthenticatedAdminNewsletterRoute
   '/_authenticated/admin/orders': typeof AuthenticatedAdminOrdersRouteWithChildren
@@ -609,6 +618,7 @@ export interface FileRouteTypes {
     | '/admin/discount-codes'
     | '/admin/distributor-contacts'
     | '/admin/flash-deals'
+    | '/admin/ginee'
     | '/admin/leads'
     | '/admin/newsletter'
     | '/admin/orders'
@@ -667,6 +677,7 @@ export interface FileRouteTypes {
     | '/admin/discount-codes'
     | '/admin/distributor-contacts'
     | '/admin/flash-deals'
+    | '/admin/ginee'
     | '/admin/leads'
     | '/admin/newsletter'
     | '/admin/orders'
@@ -728,6 +739,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/discount-codes'
     | '/_authenticated/admin/distributor-contacts'
     | '/_authenticated/admin/flash-deals'
+    | '/_authenticated/admin/ginee'
     | '/_authenticated/admin/leads'
     | '/_authenticated/admin/newsletter'
     | '/_authenticated/admin/orders'
@@ -1112,6 +1124,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminLeadsRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/ginee': {
+      id: '/_authenticated/admin/ginee'
+      path: '/ginee'
+      fullPath: '/admin/ginee'
+      preLoaderRoute: typeof AuthenticatedAdminGineeRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/flash-deals': {
       id: '/_authenticated/admin/flash-deals'
       path: '/flash-deals'
@@ -1252,6 +1271,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminDiscountCodesRoute: typeof AuthenticatedAdminDiscountCodesRoute
   AuthenticatedAdminDistributorContactsRoute: typeof AuthenticatedAdminDistributorContactsRoute
   AuthenticatedAdminFlashDealsRoute: typeof AuthenticatedAdminFlashDealsRoute
+  AuthenticatedAdminGineeRoute: typeof AuthenticatedAdminGineeRoute
   AuthenticatedAdminLeadsRoute: typeof AuthenticatedAdminLeadsRoute
   AuthenticatedAdminNewsletterRoute: typeof AuthenticatedAdminNewsletterRoute
   AuthenticatedAdminOrdersRoute: typeof AuthenticatedAdminOrdersRouteWithChildren
@@ -1276,6 +1296,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminDistributorContactsRoute:
     AuthenticatedAdminDistributorContactsRoute,
   AuthenticatedAdminFlashDealsRoute: AuthenticatedAdminFlashDealsRoute,
+  AuthenticatedAdminGineeRoute: AuthenticatedAdminGineeRoute,
   AuthenticatedAdminLeadsRoute: AuthenticatedAdminLeadsRoute,
   AuthenticatedAdminNewsletterRoute: AuthenticatedAdminNewsletterRoute,
   AuthenticatedAdminOrdersRoute: AuthenticatedAdminOrdersRouteWithChildren,
