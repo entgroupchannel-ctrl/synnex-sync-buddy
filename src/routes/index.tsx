@@ -1233,6 +1233,8 @@ function HomePage() {
 
           {search.category === "CCTV & Security" && <CctvInstallBanner className="mb-4" />}
 
+          {search.category === "CCTV & Security" && <Gt9000CctvAd className="mb-4" />}
+
           {search.category === "Webcam & Conference" && <ConferenceInstallBanner className="mb-4" />}
 
           {search.category === "Network" && <NetworkInstallBanner className="mb-4" />}
