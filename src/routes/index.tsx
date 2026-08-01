@@ -1239,6 +1239,7 @@ function HomePage() {
 
           {search.category === "Network" && <VolktekNetworkAds className="mb-4" />}
 
+          {search.category === "Edge AI Box" && <JetsonEdgeAiAds className="mb-4" />}
 
 
           {search.category === "Webcam & Conference" && <ConferenceInstallBanner className="mb-4" />}
