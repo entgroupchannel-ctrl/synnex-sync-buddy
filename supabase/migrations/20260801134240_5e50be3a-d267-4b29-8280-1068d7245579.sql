@@ -1,0 +1,1 @@
+UPDATE public.synnex_products SET image_url = '/__l5e/assets-v1/3a3285e6-0f0a-40be-8e1a-3bd2ef86fa76/airpods-max-spacegray.jpg' WHERE id = 'a13da088-7cb1-473e-b86a-c74e57e5ac99';
