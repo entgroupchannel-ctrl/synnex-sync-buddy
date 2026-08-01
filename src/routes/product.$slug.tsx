@@ -493,6 +493,8 @@ function ProductDetail() {
               <ComputerSetExplainer category={p.category as string | null | undefined} name={p.name} description={p.description} />
               <NetworkExplainer category={p.category as string | null | undefined} brand={p.brand} name={p.name} description={p.description} />
               <TechHelpBanner category={p.category as string | null | undefined} productName={p.name} />
+              <IndustrialCrossPromoBanner category={p.category as string | null | undefined} subcategory={p.subcategory as string | null | undefined} />
+
             </div>
 
             <div className="flex flex-col">
