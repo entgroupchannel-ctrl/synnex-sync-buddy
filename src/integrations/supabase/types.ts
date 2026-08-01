@@ -717,6 +717,141 @@ export type Database = {
         }
         Relationships: []
       }
+      ginee_category_map: {
+        Row: {
+          created_at: string
+          ginee_full_category_id: Json
+          id: string
+          notes: string | null
+          our_category: string
+          our_subcategory: string | null
+        }
+        Insert: {
+          created_at?: string
+          ginee_full_category_id: Json
+          id?: string
+          notes?: string | null
+          our_category: string
+          our_subcategory?: string | null
+        }
+        Update: {
+          created_at?: string
+          ginee_full_category_id?: Json
+          id?: string
+          notes?: string | null
+          our_category?: string
+          our_subcategory?: string | null
+        }
+        Relationships: []
+      }
+      ginee_product_sync: {
+        Row: {
+          created_at: string
+          ginee_product_id: string | null
+          ginee_variation_id: string | null
+          id: string
+          last_error: string | null
+          last_synced_at: string | null
+          product_id: string
+          sync_status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          ginee_product_id?: string | null
+          ginee_variation_id?: string | null
+          id?: string
+          last_error?: string | null
+          last_synced_at?: string | null
+          product_id: string
+          sync_status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          ginee_product_id?: string | null
+          ginee_variation_id?: string | null
+          id?: string
+          last_error?: string | null
+          last_synced_at?: string | null
+          product_id?: string
+          sync_status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ginee_product_sync_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: true
+            referencedRelation: "synnex_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ginee_product_sync_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: true
+            referencedRelation: "v_price_review"
+            referencedColumns: ["product_id"]
+          },
+        ]
+      }
+      ginee_shop_connections: {
+        Row: {
+          channel: string | null
+          connected_at: string
+          country: string
+          ginee_shop_id: string
+          id: string
+          shop_name: string | null
+          updated_at: string
+        }
+        Insert: {
+          channel?: string | null
+          connected_at?: string
+          country?: string
+          ginee_shop_id: string
+          id?: string
+          shop_name?: string | null
+          updated_at?: string
+        }
+        Update: {
+          channel?: string | null
+          connected_at?: string
+          country?: string
+          ginee_shop_id?: string
+          id?: string
+          shop_name?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ginee_sync_log: {
+        Row: {
+          action: string
+          created_at: string
+          detail: Json
+          id: string
+          request_path: string | null
+          status: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          detail?: Json
+          id?: string
+          request_path?: string | null
+          status: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          detail?: Json
+          id?: string
+          request_path?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
       newsletter_subscribers: {
         Row: {
           created_at: string | null
