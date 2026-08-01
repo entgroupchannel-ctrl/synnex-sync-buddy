@@ -28,6 +28,8 @@ import {
   FileOutput,
   Building2,
   Inbox,
+  ShoppingBag,
+
 
 
   LogOut,
@@ -149,6 +151,12 @@ const NAV: NavGroup[] = [
       { label: "Flash Deals", to: "/admin/flash-deals", icon: Flame },
     ],
   },
+  {
+    header: "Marketplace",
+    icon: ShoppingBag,
+    items: [{ label: "Shopee Integration", to: "/admin/shopee", icon: ShoppingBag }],
+  },
+
   {
     header: "ตั้งค่า",
     icon: Settings,
