@@ -1,4 +1,4 @@
-import { Component, type ReactNode, useState } from "react";
+import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 import { fallback, zodValidator } from "@tanstack/zod-adapter";
@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
+import { SettingsBoundary, SettingsErrorFallback } from "@/components/admin-settings-error";
 
 const searchSchema = z.object({
   tab: fallback(z.enum(["store", "payment", "shipping", "email"]), "store").default("store"),
@@ -19,30 +20,6 @@ export const Route = createFileRoute("/_authenticated/admin/settings")({
   head: () => ({ meta: [{ title: "ตั้งค่า — Admin" }, { name: "robots", content: "noindex,nofollow" }] }),
 });
 
-function SettingsErrorFallback({ error }: { error: Error }) {
-  return (
-    <div className="mx-auto max-w-lg px-4 py-16 text-center">
-      <h2 className="text-xl font-black text-slate-900">เกิดข้อผิดพลาด</h2>
-      <p className="mt-2 text-sm text-slate-600 break-words">{error?.message || "Unknown error"}</p>
-      <button
-        onClick={() => window.location.reload()}
-        className="mt-4 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700"
-      >
-        รีโหลดหน้า
-      </button>
-    </div>
-  );
-}
-
-class SettingsBoundary extends Component<{ children: ReactNode }, { error: Error | null }> {
-  state = { error: null as Error | null };
-  static getDerivedStateFromError(error: Error) { return { error }; }
-  componentDidCatch(error: Error) { console.error("[admin.settings]", error); }
-  render() {
-    if (this.state.error) return <SettingsErrorFallback error={this.state.error} />;
-    return this.props.children;
-  }
-}
 
 function SettingsPageWithBoundary() {
   return (
