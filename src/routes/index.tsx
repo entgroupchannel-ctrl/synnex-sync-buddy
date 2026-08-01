@@ -74,6 +74,7 @@ import { useVolumeRules, hasVolumeDiscount } from "@/lib/volume-discount";
 import entLogo from "@/assets/entgroup-logo.jpg.asset.json";
 import { VatNote } from "@/components/vat-note";
 import { SolarInstallBanner } from "@/components/solar-install-banner";
+import { GtSeriesSolarAds } from "@/components/gt-series-solar-ads";
 import { CctvInstallBanner } from "@/components/cctv-install-banner";
 import { ConferenceInstallBanner } from "@/components/conference-install-banner";
 import { NetworkInstallBanner } from "@/components/network-install-banner";
@@ -1227,6 +1228,8 @@ function HomePage() {
           )}
 
           {search.category === "Solar & Energy" && <SolarInstallBanner className="mb-4" />}
+
+          {search.category === "Solar & Energy" && <GtSeriesSolarAds className="mb-4" />}
 
           {search.category === "CCTV & Security" && <CctvInstallBanner className="mb-4" />}
 
