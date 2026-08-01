@@ -1228,6 +1228,8 @@ function HomePage() {
 
           {search.category === "Solar & Energy" && <SolarInstallBanner className="mb-4" />}
 
+          {search.category === "Solar & Energy" && <GtSeriesSolarAds className="mb-4" />}
+
           {search.category === "CCTV & Security" && <CctvInstallBanner className="mb-4" />}
 
           {search.category === "Webcam & Conference" && <ConferenceInstallBanner className="mb-4" />}
