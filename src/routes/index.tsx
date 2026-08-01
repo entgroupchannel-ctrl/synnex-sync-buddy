@@ -76,6 +76,7 @@ import { VatNote } from "@/components/vat-note";
 import { SolarInstallBanner } from "@/components/solar-install-banner";
 import { GtSeriesSolarAds } from "@/components/gt-series-solar-ads";
 import { CctvInstallBanner } from "@/components/cctv-install-banner";
+import { Gt9000CctvAd } from "@/components/gt9000-cctv-ad";
 import { ConferenceInstallBanner } from "@/components/conference-install-banner";
 import { NetworkInstallBanner } from "@/components/network-install-banner";
 import { EdgeAiBanner } from "@/components/edge-ai-banner";
