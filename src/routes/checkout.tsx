@@ -385,12 +385,7 @@ function CheckoutPage() {
       });
 
 
-      await supabase.from("order_status_history").insert({
-        order_id: order.id,
-        status: "pending",
-        note: "ลูกค้าสร้าง order",
-        changed_by: user?.email ?? "customer",
-      });
+      await logCreated({ data: { orderId: order.id, changedBy: user?.email ?? "customer" } });
 
       // B2B credit purchase — record the drawdown on the credit account
       if (payment === "credit" && creditAccount && user) {
