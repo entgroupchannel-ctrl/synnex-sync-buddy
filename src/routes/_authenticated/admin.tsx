@@ -152,6 +152,12 @@ const NAV: NavGroup[] = [
     ],
   },
   {
+    header: "Marketplace",
+    icon: ShoppingBag,
+    items: [{ label: "Shopee Integration", to: "/admin/shopee", icon: ShoppingBag }],
+  },
+
+  {
     header: "ตั้งค่า",
     icon: Settings,
     items: [
