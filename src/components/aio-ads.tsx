@@ -139,6 +139,11 @@ export function AioAdsShowcase() {
             className="group relative block overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:shadow-lg"
           >
             <BrandChip brand={hero.brand} />
+            {hero.includesOffice2024 && (
+              <div className="absolute right-3 top-3">
+                <OfficeBadge />
+              </div>
+            )}
             <img
               src={hero.image}
               alt={hero.title}
@@ -177,6 +182,11 @@ export function AioAdsShowcase() {
                 className="group relative block overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:shadow-lg"
               >
                 <BrandChip brand={ad.brand} size="sm" />
+                {ad.includesOffice2024 && (
+                  <div className="absolute right-2 top-2">
+                    <OfficeBadge size="sm" />
+                  </div>
+                )}
                 <img
                   src={ad.image}
                   alt={ad.title}
