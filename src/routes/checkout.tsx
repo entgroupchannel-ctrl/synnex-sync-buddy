@@ -18,6 +18,7 @@ import { OmiseCardForm } from "@/components/omise-card-form";
 import { ShippingMethodSelector } from "@/components/shipping-method-selector";
 import { getItemWeightKg, priceFmt, useCart } from "@/lib/cart";
 import { insertOrderItems } from "@/lib/order-items.functions";
+import { logOrderCreated as logCreated } from "@/lib/order-confirmation.functions";
 
 import { useSupabaseUser } from "@/lib/auth-sheet";
 import { bahtFmt, creditIsUsable, dueDateFrom, useCreditAccount } from "@/lib/credit";
