@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, ShieldCheck, Sparkles, Trophy } from "lucide-react";
+import { ArrowRight, Gift, ShieldCheck, Sparkles, Trophy } from "lucide-react";
 import { getBrandLogoUrl } from "@/lib/brand-assets";
 
 import adAsus from "@/assets/aio-ads/ad-asus-v440va.jpg";
