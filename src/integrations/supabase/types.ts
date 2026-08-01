@@ -1772,6 +1772,136 @@ export type Database = {
         }
         Relationships: []
       }
+      shopee_product_sync: {
+        Row: {
+          created_at: string
+          id: string
+          last_error: string | null
+          last_synced_at: string | null
+          product_id: string
+          shop_id: number
+          shopee_category_id: number | null
+          shopee_item_id: number | null
+          sync_status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          last_synced_at?: string | null
+          product_id: string
+          shop_id: number
+          shopee_category_id?: number | null
+          shopee_item_id?: number | null
+          sync_status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          last_synced_at?: string | null
+          product_id?: string
+          shop_id?: number
+          shopee_category_id?: number | null
+          shopee_item_id?: number | null
+          sync_status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shopee_product_sync_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "synnex_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shopee_product_sync_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "v_price_review"
+            referencedColumns: ["product_id"]
+          },
+          {
+            foreignKeyName: "shopee_product_sync_shop_id_fkey"
+            columns: ["shop_id"]
+            isOneToOne: false
+            referencedRelation: "shopee_shop_connections"
+            referencedColumns: ["shop_id"]
+          },
+        ]
+      }
+      shopee_shop_connections: {
+        Row: {
+          access_token: string
+          access_token_expires_at: string
+          connected_at: string
+          id: string
+          is_sandbox: boolean
+          refresh_token: string
+          region: string
+          shop_id: number
+          shop_name: string | null
+          updated_at: string
+        }
+        Insert: {
+          access_token: string
+          access_token_expires_at: string
+          connected_at?: string
+          id?: string
+          is_sandbox?: boolean
+          refresh_token: string
+          region?: string
+          shop_id: number
+          shop_name?: string | null
+          updated_at?: string
+        }
+        Update: {
+          access_token?: string
+          access_token_expires_at?: string
+          connected_at?: string
+          id?: string
+          is_sandbox?: boolean
+          refresh_token?: string
+          region?: string
+          shop_id?: number
+          shop_name?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      shopee_sync_log: {
+        Row: {
+          action: string
+          created_at: string
+          detail: Json
+          id: string
+          request_path: string | null
+          shop_id: number | null
+          status: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          detail?: Json
+          id?: string
+          request_path?: string | null
+          shop_id?: number | null
+          status: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          detail?: Json
+          id?: string
+          request_path?: string | null
+          shop_id?: number | null
+          status?: string
+        }
+        Relationships: []
+      }
       slip_verifications: {
         Row: {
           auto_approved: boolean | null
