@@ -78,6 +78,7 @@ import { GtSeriesSolarAds } from "@/components/gt-series-solar-ads";
 import { CctvInstallBanner } from "@/components/cctv-install-banner";
 import { Gt9000CctvAd } from "@/components/gt9000-cctv-ad";
 import { VolktekNetworkAds } from "@/components/volktek-network-ads";
+import { JetsonEdgeAiAds } from "@/components/jetson-edge-ai-ads";
 import { ConferenceInstallBanner } from "@/components/conference-install-banner";
 import { NetworkInstallBanner } from "@/components/network-install-banner";
 import { EdgeAiBanner } from "@/components/edge-ai-banner";
@@ -1239,6 +1240,7 @@ function HomePage() {
 
           {search.category === "Network" && <VolktekNetworkAds className="mb-4" />}
 
+          {search.category === "Edge AI Box" && <JetsonEdgeAiAds className="mb-4" />}
 
 
           {search.category === "Webcam & Conference" && <ConferenceInstallBanner className="mb-4" />}
