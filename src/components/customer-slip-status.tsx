@@ -4,8 +4,10 @@
  * ไม่โชว์ error code ภายใน (เช่น 1013) ตรงๆ แต่แปลเป็นข้อความที่เข้าใจง่ายแทน
  */
 import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { AlertTriangle, CheckCircle2, Clock } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { getOrderSlipStatus } from "@/lib/order-confirmation.functions";
+
 
 const FLAG_MESSAGE: Record<string, string> = {
   DUPLICATE_SLIP: "สลิปนี้เคยถูกใช้ยืนยันการโอนมาก่อนแล้ว กรุณาตรวจสอบว่าแนบสลิปถูกใบหรือไม่",
