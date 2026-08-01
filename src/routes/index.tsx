@@ -1,3 +1,4 @@
+import { IndustrialAdsGrid } from "@/components/industrial-ads-banner";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
