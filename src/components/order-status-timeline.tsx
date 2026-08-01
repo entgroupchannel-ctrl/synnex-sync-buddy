@@ -1,27 +1,22 @@
 /**
- * src/components/order-status-timeline.tsx  (ไฟล์ใหม่)
- * Timeline ประวัติการเปลี่ยนสถานะ ดึงจาก order_status_history (RLS อนุญาต SELECT อยู่แล้ว)
+ * src/components/order-status-timeline.tsx
+ * Timeline ประวัติการเปลี่ยนสถานะ ดึงผ่าน server function (RLS ปิดการอ่านตรงจาก client แล้ว)
  */
 import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { Clock } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { getOrderStatusHistory } from "@/lib/order-confirmation.functions";
 import { STATUS_META, isValidStatus } from "@/lib/order-helpers";
 
 type HistoryRow = { id: string; status: string; note: string | null; created_at: string };
 
 export function OrderStatusTimeline({ orderId }: { orderId: string }) {
+  const fetchHistory = useServerFn(getOrderStatusHistory);
   const q = useQuery({
     queryKey: ["order-status-history", orderId],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("order_status_history")
-        .select("id, status, note, created_at")
-        .eq("order_id", orderId)
-        .order("created_at", { ascending: true });
-      if (error) throw error;
-      return (data ?? []) as HistoryRow[];
-    },
+    queryFn: async () => (await fetchHistory({ data: { orderId } })) as HistoryRow[],
   });
+
 
   const rows = q.data ?? [];
 
