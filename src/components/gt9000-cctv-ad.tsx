@@ -21,13 +21,13 @@ export function Gt9000CctvAd({ className = "" }: { className?: string }) {
       <div className="grid gap-0 lg:grid-cols-[1.05fr_1fr]">
         {/* Copy */}
         <div className="flex flex-col justify-center gap-3 p-5 sm:p-7">
-          <div className="inline-flex w-fit items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-primary">
+          <div className="inline-flex w-fit items-center gap-1.5 rounded-full border border-emerald-400/50 bg-emerald-400/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-emerald-300">
             <Cctv className="h-3.5 w-3.5" /> CCTV & Security · Industrial Grade
           </div>
-          <h2 className="text-2xl font-extrabold leading-tight text-slate-50 sm:text-3xl">
-            GT9000 <span className="text-primary">Industrial Box PC</span>
+          <h2 className="text-2xl font-extrabold leading-tight text-white sm:text-3xl">
+            GT9000 <span className="text-emerald-300">Industrial Box PC</span>
           </h2>
-          <p className="text-sm leading-relaxed text-slate-300">
+          <p className="text-sm leading-relaxed text-slate-200">
             เครื่องสำหรับงานกล้องวงจรปิดโดยเฉพาะ — ใช้เป็น VMS / NVR Server, Video Analytics
             และเครื่องคุมระบบ Access Control ไร้พัดลม ทนฝุ่นทนร้อน ติดตั้งในตู้คอนโทรลได้ทันที
           </p>
@@ -35,12 +35,12 @@ export function Gt9000CctvAd({ className = "" }: { className?: string }) {
             {SPECS.map((s) => (
               <div
                 key={s.label}
-                className="flex items-start gap-2 rounded-xl border border-white/10 bg-white/[0.04] p-2.5"
+                className="flex items-start gap-2 rounded-xl border border-white/15 bg-white/[0.08] p-2.5"
               >
-                <s.icon className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                <s.icon className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" />
                 <div className="min-w-0">
-                  <div className="truncate text-xs font-semibold text-slate-100">{s.label}</div>
-                  <div className="truncate text-[11px] text-slate-400">{s.sub}</div>
+                  <div className="truncate text-xs font-semibold text-white">{s.label}</div>
+                  <div className="truncate text-[11px] text-slate-300">{s.sub}</div>
                 </div>
               </div>
             ))}
@@ -49,7 +49,7 @@ export function Gt9000CctvAd({ className = "" }: { className?: string }) {
             href={GT9000_URL}
             target="_blank"
             rel="noopener"
-            className="inline-flex w-fit items-center gap-1.5 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition hover:opacity-90"
+            className="inline-flex w-fit items-center gap-1.5 rounded-xl bg-emerald-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-500/20 transition hover:bg-emerald-400"
           >
             ดูสเปก GT9000 <ArrowUpRight className="h-4 w-4" />
           </a>
