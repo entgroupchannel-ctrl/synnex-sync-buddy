@@ -1,3 +1,4 @@
+import { IndustrialAdsFooterStrip } from "@/components/industrial-ads-banner";
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
@@ -672,6 +673,8 @@ export function SiteFooter() {
           </div>
         </div>
       </div>
+
+      <IndustrialAdsFooterStrip />
 
       <FooterBrandStrip />
 

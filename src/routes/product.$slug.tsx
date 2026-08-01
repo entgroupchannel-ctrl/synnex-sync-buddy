@@ -24,6 +24,7 @@ import { SolarExplainer } from "@/components/solar-explainer";
 import { ComputerSetExplainer } from "@/components/computer-set-explainer";
 import { TechHelpBanner } from "@/components/tech-help-banner";
 import { IndustrialCrossPromoBanner } from "@/components/industrial-cross-promo-banner";
+import { IndustrialAdBanner } from "@/components/industrial-ads-banner";
 
 import { NetworkExplainer } from "@/components/network-explainer";
 
@@ -496,6 +497,7 @@ function ProductDetail() {
               <NetworkExplainer category={p.category as string | null | undefined} brand={p.brand} name={p.name} description={p.description} />
               <TechHelpBanner category={p.category as string | null | undefined} productName={p.name} />
               <IndustrialCrossPromoBanner category={p.category as string | null | undefined} subcategory={p.subcategory as string | null | undefined} />
+              <IndustrialAdBanner category={p.category as string | null | undefined} subcategory={p.subcategory as string | null | undefined} className="mt-4" />
 
             </div>
 

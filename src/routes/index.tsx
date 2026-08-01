@@ -1,3 +1,4 @@
+import { IndustrialAdsGrid } from "@/components/industrial-ads-banner";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
@@ -1002,6 +1003,9 @@ function HomePage() {
 
           {/* 5 AIO Ads */}
           <AioAdsShowcase />
+
+          {/* 5 Industrial ads → www.entgroup.co.th */}
+          <IndustrialAdsGrid />
 
 
 
