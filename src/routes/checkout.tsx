@@ -18,6 +18,7 @@ import { OmiseCardForm } from "@/components/omise-card-form";
 import { ShippingMethodSelector } from "@/components/shipping-method-selector";
 import { getItemWeightKg, priceFmt, useCart } from "@/lib/cart";
 import { insertOrderItems } from "@/lib/order-items.functions";
+import { logOrderCreated as logCreated } from "@/lib/order-confirmation.functions";
 
 import { useSupabaseUser } from "@/lib/auth-sheet";
 import { bahtFmt, creditIsUsable, dueDateFrom, useCreditAccount } from "@/lib/credit";
@@ -385,12 +386,7 @@ function CheckoutPage() {
       });
 
 
-      await supabase.from("order_status_history").insert({
-        order_id: order.id,
-        status: "pending",
-        note: "ลูกค้าสร้าง order",
-        changed_by: user?.email ?? "customer",
-      });
+      await logCreated({ data: { orderId: order.id, changedBy: user?.email ?? "customer" } });
 
       // B2B credit purchase — record the drawdown on the credit account
       if (payment === "credit" && creditAccount && user) {

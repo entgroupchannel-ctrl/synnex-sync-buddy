@@ -4,8 +4,10 @@
  * ไม่โชว์ error code ภายใน (เช่น 1013) ตรงๆ แต่แปลเป็นข้อความที่เข้าใจง่ายแทน
  */
 import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { AlertTriangle, CheckCircle2, Clock } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { getOrderSlipStatus } from "@/lib/order-confirmation.functions";
+
 
 const FLAG_MESSAGE: Record<string, string> = {
   DUPLICATE_SLIP: "สลิปนี้เคยถูกใช้ยืนยันการโอนมาก่อนแล้ว กรุณาตรวจสอบว่าแนบสลิปถูกใบหรือไม่",
@@ -22,21 +24,14 @@ type Verification = {
 };
 
 export function CustomerSlipStatus({ orderId }: { orderId: string }) {
+  const fetchSlipStatus = useServerFn(getOrderSlipStatus);
   const q = useQuery({
     queryKey: ["customer-slip-status", orderId],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("slip_verifications")
-        .select("risk_flags, auto_approved, error_message")
-        .eq("order_id", orderId)
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      if (error) throw error;
-      return data as Verification | null;
-    },
+    queryFn: async () =>
+      (await fetchSlipStatus({ data: { orderId } })) as Verification | null,
     refetchInterval: 4000, // เผื่อผลตรวจสอบมาช้ากว่าที่ลูกค้าเปิดหน้าดูอยู่
   });
+
 
   const v = q.data;
 

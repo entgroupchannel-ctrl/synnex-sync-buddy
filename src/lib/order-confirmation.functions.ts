@@ -71,3 +71,55 @@ export const linkGuestOrderToAccount = createServerFn({ method: "POST" })
     if (updErr) throw new Error(updErr.message);
     return { success: true };
   });
+
+const orderIdSchema = z.object({ orderId: z.string().uuid() });
+
+/** ประวัติสถานะออเดอร์ — ผ่านเซิร์ฟเวอร์ เพราะ RLS ปิดการอ่านตรงจาก client ของ guest แล้ว */
+export const getOrderStatusHistory = createServerFn({ method: "GET" })
+  .inputValidator((data: unknown) => orderIdSchema.parse(data))
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: rows, error } = await supabaseAdmin
+      .from("order_status_history")
+      .select("id, status, note, created_at")
+      .eq("order_id", data.orderId)
+      .order("created_at", { ascending: true });
+    if (error) throw new Error(error.message);
+    return rows ?? [];
+  });
+
+/** ผลตรวจสลิปแบบย่อสำหรับลูกค้า (ไม่ส่งข้อมูลผู้โอน/ธนาคารออกไป) */
+export const getOrderSlipStatus = createServerFn({ method: "GET" })
+  .inputValidator((data: unknown) => orderIdSchema.parse(data))
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: row, error } = await supabaseAdmin
+      .from("slip_verifications")
+      .select("risk_flags, auto_approved, error_message")
+      .eq("order_id", data.orderId)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    return row ?? null;
+  });
+
+const createdHistorySchema = z.object({
+  orderId: z.string().uuid(),
+  changedBy: z.string().max(120).optional(),
+});
+
+/** บันทึกประวัติ "ลูกค้าสร้าง order" — guest เขียนตรงไม่ได้อีกแล้ว */
+export const logOrderCreated = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => createdHistorySchema.parse(data))
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.from("order_status_history").insert({
+      order_id: data.orderId,
+      status: "pending",
+      note: "ลูกค้าสร้าง order",
+      changed_by: data.changedBy ?? "customer",
+    });
+    if (error) throw new Error(error.message);
+    return { success: true };
+  });
