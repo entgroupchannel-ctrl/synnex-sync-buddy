@@ -18,6 +18,8 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { toast } from "sonner";
 import { ShoppingCart, Search, Package, Grid2x2, List, SlidersHorizontal, Flame, ChevronRight } from "lucide-react";
 import { ScrollingTicker } from "@/components/scrolling-ticker";
+import { AioAdsShowcase } from "@/components/aio-ads";
+
 import { FlashSaleCountdown } from "@/components/flash-sale-countdown";
 import { useLanguage } from "@/lib/i18n";
 import { SiteHeader } from "@/components/site-header";
