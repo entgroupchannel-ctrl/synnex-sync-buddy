@@ -673,6 +673,8 @@ export function SiteFooter() {
         </div>
       </div>
 
+      <IndustrialAdsFooterStrip />
+
       <FooterBrandStrip />
 
       {/* Network sites */}

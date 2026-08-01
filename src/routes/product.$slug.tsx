@@ -496,6 +496,7 @@ function ProductDetail() {
               <NetworkExplainer category={p.category as string | null | undefined} brand={p.brand} name={p.name} description={p.description} />
               <TechHelpBanner category={p.category as string | null | undefined} productName={p.name} />
               <IndustrialCrossPromoBanner category={p.category as string | null | undefined} subcategory={p.subcategory as string | null | undefined} />
+              <IndustrialAdBanner category={p.category as string | null | undefined} subcategory={p.subcategory as string | null | undefined} className="mt-4" />
 
             </div>
 

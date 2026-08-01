@@ -1003,6 +1003,9 @@ function HomePage() {
           {/* 5 AIO Ads */}
           <AioAdsShowcase />
 
+          {/* 5 Industrial ads → www.entgroup.co.th */}
+          <IndustrialAdsGrid />
+
 
 
 
