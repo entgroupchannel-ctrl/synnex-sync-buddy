@@ -1,57 +1,77 @@
+# shop.entgroup.co.th — robots.txt
+
+# หมายเหตุ: ไฟล์นี้เป็นแค่ "คำขอความร่วมมือ" บอทที่ไม่หวังดีจะไม่สนใจไฟล์นี้อยู่แล้ว
+
+# การป้องกันจริงต้องอาศัย Cloudflare + RLS/permission ที่แก้ไปแล้ว
+
+# แต่ยังจำเป็นสำหรับ SEO ที่ถูกต้อง และเป็นหลักฐานทางกฎหมายถ้าต้องฟ้องร้องภายหลัง
+
 User-agent: *
+
 Allow: /
+
 Disallow: /admin/
+
+Disallow: /api/
+
+Disallow: /*?*sort=
+
+Disallow: /*?*page=
+
 Disallow: /cart
+
 Disallow: /checkout
-Disallow: /auth
-Disallow: /auth/callback
-Disallow: /reset-password
-Disallow: /compare
-Disallow: /my-account
-Disallow: /my-orders
-Disallow: /order/
-Disallow: /track/
-Crawl-delay: 10
 
-# Preferred search engines — lighter throttle
-User-agent: Googlebot
-Allow: /
-Crawl-delay: 2
-
-User-agent: Bingbot
-Allow: /
 Crawl-delay: 5
 
-Sitemap: https://shop.entgroup.co.th/sitemap.xml
+# บล็อก AI/LLM crawlers ที่ใช้เทรนโมเดลหรือดึงข้อมูลจำนวนมาก
 
-
-# AI crawlers (GEO / AEO)
 User-agent: GPTBot
-Allow: /
+
+Disallow: /
 
 User-agent: ChatGPT-User
-Allow: /
 
-User-agent: OAI-SearchBot
-Allow: /
-
-User-agent: Google-Extended
-Allow: /
-
-User-agent: PerplexityBot
-Allow: /
-
-User-agent: ClaudeBot
-Allow: /
-
-User-agent: anthropic-ai
-Allow: /
-
-User-agent: Applebot-Extended
-Allow: /
-
-User-agent: Bytespider
-Allow: /
+Disallow: /
 
 User-agent: CCBot
-Allow: /
+
+Disallow: /
+
+User-agent: anthropic-ai
+
+Disallow: /
+
+User-agent: ClaudeBot
+
+Disallow: /
+
+User-agent: Claude-Web
+
+Disallow: /
+
+User-agent: Bytespider
+
+Disallow: /
+
+User-agent: PetalBot
+
+Disallow: /
+
+User-agent: SemrushBot
+
+Disallow: /
+
+User-agent: AhrefsBot
+
+Disallow: /
+
+User-agent: MJ12bot
+
+Disallow: /
+
+User-agent: DotBot
+
+Disallow: /
+
+Sitemap: https://shop.entgroup.co.th/sitemap.xml
