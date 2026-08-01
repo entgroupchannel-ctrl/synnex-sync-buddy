@@ -18,6 +18,7 @@ type Ad = {
   bullets: string[];
   price: number;
   tone: string;
+  includesOffice2024?: boolean;
 };
 
 const ADS: Ad[] = [
