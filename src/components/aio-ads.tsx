@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Sparkles, Trophy } from "lucide-react";
+import { ArrowRight, ShieldCheck, Sparkles, Trophy } from "lucide-react";
+import { getBrandLogoUrl } from "@/lib/brand-assets";
 
 import adAsus from "@/assets/aio-ads/ad-asus-v440va.jpg";
 import adAcer from "@/assets/aio-ads/ad-acer-c24a.jpg";
@@ -9,6 +10,7 @@ import adHp from "@/assets/aio-ads/ad-hp-24cy.jpg";
 
 type Ad = {
   slug: string;
+  brand: string;
   image: string;
   badge: string;
   title: string;
@@ -21,6 +23,7 @@ type Ad = {
 const ADS: Ad[] = [
   {
     slug: "c5b0c8d4-4771-4252-9018-bf7567866a0b",
+    brand: "ASUS",
     image: adAsus,
     badge: "เริ่มต้นถูกสุด",
     title: "AIO Asus V440VA-WPC002WA",
@@ -31,6 +34,7 @@ const ADS: Ad[] = [
   },
   {
     slug: "672c97b5-9a3d-4273-a84d-9d39b2befdf3",
+    brand: "ACER",
     image: adAcer,
     badge: "คุ้มที่สุด",
     title: "AIO Acer Aspire C24A-C512016GT23Mi/T005",
@@ -41,6 +45,7 @@ const ADS: Ad[] = [
   },
   {
     slug: "aio-lenovo-thinkcentre-neo-50a-24-g5-12sd0050th-3bbad7d6",
+    brand: "LENOVO",
     image: adLenovoG5,
     badge: "ยอดนิยมออฟฟิศ",
     title: "AIO Lenovo ThinkCentre Neo 50a 24 G5",
@@ -51,6 +56,7 @@ const ADS: Ad[] = [
   },
   {
     slug: "4d2e3a11-90e3-4c15-bbe1-e9f1ea9a1ff0",
+    brand: "LENOVO",
     image: adLenovoG6,
     badge: "AI PC ธุรกิจ",
     title: "AIO Lenovo ThinkCentre Neo 50a 24 G6 LNL",
@@ -61,6 +67,7 @@ const ADS: Ad[] = [
   },
   {
     slug: "7d517bc0-dd84-4563-a965-b3c04c9f3a83",
+    brand: "HP",
     image: adHp,
     badge: "AI PC + Office",
     title: "AIO HP 24-cy0015d",
@@ -70,6 +77,23 @@ const ADS: Ad[] = [
     tone: "from-amber-700/85",
   },
 ];
+
+function BrandChip({ brand, size = "md" }: { brand: string; size?: "md" | "sm" }) {
+  const logo = getBrandLogoUrl(brand);
+  const h = size === "md" ? 22 : 16;
+  return (
+    <div className="absolute left-3 top-3 z-10 inline-flex items-center gap-2 rounded-lg bg-white/95 px-2.5 py-1.5 shadow-md ring-1 ring-black/5 backdrop-blur">
+      {logo ? (
+        <img src={logo} alt={brand} style={{ height: h, maxWidth: 74, objectFit: "contain" }} />
+      ) : (
+        <span className="text-xs font-bold text-slate-700">{brand}</span>
+      )}
+      <span className="hidden items-center gap-1 border-l border-slate-200 pl-2 text-[10px] font-semibold text-emerald-700 sm:inline-flex">
+        <ShieldCheck className="h-3 w-3" /> ประกันศูนย์ไทย
+      </span>
+    </div>
+  );
+}
 
 const baht = (n: number) => `฿${n.toLocaleString("th-TH")}`;
 
@@ -97,6 +121,7 @@ export function AioAdsShowcase() {
             params={{ slug: hero.slug }}
             className="group relative block overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:shadow-lg"
           >
+            <BrandChip brand={hero.brand} />
             <img
               src={hero.image}
               alt={hero.title}
@@ -134,6 +159,7 @@ export function AioAdsShowcase() {
                 params={{ slug: ad.slug }}
                 className="group relative block overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:shadow-lg"
               >
+                <BrandChip brand={ad.brand} size="sm" />
                 <img
                   src={ad.image}
                   alt={ad.title}
