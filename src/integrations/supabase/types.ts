@@ -2113,6 +2113,7 @@ export type Database = {
           batch_id: string
           distributor: string
           id: string
+          image_gallery: Json
           image_url: string
           model_code: string | null
           name: string | null
@@ -2126,6 +2127,7 @@ export type Database = {
           batch_id: string
           distributor?: string
           id?: string
+          image_gallery?: Json
           image_url: string
           model_code?: string | null
           name?: string | null
@@ -2139,6 +2141,7 @@ export type Database = {
           batch_id?: string
           distributor?: string
           id?: string
+          image_gallery?: Json
           image_url?: string
           model_code?: string | null
           name?: string | null
