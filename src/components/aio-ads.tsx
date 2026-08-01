@@ -99,6 +99,19 @@ function BrandChip({ brand, size = "md" }: { brand: string; size?: "md" | "sm" }
   );
 }
 
+function OfficeBadge({ size = "md" }: { size?: "md" | "sm" }) {
+  return (
+    <div
+      className={`z-10 inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-br from-orange-500 to-red-600 px-2.5 py-1.5 text-white shadow-lg ring-2 ring-white/50 backdrop-blur ${
+        size === "sm" ? "text-[10px]" : "text-xs"
+      }`}
+    >
+      <Gift className={size === "sm" ? "h-3 w-3" : "h-3.5 w-3.5"} />
+      <span className="font-semibold">แถม Office 2024</span>
+    </div>
+  );
+}
+
 const baht = (n: number) => `฿${n.toLocaleString("th-TH")}`;
 
 export function AioAdsShowcase() {
