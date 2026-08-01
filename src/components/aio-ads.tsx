@@ -32,6 +32,7 @@ const ADS: Ad[] = [
     bullets: ["แถม Office 2024", "MS365 Basic ครบ", "ราคาเริ่มต้นถูกสุดในไลน์"],
     price: 23620,
     tone: "from-emerald-600/85",
+    includesOffice2024: true,
   },
   {
     slug: "672c97b5-9a3d-4273-a84d-9d39b2befdf3",
@@ -43,6 +44,7 @@ const ADS: Ad[] = [
     bullets: ["RAM 16GB ลื่นทุกงาน", "Office 2024 ในเครื่อง", "สเปคชนะคู่แข่งช่วงราคาเดียวกัน"],
     price: 28160,
     tone: "from-sky-700/85",
+    includesOffice2024: true,
   },
   {
     slug: "aio-lenovo-thinkcentre-neo-50a-24-g5-12sd0050th-3bbad7d6",
@@ -76,6 +78,7 @@ const ADS: Ad[] = [
     bullets: ["Intel Core Ultra 5 325", "Office 2024 + MS365", "จอสวย งานบ้าน–งานออฟฟิศจบในเครื่อง"],
     price: 36460,
     tone: "from-amber-700/85",
+    includesOffice2024: true,
   },
 ];
 
