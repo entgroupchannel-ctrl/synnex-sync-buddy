@@ -9,3 +9,12 @@ verify_jwt = true
 
 [functions.send-newsletter-welcome]
 verify_jwt = false
+
+[functions.shopee-oauth-authorize]
+verify_jwt = true
+
+[functions.shopee-oauth-callback]
+verify_jwt = false
+
+[functions.shopee-test-connection]
+verify_jwt = true
