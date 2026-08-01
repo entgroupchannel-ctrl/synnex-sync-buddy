@@ -21,11 +21,11 @@ export function Gt9000CctvAd({ className = "" }: { className?: string }) {
       <div className="grid gap-0 lg:grid-cols-[1.05fr_1fr]">
         {/* Copy */}
         <div className="flex flex-col justify-center gap-3 p-5 sm:p-7">
-          <div className="inline-flex w-fit items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-primary">
+          <div className="inline-flex w-fit items-center gap-1.5 rounded-full border border-emerald-400/50 bg-emerald-400/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-emerald-300">
             <Cctv className="h-3.5 w-3.5" /> CCTV & Security · Industrial Grade
           </div>
-          <h2 className="text-2xl font-extrabold leading-tight text-slate-50 sm:text-3xl">
-            GT9000 <span className="text-primary">Industrial Box PC</span>
+          <h2 className="text-2xl font-extrabold leading-tight text-white sm:text-3xl">
+            GT9000 <span className="text-emerald-300">Industrial Box PC</span>
           </h2>
           <p className="text-sm leading-relaxed text-slate-300">
             เครื่องสำหรับงานกล้องวงจรปิดโดยเฉพาะ — ใช้เป็น VMS / NVR Server, Video Analytics
