@@ -547,7 +547,7 @@ function CheckoutPage() {
             email: base.data.customer_email || undefined,
             phone: base.data.customer_phone || undefined,
           },
-        }).catch((e) => console.warn("[meta-capi]", e));
+        }).catch((e: unknown) => console.warn("[meta-capi]", e));
 
         await navigate({ to: "/order/$orderNumber", params: { orderNumber: order.order_number } });
         clear();
