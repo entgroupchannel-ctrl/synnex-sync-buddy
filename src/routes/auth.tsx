@@ -171,19 +171,6 @@ function SignInForm({ redirectTo }: { redirectTo: string }) {
   const [forgotBusy, setForgotBusy] = useState(false);
   const navigate = useNavigate();
 
-  const [googleBusy, setGoogleBusy] = useState(false);
-  const onGoogleSignIn = async () => {
-    setGoogleBusy(true);
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: window.location.origin + "/auth/callback" },
-    });
-    if (error) {
-      toast.error(error.message);
-      setGoogleBusy(false);
-    }
-    // สำเร็จแล้วเบราว์เซอร์จะ redirect ออกจากหน้านี้เอง
-  };
 
 
   const onSubmit = async (e: React.FormEvent) => {
