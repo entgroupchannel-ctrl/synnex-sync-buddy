@@ -1,12 +1,15 @@
-import { LineQrDialog } from "@/components/line-qr-dialog";
-import { useEffect, useRef, useState } from "react";
+/**
+ * PromptPay QR — สร้างเองฝั่ง client ด้วย library promptpay-qr (มาตรฐาน EMVCo)
+ * ไม่ต้องพึ่ง payment gateway; ยืนยันการชำระเงินด้วยการแนบสลิป → SlipOK ตรวจอัตโนมัติ
+ */
+import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { CheckCircle2, Copy, CreditCard, Landmark, Loader2, Timer, X } from "lucide-react";
+import generatePayload from "promptpay-qr";
+import { QRCodeSVG } from "qrcode.react";
+import { CheckCircle2, CreditCard, Upload, X } from "lucide-react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogPortal, DialogOverlay } from "@/components/ui/dialog";
-import { bahtFmt } from "@/lib/order-helpers";
+import { bahtFmt, COMPANY_INFO } from "@/lib/order-helpers";
 import { getOrderPaymentStatus } from "@/lib/order-confirmation.functions";
 
 type Props = {
@@ -16,33 +19,15 @@ type Props = {
   onPaid: () => void;
 };
 
-type BankAccount = {
-  bank: string;
-  account: string;
-  name: string;
-  branch?: string;
-};
-
-type ChargeResp = {
-  qr_code_url?: string;
-  expires_at?: string;
-  charge_id?: string;
-  requires_manual_transfer?: boolean;
-  bank_accounts?: BankAccount[];
-  amount?: number;
-};
-
 const BANKS = ["KBank", "SCB", "กรุงไทย", "กรุงเทพ", "ทหารไทย"];
 
 export function PromptPayPaymentModal({ orderId, orderNumber, amount, onPaid }: Props) {
   const [open, setOpen] = useState(true);
-  const [charge, setCharge] = useState<ChargeResp | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [checking, setChecking] = useState(false);
   const [paid, setPaid] = useState(false);
-  const [remaining, setRemaining] = useState<number>(15 * 60);
-  const requested = useRef(false);
   const checkPayment = useServerFn(getOrderPaymentStatus);
+
+  // สร้าง QR ทันที ไม่ต้องรอ network call ใดๆ (คำนวณล้วนๆ ฝั่ง client)
+  const payload = generatePayload(COMPANY_INFO.promptpay_id, { amount });
 
   const markPaid = () => {
     if (paid) return;
@@ -54,41 +39,7 @@ export function PromptPayPaymentModal({ orderId, orderNumber, amount, onPaid }: 
     }, 3000);
   };
 
-  // Create charge once
-  useEffect(() => {
-    if (requested.current) return;
-    requested.current = true;
-    (async () => {
-      try {
-        const { data, error } = await supabase.functions.invoke("create-omise-charge", {
-          body: { order_id: orderId, amount },
-        });
-        if (error) throw error;
-        const { qr_code_url, charge_id, expires_at, requires_manual_transfer } = data as ChargeResp;
-        if (requires_manual_transfer) {
-          setCharge({ requires_manual_transfer: true, bank_accounts: (data as ChargeResp).bank_accounts || [] });
-        } else {
-          if (!qr_code_url) throw new Error("ไม่ได้รับข้อมูล QR");
-          setCharge({ qr_code_url, charge_id, expires_at });
-          const exp = new Date(expires_at!).getTime();
-          setRemaining(Math.max(0, Math.floor((exp - Date.now()) / 1000)));
-        }
-      } catch (e) {
-        toast.error(e instanceof Error ? e.message : "สร้าง QR ไม่สำเร็จ");
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [orderId, amount]);
-
-  // Countdown (only for PromptPay QR)
-  useEffect(() => {
-    if (!charge || paid || charge.requires_manual_transfer) return;
-    const t = setInterval(() => setRemaining((r) => Math.max(0, r - 1)), 1000);
-    return () => clearInterval(t);
-  }, [charge, paid]);
-
-  // Poll payment_status every 5s (runs even when modal closed)
+  // Poll payment_status ทุก 5 วิ เผื่อ admin/SlipOK ตรวจสลิปแล้ว mark paid
   useEffect(() => {
     if (paid) return;
     const iv = setInterval(async () => {
@@ -103,30 +54,14 @@ export function PromptPayPaymentModal({ orderId, orderNumber, amount, onPaid }: 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orderId, paid, open]);
 
-  const checkNow = async () => {
-    setChecking(true);
-    const data = await checkPayment({ data: { orderId } });
-    setChecking(false);
-    if (data?.payment_status === "paid") {
-      markPaid();
-    } else {
-      toast.info("ยังไม่พบการชำระเงิน กรุณารอสักครู่");
-    }
+  const goToSlipUpload = () => {
+    setOpen(false);
+    setTimeout(() => {
+      document
+        .getElementById("slip-upload-section")
+        ?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 150);
   };
-
-  const copyAccount = async (number: string) => {
-    try {
-      await navigator.clipboard.writeText(number);
-      toast.success("คัดลอกเลขบัญชีแล้ว");
-    } catch {
-      toast.error("คัดลอกไม่สำเร็จ");
-    }
-  };
-
-  const mm = String(Math.floor(remaining / 60)).padStart(2, "0");
-  const ss = String(remaining % 60).padStart(2, "0");
-  const expired = remaining <= 0;
-  const timerLow = remaining < 120;
 
   return (
     <>
@@ -161,154 +96,52 @@ export function PromptPayPaymentModal({ orderId, orderNumber, amount, onPaid }: 
                 </div>
 
                 <div className="px-6 pb-6 pt-4 text-center">
-                  <h2 className="text-lg font-bold text-slate-800">
-                    {charge?.requires_manual_transfer ? "โอนเงินผ่านธนาคาร" : "ชำระเงินด้วย PromptPay"}
-                  </h2>
-                  {charge?.requires_manual_transfer && (
-                    <div className="mt-1 text-xs text-orange-600">(ยอดเกิน ฿150,000)</div>
-                  )}
+                  <h2 className="text-lg font-bold text-slate-800">ชำระเงินด้วย PromptPay</h2>
                   <div className="mx-auto mt-1 h-px w-16 bg-slate-200" />
 
                   <div className="mt-4 text-sm text-slate-500">ยอดที่ต้องชำระ</div>
                   <div className="text-4xl font-bold text-blue-600">{bahtFmt.format(amount)}</div>
                   <div className="mt-1 font-mono text-xs text-slate-500">{orderNumber}</div>
 
-                  {charge?.requires_manual_transfer ? (
-                    <>
-                      {/* Bank transfer UI */}
-                      <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-left">
-                        <div className="flex items-center gap-2 text-amber-800">
-                          <Landmark className="h-5 w-5" />
-                          <div className="font-bold">โอนเงินผ่านธนาคาร</div>
-                        </div>
-                        <div className="mt-1 text-xs text-amber-700">
-                          ยอด ฿{amount.toLocaleString()} เกินวงเงิน PromptPay
-                        </div>
+                  {/* QR frame */}
+                  <div className="mx-auto mt-4 overflow-hidden rounded-xl border-2 border-blue-100">
+                    <div className="bg-gradient-to-b from-blue-600 to-blue-700 px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-white">
+                      Thai QR Payment · PromptPay
+                    </div>
+                    <div className="grid place-items-center bg-white p-4">
+                      <QRCodeSVG value={payload} size={200} level="M" />
+                    </div>
+                    <div className="border-t bg-slate-50 px-3 py-2 text-[11px] text-slate-600">
+                      {COMPANY_INFO.name}
+                    </div>
+                  </div>
 
-                        <div className="mt-3 space-y-3">
-                          {charge.bank_accounts?.map((acc) => (
-                            <div key={acc.account} className="rounded-lg border border-amber-100 bg-white p-3">
-                              <div className="font-semibold text-slate-800">{acc.bank}</div>
-                              <div className="font-mono text-sm text-slate-700">{acc.account}</div>
-                              <div className="text-xs text-slate-500">{acc.name}</div>
-                              {acc.branch && <div className="text-xs text-slate-400">{acc.branch}</div>}
-                              <button
-                                onClick={() => copyAccount(acc.account.replace(/-/g, ""))}
-                                className="mt-2 inline-flex items-center gap-1 text-xs text-blue-600 underline"
-                              >
-                                📋 คัดลอกเลขบัญชี
-                              </button>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
+                  <p className="mt-3 text-sm text-slate-600">
+                    เปิด Mobile Banking → สแกน QR → ยืนยันการชำระเงิน
+                  </p>
 
-                      <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-3 text-left text-sm">
-                        <div className="mb-2 font-semibold text-slate-800">📸 หลังโอนเงินแล้ว แจ้งสลิปได้ที่</div>
-                        <div className="flex flex-wrap gap-2">
-                          <LineQrDialog>
-                            <button
-                              type="button"
-                              className="flex items-center gap-1.5 rounded-full bg-[#06C755] px-4 py-2 text-sm font-medium text-white"
-                            >
-                              💚 Line: @entgroup
-                            </button>
-                          </LineQrDialog>
-                          <a
-                            href="mailto:sales@entgroup.co.th"
-                            className="flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm"
-                          >
-                            ✉️ Email
-                          </a>
-                        </div>
-                      </div>
+                  <button
+                    onClick={goToSlipUpload}
+                    className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-blue-600 px-4 py-3 text-sm font-bold text-white hover:bg-blue-700"
+                  >
+                    <Upload className="h-4 w-4" /> จ่ายแล้ว แนบสลิปยืนยัน
+                  </button>
 
-                      <Button
-                        onClick={checkNow}
-                        disabled={checking}
-                        className="mt-3 w-full rounded-full bg-blue-600 hover:bg-blue-700"
-                        size="lg"
-                      >
-                        {checking ? (
-                          <><Loader2 className="mr-2 h-4 w-4 animate-spin" />กำลังตรวจสอบ...</>
-                        ) : (
-                          "ฉันโอนเงินแล้ว"
-                        )}
-                      </Button>
+                  <div className="mt-5 text-xs text-slate-500">รองรับทุกธนาคาร</div>
+                  <div className="mt-1.5 flex flex-wrap items-center justify-center gap-1 text-xs text-slate-600">
+                    {BANKS.map((b, i) => (
+                      <span key={b} className="inline-flex items-center">
+                        <span className="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 font-medium">
+                          {b}
+                        </span>
+                        {i < BANKS.length - 1 && <span className="mx-0.5 text-slate-300">·</span>}
+                      </span>
+                    ))}
+                  </div>
 
-                      <div className="mt-4 text-[11px] text-slate-400">
-                        ระบบตรวจสอบอัตโนมัติทุก 5 วินาที
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      {/* QR frame */}
-                      <div className="mx-auto mt-4 overflow-hidden rounded-xl border-2 border-blue-100">
-                        <div className="bg-gradient-to-b from-blue-600 to-blue-700 px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-white">
-                          Thai QR Payment · PromptPay
-                        </div>
-                        <div className="grid place-items-center bg-white p-4">
-                          {loading || !charge ? (
-                            <div className="grid h-[200px] w-[200px] place-items-center">
-                              <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
-                            </div>
-                          ) : expired ? (
-                            <div className="grid h-[200px] w-[200px] place-items-center px-2 text-center text-sm text-red-500">
-                              QR หมดอายุ<br />กรุณาสร้างคำสั่งซื้อใหม่
-                            </div>
-                          ) : (
-                            <img
-                              src={charge.qr_code_url}
-                              alt={`PromptPay QR ${orderNumber}`}
-                              width={200}
-                              height={200}
-                              className="h-[200px] w-[200px] object-contain"
-                            />
-                          )}
-                        </div>
-                      </div>
-
-                      <div
-                        className={`mt-3 inline-flex items-center gap-1.5 text-sm font-semibold ${
-                          expired || timerLow ? "text-red-500" : "text-orange-500"
-                        }`}
-                      >
-                        <Timer className="h-4 w-4" />
-                        {expired ? "QR หมดอายุแล้ว" : (
-                          <>QR หมดอายุใน <span className="font-mono">{mm}:{ss}</span></>
-                        )}
-                      </div>
-
-                      <Button
-                        onClick={checkNow}
-                        disabled={loading || expired || checking}
-                        className="mt-4 w-full rounded-full bg-blue-600 hover:bg-blue-700"
-                        size="lg"
-                      >
-                        {checking ? (
-                          <><Loader2 className="mr-2 h-4 w-4 animate-spin" />กำลังตรวจสอบ...</>
-                        ) : (
-                          "ฉันโอนเงินแล้ว"
-                        )}
-                      </Button>
-
-                      <div className="mt-5 text-xs text-slate-500">รองรับทุกธนาคาร</div>
-                      <div className="mt-1.5 flex flex-wrap items-center justify-center gap-1 text-xs text-slate-600">
-                        {BANKS.map((b, i) => (
-                          <span key={b} className="inline-flex items-center">
-                            <span className="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 font-medium">
-                              {b}
-                            </span>
-                            {i < BANKS.length - 1 && <span className="mx-0.5 text-slate-300">·</span>}
-                          </span>
-                        ))}
-                      </div>
-
-                      <div className="mt-4 text-[11px] text-slate-400">
-                        ระบบตรวจสอบอัตโนมัติทุก 5 วินาที
-                      </div>
-                    </>
-                  )}
+                  <div className="mt-4 text-[11px] text-slate-400">
+                    หลังสแกนจ่ายแล้ว กรุณาแนบสลิปเพื่อให้ระบบตรวจสอบอัตโนมัติ
+                  </div>
                 </div>
               </div>
             )}
