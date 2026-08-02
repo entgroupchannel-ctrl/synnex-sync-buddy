@@ -1,35 +1,20 @@
-## สถานะปัจจุบัน
+## ยืนยันปัญหาแล้ว
 
-เมนูบนแถบ nav ใช้ลิสต์ 19 หมวดจาก `CATEGORIES` เป็นลิงก์ธรรมดาทั้งหมด ยกเว้น 2 ตัวที่เป็น Mega Menu แล้ว: Apple (แทรกหลัง Notebook) และ Edge AI Box มีเฉพาะ RAM กับ Printer ที่นิยาม subcategory ไว้ใน `SUBCATEGORIES` แต่ยังไม่ถูกใช้ทำ mega menu
+ตรวจ environment ของ server runtime ในโปรเจกต์นี้:
+- `SUPABASE_URL` — มีค่า
+- `SUPABASE_PUBLISHABLE_KEY` — มีค่า
+- `SUPABASE_SERVICE_ROLE_KEY` — **ว่าง**
 
-## หมวดที่ควรทำ Mega Menu เพิ่ม (เรียงตามความคุ้มค่า)
+ฉะนั้น `supabaseAdmin` ใน `src/integrations/supabase/client.server.ts` จะ throw `Missing Supabase environment variable(s): SUPABASE_SERVICE_ROLE_KEY` ทุกครั้งที่ server function เรียกใช้ (เช่น `admin-guard.server.ts`, `pricing-admin.server.ts`) การเชื่อมต่อ Supabase ตัวอื่นยังปกติ — ขาดแค่ service role key
 
-**1. Network — คุ้มที่สุด**
-มีเนื้อหารองรับอยู่แล้ว (`network-explainer.tsx` แยกกลุ่มเป็น Switch / Router / Firewall / Access Point และตรวจแบรนด์องค์กร Cisco, Huawei, Aruba, Fortinet) เมนูควรเป็น 2 คอลัมน์: ซ้าย = ประเภทอุปกรณ์, ขวา = แบรนด์องค์กร + แบนเนอร์ "มีช่างติดตั้ง / ขอใบเสนอราคา" ผลดี: ดันงานโครงการ B2B ซึ่งมูลค่าต่อออเดอร์สูงสุด
+## แผนการแก้
 
-**2. CCTV & Security**
-ลูกค้าเลือกตามการใช้งานมากกว่าชื่อรุ่น เมนูแบ่งเป็น กล้อง IP / กล้องอนาล็อก / NVR-DVR / Storage สำหรับกล้อง / ชุดติดตั้งพร้อมช่าง ผลดี: เชื่อมเข้าฟอร์มหาลูกค้าที่มีอยู่แล้ว (`quote_requests`) ตั้งแต่ระดับเมนู
+1. เรียกเครื่องมือ re-bind ของ Supabase integration เพื่อดึง service-role key ตัวจริงจาก Supabase management API มาผูกใหม่ และรีเฟรช env (`SUPABASE_URL`, publishable key, service role key) — ไม่ rotate key ไม่กระทบ key เดิม
+2. ตรวจซ้ำว่า `SUPABASE_SERVICE_ROLE_KEY` มีค่าแล้ว (ไม่แสดงค่าออกมา)
+3. ถ้า env ยังไม่มา ให้ restart dev server แล้วตรวจอีกครั้ง
+4. ทดสอบเส้นทางที่ใช้ `supabaseAdmin` จริง (เรียก server function ฝั่ง admin เช่นหน้า `/admin/pricing/products`) เพื่อยืนยันว่าไม่ throw แล้ว
 
-**3. Solar & Energy**
-สินค้าเข้าใจยาก ต้องแนะแนวตั้งแต่เมนู: แผงโซลาร์ / อินเวอร์เตอร์ / แบตเตอรี่ / ชุดระบบครบ / บริการสำรวจ-ติดตั้ง ผลดี: ลดการหลุดออกจากหน้าเว็บเพราะไม่รู้จะเริ่มตรงไหน
+## หมายเหตุ
 
-**4. Printer**
-มี `SUBCATEGORIES.Printer` พร้อมป้ายภาษาไทยอยู่แล้ว (ใบเสร็จ / เลเซอร์ / อิงค์เจ็ท / สแกนเนอร์ / 3D) ทำได้เร็วที่สุดเพราะข้อมูลครบ ผลดี: ต้นทุนงานต่ำ ได้ผลทันที
-
-**ยังไม่ควรทำ:** Monitor, Storage, Accessories, Software, Speaker & Audio — จำนวนสินค้า/ความหลากหลายยังไม่มากพอ เมนูใหญ่จะดูโล่ง และ RAM ที่มีเมนูย่อยอยู่แล้วก็เพียงพอ
-
-## ข้อควรระวัง
-
-nav bar ตอนนี้มี 20 รายการเรียงยาวอยู่แล้ว การเพิ่ม mega menu ไม่เพิ่มรายการใหม่ (แทนที่ลิงก์เดิม) จึงไม่ทำให้แถบยาวขึ้น แต่ต้องคุมให้ panel ไม่ล้นจอ — ใช้วิธีเดียวกับ Edge AI (จัดชิดขวาเมื่อเมนูอยู่ท้ายแถว)
-
-## แนวทางเทคนิค
-
-- สร้าง component กลาง `src/components/category-mega-menu.tsx` รับ config (ชื่อหมวด, กลุ่มย่อย + คำค้น/ตัวกรอง, แบรนด์เด่น, การ์ดโปรโมท) แทนการ copy โครงจาก `apple-mega-menu.tsx` ซ้ำอีก 4 ไฟล์
-- นิยาม config ต่อหมวดในไฟล์เดียว (`src/lib/mega-menu-config.ts`) เพื่อให้เพิ่มหมวดใหม่ในอนาคตแก้ที่เดียว
-- แต่ละรายการลิงก์ไป `/` พร้อม search params `category` + ตัวกรองย่อย และล้างตัวกรองค้างด้วย `CLEAR_STALE_BROWSE_FILTERS` เหมือน Shop by Brand
-- เสียบใน `site-header.tsx` โดยเช็คชื่อหมวดใน loop `NAV_CATS` เดิม
-- มือถือใช้เมนูรายการเดิมแบบขยายพับได้ ไม่ต้องทำ panel ใหญ่
-
-## ขอบเขตที่จะทำถ้าอนุมัติ
-
-ทำครบทั้ง 4 หมวด (Network → CCTV → Solar → Printer) ด้วย component กลางตัวเดียว หากต้องการเริ่มเฉพาะบางหมวด บอกได้ครับ
+- ไม่ต้องแก้โค้ดใด ๆ และจะไม่ลดสิทธิ์จาก service role ไปเป็น client แบบ RLS เพื่อเลี่ยงปัญหา
+- ถ้า re-bind ล้มเหลว แปลว่า authorization ของ Supabase ระดับ workspace ถูกถอน — กรณีนั้นต้อง reconnect Supabase ใน Project Settings (ผมจะแจ้งชัดเจน) ไม่ต้องส่ง service-role key มาให้ผมเอง
