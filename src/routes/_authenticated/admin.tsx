@@ -323,8 +323,10 @@ function AdminLayout() {
         </div>
 
         <main className="flex-1 min-w-0">
+          <SecretsHealthBanner />
           <Outlet />
         </main>
+
         <WorkFooter />
       </div>
     </div>
