@@ -390,8 +390,14 @@ function CheckoutPage() {
         console.error("[checkout] บันทึกรายการสินค้าไม่สำเร็จ ยกเลิกออเดอร์", itemsErr);
         await supabase
           .from("orders")
-          .update({ status: "cancelled", admin_note: "ยกเลิกอัตโนมัติ: บันทึกรายการสินค้าไม่สำเร็จ" })
+          .update({
+            status: "cancelled",
+            cancelled_at: new Date().toISOString(),
+            cancelled_reason: "ระบบยกเลิกอัตโนมัติ: บันทึกรายการสินค้าไม่สำเร็จ",
+            admin_notes: "ระบบยกเลิกอัตโนมัติ: insertOrderItems ล้มเหลว",
+          })
           .eq("id", order.id);
+
         throw itemsErr;
       }
 
