@@ -297,8 +297,10 @@ function OrderConfirm() {
             วิธีชำระเงิน: {order.payment_method === "cod" ? "เก็บเงินปลายทาง (COD)" : order.payment_method === "promptpay" ? "PromptPay QR" : "โอนเงิน"}
           </h2>
 
-          {order.payment_method === "transfer" && (
+          {(order.payment_method === "transfer" || order.payment_method === "promptpay") && (
             <>
+              {order.payment_method === "transfer" && (
+              <>
               <div className="grid gap-3 sm:grid-cols-2">
                 {BANK_ACCOUNTS.map((b) => (
                   <div key={b.account} className="rounded-lg border bg-slate-50 p-4 text-sm">
