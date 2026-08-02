@@ -3,6 +3,42 @@ import { z } from "zod";
 
 const orderNumberSchema = z.object({ orderNumber: z.string().min(3).max(64) });
 
+export type OrderConfirmationRow = {
+  id: string;
+  order_number: string;
+  created_at: string | null;
+  customer_name: string | null;
+  customer_phone: string | null;
+  customer_email: string | null;
+  customer_type: string | null;
+  user_id: string | null;
+  shipping_name: string | null;
+  shipping_phone: string | null;
+  shipping_address: string | null;
+  shipping_district: string | null;
+  shipping_province: string | null;
+  shipping_postcode: string | null;
+  payment_method: string | null;
+  payment_status: string | null;
+  payment_slip_url: string | null;
+  subtotal: number | null;
+  cod_fee: number | null;
+  total: number | null;
+  status: string | null;
+  need_tax_invoice: boolean | null;
+  company_name: string | null;
+  order_items: Array<{
+    id: string;
+    product_sku: string | null;
+    product_name: string | null;
+    product_image_url: string | null;
+    unit_price: number | null;
+    quantity: number | null;
+    subtotal: number | null;
+  }>;
+};
+
+
 /**
  * แทนที่ query ตรงจาก client — ปลอดภัยเหมือน getPublicTracking (ไม่ส่ง cost_price/distributor ออกไป)
  * ถ้า service role key หายจาก environment จะ fallback ไปอ่านผ่าน publishable key + RPC
