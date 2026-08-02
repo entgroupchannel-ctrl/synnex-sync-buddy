@@ -138,22 +138,38 @@ function FacebookIcon({ className }: { className?: string }) {
   );
 }
 
+function LineIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="#06C755">
+      <path d="M24 10.3C24 4.62 18.63 0 12 0S0 4.62 0 10.3c0 5.1 4.26 9.37 10.02 10.18.39.08.92.26 1.05.6.12.3.08.78.04 1.09l-.17 1.03c-.05.3-.24 1.18 1.03.65 1.28-.55 6.86-4.03 9.36-6.91C22.94 15 24 12.77 24 10.3zM7.9 13.15H6.15a.42.42 0 0 1-.42-.42V8.34c0-.23.19-.42.42-.42s.42.19.42.42v3.97h1.33c.23 0 .42.19.42.42s-.19.42-.42.42zm1.83-.42c0 .23-.19.42-.42.42s-.42-.19-.42-.42V8.34c0-.23.19-.42.42-.42s.42.19.42.42zm4.68 0c0 .18-.11.34-.28.4a.44.44 0 0 1-.14.02.42.42 0 0 1-.34-.17l-2.05-2.79v2.54c0 .23-.19.42-.42.42s-.42-.19-.42-.42V8.34c0-.18.11-.34.28-.4a.4.4 0 0 1 .13-.02c.13 0 .26.06.34.17l2.05 2.79V8.34c0-.23.19-.42.42-.42s.42.19.42.42zm3.35-3.15c.23 0 .42.19.42.42s-.19.42-.42.42h-1.75v1.06h1.75c.23 0 .42.19.42.42s-.19.42-.42.42h-2.17a.42.42 0 0 1-.42-.42V8.34c0-.23.19-.42.42-.42h2.17c.23 0 .42.19.42.42s-.19.42-.42.42h-1.75v.98z" />
+    </svg>
+  );
+}
+
+type OAuthProvider = "google" | "facebook" | "custom:line";
+
+const PROVIDER_LABEL: Record<OAuthProvider, string> = {
+  google: "Google",
+  facebook: "Facebook",
+  "custom:line": "LINE",
+};
+
 /** ปุ่ม social login — ใช้ร่วมกัน 3 จุด: signin, สมัคร B2C, สมัคร B2B */
 function OAuthButtons({ nextPath, labelPrefix = "เข้าสู่ระบบด้วย" }: { nextPath?: string; labelPrefix?: string }) {
-  const [busyProvider, setBusyProvider] = useState<"google" | "facebook" | null>(null);
+  const [busyProvider, setBusyProvider] = useState<OAuthProvider | null>(null);
 
-  const signIn = async (provider: "google" | "facebook") => {
+  const signIn = async (provider: OAuthProvider) => {
     setBusyProvider(provider);
     try {
       if (nextPath) window.sessionStorage.setItem("auth:nextPath", nextPath);
     } catch { /* sessionStorage ใช้ไม่ได้ ข้ามไป */ }
     const { error } = await supabase.auth.signInWithOAuth({
-      provider,
+      provider: provider as never, // custom OIDC provider id ("custom:line") ยังไม่อยู่ใน type ของ supabase-js
       options: { redirectTo: window.location.origin + "/auth/callback" },
     });
     if (error) {
       const m = error.message.toLowerCase();
-      const providerName = provider === "facebook" ? "Facebook" : "Google";
+      const providerName = PROVIDER_LABEL[provider];
       const notConfigured =
         m.includes("provider") ||
         m.includes("redirect") ||
@@ -178,22 +194,27 @@ function OAuthButtons({ nextPath, labelPrefix = "เข้าสู่ระบ�
           <span className="w-full border-t border-slate-200" />
         </div>
         <div className="relative flex justify-center text-xs">
-          <span className="bg-white px-2 text-slate-400">หรือ</span>
+          <span className="bg-white px-2 text-slate-400">หรือ{labelPrefix ? "" : ""}</span>
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-2">
-        <Button type="button" variant="outline" disabled={!!busyProvider} onClick={() => signIn("google")} className="gap-2">
-          <GoogleIcon className="h-4 w-4" />
-          {busyProvider === "google" ? "กำลังเชื่อมต่อ..." : "Google"}
+      <div className="grid grid-cols-3 gap-2">
+        <Button type="button" variant="outline" disabled={!!busyProvider} onClick={() => signIn("google")} className="gap-1.5 px-2">
+          <GoogleIcon className="h-4 w-4 shrink-0" />
+          <span className="truncate">{busyProvider === "google" ? "..." : "Google"}</span>
         </Button>
-        <Button type="button" variant="outline" disabled={!!busyProvider} onClick={() => signIn("facebook")} className="gap-2">
-          <FacebookIcon className="h-4 w-4" />
-          {busyProvider === "facebook" ? "กำลังเชื่อมต่อ..." : "Facebook"}
+        <Button type="button" variant="outline" disabled={!!busyProvider} onClick={() => signIn("facebook")} className="gap-1.5 px-2">
+          <FacebookIcon className="h-4 w-4 shrink-0" />
+          <span className="truncate">{busyProvider === "facebook" ? "..." : "Facebook"}</span>
+        </Button>
+        <Button type="button" variant="outline" disabled={!!busyProvider} onClick={() => signIn("custom:line")} className="gap-1.5 px-2">
+          <LineIcon className="h-4 w-4 shrink-0" />
+          <span className="truncate">{busyProvider === "custom:line" ? "..." : "LINE"}</span>
         </Button>
       </div>
     </>
   );
 }
+
 
 function SignInForm({ redirectTo }: { redirectTo: string }) {
   const [email, setEmail] = useState(() => {
