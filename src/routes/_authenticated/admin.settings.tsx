@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { SettingsBoundary, SettingsErrorFallback } from "@/components/admin-settings-error";
+import { SecretsHealthPanel } from "@/components/secrets-health-banner";
+
 
 const searchSchema = z.object({
   tab: fallback(z.enum(["store", "payment", "shipping", "email"]), "store").default("store"),
@@ -65,7 +67,12 @@ function SettingsPage() {
           <EmailInfo />
         </TabsContent>
       </Tabs>
+
+      <div className="mt-6">
+        <SecretsHealthPanel />
+      </div>
     </div>
+
   );
 }
 
