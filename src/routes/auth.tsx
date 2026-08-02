@@ -130,14 +130,18 @@ function GoogleIcon({ className }: { className?: string }) {
   );
 }
 
-function GoogleAuthButton({ label = "เข้าสู่ระบบด้วย Google" }: { label?: string }) {
+function GoogleAuthButton({ label = "เข้าสู่ระบบด้วย Google", nextPath }: { label?: string; nextPath?: string }) {
   const [busy, setBusy] = useState(false);
   const onClick = async () => {
     setBusy(true);
+    try {
+      if (nextPath) window.sessionStorage.setItem("auth:nextPath", nextPath);
+    } catch { /* sessionStorage ใช้ไม่ได้ ข้ามไป */ }
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: { redirectTo: window.location.origin + "/auth/callback" },
     });
+
     if (error) {
       toast.error(error.message);
       setBusy(false);
