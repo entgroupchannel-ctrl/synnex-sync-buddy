@@ -293,6 +293,21 @@ function CheckoutPage() {
       toast.error(base.error.issues[0].message);
       return;
     }
+    if (!isPickup) {
+      const geo = validateThaiAddress({
+        province: base.data.shipping_province,
+        district: base.data.shipping_district,
+        postcode: base.data.shipping_postcode,
+      });
+      if (!geo.ok) {
+        setErrors(geo.errors);
+        toast.error(Object.values(geo.errors)[0] ?? "ที่อยู่ไม่ถูกต้อง");
+        return;
+      }
+      base.data.shipping_province = geo.normalized.province;
+      base.data.shipping_district = geo.normalized.district;
+    }
+
     let taxInvoice: z.infer<typeof taxSchema> | null = null;
     if (wantsTaxInvoice) {
       const t = taxSchema.safeParse(tax);
