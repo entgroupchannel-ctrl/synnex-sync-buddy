@@ -321,8 +321,10 @@ function OrderConfirm() {
               <ul className="mt-3 space-y-1 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
                 {VAT_NOTES.map((n) => <li key={n}>• {n}</li>)}
               </ul>
+              </>
+              )}
 
-              <div className="mt-4">
+              <div id="slip-upload-section" className="mt-4">
                 {slipUrl && !replacingSlip ? (
                   <div>
                     <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">
