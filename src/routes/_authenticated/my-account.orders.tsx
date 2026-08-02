@@ -68,31 +68,31 @@ function MyOrders() {
         const items = o.order_items ?? [];
         const canUploadSlip = o.status === "pending" && o.payment_method === "transfer" && o.payment_status !== "paid";
         return (
-          <div key={o.id} className="rounded-lg border bg-white p-4 transition hover:shadow-md">
+          <div key={o.id} className="rounded-lg border bg-white p-3 transition hover:shadow-md sm:p-4">
             <Link to="/order/$orderNumber" params={{ orderNumber: o.order_number }} className="block">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div>
-                  <div className="font-mono text-xs font-semibold text-slate-800">{o.order_number}</div>
+              <div className="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:items-center sm:justify-between sm:gap-3">
+                <div className="min-w-0">
+                  <div className="truncate font-mono text-xs font-semibold text-slate-800">{o.order_number}</div>
                   <div className="text-xs text-slate-500">{o.created_at ? new Date(o.created_at).toLocaleString("th-TH") : ""}</div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${stMeta.badge}`}><span className={`h-1.5 w-1.5 rounded-full ${stMeta.dot}`} />{stMeta.label}</span>
-                  <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${payMeta.badge}`}>{payMeta.label}</span>
-                  <div className="text-lg font-black text-[color:var(--brand-orange)]">{priceFmt.format(Number(o.total ?? 0))}</div>
+                <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+                  <span className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${stMeta.badge}`}><span className={`h-1.5 w-1.5 rounded-full ${stMeta.dot}`} />{stMeta.label}</span>
+                  <span className={`inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-xs font-semibold ${payMeta.badge}`}>{payMeta.label}</span>
+                  <div className="text-base font-black text-[color:var(--brand-orange)] sm:text-lg">{priceFmt.format(Number(o.total ?? 0))}</div>
                 </div>
               </div>
-              <div className="mt-3">
+              <div className="mt-2 sm:mt-3">
                 <OrderProgressStepper status={o.status} compact />
               </div>
-              <div className="mt-3 space-y-2 border-t pt-3 text-sm text-slate-700">
+              <div className="mt-2 space-y-2 border-t pt-2 text-sm text-slate-700 sm:mt-3 sm:pt-3">
                 {items.slice(0, 3).map((i, idx) => (
-                  <div key={idx} className="flex items-center gap-3">
-                    <div className="h-14 w-14 shrink-0 overflow-hidden rounded-md border bg-slate-50 p-1">
+                  <div key={idx} className="flex items-center gap-2 sm:gap-3">
+                    <div className="h-12 w-12 shrink-0 overflow-hidden rounded-md border bg-slate-50 p-0.5 sm:h-14 sm:w-14 sm:p-1">
                       <ProductImage
                         src={i.product_image_url}
                         alt={i.product_name}
                         className="h-full w-full object-contain"
-                        iconClassName="h-6 w-6 text-slate-300"
+                        iconClassName="h-5 w-5 text-slate-300 sm:h-6 sm:w-6"
                       />
                     </div>
                     <div className="min-w-0 flex-1">
@@ -105,37 +105,39 @@ function MyOrders() {
               </div>
             </Link>
             {o.tracking_number && (
-              <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs">
-                <div className="flex items-center gap-1.5 text-emerald-800">
-                  <Truck className="h-3.5 w-3.5" />
+              <div className="mt-2 grid grid-cols-1 gap-1.5 rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-2 text-xs sm:mt-3 sm:flex sm:flex-wrap sm:items-center sm:justify-between sm:gap-2 sm:px-3">
+                <div className="flex min-w-0 flex-wrap items-center gap-1.5 text-emerald-800">
+                  <Truck className="h-3.5 w-3.5 shrink-0" />
                   <span className="font-semibold">{providerLabel(o.shipping_provider)}</span>
-                  <span className="font-mono">{o.tracking_number}</span>
+                  <span className="truncate font-mono">{o.tracking_number}</span>
                   {(o.shipping_events?.length ?? 0) > 0 && (
                     <span className="text-slate-500">— {eventLabel(o.shipping_events[o.shipping_events.length - 1].status)}</span>
                   )}
                 </div>
-                <Link to="/track/$orderNumber" params={{ orderNumber: o.order_number }} className="font-semibold text-emerald-700 hover:underline">
+                <Link to="/track/$orderNumber" params={{ orderNumber: o.order_number }} className="font-semibold text-emerald-700 hover:underline sm:text-right">
                   ติดตามพัสดุ →
                 </Link>
               </div>
             )}
-            <div className="mt-3 flex flex-wrap gap-2 border-t pt-3">
+            <div className="mt-2 grid grid-cols-2 gap-2 border-t pt-2 sm:mt-3 sm:flex sm:flex-wrap sm:items-center sm:gap-2 sm:pt-3">
               {canUploadSlip && (
-                <Link to="/order/$orderNumber" params={{ orderNumber: o.order_number }} className="rounded-md bg-[color:var(--brand-green)] px-3 py-1.5 text-xs font-semibold text-white hover:opacity-90">
-                  แนบสลิปการโอน
+                <Link to="/order/$orderNumber" params={{ orderNumber: o.order_number }} className="rounded-md bg-[color:var(--brand-green)] px-2.5 py-1.5 text-center text-xs font-semibold text-white hover:opacity-90 sm:px-3">
+                  แนบสลิป
                 </Link>
               )}
               {o.quotation_url && (
-                <a href={o.quotation_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 rounded-md border px-3 py-1.5 text-xs hover:bg-slate-50">
+                <a href={o.quotation_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-1 rounded-md border px-2.5 py-1.5 text-xs hover:bg-slate-50 sm:px-3">
                   <FileText className="h-3.5 w-3.5" /> ใบเสนอราคา
                 </a>
               )}
               {o.tax_invoice_url && (
-                <a href={o.tax_invoice_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 rounded-md border px-3 py-1.5 text-xs hover:bg-slate-50">
+                <a href={o.tax_invoice_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-1 rounded-md border px-2.5 py-1.5 text-xs hover:bg-slate-50 sm:px-3">
                   <Receipt className="h-3.5 w-3.5" /> ใบกำกับภาษี
                 </a>
               )}
-              <ReorderButton orderId={o.id} className="ml-auto" />
+              <div className="col-span-full flex justify-end sm:col-span-auto sm:ml-auto">
+                <ReorderButton orderId={o.id} />
+              </div>
             </div>
           </div>
         );
