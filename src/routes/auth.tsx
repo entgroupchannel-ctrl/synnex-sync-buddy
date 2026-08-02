@@ -100,7 +100,7 @@ function AuthPage() {
               <SignUpB2CForm />
             </TabsContent>
             <TabsContent value="b2b" className="mt-6">
-              <SignUpB2BForm />
+              <SignUpB2BForm alreadySignedIn={profileType === "b2c"} />
             </TabsContent>
           </Tabs>
         </div>
