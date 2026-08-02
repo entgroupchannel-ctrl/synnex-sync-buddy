@@ -105,10 +105,10 @@ function OrderConfirm() {
     queryKey: ["order-by-number", orderNumber],
     queryFn: async () => {
       const data = await fetchOrder({ data: { orderNumber } });
-      if (!data) throw notFound();
-      return data as unknown as OrderRow;
+      return (data ?? null) as unknown as OrderRow | null;
     },
   });
+
 
 
   const order = q.data;
@@ -205,7 +205,37 @@ function OrderConfirm() {
       </div>
     );
   }
-  if (!order) return null;
+  if (!order) {
+    const msg = q.error instanceof Error ? q.error.message : "";
+    if (q.isSuccess) throw notFound();
+
+    return (
+      <div className="min-h-screen bg-slate-50">
+        <SiteHeader />
+        <div className="mx-auto max-w-xl px-4 py-14">
+          <div className="rounded-2xl border bg-white p-8 text-center">
+            <h1 className="text-xl font-bold text-[color:var(--brand-navy)]">
+              โหลดรายละเอียดคำสั่งซื้อไม่สำเร็จ
+            </h1>
+            <p className="mt-2 text-sm text-slate-600">
+              คำสั่งซื้อ <span className="font-mono font-semibold">{orderNumber}</span> ถูกบันทึกไว้แล้ว
+              แต่ระบบดึงรายละเอียดมาแสดงไม่ได้ชั่วคราว กรุณากดลองใหม่อีกครั้ง
+            </p>
+            {msg && <p className="mt-2 text-xs text-slate-400">{msg}</p>}
+            <div className="mt-6 flex flex-wrap justify-center gap-2">
+              <Button onClick={() => q.refetch()}>ลองโหลดใหม่</Button>
+              <Button variant="outline" asChild><Link to="/">กลับหน้าหลัก</Link></Button>
+            </div>
+            <p className="mt-6 text-xs text-slate-500">
+              ต้องการชำระเงินหรือสอบถามสถานะ: โทร 02-114-7789 หรือ LINE @njm2688e
+              (แจ้งเลขที่คำสั่งซื้อ {orderNumber})
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
 
   const statusKey = isValidStatus(order.status) ? order.status : "pending";
   const stMeta = STATUS_META[statusKey];

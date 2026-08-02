@@ -1,28 +1,27 @@
-## ที่ได้จากไฟล์อัปโหลด
+## สาเหตุ (ยืนยันจาก production แล้ว)
 
-zip มี patch + ไฟล์เต็มของการแก้ปัญหา "session/JWT ที่ตายแล้วยังถูกแนบไปกับทุก request → PostgREST ตอบ 401 ก่อนถึง RLS → checkout ล้ม" ตรงกับ diagnosis รอบก่อน
+ทดสอบเปิด `https://shop.entgroup.co.th/order/ENT-20260802-292E8F` ด้วยเบราว์เซอร์จริง: หน้าเว็บ **ขาว/โหลดค้าง** และ server function ตอบกลับว่า
 
-## แผน apply
+```text
+Missing Supabase environment variable(s): SUPABASE_SERVICE_ROLE_KEY.
+```
 
-1. **สร้างไฟล์ใหม่** `src/lib/auth-session.ts` ตามที่ให้มา
-   - `getUserSafe()` — เรียก `getUser()`; ถ้า error เป็น dead-token (401/403, `refresh_token_not_found`, `invalid JWT`, `jwt expired`, `session_not_found`) → `signOut({ scope: "local" })` (de-dupe ด้วย flag) แล้วคืน `null`
-   - `getFreshAccessToken()` — คืน access token เฉพาะเมื่อ session ยังไม่หมดอายุ; ถ้าหมดอายุจะยืนยันด้วย `getUserSafe()` ก่อน ไม่งั้นคืน `null` ให้ผู้เรียกไม่แนบ Authorization → fallback เป็น guest
+- ออเดอร์สร้างสำเร็จจริง (ตรวจในฐานข้อมูล: ล่าสุด `ENT-20260802-292E8F`, `payment_method = promptpay`, `payment_status = pending`)
+- แต่หน้า `/order/$orderNumber` ดึงข้อมูลผ่าน `getOrderConfirmation` ซึ่งใช้ admin client → พังเพราะ service role key หายจาก environment ฝั่ง production
+- โมดัล PromptPay ถูก render **หลัง** ได้ข้อมูลออเดอร์ (`order.payment_method === "promptpay"`) จึงไม่มี QR ให้สแกน — ไม่ใช่บั๊กที่โค้ด QR (bundle มีตัวสร้าง payload ครบ)
 
-2. **สร้างเทสต์** `src/lib/__tests__/auth-session.test.ts` (7 เทสต์ตามที่ให้มา)
+## สิ่งที่จะทำ
 
-3. **แก้ไฟล์เดิมเฉพาะส่วนที่เป็นตรรกะจริง** (ข้ามส่วนที่เป็นแค่ prettier reformat ในไฟล์เดิม เพื่อให้ diff อ่านง่ายและลดความเสี่ยง)
-   - `src/lib/auth-sheet.ts` — `useSupabaseUser()` ใช้ `getUserSafe()` และจัดการ event `SIGNED_OUT` / `TOKEN_REFRESHED` ที่ไม่มี session → `setUser(null)`
-   - `src/lib/cart.ts` — `useCustomerTier()` ใช้ `getUserSafe()` แทน `supabase.auth.getUser()`
-   - `src/routes/checkout.tsx` — จุด charge บัตรเครดิต ใช้ `getFreshAccessToken()` แทน `getSession().access_token`
-   - `src/integrations/supabase/auth-attacher.ts` — แนบ bearer จาก `getFreshAccessToken()` (หมายเหตุ: ไฟล์นี้ generated โดย integration ถ้าถูก regenerate ต้องแก้ซ้ำ)
-   - `src/routes/__root.tsx` — เพิ่ม listener กลางหนึ่งตัว: เมื่อ `SIGNED_OUT` → `queryClient.removeQueries()` เพื่อไม่ให้ cache ผูกกับ user เก่าค้าง
+1. **Rebind Supabase secrets** ใหม่ (`SUPABASE_SERVICE_ROLE_KEY` หายซ้ำรอบที่ 3) แล้วต้อง **Publish** เพื่อให้ production โหลดค่าใหม่
 
-4. **ตรวจสอบ** — `tsgo` typecheck + `vitest run` ทั้งชุด แล้วตรวจว่าไม่มี error ใหม่
+2. **ทำหน้าออเดอร์ไม่ให้ล้มทั้งหน้าเมื่อ admin client ใช้ไม่ได้** — ใน `src/lib/order-confirmation.functions.ts` ให้ `getOrderConfirmation` มี fallback: ถ้าไม่มี service role key ให้อ่านผ่าน publishable client ตาม RLS (เจ้าของออเดอร์ / guest ผ่าน order_number + email เดิมที่ใช้อยู่) แทนการ throw ทันที
 
-## ระหว่างนี้
+3. **แยก QR ออกจาก data fetch** — ให้หน้า `/order/$orderNumber` แสดงกล่อง QR PromptPay ได้จากข้อมูลที่มีอยู่แล้ว (เลขออเดอร์ + ยอดเงิน) แม้ query รายละเอียดออเดอร์จะล้ม พร้อมปุ่ม "ลองโหลดใหม่" และข้อความ error ที่อ่านรู้เรื่อง แทนหน้าขาว
 
-ล้าง key `sb-*-auth-token` ใน localStorage ของ preview (หรือเปิด incognito) แล้วลอง checkout ใหม่ ควรผ่านทันที
+4. **แจ้งเตือนล่วงหน้า** — ต่อยอด `secrets-health.functions.ts` ที่มีอยู่: เพิ่มการเช็ค service role key แบบ runtime บนหน้า order/checkout (เงียบสำหรับลูกค้า, log ให้แอดมิน) เพื่อจับเคสคีย์หายได้ก่อนลูกค้าเจอ
 
-## หลัง apply
+5. ทดสอบซ้ำด้วยเบราว์เซอร์จริงหลัง publish: ยืนยันว่าหน้าออเดอร์แสดงรายละเอียด + QR ขึ้นให้สแกน
 
-ต้องกด Publish เพื่ออัปเดต shop.entgroup.co.th
+## หมายเหตุทางเทคนิค
+
+ต้นเหตุคือ environment ฝั่ง deploy ไม่ใช่ code ดังนั้นข้อ 1 คือสิ่งที่ทำให้ใช้งานได้ทันที ข้อ 2–4 คือกันไม่ให้อาการเดิม (หน้าขาว/จ่ายเงินไม่ได้) กลับมาอีกถ้า secret หายซ้ำ

@@ -3,37 +3,97 @@ import { z } from "zod";
 
 const orderNumberSchema = z.object({ orderNumber: z.string().min(3).max(64) });
 
-/** แทนที่ query ตรงจาก client — ปลอดภัยเหมือน getPublicTracking (ไม่ส่ง cost_price/distributor ออกไป) */
+export type OrderConfirmationRow = {
+  id: string;
+  order_number: string;
+  created_at: string | null;
+  customer_name: string | null;
+  customer_phone: string | null;
+  customer_email: string | null;
+  customer_type: string | null;
+  user_id: string | null;
+  shipping_name: string | null;
+  shipping_phone: string | null;
+  shipping_address: string | null;
+  shipping_district: string | null;
+  shipping_province: string | null;
+  shipping_postcode: string | null;
+  payment_method: string | null;
+  payment_status: string | null;
+  payment_slip_url: string | null;
+  subtotal: number | null;
+  cod_fee: number | null;
+  total: number | null;
+  status: string | null;
+  need_tax_invoice: boolean | null;
+  company_name: string | null;
+  order_items: Array<{
+    id: string;
+    product_sku: string | null;
+    product_name: string | null;
+    product_image_url: string | null;
+    unit_price: number | null;
+    quantity: number | null;
+    subtotal: number | null;
+  }>;
+};
+
+
+/**
+ * แทนที่ query ตรงจาก client — ปลอดภัยเหมือน getPublicTracking (ไม่ส่ง cost_price/distributor ออกไป)
+ * ถ้า service role key หายจาก environment จะ fallback ไปอ่านผ่าน publishable key + RPC
+ * get_order_confirmation (security definer, คืนเฉพาะคอลัมน์ปลอดภัย) เพื่อไม่ให้หน้าออเดอร์ล่มทั้งหน้า
+ */
 export const getOrderConfirmation = createServerFn({ method: "GET" })
   .inputValidator((data: unknown) => orderNumberSchema.parse(data))
   .handler(async ({ data }) => {
-    const { getAdminClient } = await import("@/lib/supabase-admin.server");
-    const supabaseAdmin = getAdminClient();
-    const { data: order, error } = await supabaseAdmin
-      .from("orders")
-      .select(`
-        id, order_number, created_at, customer_name, customer_phone, customer_email, customer_type, user_id,
-        shipping_name, shipping_phone, shipping_address, shipping_district, shipping_province, shipping_postcode,
-        payment_method, payment_status, payment_slip_url, subtotal, cod_fee, total, status,
-        need_tax_invoice, company_name,
-        order_items(id, product_sku, product_name, product_image_url, unit_price, quantity, subtotal)
-      `)
-      .eq("order_number", data.orderNumber)
-      .maybeSingle();
-    if (error) throw new Error(error.message);
-    return order ?? null;
+    try {
+      const { getAdminClient } = await import("@/lib/supabase-admin.server");
+      const supabaseAdmin = getAdminClient();
+      const { data: order, error } = await supabaseAdmin
+        .from("orders")
+        .select(`
+          id, order_number, created_at, customer_name, customer_phone, customer_email, customer_type, user_id,
+          shipping_name, shipping_phone, shipping_address, shipping_district, shipping_province, shipping_postcode,
+          payment_method, payment_status, payment_slip_url, subtotal, cod_fee, total, status,
+          need_tax_invoice, company_name,
+          order_items(id, product_sku, product_name, product_image_url, unit_price, quantity, subtotal)
+        `)
+        .eq("order_number", data.orderNumber)
+        .maybeSingle();
+      if (error) throw new Error(error.message);
+      return (order ?? null) as OrderConfirmationRow | null;
+    } catch (adminErr) {
+      console.warn("[order-confirmation] admin client ใช้ไม่ได้ ใช้ RPC สำรอง", adminErr);
+      const { getPublicClient } = await import("@/lib/supabase-public.server");
+      const { data: row, error } = await getPublicClient().rpc("get_order_confirmation", {
+        p_order_number: data.orderNumber,
+      });
+      if (error) throw new Error(error.message);
+      return ((row as unknown) ?? null) as OrderConfirmationRow | null;
+    }
   });
+
 
 const paymentStatusSchema = z.object({ orderId: z.string().uuid() });
 export const getOrderPaymentStatus = createServerFn({ method: "GET" })
   .inputValidator((data: unknown) => paymentStatusSchema.parse(data))
   .handler(async ({ data }) => {
-    const { getAdminClient } = await import("@/lib/supabase-admin.server");
-    const supabaseAdmin = getAdminClient();
-    const { data: order } = await supabaseAdmin
-      .from("orders").select("payment_status").eq("id", data.orderId).maybeSingle();
-    return { payment_status: order?.payment_status ?? null };
+    try {
+      const { getAdminClient } = await import("@/lib/supabase-admin.server");
+      const supabaseAdmin = getAdminClient();
+      const { data: order } = await supabaseAdmin
+        .from("orders").select("payment_status").eq("id", data.orderId).maybeSingle();
+      return { payment_status: order?.payment_status ?? null };
+    } catch {
+      const { getPublicClient } = await import("@/lib/supabase-public.server");
+      const { data: status } = await getPublicClient().rpc("get_order_payment_status", {
+        p_order_id: data.orderId,
+      });
+      return { payment_status: (status as string | null) ?? null };
+    }
   });
+
 
 const submitSlipSchema = z.object({ orderNumber: z.string().min(3).max(64), path: z.string().min(3) });
 export const submitPaymentSlip = createServerFn({ method: "POST" })
