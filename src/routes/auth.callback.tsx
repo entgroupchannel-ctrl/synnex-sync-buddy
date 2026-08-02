@@ -51,6 +51,12 @@ function AuthCallback() {
         if (errDesc || errCode) {
           const raw = decodeURIComponent(errDesc || errCode || "").replace(/\+/g, " ");
           const low = raw.toLowerCase();
+          if (low.includes("user email from external provider")) {
+            setError(
+              "LINE ยังไม่ส่งอีเมลให้ระบบ — กรุณาเปิด Email address permission ใน LINE Developers Console ให้เป็น Applied แล้วลองเข้าสู่ระบบใหม่",
+            );
+            return;
+          }
           if (low.includes("user profile from external provider")) {
             setError(
               "การเชื่อมต่อบัญชี LINE ยังตั้งค่าไม่สมบูรณ์ (ผู้ให้บริการส่งข้อมูลโปรไฟล์ในรูปแบบที่ระบบยังรับไม่ได้) — " +

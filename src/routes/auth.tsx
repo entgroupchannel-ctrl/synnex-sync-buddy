@@ -169,7 +169,10 @@ function OAuthButtons({ nextPath, labelPrefix = "เข้าสู่ระบ�
     } catch { /* sessionStorage ใช้ไม่ได้ ข้ามไป */ }
     const { error } = await supabase.auth.signInWithOAuth({
       provider: provider as never, // custom OIDC provider id ("custom:line") ยังไม่อยู่ใน type ของ supabase-js
-      options: { redirectTo: window.location.origin + "/auth/callback" },
+      options: {
+        redirectTo: window.location.origin + "/auth/callback",
+        ...(provider === "custom:line" ? { scopes: "openid profile email" } : {}),
+      },
     });
     if (error) {
       const m = error.message.toLowerCase();
