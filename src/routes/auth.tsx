@@ -46,16 +46,29 @@ function AuthPage() {
   const raw = (useSearch({ strict: false, shouldThrow: false }) ?? {}) as { tab?: "signin" | "b2c" | "b2b"; redirect?: string };
   const search = { tab: raw.tab ?? "signin", redirect: raw.redirect ?? "/" };
   const [tab, setTab] = useState<"signin" | "b2c" | "b2b">(search.tab);
+  const [profileType, setProfileType] = useState<string | null>(null);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      if (data.user) navigate({ to: search.redirect as never, replace: true });
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) return;
+      const { data: profile } = await supabase
+        .from("user_profiles")
+        .select("user_type")
+        .eq("id", data.user.id)
+        .maybeSingle();
+      // เพิ่ง Google login มาบนแท็บ B2B แต่ยังไม่ได้กรอกข้อมูลบริษัท → ค้างอยู่หน้านี้
+      if (search.tab === "b2b" && profile?.user_type === "b2c") {
+        setProfileType("b2c");
+        return;
+      }
+      navigate({ to: search.redirect as never, replace: true });
     });
-  }, [navigate, search.redirect]);
+  }, [navigate, search.redirect, search.tab]);
 
   useEffect(() => {
     setTab(search.tab);
   }, [search.tab]);
+
 
   return (
     <div className="min-h-screen bg-slate-50">
