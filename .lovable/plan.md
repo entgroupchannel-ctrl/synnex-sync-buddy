@@ -1,27 +1,30 @@
-## สาเหตุ (ยืนยันจาก production แล้ว)
+## สาเหตุ (ยืนยันจากโค้ดแล้ว)
 
-ทดสอบเปิด `https://shop.entgroup.co.th/order/ENT-20260802-292E8F` ด้วยเบราว์เซอร์จริง: หน้าเว็บ **ขาว/โหลดค้าง** และ server function ตอบกลับว่า
+Error `Can't load URL — The domain of this URL isn't included in the app's domains` เป็น **error จากฝั่ง Meta app settings ไม่ใช่บั๊กในโค้ด**
 
-```text
-Missing Supabase environment variable(s): SUPABASE_SERVICE_ROLE_KEY.
-```
+โค้ดในโปรเจกต์ถูกต้องแล้ว: `src/routes/auth.tsx` เรียก `supabase.auth.signInWithOAuth({ provider: "facebook", options: { redirectTo: origin + "/auth/callback" } })` → Supabase ส่งต่อไป `facebook.com/dialog/oauth` โดยใช้ redirect URI ของ Supabase เอง ซึ่ง Meta app ยังไม่ได้อนุญาตโดเมนนั้น
 
-- ออเดอร์สร้างสำเร็จจริง (ตรวจในฐานข้อมูล: ล่าสุด `ENT-20260802-292E8F`, `payment_method = promptpay`, `payment_status = pending`)
-- แต่หน้า `/order/$orderNumber` ดึงข้อมูลผ่าน `getOrderConfirmation` ซึ่งใช้ admin client → พังเพราะ service role key หายจาก environment ฝั่ง production
-- โมดัล PromptPay ถูก render **หลัง** ได้ข้อมูลออเดอร์ (`order.payment_method === "promptpay"`) จึงไม่มี QR ให้สแกน — ไม่ใช่บั๊กที่โค้ด QR (bundle มีตัวสร้าง payload ครบ)
+## สิ่งที่ต้องทำ (ตั้งค่านอกโค้ด — ผมทำแทนไม่ได้)
 
-## สิ่งที่จะทำ
+ที่ [developers.facebook.com](https://developers.facebook.com/) → App ของคุณ:
 
-1. **Rebind Supabase secrets** ใหม่ (`SUPABASE_SERVICE_ROLE_KEY` หายซ้ำรอบที่ 3) แล้วต้อง **Publish** เพื่อให้ production โหลดค่าใหม่
+1. **Settings → Basic → App Domains** ใส่ทั้งสองค่า:
+   - `wuieuiohusgfdilemplj.supabase.co`
+   - `shop.entgroup.co.th`
+2. **Settings → Basic → Site URL** (ในส่วน Website platform): `https://shop.entgroup.co.th`
+3. **Facebook Login → Settings → Valid OAuth Redirect URIs**:
+   - `https://wuieuiohusgfdilemplj.supabase.co/auth/v1/callback`
+4. **Supabase → Authentication → Providers → Facebook**: ใส่ App ID + App Secret และเปิด Enabled
+5. **Supabase → Authentication → URL Configuration → Redirect URLs** เพิ่ม:
+   - `https://shop.entgroup.co.th/auth/callback`
+   - `https://id-preview--7d8a7d42-ef56-43a0-9320-1e6b4432ed74.lovable.app/auth/callback`
+6. ถ้า App ยังอยู่โหมด Development → ต้องเพิ่มบัญชีทดสอบเป็น Tester หรือกด Go Live (ต้องมี Privacy Policy URL — ใช้ `https://shop.entgroup.co.th/privacy` ที่มีอยู่แล้วได้)
 
-2. **ทำหน้าออเดอร์ไม่ให้ล้มทั้งหน้าเมื่อ admin client ใช้ไม่ได้** — ใน `src/lib/order-confirmation.functions.ts` ให้ `getOrderConfirmation` มี fallback: ถ้าไม่มี service role key ให้อ่านผ่าน publishable client ตาม RLS (เจ้าของออเดอร์ / guest ผ่าน order_number + email เดิมที่ใช้อยู่) แทนการ throw ทันที
+## สิ่งที่ผมจะแก้ในโค้ด (เล็กน้อย, ช่วยลูกค้าไม่เจอหน้าจอตาย)
 
-3. **แยก QR ออกจาก data fetch** — ให้หน้า `/order/$orderNumber` แสดงกล่อง QR PromptPay ได้จากข้อมูลที่มีอยู่แล้ว (เลขออเดอร์ + ยอดเงิน) แม้ query รายละเอียดออเดอร์จะล้ม พร้อมปุ่ม "ลองโหลดใหม่" และข้อความ error ที่อ่านรู้เรื่อง แทนหน้าขาว
+1. `src/routes/auth.tsx` — ขยาย error handling ของ OAuth ให้ครอบคลุมข้อความจาก Meta/Supabase มากขึ้น (เช่น domain/redirect ไม่ถูกอนุญาต, provider ปิดอยู่) แล้วแสดง toast ภาษาไทยที่บอกว่า "ยังตั้งค่าไม่เสร็จ" พร้อมทางเลือกล็อกอินด้วยอีเมล/Google แทน
+2. `src/routes/auth.callback.tsx` — ถ้ากลับมาพร้อม `?error=` หรือ `error_description=` จาก provider ให้เด้งกลับ `/auth` พร้อมข้อความอธิบาย ไม่ค้างหน้าเปล่า
 
-4. **แจ้งเตือนล่วงหน้า** — ต่อยอด `secrets-health.functions.ts` ที่มีอยู่: เพิ่มการเช็ค service role key แบบ runtime บนหน้า order/checkout (เงียบสำหรับลูกค้า, log ให้แอดมิน) เพื่อจับเคสคีย์หายได้ก่อนลูกค้าเจอ
+## หมายเหตุ
 
-5. ทดสอบซ้ำด้วยเบราว์เซอร์จริงหลัง publish: ยืนยันว่าหน้าออเดอร์แสดงรายละเอียด + QR ขึ้นให้สแกน
-
-## หมายเหตุทางเทคนิค
-
-ต้นเหตุคือ environment ฝั่ง deploy ไม่ใช่ code ดังนั้นข้อ 1 คือสิ่งที่ทำให้ใช้งานได้ทันที ข้อ 2–4 คือกันไม่ให้อาการเดิม (หน้าขาว/จ่ายเงินไม่ได้) กลับมาอีกถ้า secret หายซ้ำ
+จนกว่าจะทำข้อ 1–6 เสร็จ ปุ่ม Facebook จะยังใช้งานไม่ได้ (แต่ไม่ทำให้เว็บพัง) — Google login กับอีเมล/รหัสผ่านยังทำงานปกติ ถ้าต้องการให้ผม **ซ่อนปุ่ม Facebook ชั่วคราว** จนตั้งค่าเสร็จ บอกได้เลยครับ
