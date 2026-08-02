@@ -385,15 +385,11 @@ function CheckoutPage() {
       } catch (itemsErr) {
         // ไม่ปล่อยออเดอร์เปล่า (ไม่มีรายการสินค้า) ค้างไว้ในระบบ
         console.error("[checkout] บันทึกรายการสินค้าไม่สำเร็จ ยกเลิกออเดอร์", itemsErr);
-        await supabase
-          .from("orders")
-          .update({
-            status: "cancelled",
-            cancelled_at: new Date().toISOString(),
-            cancelled_reason: "ระบบยกเลิกอัตโนมัติ: บันทึกรายการสินค้าไม่สำเร็จ",
-            admin_notes: "ระบบยกเลิกอัตโนมัติ: insertOrderItems ล้มเหลว",
-          })
-          .eq("id", order.id);
+        await supabase.rpc("cancel_own_order", {
+          p_order_id: order.id,
+          p_reason: "ระบบยกเลิกอัตโนมัติ: บันทึกรายการสินค้าไม่สำเร็จ",
+        });
+
 
         throw itemsErr;
       }
