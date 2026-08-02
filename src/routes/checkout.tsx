@@ -19,6 +19,7 @@ import { ShippingMethodSelector } from "@/components/shipping-method-selector";
 import { getItemWeightKg, priceFmt, useCart } from "@/lib/cart";
 import { insertOrderItems } from "@/lib/order-items.functions";
 import { logOrderCreated as logCreated } from "@/lib/order-confirmation.functions";
+import { sendMetaPurchaseEvent } from "@/lib/meta-capi.functions";
 
 import { useSupabaseUser } from "@/lib/auth-sheet";
 import { getFreshAccessToken } from "@/lib/auth-session";
