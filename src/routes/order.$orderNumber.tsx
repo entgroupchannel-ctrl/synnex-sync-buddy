@@ -105,10 +105,10 @@ function OrderConfirm() {
     queryKey: ["order-by-number", orderNumber],
     queryFn: async () => {
       const data = await fetchOrder({ data: { orderNumber } });
-      if (!data) throw notFound();
-      return data as unknown as OrderRow;
+      return (data ?? null) as unknown as OrderRow | null;
     },
   });
+
 
 
   const order = q.data;
