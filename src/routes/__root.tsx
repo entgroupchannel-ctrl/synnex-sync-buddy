@@ -252,6 +252,24 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
+  // เมื่อ session ถูกล้าง (ผู้ใช้กด logout เอง หรือระบบตรวจพบ token ตาย/refresh ล้ม
+  // แล้วสั่ง local sign-out ให้ — ดู src/lib/auth-session.ts) ให้เคลียร์ query cache
+  // ที่อาจผูกกับ user คนเดิม
+  useEffect(() => {
+    let unsub: (() => void) | undefined;
+    import("@/integrations/supabase/client").then(({ supabase }) => {
+      const { data: sub } = supabase.auth.onAuthStateChange((evt) => {
+        if (evt === "SIGNED_OUT") {
+          queryClient.removeQueries();
+        }
+      });
+      unsub = () => sub.subscription.unsubscribe();
+    });
+    return () => unsub?.();
+  }, [queryClient]);
+
+
+
   return (
     <QueryClientProvider client={queryClient}>
       <CompareProvider>
