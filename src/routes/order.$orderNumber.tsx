@@ -207,6 +207,8 @@ function OrderConfirm() {
   }
   if (!order) {
     const msg = q.error instanceof Error ? q.error.message : "";
+    if (q.isSuccess) throw notFound();
+
     return (
       <div className="min-h-screen bg-slate-50">
         <SiteHeader />
