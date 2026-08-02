@@ -26,7 +26,7 @@ export const getOrderConfirmation = createServerFn({ method: "GET" })
         .eq("order_number", data.orderNumber)
         .maybeSingle();
       if (error) throw new Error(error.message);
-      return order ?? null;
+      return (order ?? null) as OrderConfirmationRow | null;
     } catch (adminErr) {
       console.warn("[order-confirmation] admin client ใช้ไม่ได้ ใช้ RPC สำรอง", adminErr);
       const { getPublicClient } = await import("@/lib/supabase-public.server");
@@ -34,12 +34,10 @@ export const getOrderConfirmation = createServerFn({ method: "GET" })
         p_order_number: data.orderNumber,
       });
       if (error) throw new Error(error.message);
-      return (row as Awaited<ReturnType<typeof getOrderConfirmationShape>>) ?? null;
+      return ((row as unknown) ?? null) as OrderConfirmationRow | null;
     }
   });
 
-// ตัวช่วยด้าน type เท่านั้น (ไม่ถูกเรียกใช้จริง)
-declare function getOrderConfirmationShape(): Promise<Record<string, unknown> | null>;
 
 const paymentStatusSchema = z.object({ orderId: z.string().uuid() });
 export const getOrderPaymentStatus = createServerFn({ method: "GET" })
