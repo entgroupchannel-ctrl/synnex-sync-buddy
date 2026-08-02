@@ -56,7 +56,7 @@ function AuthCallback() {
           if (exchangeErr) throw exchangeErr;
           window.history.replaceState({}, "", window.location.pathname);
           toast.success("เข้าสู่ระบบสำเร็จ");
-          navigate({ to: "/" });
+          navigate({ to: takeNext() as never });
           return;
         }
 
@@ -90,7 +90,7 @@ function AuthCallback() {
         } else {
           toast.success("เข้าสู่ระบบสำเร็จ");
         }
-        navigate({ to: "/" });
+        navigate({ to: takeNext() as never });
       } catch (e: any) {
         setError(e?.message ?? "เกิดข้อผิดพลาด");
       }
