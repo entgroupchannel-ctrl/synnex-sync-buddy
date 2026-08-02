@@ -266,8 +266,7 @@ function SignInForm({ redirectTo }: { redirectTo: string }) {
   );
 }
 
-  );
-}
+
 
 const b2cSchema = z
   .object({
