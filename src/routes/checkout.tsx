@@ -19,6 +19,7 @@ import { ShippingMethodSelector } from "@/components/shipping-method-selector";
 import { getItemWeightKg, priceFmt, useCart } from "@/lib/cart";
 import { insertOrderItems } from "@/lib/order-items.functions";
 import { logOrderCreated as logCreated } from "@/lib/order-confirmation.functions";
+import { sendMetaPurchaseEvent } from "@/lib/meta-capi.functions";
 
 import { useSupabaseUser } from "@/lib/auth-sheet";
 import { getFreshAccessToken } from "@/lib/auth-session";
@@ -148,6 +149,25 @@ function CheckoutPage() {
   const [applyingCode, setApplyingCode] = useState(false);
   const [discount, setDiscount] = useState<DiscountApplied | null>(null);
   const [codeError, setCodeError] = useState<string | null>(null);
+
+  // Meta Pixel: InitiateCheckout ตอนเข้าหน้านี้
+  useEffect(() => {
+    if (items.length === 0) return;
+    import("@/lib/meta-pixel").then(({ trackMetaEvent }) => {
+      trackMetaEvent(
+        "InitiateCheckout",
+        {
+          currency: "THB",
+          value: items.reduce((sum, i) => sum + i.price * i.qty, 0),
+          content_ids: items.map((i) => i.sku),
+          content_type: "product",
+        },
+        crypto.randomUUID(),
+      );
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
 
   // Guard: cart must be non-empty
   useEffect(() => {
@@ -507,6 +527,28 @@ function CheckoutPage() {
           const { markCartRecovered } = await import("@/lib/cart-reminder");
           markCartRecovered(user.id).catch(() => {});
         }
+
+        // Meta Pixel + Conversions API (dedupe ด้วย event id เดียวกัน) — fire-and-forget
+        const metaEventId = crypto.randomUUID();
+        import("@/lib/meta-pixel").then(({ trackMetaEvent }) => {
+          trackMetaEvent(
+            "Purchase",
+            { currency: "THB", value: grandTotal, content_ids: items.map((i) => i.sku), content_type: "product" },
+            metaEventId,
+          );
+        });
+        sendMetaPurchaseEvent({
+          data: {
+            eventId: metaEventId,
+            eventSourceUrl: `${window.location.origin}/order/${order.order_number}`,
+            value: grandTotal,
+            currency: "THB",
+            contentIds: items.map((i) => i.sku),
+            email: base.data.customer_email || undefined,
+            phone: base.data.customer_phone || undefined,
+          },
+        }).catch((e: unknown) => console.warn("[meta-capi]", e));
+
         await navigate({ to: "/order/$orderNumber", params: { orderNumber: order.order_number } });
         clear();
         localStorage.removeItem("ent_cart");

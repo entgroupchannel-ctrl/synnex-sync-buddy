@@ -130,24 +130,39 @@ function GoogleIcon({ className }: { className?: string }) {
   );
 }
 
-function GoogleAuthButton({ label = "เข้าสู่ระบบด้วย Google", nextPath }: { label?: string; nextPath?: string }) {
-  const [busy, setBusy] = useState(false);
-  const onClick = async () => {
-    setBusy(true);
+function FacebookIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="#1877F2">
+      <path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07c0 6.02 4.39 11.01 10.13 11.93v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.68.24 2.68.24v2.96h-1.51c-1.49 0-1.95.93-1.95 1.89v2.26h3.32l-.53 3.49h-2.79v8.44C19.61 23.08 24 18.09 24 12.07z" />
+    </svg>
+  );
+}
+
+/** ปุ่ม social login — ใช้ร่วมกัน 3 จุด: signin, สมัคร B2C, สมัคร B2B */
+function OAuthButtons({ nextPath, labelPrefix = "เข้าสู่ระบบด้วย" }: { nextPath?: string; labelPrefix?: string }) {
+  const [busyProvider, setBusyProvider] = useState<"google" | "facebook" | null>(null);
+
+  const signIn = async (provider: "google" | "facebook") => {
+    setBusyProvider(provider);
     try {
       if (nextPath) window.sessionStorage.setItem("auth:nextPath", nextPath);
     } catch { /* sessionStorage ใช้ไม่ได้ ข้ามไป */ }
     const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
+      provider,
       options: { redirectTo: window.location.origin + "/auth/callback" },
     });
-
     if (error) {
-      toast.error(error.message);
-      setBusy(false);
+      // Facebook provider ยังไม่ได้เปิดใช้งานใน Supabase → ข้อความ error มาตรฐานคือ "Unsupported provider"
+      toast.error(
+        error.message.toLowerCase().includes("provider")
+          ? "ยังไม่ได้เปิดใช้งาน Facebook Login — ติดต่อผู้ดูแลระบบ"
+          : error.message,
+      );
+      setBusyProvider(null);
     }
     // สำเร็จแล้วเบราว์เซอร์จะ redirect ออกจากหน้านี้เอง
   };
+
   return (
     <>
       <div className="relative py-1">
@@ -158,10 +173,16 @@ function GoogleAuthButton({ label = "เข้าสู่ระบบด้ว�
           <span className="bg-white px-2 text-slate-400">หรือ</span>
         </div>
       </div>
-      <Button type="button" variant="outline" disabled={busy} onClick={onClick} className="w-full gap-2">
-        <GoogleIcon className="h-4 w-4" />
-        {busy ? "กำลังเชื่อมต่อ..." : label}
-      </Button>
+      <div className="grid grid-cols-2 gap-2">
+        <Button type="button" variant="outline" disabled={!!busyProvider} onClick={() => signIn("google")} className="gap-2">
+          <GoogleIcon className="h-4 w-4" />
+          {busyProvider === "google" ? "กำลังเชื่อมต่อ..." : "Google"}
+        </Button>
+        <Button type="button" variant="outline" disabled={!!busyProvider} onClick={() => signIn("facebook")} className="gap-2">
+          <FacebookIcon className="h-4 w-4" />
+          {busyProvider === "facebook" ? "กำลังเชื่อมต่อ..." : "Facebook"}
+        </Button>
+      </div>
     </>
   );
 }
@@ -290,7 +311,7 @@ function SignInForm({ redirectTo }: { redirectTo: string }) {
         {busy ? "กำลังเข้าสู่ระบบ..." : "เข้าสู่ระบบ"}
       </Button>
 
-      <GoogleAuthButton label="เข้าสู่ระบบด้วย Google" />
+      <OAuthButtons />
 
     </form>
   );
@@ -369,7 +390,7 @@ function SignUpB2CForm() {
       <Button type="submit" disabled={busy} className="w-full bg-[color:var(--brand-navy)] hover:bg-[color:var(--brand-navy-2)]">
         {busy ? "กำลังสมัคร..." : "สมัครสมาชิก"}
       </Button>
-      <GoogleAuthButton label="สมัครสมาชิกด้วย Google" />
+      <OAuthButtons />
     </form>
   );
 }
@@ -462,14 +483,14 @@ function SignUpB2BForm({ alreadySignedIn }: { alreadySignedIn: boolean }) {
         บัญชี B2B จะต้องรอทีมงานยืนยัน (1 วันทำการ) — คุณสามารถซื้อสินค้าในฐานะ Guest ระหว่างรอได้
       </div>
       {!alreadySignedIn && (
-        <GoogleAuthButton
-          label="สมัคร B2B ด้วย Google (กรอกข้อมูลบริษัทต่อหลังล็อกอิน)"
-          nextPath="/auth?tab=b2b"
-        />
+        <div>
+          <p className="mb-2 text-xs text-slate-500">สมัคร B2B ด้วย Google/Facebook (กรอกข้อมูลบริษัทต่อหลังล็อกอิน)</p>
+          <OAuthButtons nextPath="/auth?tab=b2b" />
+        </div>
       )}
       {alreadySignedIn && (
         <div className="rounded-lg bg-green-50 p-3 text-xs text-green-800">
-          ✅ ล็อกอินด้วย Google แล้ว — กรอกข้อมูลบริษัทให้ครบเพื่อส่งคำขอ B2B
+          ✅ ล็อกอินแล้ว — กรอกข้อมูลบริษัทให้ครบเพื่อส่งคำขอ B2B
         </div>
       )}
 

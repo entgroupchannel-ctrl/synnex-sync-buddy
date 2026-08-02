@@ -198,6 +198,25 @@ function ProductDetail() {
   });
 
 
+  // Meta Pixel: ViewContent ตอนโหลดข้อมูลสินค้าสำเร็จ (ยิงครั้งเดียวต่อ product id)
+  useEffect(() => {
+    const p = productQ.data;
+    if (!p) return;
+    import("@/lib/meta-pixel").then(({ trackMetaEvent }) => {
+      trackMetaEvent(
+        "ViewContent",
+        {
+          currency: "THB",
+          value: Number(p.tier_price_guest ?? p.selling_price ?? 0),
+          content_ids: [p.sku],
+          content_type: "product",
+        },
+        crypto.randomUUID(),
+      );
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [productQ.data?.id]);
+
   const relatedQ = useQuery({
     enabled: !!productQ.data?.id,
     queryKey: ["smart-recommendations", productQ.data?.id],

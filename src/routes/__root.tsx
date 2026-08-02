@@ -4,6 +4,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
@@ -251,6 +252,19 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+
+  // เริ่ม Meta Pixel ครั้งเดียวตอนโหลดแอป
+  // no-op เงียบๆ ถ้ายังไม่ได้ตั้งค่า VITE_META_PIXEL_ID — ดู src/lib/meta-pixel.ts
+  useEffect(() => {
+    import("@/lib/meta-pixel").then(({ initMetaPixel }) => initMetaPixel());
+  }, []);
+
+  // ยิง PageView ทุกครั้งที่เปลี่ยนหน้า (SPA navigation ไม่ reload หน้าจริง ต้องยิงเอง
+  // ไม่งั้น Meta จะเห็นแค่ PageView แรกตอนเข้าเว็บครั้งเดียว)
+  useEffect(() => {
+    import("@/lib/meta-pixel").then(({ trackPageView }) => trackPageView());
+  }, [pathname]);
 
   // เมื่อ session ถูกล้าง (ผู้ใช้กด logout เอง หรือระบบตรวจพบ token ตาย/refresh ล้ม
   // แล้วสั่ง local sign-out ให้ — ดู src/lib/auth-session.ts) ให้เคลียร์ query cache
