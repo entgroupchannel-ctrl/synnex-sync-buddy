@@ -158,12 +158,39 @@ function CheckoutPage() {
     }
   }, [items.length, navigate, orderCreated]);
 
+  // Saved addresses (address memory)
+  const [savedAddrs, setSavedAddrs] = useState<
+    Array<{ id: string; label: string | null; recipient: string | null; phone: string | null; address_line: string; district: string | null; province: string | null; postcode: string | null; is_default: boolean | null }>
+  >([]);
+  const [selectedAddrId, setSelectedAddrId] = useState<string | null>(null);
+
+  const applyAddress = (a: (typeof savedAddrs)[number]) => {
+    setSelectedAddrId(a.id);
+    setF((prev) => ({
+      ...prev,
+      shipping_name: a.recipient ?? prev.shipping_name,
+      shipping_phone: a.phone ?? prev.shipping_phone,
+      shipping_address: a.address_line ?? prev.shipping_address,
+      shipping_district: a.district ?? prev.shipping_district,
+      shipping_province: a.province ?? prev.shipping_province,
+      shipping_postcode: a.postcode ?? prev.shipping_postcode,
+    }));
+  };
+
   // Prefill from user profile
   useEffect(() => {
     if (!user) return;
     (async () => {
       const { data: profile } = await supabase.from("user_profiles").select("*").eq("id", user.id).maybeSingle();
-      const { data: addr } = await supabase.from("user_addresses").select("*").eq("user_id", user.id).order("is_default", { ascending: false }).limit(1).maybeSingle();
+      const { data: addrs } = await supabase
+        .from("user_addresses")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("is_default", { ascending: false })
+        .limit(6);
+      const addr = addrs?.[0];
+      setSavedAddrs((addrs ?? []) as typeof savedAddrs);
+      if (addr) setSelectedAddrId(addr.id);
       setF((prev) => ({
         ...prev,
         customer_name: profile?.full_name ?? prev.customer_name,
@@ -186,6 +213,7 @@ function CheckoutPage() {
       }
     })();
   }, [user]);
+
 
   const codFee = payment === "cod" ? COD_FEE : 0;
   const shippingFee = isPickup ? 0 : discount?.isFreeShipping ? 0 : shipCalc.fee;
