@@ -58,7 +58,7 @@ export function ShippingMethodSelector({ className }: { className?: string }) {
               type="button"
               onClick={() => setSelected(opt.value)}
               className={cn(
-                "flex w-full cursor-pointer items-start gap-3 rounded-xl p-3 text-left transition-colors",
+                "flex w-full cursor-pointer items-start gap-2.5 rounded-xl p-2.5 text-left transition-colors",
                 active
                   ? "border-2 border-green-600 bg-green-50"
                   : "border border-gray-200 bg-white hover:border-gray-300",
@@ -76,8 +76,7 @@ export function ShippingMethodSelector({ className }: { className?: string }) {
               <span className="min-w-0 flex-1">
                 <span className="block text-sm font-semibold text-gray-900">{opt.title}</span>
                 <span className="mt-0.5 block text-xs text-gray-600">{opt.subtitle}</span>
-                <span className="mt-1 block text-xs text-gray-500">{opt.line1}</span>
-                <span className="block text-xs text-gray-400">{opt.line2}</span>
+                <span className="mt-0.5 block text-xs text-gray-500">{opt.line1} · {opt.line2}</span>
               </span>
               <span
                 className={cn(
@@ -100,7 +99,7 @@ export function ShippingMethodSelector({ className }: { className?: string }) {
 
 function PickupMap() {
   return (
-    <div className="mt-3 rounded-2xl border border-gray-200 bg-white p-4">
+    <div className="mt-3 rounded-2xl border border-gray-200 bg-white p-3">
       <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-800">
         <MapPin className="h-4 w-4 text-green-600" /> ที่อยู่สำนักงาน
       </div>
@@ -112,7 +111,7 @@ function PickupMap() {
         <iframe
           src="https://maps.google.com/maps?q=13.9320709,100.4819588&z=16&output=embed"
           width="100%"
-          height={250}
+          height={170}
           style={{ border: 0, borderRadius: "12px" }}
           allowFullScreen
           loading="lazy"
