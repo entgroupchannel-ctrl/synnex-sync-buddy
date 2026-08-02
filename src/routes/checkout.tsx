@@ -704,9 +704,9 @@ function CheckoutPage() {
                   ซื้อเพิ่มอีก ฿{(5000 - subtotal).toLocaleString()} รับสิทธิ์ส่งฟรี กทม./ปริมณฑล
                 </p>
               )}
-              <div className="rounded-md bg-slate-50 p-3 text-xs text-slate-600">
-                <div className="mb-1 font-semibold text-slate-700">อัตราค่าจัดส่งต่างจังหวัด (Kerry)</div>
-                <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
+              <details className="rounded-md bg-slate-50 px-3 py-2 text-xs text-slate-600">
+                <summary className="cursor-pointer font-semibold text-slate-700">อัตราค่าจัดส่งต่างจังหวัด (Kerry)</summary>
+                <div className="mt-1.5 grid grid-cols-2 gap-x-4 gap-y-0.5 sm:grid-cols-4">
                   <span>≤ 1 กก.</span><span>฿50</span>
                   <span>≤ 3 กก.</span><span>฿80</span>
                   <span>≤ 5 กก.</span><span>฿120</span>
@@ -715,14 +715,15 @@ function CheckoutPage() {
                   <span>≤ 20 กก.</span><span>฿320</span>
                   <span>&gt; 20 กก.</span><span>฿400</span>
                 </div>
-              </div>
+              </details>
             </section>
             </>
             )}
-            <section className="space-y-3 rounded-lg border bg-white p-4">
-              <h2 className="flex items-center gap-2 font-bold text-[color:var(--brand-navy)]">
-                <Tag className="h-5 w-5" /> โค้ดส่วนลด / Discount Code
+            <section className="space-y-2 rounded-lg border bg-white p-4">
+              <h2 className="flex items-center gap-2 text-sm font-bold text-[color:var(--brand-navy)]">
+                <Tag className="h-4 w-4" /> โค้ดส่วนลด
               </h2>
+
               {!discount ? (
                 <>
                   <div className="flex gap-2">
