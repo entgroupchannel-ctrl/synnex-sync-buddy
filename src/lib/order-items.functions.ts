@@ -19,17 +19,9 @@ export type OrderItemInput = {
 export const insertOrderItems = createServerFn({ method: "POST" })
   .inputValidator((input: { items: OrderItemInput[] }) => input)
   .handler(async ({ data }) => {
-    let supabaseAdmin: Awaited<typeof import("@/integrations/supabase/client.server")>["supabaseAdmin"];
-    try {
-      ({ supabaseAdmin } = await import("@/integrations/supabase/client.server"));
-      // แตะ client ครั้งแรกเพื่อให้ error เรื่อง env โผล่ตรงนี้ ไม่ใช่กลางทาง
-      void supabaseAdmin.from("order_items");
-    } catch (e) {
-      console.error("[insertOrderItems] service role ใช้งานไม่ได้", e);
-      throw new Error(
-        "ระบบหลังบ้านยังเชื่อมต่อฐานข้อมูลไม่ได้ (SUPABASE_SERVICE_ROLE_KEY หาย) กรุณาแจ้งผู้ดูแลระบบ",
-      );
-    }
+    const { getAdminClient } = await import("@/lib/supabase-admin.server");
+    const supabaseAdmin = getAdminClient();
+
 
 
     const skus = [...new Set(data.items.map((i) => i.product_sku).filter(Boolean))];
