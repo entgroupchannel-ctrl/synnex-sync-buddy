@@ -526,6 +526,28 @@ function CheckoutPage() {
           const { markCartRecovered } = await import("@/lib/cart-reminder");
           markCartRecovered(user.id).catch(() => {});
         }
+
+        // Meta Pixel + Conversions API (dedupe ด้วย event id เดียวกัน) — fire-and-forget
+        const metaEventId = crypto.randomUUID();
+        import("@/lib/meta-pixel").then(({ trackMetaEvent }) => {
+          trackMetaEvent(
+            "Purchase",
+            { currency: "THB", value: grandTotal, content_ids: items.map((i) => i.sku), content_type: "product" },
+            metaEventId,
+          );
+        });
+        sendMetaPurchaseEvent({
+          data: {
+            eventId: metaEventId,
+            eventSourceUrl: `${window.location.origin}/order/${order.order_number}`,
+            value: grandTotal,
+            currency: "THB",
+            contentIds: items.map((i) => i.sku),
+            email: base.data.customer_email || undefined,
+            phone: base.data.customer_phone || undefined,
+          },
+        }).catch((e) => console.warn("[meta-capi]", e));
+
         await navigate({ to: "/order/$orderNumber", params: { orderNumber: order.order_number } });
         clear();
         localStorage.removeItem("ent_cart");
