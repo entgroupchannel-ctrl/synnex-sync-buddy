@@ -1,32 +1,28 @@
-## สาเหตุที่ยืนยันแล้ว
+## ที่ได้จากไฟล์อัปโหลด
 
-ผมแมปตำแหน่งใน bundle จริงบนเว็บ (`/assets/order._orderNumber-D8KQCR4G.js` ตำแหน่ง 10879) โค้ดตรงนั้นคือ:
+zip มี patch + ไฟล์เต็มของการแก้ปัญหา "session/JWT ที่ตายแล้วยังถูกแนบไปกับทุก request → PostgREST ตอบ 401 ก่อนถึง RLS → checkout ล้ม" ตรงกับ diagnosis รอบก่อน
 
-```text
-F = P(); I = F.Buffer.from && F.Buffer.alloc && ...
-var P = i(((e,t) => { t.exports = {} }));   // โมดูล "buffer" ถูก stub เป็น {}
-```
+## แผน apply
 
-`F.Buffer` เป็น `undefined` → อ่าน `.from` ไม่ได้ → `TypeError: Cannot read properties of undefined (reading 'from')`
+1. **สร้างไฟล์ใหม่** `src/lib/auth-session.ts` ตามที่ให้มา
+   - `getUserSafe()` — เรียก `getUser()`; ถ้า error เป็น dead-token (401/403, `refresh_token_not_found`, `invalid JWT`, `jwt expired`, `session_not_found`) → `signOut({ scope: "local" })` (de-dupe ด้วย flag) แล้วคืน `null`
+   - `getFreshAccessToken()` — คืน access token เฉพาะเมื่อ session ยังไม่หมดอายุ; ถ้าหมดอายุจะยืนยันด้วย `getUserSafe()` ก่อน ไม่งั้นคืน `null` ให้ผู้เรียกไม่แนบ Authorization → fallback เป็น guest
 
-- **ไม่ใช่** `supabase.storage.from("payment-slips")`
-- **ไม่ใช่** `supabaseAdmin.from("orders")` ใน server function
-- ต้นเหตุจริง: ไลบรารี `promptpay-qr` ที่หน้านี้ import (ผ่าน `promptpay-modal`) ใช้ `crc` ซึ่งต้องการ `Buffer` ของ Node ตอน build สำหรับเบราว์เซอร์ Buffer ถูกแทนด้วยอ็อบเจ็กต์ว่าง จึงพังตอนโมดูลถูกประเมินผล (พังทันทีที่โหลดหน้า ไม่เกี่ยวกับข้อมูลของออเดอร์ ENT-20260802-424634)
+2. **สร้างเทสต์** `src/lib/__tests__/auth-session.test.ts` (7 เทสต์ตามที่ให้มา)
 
-หมายเหตุ: ในพรีวิว (dev) ไม่พัง เพราะ dev server ให้ Buffer ได้ ปัญหาจึงโผล่แค่บนเว็บจริง
+3. **แก้ไฟล์เดิมเฉพาะส่วนที่เป็นตรรกะจริง** (ข้ามส่วนที่เป็นแค่ prettier reformat ในไฟล์เดิม เพื่อให้ diff อ่านง่ายและลดความเสี่ยง)
+   - `src/lib/auth-sheet.ts` — `useSupabaseUser()` ใช้ `getUserSafe()` และจัดการ event `SIGNED_OUT` / `TOKEN_REFRESHED` ที่ไม่มี session → `setUser(null)`
+   - `src/lib/cart.ts` — `useCustomerTier()` ใช้ `getUserSafe()` แทน `supabase.auth.getUser()`
+   - `src/routes/checkout.tsx` — จุด charge บัตรเครดิต ใช้ `getFreshAccessToken()` แทน `getSession().access_token`
+   - `src/integrations/supabase/auth-attacher.ts` — แนบ bearer จาก `getFreshAccessToken()` (หมายเหตุ: ไฟล์นี้ generated โดย integration ถ้าถูก regenerate ต้องแก้ซ้ำ)
+   - `src/routes/__root.tsx` — เพิ่ม listener กลางหนึ่งตัว: เมื่อ `SIGNED_OUT` → `queryClient.removeQueries()` เพื่อไม่ให้ cache ผูกกับ user เก่าค้าง
 
-## แผนการแก้
+4. **ตรวจสอบ** — `tsgo` typecheck + `vitest run` ทั้งชุด แล้วตรวจว่าไม่มี error ใหม่
 
-1. เพิ่ม `src/lib/promptpay.ts` — สร้าง payload PromptPay (มาตรฐาน EMVCo) และ CRC16-CCITT ด้วย TypeScript ล้วน ไม่พึ่ง `Buffer` หรือแพ็กเกจภายนอก รองรับเบอร์มือถือ / เลขนิติบุคคล / e-Wallet ID และจำนวนเงินทศนิยม 2 ตำแหน่ง เหมือนที่ใช้อยู่
-2. แก้ `src/components/promptpay-modal.tsx` ให้เรียกฟังก์ชันใหม่แทน `promptpay-qr` (`qrcode.react` ใช้ต่อได้ปกติ ไม่เกี่ยวกับ Buffer)
-3. ค้นหาไฟล์อื่นที่ยัง import `promptpay-qr` แล้วเปลี่ยนให้ใช้ตัวใหม่ทั้งหมด และถอดแพ็กเกจ `promptpay-qr` ออกจาก dependencies
-4. ตรวจว่า QR ที่ได้เหมือนเดิม โดยเทียบสตริง payload ของเลข PromptPay + ยอดเงินตัวอย่างกับผลลัพธ์เดิม (unit test เล็ก ๆ ใน vitest ที่มีอยู่แล้ว) แล้ว typecheck
-5. เช็คว่ามีแพ็กเกจอื่นในบันเดิลฝั่ง client ที่พึ่ง `Buffer` ซ่อนอยู่อีกไหม (grep บันเดิลหลังบิลด์) เพื่อกันปัญหาเดียวกันในหน้าอื่น เช่น checkout
+## ระหว่างนี้
 
-## ต้อง Publish
+ล้าง key `sb-*-auth-token` ใน localStorage ของ preview (หรือเปิด incognito) แล้วลอง checkout ใหม่ ควรผ่านทันที
 
-แก้เสร็จต้องกด Publish หน้าคำสั่งซื้อบน shop.entgroup.co.th จึงจะหายครับ
+## หลัง apply
 
-## นอกขอบเขต (แจ้งไว้)
-
-console ยังเตือน `<a>` ซ้อน `<a>` ใน `home-sections.tsx` (ส่วน Corporate) — คนละเรื่อง ถ้าต้องการให้แก้พร้อมกันบอกได้ครับ
+ต้องกด Publish เพื่ออัปเดต shop.entgroup.co.th
