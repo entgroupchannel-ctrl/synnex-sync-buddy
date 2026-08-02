@@ -60,7 +60,7 @@ export type OrderStatus = (typeof ORDER_STATUSES)[number];
 export const STATUS_META: Record<OrderStatus, { label: string; badge: string; dot: string }> = {
   pending:                  { label: "รอยืนยัน",       badge: "bg-slate-100 text-slate-700 ring-1 ring-slate-200",   dot: "bg-slate-400" },
   confirmed:                { label: "ยืนยันแล้ว",     badge: "bg-blue-50 text-blue-700 ring-1 ring-blue-200",       dot: "bg-blue-500" },
-  ordered_from_distributor: { label: "สั่ง Distributor", badge: "bg-purple-50 text-purple-700 ring-1 ring-purple-200", dot: "bg-purple-500" },
+  ordered_from_distributor: { label: "เตรียมสินค้า", badge: "bg-purple-50 text-purple-700 ring-1 ring-purple-200", dot: "bg-purple-500" },
   shipped:                  { label: "จัดส่งแล้ว",     badge: "bg-amber-50 text-amber-700 ring-1 ring-amber-200",    dot: "bg-amber-500" },
   delivered:                { label: "ส่งถึงแล้ว",     badge: "bg-teal-50 text-teal-700 ring-1 ring-teal-200",       dot: "bg-teal-500" },
   completed:                { label: "เสร็จสิ้น",       badge: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200", dot: "bg-emerald-500" },
