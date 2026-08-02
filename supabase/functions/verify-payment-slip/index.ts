@@ -53,7 +53,8 @@ serve(async (req) => {
     if (!order.payment_slip_url) return json({ error: 'ออเดอร์นี้ยังไม่มีสลิปแนบมา' }, 400);
 
     const apiKey = Deno.env.get('SLIPOK_API_KEY');
-    const branchId = Deno.env.get('SLIPOK_BRANCH_ID');
+    // รับได้ทั้งเลข branch id ตรงๆ หรือ URL เต็ม (https://api.slipok.com/api/line/apikey/72012)
+    const branchId = (Deno.env.get('SLIPOK_BRANCH_ID') ?? '').trim().replace(/\/+$/, '').split('/').pop();
     if (!apiKey || !branchId) return json({ error: 'ยังไม่ได้ตั้งค่า SLIPOK_API_KEY หรือ SLIPOK_BRANCH_ID' }, 500);
 
     // ดาวน์โหลดไฟล์สลิปจาก private bucket มาส่งเป็น multipart ตรงๆ
