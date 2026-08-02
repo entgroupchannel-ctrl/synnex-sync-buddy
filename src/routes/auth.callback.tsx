@@ -51,6 +51,13 @@ function AuthCallback() {
         if (errDesc || errCode) {
           const raw = decodeURIComponent(errDesc || errCode || "").replace(/\+/g, " ");
           const low = raw.toLowerCase();
+          if (low.includes("user profile from external provider")) {
+            setError(
+              "การเชื่อมต่อบัญชี LINE ยังตั้งค่าไม่สมบูรณ์ (ผู้ให้บริการส่งข้อมูลโปรไฟล์ในรูปแบบที่ระบบยังรับไม่ได้) — " +
+                "กรุณาเข้าสู่ระบบด้วยอีเมล/รหัสผ่าน หรือ Google ไปก่อน ทีมงานกำลังแก้ไขการตั้งค่าครับ",
+            );
+            return;
+          }
           setError(
             low.includes("redirect") || low.includes("domain") || low.includes("uri")
               ? `การตั้งค่าผู้ให้บริการล็อกอินยังไม่สมบูรณ์ (${raw}) — กรุณาใช้อีเมล/รหัสผ่าน หรือแจ้งผู้ดูแลระบบ`
@@ -62,7 +69,7 @@ function AuthCallback() {
         const cleanUrl = () =>
           window.history.replaceState({}, "", window.location.pathname);
 
-        const finish = (type: string | null) => {
+        const finish = async (type: string | null) => {
           cleanUrl();
           if (type === "recovery") {
             navigate({ to: "/reset-password" as any });
@@ -73,8 +80,18 @@ function AuthCallback() {
           } else {
             toast.success("เข้าสู่ระบบสำเร็จ");
           }
-          navigate({ to: takeNext() as never });
+
+          // ผู้ใช้จาก LINE อาจไม่มีอีเมล — พาไปกรอกข้อมูลติดต่อก่อน ไม่ให้ค้างตอนสั่งซื้อ
+          const { data: userRes } = await supabase.auth.getUser();
+          const next = takeNext();
+          if (userRes?.user && !userRes.user.email) {
+            toast.info("กรุณากรอกอีเมลและเบอร์โทรเพื่อใช้สั่งซื้อและรับใบเสร็จ");
+            navigate({ to: "/my-account/profile" as never });
+            return;
+          }
+          navigate({ to: next as never });
         };
+
 
         const type = params.get("type") || search.get("type");
 
