@@ -2701,6 +2701,18 @@ export type Database = {
       }
     }
     Functions: {
+      apply_for_b2b: {
+        Args: {
+          p_company_address: string
+          p_company_name: string
+          p_full_name: string
+          p_phone: string
+          p_position: string
+          p_tax_id: string
+          p_wants_tax_invoice: boolean
+        }
+        Returns: undefined
+      }
       apply_images_batch: {
         Args: { p_batch_id: string; p_dry_run?: boolean }
         Returns: {

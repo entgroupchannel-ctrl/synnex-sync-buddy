@@ -412,21 +412,15 @@ function SignUpB2BForm({ alreadySignedIn }: { alreadySignedIn: boolean }) {
     setBusy(true);
 
     if (alreadySignedIn) {
-      const { data: userData } = await supabase.auth.getUser();
-      const { error } = await supabase
-        .from("user_profiles")
-        .update({
-          user_type: "b2b",
-          full_name: form.full_name,
-          phone: form.phone,
-          company_name: form.company_name,
-          tax_id: form.tax_id,
-          company_address: form.company_address,
-          position: form.position,
-          wants_tax_invoice: form.wants_tax_invoice,
-          account_status: "pending_approval",
-        })
-        .eq("id", userData.user!.id);
+      const { error } = await supabase.rpc("apply_for_b2b", {
+        p_full_name: form.full_name,
+        p_phone: form.phone,
+        p_company_name: form.company_name,
+        p_tax_id: form.tax_id,
+        p_company_address: form.company_address,
+        p_position: form.position,
+        p_wants_tax_invoice: form.wants_tax_invoice,
+      });
       setBusy(false);
       if (error) {
         toast.error(error.message);
