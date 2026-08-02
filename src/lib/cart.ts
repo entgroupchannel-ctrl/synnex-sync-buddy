@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { getUserSafe } from "@/lib/auth-session";
 
 export type CartItem = {
   id: string;
@@ -190,7 +191,7 @@ export function useCustomerTier(): CustomerTier {
   useEffect(() => {
     let mounted = true;
     const load = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await getUserSafe();
       if (!user) {
         if (mounted) setTier("guest");
         return;

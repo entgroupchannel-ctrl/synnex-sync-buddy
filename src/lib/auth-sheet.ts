@@ -39,17 +39,28 @@ export function useSupabaseUser() {
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     let mounted = true;
-    import("@/integrations/supabase/client").then(({ supabase }) => {
-      supabase.auth.getUser().then(({ data }) => {
-        if (!mounted) return;
-        setUser(data.user ? { id: data.user.id, email: data.user.email ?? null } : null);
-        setLoading(false);
-      });
-      const { data: sub } = supabase.auth.onAuthStateChange((_evt, session) => {
-        setUser(session?.user ? { id: session.user.id, email: session.user.email ?? null } : null);
-      });
-      return () => sub.subscription.unsubscribe();
-    });
+    Promise.all([import("@/integrations/supabase/client"), import("@/lib/auth-session")]).then(
+      ([{ supabase }, { getUserSafe }]) => {
+        getUserSafe().then((u) => {
+          if (!mounted) return;
+          setUser(u ? { id: u.id, email: u.email ?? null } : null);
+          setLoading(false);
+        });
+        const { data: sub } = supabase.auth.onAuthStateChange((evt, session) => {
+          if (!mounted) return;
+          // SIGNED_OUT (รวมถึง local sign-out ที่ getUserSafe สั่งเมื่อ token ตาย) หรือ
+          // TOKEN_REFRESHED ที่ไม่มี session (refresh ล้ม) → ถือว่าไม่มี user แล้ว
+          if (evt === "SIGNED_OUT" || (evt === "TOKEN_REFRESHED" && !session)) {
+            setUser(null);
+            return;
+          }
+          setUser(
+            session?.user ? { id: session.user.id, email: session.user.email ?? null } : null,
+          );
+        });
+        return () => sub.subscription.unsubscribe();
+      },
+    );
     return () => {
       mounted = false;
     };
