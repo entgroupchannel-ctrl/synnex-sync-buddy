@@ -148,11 +148,15 @@ function LineIcon({ className }: { className?: string }) {
 
 type OAuthProvider = "google" | "facebook" | "custom:line";
 
+/** ปิดเป็น false ได้ที่จุดเดียวนี้ ถ้ายังตั้งค่า LINE provider ใน Supabase ไม่เสร็จ */
+const SHOW_LINE_LOGIN = true;
+
 const PROVIDER_LABEL: Record<OAuthProvider, string> = {
   google: "Google",
   facebook: "Facebook",
   "custom:line": "LINE",
 };
+
 
 /** ปุ่ม social login — ใช้ร่วมกัน 3 จุด: signin, สมัคร B2C, สมัคร B2B */
 function OAuthButtons({ nextPath, labelPrefix = "เข้าสู่ระบบด้วย" }: { nextPath?: string; labelPrefix?: string }) {
