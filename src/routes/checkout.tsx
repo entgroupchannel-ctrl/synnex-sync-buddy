@@ -36,6 +36,7 @@ import {
   useShippingMethod,
 } from "@/lib/shipping-method";
 import { VatNoteDetailed } from "@/components/vat-note";
+import { districtsOf, postcodesOf, validateThaiAddress } from "@/lib/thai-address";
 
 // Thai provinces excluding BKK metro (which are listed under "free shipping" optgroup)
 const THAI_PROVINCES: string[] = [
@@ -301,7 +302,7 @@ function CheckoutPage() {
       });
       if (!geo.ok) {
         setErrors(geo.errors);
-        toast.error(Object.values(geo.errors)[0] ?? "ที่อยู่ไม่ถูกต้อง");
+        toast.error(Object.values(geo.errors)[0] as string ?? "ที่อยู่ไม่ถูกต้อง");
         return;
       }
       base.data.shipping_province = geo.normalized.province;
