@@ -513,7 +513,7 @@ function SignUpB2BForm({ alreadySignedIn }: { alreadySignedIn: boolean }) {
       </div>
       {!alreadySignedIn && (
         <div>
-          <p className="mb-2 text-xs text-slate-500">สมัคร B2B ด้วย Google/Facebook (กรอกข้อมูลบริษัทต่อหลังล็อกอิน)</p>
+          <p className="mb-2 text-xs text-slate-500">สมัคร B2B ด้วย Google/Facebook/LINE (กรอกข้อมูลบริษัทต่อหลังล็อกอิน)</p>
           <OAuthButtons nextPath="/auth?tab=b2b" />
         </div>
       )}
