@@ -201,7 +201,7 @@ function OAuthButtons({ nextPath, labelPrefix = "เข้าสู่ระบ�
           <span className="bg-white px-2 text-slate-400">หรือ{labelPrefix ? "" : ""}</span>
         </div>
       </div>
-      <div className="grid grid-cols-3 gap-2">
+      <div className={SHOW_LINE_LOGIN ? "grid grid-cols-3 gap-2" : "grid grid-cols-2 gap-2"}>
         <Button type="button" variant="outline" disabled={!!busyProvider} onClick={() => signIn("google")} className="gap-1.5 px-2">
           <GoogleIcon className="h-4 w-4 shrink-0" />
           <span className="truncate">{busyProvider === "google" ? "..." : "Google"}</span>
@@ -210,11 +210,14 @@ function OAuthButtons({ nextPath, labelPrefix = "เข้าสู่ระบ�
           <FacebookIcon className="h-4 w-4 shrink-0" />
           <span className="truncate">{busyProvider === "facebook" ? "..." : "Facebook"}</span>
         </Button>
-        <Button type="button" variant="outline" disabled={!!busyProvider} onClick={() => signIn("custom:line")} className="gap-1.5 px-2">
-          <LineIcon className="h-4 w-4 shrink-0" />
-          <span className="truncate">{busyProvider === "custom:line" ? "..." : "LINE"}</span>
-        </Button>
+        {SHOW_LINE_LOGIN && (
+          <Button type="button" variant="outline" disabled={!!busyProvider} onClick={() => signIn("custom:line")} className="gap-1.5 px-2">
+            <LineIcon className="h-4 w-4 shrink-0" />
+            <span className="truncate">{busyProvider === "custom:line" ? "..." : "LINE"}</span>
+          </Button>
+        )}
       </div>
+
     </>
   );
 }
