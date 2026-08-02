@@ -8,6 +8,7 @@ import { OrderProgressStepper } from "@/components/order-progress-stepper";
 import { providerLabel, eventLabel } from "@/lib/shipping";
 import { ReorderButton } from "@/components/reorder-dialog";
 import { FrequentlyBought } from "@/components/frequently-bought";
+import { ProductImage } from "@/components/product-image";
 
 export const Route = createFileRoute("/_authenticated/my-account/orders")({
   head: () => ({
@@ -33,7 +34,7 @@ type Row = {
   tax_invoice_url: string | null;
   tracking_number: string | null;
   shipping_provider: string | null;
-  order_items: { product_name: string; quantity: number }[];
+  order_items: { product_name: string; quantity: number; product_image_url: string | null }[];
   shipping_events: { status: string | null; event_time: string | null }[];
 };
 
@@ -43,7 +44,7 @@ function MyOrders() {
     queryFn: async () => {
       const { data } = await supabase
         .from("orders")
-        .select("id,order_number,created_at,status,payment_status,payment_method,total,quotation_url,tax_invoice_url,tracking_number,shipping_provider,order_items(product_name,quantity),shipping_events(status,event_time)")
+        .select("id,order_number,created_at,status,payment_status,payment_method,total,quotation_url,tax_invoice_url,tracking_number,shipping_provider,order_items(product_name,quantity,product_image_url),shipping_events(status,event_time)")
         .order("created_at", { ascending: false });
       return (data ?? []) as unknown as Row[];
     },
@@ -83,9 +84,22 @@ function MyOrders() {
               <div className="mt-3">
                 <OrderProgressStepper status={o.status} compact />
               </div>
-              <div className="mt-3 border-t pt-3 text-sm text-slate-700">
+              <div className="mt-3 space-y-2 border-t pt-3 text-sm text-slate-700">
                 {items.slice(0, 3).map((i, idx) => (
-                  <div key={idx} className="truncate">• {i.product_name} × {i.quantity}</div>
+                  <div key={idx} className="flex items-center gap-3">
+                    <div className="h-14 w-14 shrink-0 overflow-hidden rounded-md border bg-slate-50 p-1">
+                      <ProductImage
+                        src={i.product_image_url}
+                        alt={i.product_name}
+                        className="h-full w-full object-contain"
+                        iconClassName="h-6 w-6 text-slate-300"
+                      />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="line-clamp-2 text-xs font-medium text-slate-800">{i.product_name}</div>
+                      <div className="text-xs text-slate-500">จำนวน {i.quantity}</div>
+                    </div>
+                  </div>
                 ))}
                 {items.length > 3 && <div className="text-xs text-slate-500">และอีก {items.length - 3} รายการ</div>}
               </div>
