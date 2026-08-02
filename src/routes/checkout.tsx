@@ -620,6 +620,26 @@ function CheckoutPage() {
             <>
             <section className="space-y-3 rounded-lg border bg-white p-4">
               <h2 className="font-bold text-[color:var(--brand-navy)]">ที่อยู่จัดส่ง</h2>
+              {savedAddrs.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {savedAddrs.map((a) => (
+                    <button
+                      key={a.id}
+                      type="button"
+                      onClick={() => applyAddress(a)}
+                      className={`max-w-full truncate rounded-full border px-3 py-1 text-xs ${
+                        selectedAddrId === a.id
+                          ? "border-green-600 bg-green-50 font-semibold text-green-700"
+                          : "border-slate-200 text-slate-600 hover:border-slate-300"
+                      }`}
+                    >
+                      📍 {a.label ?? a.recipient ?? "ที่อยู่"} · {a.district ?? ""} {a.province ?? ""}
+                      {a.is_default ? " (ค่าเริ่มต้น)" : ""}
+                    </button>
+                  ))}
+                </div>
+              )}
+
               <div className="grid gap-3 sm:grid-cols-2">
                 <div>
                   <Label htmlFor="sname">ชื่อผู้รับ *</Label>
