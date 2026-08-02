@@ -128,7 +128,7 @@ function PricingPage() {
               <Link to="/admin/discount-codes">🎟 โค้ดส่วนลด</Link>
             </Button>
             <Button asChild variant="ghost" size="sm" className="text-white hover:bg-white/10">
-              <Link to="/admin/sync">← กลับ Dashboard</Link>
+              <Link to="/admin">← กลับ Dashboard</Link>
             </Button>
           </div>
 
