@@ -29,6 +29,8 @@ export const BANK_ACCOUNT = BANK_ACCOUNTS[0];
 export const COMPANY_INFO = {
   name: "บริษัท อีเอ็นที กรุ๊ป จำกัด",
   tax_id: "0135558013167",
+  /** PromptPay ID (นิติบุคคล = เลขผู้เสียภาษี) — ต้องยืนยันว่าผูกกับบัญชีบริษัทจริงก่อนใช้งาน */
+  promptpay_id: "0135558013167",
   email: "Sales@entgroup.co.th",
   phone: "02-045-6104",
   phones: ["02-045-6104", "095-739-1053", "084-046-1315"],
