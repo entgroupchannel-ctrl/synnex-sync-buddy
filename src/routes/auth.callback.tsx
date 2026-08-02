@@ -43,10 +43,22 @@ function AuthCallback() {
 
         const errDesc =
           params.get("error_description") || search.get("error_description");
-        if (errDesc) {
-          setError(decodeURIComponent(errDesc));
+        const errCode =
+          params.get("error") ||
+          search.get("error") ||
+          params.get("error_code") ||
+          search.get("error_code");
+        if (errDesc || errCode) {
+          const raw = decodeURIComponent(errDesc || errCode || "").replace(/\+/g, " ");
+          const low = raw.toLowerCase();
+          setError(
+            low.includes("redirect") || low.includes("domain") || low.includes("uri")
+              ? `การตั้งค่าผู้ให้บริการล็อกอินยังไม่สมบูรณ์ (${raw}) — กรุณาใช้อีเมล/รหัสผ่าน หรือแจ้งผู้ดูแลระบบ`
+              : raw || "เข้าสู่ระบบผ่านผู้ให้บริการภายนอกไม่สำเร็จ",
+          );
           return;
         }
+
 
         // OAuth (Google) แบบ PKCE ส่งกลับมาเป็น ?code=... แทน hash token
         const code = search.get("code");
