@@ -35,9 +35,22 @@ function AuthCallback() {
           return;
         }
 
+        // OAuth (Google) แบบ PKCE ส่งกลับมาเป็น ?code=... แทน hash token
+        const code = search.get("code");
+        if (code) {
+          const { error: exchangeErr } =
+            await supabase.auth.exchangeCodeForSession(code);
+          if (exchangeErr) throw exchangeErr;
+          window.history.replaceState({}, "", window.location.pathname);
+          toast.success("เข้าสู่ระบบสำเร็จ");
+          navigate({ to: "/" });
+          return;
+        }
+
         const access_token = params.get("access_token");
         const refresh_token = params.get("refresh_token");
         const type = params.get("type") || search.get("type");
+
 
         if (access_token && refresh_token) {
           const { error: setErr } = await supabase.auth.setSession({
