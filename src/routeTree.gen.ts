@@ -47,7 +47,6 @@ import { Route as AuthenticatedMyAccountMembershipRouteImport } from './routes/_
 import { Route as AuthenticatedMyAccountCreditRouteImport } from './routes/_authenticated/my-account.credit'
 import { Route as AuthenticatedMyAccountCompanyRouteImport } from './routes/_authenticated/my-account.company'
 import { Route as AuthenticatedMyAccountAddressesRouteImport } from './routes/_authenticated/my-account.addresses'
-import { Route as AuthenticatedAdminSyncRouteImport } from './routes/_authenticated/admin.sync'
 import { Route as AuthenticatedAdminShopeeRouteImport } from './routes/_authenticated/admin.shopee'
 import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin.settings'
 import { Route as AuthenticatedAdminSeoRouteImport } from './routes/_authenticated/admin.seo'
@@ -268,11 +267,6 @@ const AuthenticatedMyAccountAddressesRoute =
     path: '/addresses',
     getParentRoute: () => AuthenticatedMyAccountRoute,
   } as any)
-const AuthenticatedAdminSyncRoute = AuthenticatedAdminSyncRouteImport.update({
-  id: '/sync',
-  path: '/sync',
-  getParentRoute: () => AuthenticatedAdminRoute,
-} as any)
 const AuthenticatedAdminShopeeRoute =
   AuthenticatedAdminShopeeRouteImport.update({
     id: '/shopee',
@@ -442,7 +436,6 @@ export interface FileRoutesByFullPath {
   '/admin/seo': typeof AuthenticatedAdminSeoRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/shopee': typeof AuthenticatedAdminShopeeRoute
-  '/admin/sync': typeof AuthenticatedAdminSyncRoute
   '/my-account/addresses': typeof AuthenticatedMyAccountAddressesRoute
   '/my-account/company': typeof AuthenticatedMyAccountCompanyRoute
   '/my-account/credit': typeof AuthenticatedMyAccountCreditRoute
@@ -501,7 +494,6 @@ export interface FileRoutesByTo {
   '/admin/seo': typeof AuthenticatedAdminSeoRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/shopee': typeof AuthenticatedAdminShopeeRoute
-  '/admin/sync': typeof AuthenticatedAdminSyncRoute
   '/my-account/addresses': typeof AuthenticatedMyAccountAddressesRoute
   '/my-account/company': typeof AuthenticatedMyAccountCompanyRoute
   '/my-account/credit': typeof AuthenticatedMyAccountCreditRoute
@@ -564,7 +556,6 @@ export interface FileRoutesById {
   '/_authenticated/admin/seo': typeof AuthenticatedAdminSeoRoute
   '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/_authenticated/admin/shopee': typeof AuthenticatedAdminShopeeRoute
-  '/_authenticated/admin/sync': typeof AuthenticatedAdminSyncRoute
   '/_authenticated/my-account/addresses': typeof AuthenticatedMyAccountAddressesRoute
   '/_authenticated/my-account/company': typeof AuthenticatedMyAccountCompanyRoute
   '/_authenticated/my-account/credit': typeof AuthenticatedMyAccountCreditRoute
@@ -627,7 +618,6 @@ export interface FileRouteTypes {
     | '/admin/seo'
     | '/admin/settings'
     | '/admin/shopee'
-    | '/admin/sync'
     | '/my-account/addresses'
     | '/my-account/company'
     | '/my-account/credit'
@@ -686,7 +676,6 @@ export interface FileRouteTypes {
     | '/admin/seo'
     | '/admin/settings'
     | '/admin/shopee'
-    | '/admin/sync'
     | '/my-account/addresses'
     | '/my-account/company'
     | '/my-account/credit'
@@ -748,7 +737,6 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/seo'
     | '/_authenticated/admin/settings'
     | '/_authenticated/admin/shopee'
-    | '/_authenticated/admin/sync'
     | '/_authenticated/my-account/addresses'
     | '/_authenticated/my-account/company'
     | '/_authenticated/my-account/credit'
@@ -1061,13 +1049,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMyAccountAddressesRouteImport
       parentRoute: typeof AuthenticatedMyAccountRoute
     }
-    '/_authenticated/admin/sync': {
-      id: '/_authenticated/admin/sync'
-      path: '/sync'
-      fullPath: '/admin/sync'
-      preLoaderRoute: typeof AuthenticatedAdminSyncRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
     '/_authenticated/admin/shopee': {
       id: '/_authenticated/admin/shopee'
       path: '/shopee'
@@ -1280,7 +1261,6 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminSeoRoute: typeof AuthenticatedAdminSeoRoute
   AuthenticatedAdminSettingsRoute: typeof AuthenticatedAdminSettingsRoute
   AuthenticatedAdminShopeeRoute: typeof AuthenticatedAdminShopeeRoute
-  AuthenticatedAdminSyncRoute: typeof AuthenticatedAdminSyncRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedAdminPurchaseOrdersPoIdRoute: typeof AuthenticatedAdminPurchaseOrdersPoIdRoute
 }
@@ -1305,7 +1285,6 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminSeoRoute: AuthenticatedAdminSeoRoute,
   AuthenticatedAdminSettingsRoute: AuthenticatedAdminSettingsRoute,
   AuthenticatedAdminShopeeRoute: AuthenticatedAdminShopeeRoute,
-  AuthenticatedAdminSyncRoute: AuthenticatedAdminSyncRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   AuthenticatedAdminPurchaseOrdersPoIdRoute:
     AuthenticatedAdminPurchaseOrdersPoIdRoute,

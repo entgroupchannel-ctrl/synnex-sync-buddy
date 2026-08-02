@@ -6,7 +6,6 @@ import {
   DollarSign,
   AlertTriangle,
   Tag,
-  RefreshCw,
   Ticket,
   Mail,
   BarChart3,
@@ -203,7 +202,6 @@ function AdminDashboard() {
 
       {/* Quick actions */}
       <div className="mt-5 flex flex-wrap gap-2">
-        <QuickAction icon={RefreshCw} label="Sync สินค้า" to="/admin/sync" />
         <QuickAction icon={Ticket} label="เพิ่มโค้ดส่วนลด" to="/admin/discount-codes" />
         <QuickAction icon={Mail} label="ส่ง Newsletter" to="/admin/newsletter" />
         <QuickAction icon={BarChart3} label="ดู Report" to="/admin/analytics" />
@@ -296,13 +294,6 @@ function AdminDashboard() {
                 <span className="font-semibold text-slate-900">{data?.productCount ?? 0} รายการ</span>
               </div>
             </div>
-            <Link
-              to="/admin/sync"
-              className="mt-3 inline-flex w-full items-center justify-center gap-1.5 rounded-md bg-[color:var(--brand-green)] px-3 py-1.5 text-xs font-semibold text-white hover:brightness-110"
-            >
-              <RefreshCw className="h-3.5 w-3.5" />
-              Sync ตอนนี้
-            </Link>
           </section>
         </aside>
       </div>

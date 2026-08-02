@@ -10,7 +10,6 @@ import {
 import {
   LayoutDashboard,
   BarChart3,
-  RefreshCw,
   Tag,
   ScrollText,
   ClipboardList,
@@ -29,6 +28,7 @@ import {
   Building2,
   Inbox,
   ShoppingBag,
+
 
 
 
@@ -113,7 +113,6 @@ const NAV: NavGroup[] = [
     header: "สินค้าและราคา",
     icon: Package,
     items: [
-      { label: "Sync สินค้า", to: "/admin/sync", icon: RefreshCw },
       { label: "จัดการราคา", to: "/admin/pricing/products", icon: Tag },
       { label: "กฎราคา", to: "/admin/pricing", icon: Tag },
       { label: "Audit Log", to: "/admin/pricing/audit", icon: ScrollText },
