@@ -8,6 +8,7 @@ import { OrderProgressStepper } from "@/components/order-progress-stepper";
 import { providerLabel, eventLabel } from "@/lib/shipping";
 import { ReorderButton } from "@/components/reorder-dialog";
 import { FrequentlyBought } from "@/components/frequently-bought";
+import { ProductImage } from "@/components/product-image";
 
 export const Route = createFileRoute("/_authenticated/my-account/orders")({
   head: () => ({
