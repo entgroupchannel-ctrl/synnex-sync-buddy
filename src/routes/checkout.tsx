@@ -540,7 +540,7 @@ function CheckoutPage() {
           </div>
         )}
 
-        <form onSubmit={submit} className="grid gap-6 lg:grid-cols-[1fr_360px]">
+        <form onSubmit={submit} className="grid gap-4 lg:grid-cols-[1fr_360px]">
           {/* Honeypot — hidden from users, bots may fill it */}
           <input
             type="text"
@@ -552,17 +552,17 @@ function CheckoutPage() {
             aria-hidden="true"
             style={{ position: "absolute", left: "-10000px", width: 1, height: 1, opacity: 0 }}
           />
-          <div className="space-y-6">
+          <div className="space-y-3">
 
             {/* Contact */}
-            <section className="space-y-4 rounded-lg border bg-white p-6">
+            <section className="space-y-3 rounded-lg border bg-white p-4">
               <h2 className="font-bold text-[color:var(--brand-navy)]">ข้อมูลผู้ติดต่อ</h2>
               <div>
                 <Label htmlFor="cname">ชื่อ-นามสกุล *</Label>
                 <Input id="cname" value={f.customer_name} onChange={(e) => setField("customer_name", e.target.value)} maxLength={100} aria-invalid={!!fieldError("customer_name")} />
                 {fieldError("customer_name") && <p className="mt-1 text-xs text-red-600">{fieldError("customer_name")}</p>}
               </div>
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-3 sm:grid-cols-2">
                 <div>
                   <Label htmlFor="cphone">เบอร์โทรศัพท์ *</Label>
                   <Input id="cphone" value={f.customer_phone} onChange={(e) => setField("customer_phone", e.target.value)} placeholder="0812345678" maxLength={10} aria-invalid={!!fieldError("customer_phone")} />
@@ -594,13 +594,13 @@ function CheckoutPage() {
             </section>
 
             {/* Shipping method selector */}
-            <section className="space-y-3 rounded-lg border bg-white p-6">
+            <section className="space-y-3 rounded-lg border bg-white p-4">
               <h2 className="font-bold text-[color:var(--brand-navy)]">🚚 วิธีรับสินค้า</h2>
               <ShippingMethodSelector className="!mt-0" />
             </section>
 
             {isPickup && (
-              <section className="space-y-2 rounded-lg border-2 border-green-600 bg-green-50 p-6">
+              <section className="space-y-2 rounded-lg border-2 border-green-600 bg-green-50 p-4">
                 <h2 className="font-bold text-[color:var(--brand-navy)]">รับสินค้าที่สำนักงาน</h2>
                 <p className="text-sm text-gray-700">
                   คุณเลือกรับสินค้าที่สำนักงาน — ไม่ต้องกรอกที่อยู่จัดส่ง
@@ -618,9 +618,9 @@ function CheckoutPage() {
 
             {!isPickup && (
             <>
-            <section className="space-y-4 rounded-lg border bg-white p-6">
+            <section className="space-y-3 rounded-lg border bg-white p-4">
               <h2 className="font-bold text-[color:var(--brand-navy)]">ที่อยู่จัดส่ง</h2>
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-3 sm:grid-cols-2">
                 <div>
                   <Label htmlFor="sname">ชื่อผู้รับ *</Label>
                   <Input id="sname" value={f.shipping_name} onChange={(e) => setField("shipping_name", e.target.value)} maxLength={100} aria-invalid={!!fieldError("shipping_name")} />
@@ -637,7 +637,7 @@ function CheckoutPage() {
                 <Textarea id="saddr" rows={3} value={f.shipping_address} onChange={(e) => setField("shipping_address", e.target.value)} maxLength={500} placeholder="เลขที่ / ซอย / ถนน / แขวง" aria-invalid={!!fieldError("shipping_address")} />
                 {fieldError("shipping_address") && <p className="mt-1 text-xs text-red-600">{fieldError("shipping_address")}</p>}
               </div>
-              <div className="grid gap-4 sm:grid-cols-3">
+              <div className="grid gap-3 sm:grid-cols-3">
                 <div>
                   <Label htmlFor="sdistrict">เขต/อำเภอ *</Label>
                   <Input id="sdistrict" value={f.shipping_district} onChange={(e) => setField("shipping_district", e.target.value)} maxLength={100} aria-invalid={!!fieldError("shipping_district")} />
@@ -676,7 +676,7 @@ function CheckoutPage() {
             </section>
 
             {/* Shipping method — Kerry weight-based */}
-            <section className="space-y-3 rounded-lg border bg-white p-6">
+            <section className="space-y-3 rounded-lg border bg-white p-4">
               <h2 className="font-bold text-[color:var(--brand-navy)]">วิธีจัดส่ง</h2>
               <div className="flex items-start gap-3 rounded-lg border-2 border-[color:var(--brand-orange)] bg-orange-50 p-3">
                 <Truck className="h-5 w-5 shrink-0 text-[color:var(--brand-navy)]" />
@@ -719,7 +719,7 @@ function CheckoutPage() {
             </section>
             </>
             )}
-            <section className="space-y-3 rounded-lg border bg-white p-6">
+            <section className="space-y-3 rounded-lg border bg-white p-4">
               <h2 className="flex items-center gap-2 font-bold text-[color:var(--brand-navy)]">
                 <Tag className="h-5 w-5" /> โค้ดส่วนลด / Discount Code
               </h2>
@@ -757,7 +757,7 @@ function CheckoutPage() {
               )}
             </section>
 
-            <section className="space-y-4 rounded-lg border bg-white p-6">
+            <section className="space-y-3 rounded-lg border bg-white p-4">
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="flex items-center gap-2 font-bold text-[color:var(--brand-navy)]">
@@ -798,12 +798,12 @@ function CheckoutPage() {
             </section>
 
             {/* Payment */}
-            <section className="space-y-3 rounded-lg border bg-white p-6">
+            <section className="space-y-3 rounded-lg border bg-white p-4">
               <h2 className="font-bold text-[color:var(--brand-navy)]">วิธีการชำระเงิน</h2>
               <RadioGroup value={payment} onValueChange={(v) => setPayment(v as "transfer" | "cod" | "promptpay" | "credit" | "credit_card")} className="grid gap-2 sm:grid-cols-3">
                 {creditAccount && (
                   <label
-                    className={`flex items-center gap-3 rounded-lg border-2 p-4 transition sm:col-span-3 ${
+                    className={`flex items-center gap-3 rounded-lg border-2 p-3 transition sm:col-span-3 ${
                       payment === "credit" ? "border-emerald-600 bg-emerald-50" : "hover:bg-slate-50"
                     } ${creditUsable && creditEnough ? "cursor-pointer" : "cursor-not-allowed opacity-60"}`}
                   >
@@ -824,7 +824,7 @@ function CheckoutPage() {
                     </div>
                   </label>
                 )}
-                <label className={`flex cursor-pointer items-center gap-3 rounded-lg border-2 p-4 transition ${payment === "promptpay" ? "border-blue-600 bg-blue-50" : "hover:bg-slate-50"}`}>
+                <label className={`flex cursor-pointer items-center gap-3 rounded-lg border-2 p-3 transition ${payment === "promptpay" ? "border-blue-600 bg-blue-50" : "hover:bg-slate-50"}`}>
                   <RadioGroupItem value="promptpay" />
                   <Banknote className="h-5 w-5 text-blue-700" />
                   <div>
@@ -832,7 +832,7 @@ function CheckoutPage() {
                     <div className="text-xs text-slate-500">สแกนจ่ายทันที</div>
                   </div>
                 </label>
-                <label className={`flex cursor-pointer items-center gap-3 rounded-lg border-2 p-4 transition ${payment === "transfer" ? "border-[color:var(--brand-orange)] bg-orange-50" : "hover:bg-slate-50"}`}>
+                <label className={`flex cursor-pointer items-center gap-3 rounded-lg border-2 p-3 transition ${payment === "transfer" ? "border-[color:var(--brand-orange)] bg-orange-50" : "hover:bg-slate-50"}`}>
                   <RadioGroupItem value="transfer" />
                   <Banknote className="h-5 w-5 text-[color:var(--brand-navy)]" />
                   <div>
@@ -840,7 +840,7 @@ function CheckoutPage() {
                     <div className="text-xs text-slate-500">แนบสลิปหลังชำระ</div>
                   </div>
                 </label>
-                <label className={`flex cursor-pointer items-center gap-3 rounded-lg border-2 p-4 transition ${payment === "cod" ? "border-[color:var(--brand-orange)] bg-orange-50" : "hover:bg-slate-50"}`}>
+                <label className={`flex cursor-pointer items-center gap-3 rounded-lg border-2 p-3 transition ${payment === "cod" ? "border-[color:var(--brand-orange)] bg-orange-50" : "hover:bg-slate-50"}`}>
                   <RadioGroupItem value="cod" />
                   <Truck className="h-5 w-5 text-[color:var(--brand-navy)]" />
                   <div>
@@ -848,7 +848,7 @@ function CheckoutPage() {
                     <div className="text-xs text-slate-500">+฿{COD_FEE} ค่าธรรมเนียม</div>
                   </div>
                 </label>
-                <label className={`flex cursor-pointer items-center gap-3 rounded-lg border-2 p-4 transition ${payment === "credit_card" ? "border-purple-600 bg-purple-50" : "hover:bg-slate-50"}`}>
+                <label className={`flex cursor-pointer items-center gap-3 rounded-lg border-2 p-3 transition ${payment === "credit_card" ? "border-purple-600 bg-purple-50" : "hover:bg-slate-50"}`}>
                   <RadioGroupItem value="credit_card" />
                   <CreditCard className="h-5 w-5 text-purple-700" />
                   <div>
