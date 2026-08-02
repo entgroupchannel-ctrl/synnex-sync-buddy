@@ -65,7 +65,12 @@ function SettingsPage() {
           <EmailInfo />
         </TabsContent>
       </Tabs>
+
+      <div className="mt-6">
+        <SecretsHealthPanel />
+      </div>
     </div>
+
   );
 }
 
