@@ -352,6 +352,7 @@ function SignUpB2CForm() {
       <Button type="submit" disabled={busy} className="w-full bg-[color:var(--brand-navy)] hover:bg-[color:var(--brand-navy-2)]">
         {busy ? "กำลังสมัคร..." : "สมัครสมาชิก"}
       </Button>
+      <GoogleAuthButton label="สมัครสมาชิกด้วย Google" />
     </form>
   );
 }
