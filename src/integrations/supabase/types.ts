@@ -2743,8 +2743,19 @@ export type Database = {
         }
         Returns: number
       }
+      cancel_own_order: {
+        Args: { p_order_id: string; p_reason: string }
+        Returns: undefined
+      }
       check_sync_secret: { Args: { input_secret: string }; Returns: boolean }
       cleanup_rate_limits: { Args: never; Returns: undefined }
+      create_order: {
+        Args: { payload: Json }
+        Returns: {
+          id: string
+          order_number: string
+        }[]
+      }
       get_brand_product_counts: {
         Args: { p_limit?: number }
         Returns: {
