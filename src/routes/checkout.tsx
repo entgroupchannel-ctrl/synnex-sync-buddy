@@ -676,7 +676,25 @@ function CheckoutPage() {
               <div className="grid gap-3 sm:grid-cols-3">
                 <div>
                   <Label htmlFor="sdistrict">เขต/อำเภอ *</Label>
-                  <Input id="sdistrict" value={f.shipping_district} onChange={(e) => setField("shipping_district", e.target.value)} maxLength={100} aria-invalid={!!fieldError("shipping_district")} />
+                  <Input
+                    id="sdistrict"
+                    list="district-list"
+                    value={f.shipping_district}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      setField("shipping_district", v);
+                      const zips = postcodesOf(f.shipping_province, v);
+                      if (zips.length === 1) setField("shipping_postcode", zips[0]);
+                    }}
+                    maxLength={100}
+                    placeholder={f.shipping_province ? "พิมพ์เพื่อค้นหา" : "เลือกจังหวัดก่อน"}
+                    aria-invalid={!!fieldError("shipping_district")}
+                  />
+                  <datalist id="district-list">
+                    {districtsOf(f.shipping_province).map((d) => (
+                      <option key={d} value={d} />
+                    ))}
+                  </datalist>
                   {fieldError("shipping_district") && <p className="mt-1 text-xs text-red-600">{fieldError("shipping_district")}</p>}
                 </div>
                 <div>
@@ -684,7 +702,11 @@ function CheckoutPage() {
                   <select
                     id="sprov"
                     value={f.shipping_province}
-                    onChange={(e) => setField("shipping_province", e.target.value)}
+                    onChange={(e) => {
+                      setField("shipping_province", e.target.value);
+                      setField("shipping_district", "");
+                      setField("shipping_postcode", "");
+                    }}
                     aria-invalid={!!fieldError("shipping_province")}
                     className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                   >
@@ -705,9 +727,28 @@ function CheckoutPage() {
                 </div>
                 <div>
                   <Label htmlFor="szip">รหัสไปรษณีย์ *</Label>
-                  <Input id="szip" value={f.shipping_postcode} onChange={(e) => setField("shipping_postcode", e.target.value)} maxLength={5} inputMode="numeric" aria-invalid={!!fieldError("shipping_postcode")} />
+                  {(() => {
+                    const zips = postcodesOf(f.shipping_province, f.shipping_district);
+                    return zips.length > 1 ? (
+                      <select
+                        id="szip"
+                        value={f.shipping_postcode}
+                        onChange={(e) => setField("shipping_postcode", e.target.value)}
+                        aria-invalid={!!fieldError("shipping_postcode")}
+                        className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                      >
+                        <option value="">— เลือก —</option>
+                        {zips.map((z) => (
+                          <option key={z} value={z}>{z}</option>
+                        ))}
+                      </select>
+                    ) : (
+                      <Input id="szip" value={f.shipping_postcode} onChange={(e) => setField("shipping_postcode", e.target.value.replace(/\D/g, ""))} maxLength={5} inputMode="numeric" aria-invalid={!!fieldError("shipping_postcode")} />
+                    );
+                  })()}
                   {fieldError("shipping_postcode") && <p className="mt-1 text-xs text-red-600">{fieldError("shipping_postcode")}</p>}
                 </div>
+
               </div>
             </section>
 
