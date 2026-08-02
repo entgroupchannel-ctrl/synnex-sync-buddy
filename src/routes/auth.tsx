@@ -467,6 +467,18 @@ function SignUpB2BForm({ alreadySignedIn }: { alreadySignedIn: boolean }) {
       <div className="rounded-lg bg-orange-50 p-3 text-xs text-orange-800">
         บัญชี B2B จะต้องรอทีมงานยืนยัน (1 วันทำการ) — คุณสามารถซื้อสินค้าในฐานะ Guest ระหว่างรอได้
       </div>
+      {!alreadySignedIn && (
+        <GoogleAuthButton
+          label="สมัคร B2B ด้วย Google (กรอกข้อมูลบริษัทต่อหลังล็อกอิน)"
+          nextPath="/auth?tab=b2b"
+        />
+      )}
+      {alreadySignedIn && (
+        <div className="rounded-lg bg-green-50 p-3 text-xs text-green-800">
+          ✅ ล็อกอินด้วย Google แล้ว — กรอกข้อมูลบริษัทให้ครบเพื่อส่งคำขอ B2B
+        </div>
+      )}
+
       <div>
         <Label>ชื่อบริษัท *</Label>
         <Input value={form.company_name} onChange={(e) => setForm({ ...form, company_name: e.target.value })} required maxLength={200} />
