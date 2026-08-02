@@ -2763,6 +2763,14 @@ export type Database = {
           product_count: number
         }[]
       }
+      get_order_confirmation: {
+        Args: { p_order_number: string }
+        Returns: Json
+      }
+      get_order_payment_status: {
+        Args: { p_order_id: string }
+        Returns: string
+      }
       get_product_price: {
         Args: {
           p_b2b_price: number
