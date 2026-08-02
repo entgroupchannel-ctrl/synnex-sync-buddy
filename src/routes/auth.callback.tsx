@@ -59,23 +59,42 @@ function AuthCallback() {
           return;
         }
 
+        const cleanUrl = () =>
+          window.history.replaceState({}, "", window.location.pathname);
 
-        // OAuth (Google) แบบ PKCE ส่งกลับมาเป็น ?code=... แทน hash token
+        const finish = (type: string | null) => {
+          cleanUrl();
+          if (type === "recovery") {
+            navigate({ to: "/reset-password" as any });
+            return;
+          }
+          if (type === "signup" || type === "email_change") {
+            toast.success("ยืนยันอีเมลสำเร็จ ยินดีต้อนรับ!");
+          } else {
+            toast.success("เข้าสู่ระบบสำเร็จ");
+          }
+          navigate({ to: takeNext() as never });
+        };
+
+        const type = params.get("type") || search.get("type");
+
+        // OAuth/OIDC (Google, Facebook, LINE) แบบ PKCE ส่งกลับมาเป็น ?code=...
         const code = search.get("code");
+        const access_token = params.get("access_token");
+        const refresh_token = params.get("refresh_token");
+
         if (code) {
           const { error: exchangeErr } =
             await supabase.auth.exchangeCodeForSession(code);
-          if (exchangeErr) throw exchangeErr;
-          window.history.replaceState({}, "", window.location.pathname);
-          toast.success("เข้าสู่ระบบสำเร็จ");
-          navigate({ to: takeNext() as never });
+          if (exchangeErr) {
+            // detectSessionInUrl ของ supabase-js อาจแลก code ไปแล้วก่อน effect นี้รัน
+            // (code ถูกใช้แล้ว/ไม่มี code_verifier) — ถ้ามี session อยู่จริงถือว่าสำเร็จ
+            const { data: existing } = await supabase.auth.getSession();
+            if (!existing.session) throw exchangeErr;
+          }
+          finish(type);
           return;
         }
-
-        const access_token = params.get("access_token");
-        const refresh_token = params.get("refresh_token");
-        const type = params.get("type") || search.get("type");
-
 
         if (access_token && refresh_token) {
           const { error: setErr } = await supabase.auth.setSession({
@@ -83,31 +102,30 @@ function AuthCallback() {
             refresh_token,
           });
           if (setErr) throw setErr;
-        }
-
-        // clean URL
-        window.history.replaceState(
-          {},
-          "",
-          window.location.pathname,
-        );
-
-        if (type === "recovery") {
-          navigate({ to: "/reset-password" as any });
+          finish(type);
           return;
         }
 
-        if (type === "signup" || type === "email_change") {
-          toast.success("ยืนยันอีเมลสำเร็จ ยินดีต้อนรับ!");
-        } else {
-          toast.success("เข้าสู่ระบบสำเร็จ");
+        // ไม่มี code/token ใน URL — อาจถูก supabase-js กินไปแล้ว หรือ session
+        // ยังถูกเขียนลง storage ไม่เสร็จ รอสั้นๆ ก่อนตัดสินว่าไม่สำเร็จ
+        for (let i = 0; i < 10; i++) {
+          const { data } = await supabase.auth.getSession();
+          if (data.session) {
+            finish(type);
+            return;
+          }
+          await new Promise((r) => setTimeout(r, 300));
         }
-        navigate({ to: takeNext() as never });
+
+        setError(
+          "ไม่พบข้อมูลการเข้าสู่ระบบจากผู้ให้บริการ — กรุณาลองเข้าสู่ระบบอีกครั้ง",
+        );
       } catch (e: any) {
         setError(e?.message ?? "เกิดข้อผิดพลาด");
       }
     })();
   }, [navigate]);
+
 
   return (
     <div className="min-h-screen flex items-center justify-center p-6">
