@@ -499,20 +499,22 @@ function SignUpB2BForm({ alreadySignedIn }: { alreadySignedIn: boolean }) {
           <Input value={form.position} onChange={(e) => setForm({ ...form, position: e.target.value })} maxLength={100} />
         </div>
       </div>
-      <div className="grid gap-3 sm:grid-cols-2">
-        <div>
-          <Label>เบอร์โทรศัพท์ *</Label>
-          <Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} required placeholder="0812345678" maxLength={10} />
-        </div>
-        <div>
-          <Label>อีเมล *</Label>
-          <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
-        </div>
-      </div>
       <div>
-        <Label>รหัสผ่าน * (≥ 8 ตัว)</Label>
-        <PasswordInput autoComplete="new-password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required minLength={8} />
+        <Label>เบอร์โทรศัพท์ *</Label>
+        <Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} required placeholder="0812345678" maxLength={10} />
       </div>
+      {!alreadySignedIn && (
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div>
+            <Label>อีเมล *</Label>
+            <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
+          </div>
+          <div>
+            <Label>รหัสผ่าน * (≥ 8 ตัว)</Label>
+            <PasswordInput autoComplete="new-password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required minLength={8} />
+          </div>
+        </div>
+      )}
       <div>
         <Label className="mb-2 block">ต้องการใบกำกับภาษี</Label>
         <RadioGroup
@@ -525,7 +527,8 @@ function SignUpB2BForm({ alreadySignedIn }: { alreadySignedIn: boolean }) {
         </RadioGroup>
       </div>
       <Button type="submit" disabled={busy} className="w-full bg-[color:var(--brand-orange)] hover:bg-[color:var(--brand-orange-dark)]">
-        {busy ? "กำลังสมัคร..." : "สมัครสมาชิก B2B"}
+        {busy ? "กำลังบันทึก..." : alreadySignedIn ? "ส่งคำขอสมัคร B2B" : "สมัครสมาชิก B2B"}
+
       </Button>
     </form>
   );
