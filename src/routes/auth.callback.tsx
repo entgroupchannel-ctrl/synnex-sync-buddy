@@ -109,7 +109,7 @@ function AuthCallback() {
             const { data: existing } = await supabase.auth.getSession();
             if (!existing.session) throw exchangeErr;
           }
-          finish(type);
+          await finish(type);
           return;
         }
 
@@ -119,7 +119,7 @@ function AuthCallback() {
             refresh_token,
           });
           if (setErr) throw setErr;
-          finish(type);
+          await finish(type);
           return;
         }
 
@@ -128,7 +128,7 @@ function AuthCallback() {
         for (let i = 0; i < 10; i++) {
           const { data } = await supabase.auth.getSession();
           if (data.session) {
-            finish(type);
+            await finish(type);
             return;
           }
           await new Promise((r) => setTimeout(r, 300));
