@@ -289,12 +289,10 @@ function CheckoutPage() {
       const provider =
         shippingMethod === "pickup" ? "pickup" : shippingMethod === "express" ? "express-manual" : "kerry";
 
-      const { data: order, error: oErr } = await supabase
-        .from("orders")
-        .insert({
-          order_number: "", // trigger will fill
-          user_id: user?.id ?? null,
-          is_guest: !user,
+      // ใช้ RPC create_order: guest ไม่มีสิทธิ์อ่านตาราง orders จึงไม่สามารถใช้
+      // insert().select() ได้ (PostgREST จะตอบ 42501) ฟังก์ชันนี้คืน id/order_number ให้ปลอดภัย
+      const { data: orderRows, error: oErr } = await supabase.rpc("create_order", {
+        payload: {
           customer_type: customerType,
           customer_name: base.data.customer_name,
           customer_phone: base.data.customer_phone,
@@ -307,7 +305,6 @@ function CheckoutPage() {
           shipping_district: base.data.shipping_district,
           shipping_province: base.data.shipping_province,
           shipping_postcode: base.data.shipping_postcode,
-          shipping_method_id: null,
           shipping_method_name: methodName,
           shipping_provider: provider,
           shipping_weight_kg: totalWeight,
@@ -325,13 +322,12 @@ function CheckoutPage() {
           subtotal,
           cod_fee: codFee,
           total: grandTotal,
-          status: "pending",
-        })
-        .select("id, order_number")
-        .single();
-
+        },
+      });
+      const order = Array.isArray(orderRows) ? orderRows[0] : orderRows;
 
       if (oErr || !order) throw oErr ?? new Error("ไม่สามารถบันทึกออเดอร์ได้");
+
 
       // บันทึก/อัปเดตที่อยู่จัดส่งอัตโนมัติ ให้ครั้งถัดไป pre-fill ได้เลยไม่ต้องพิมพ์ใหม่
       // (เฉพาะลูกค้าที่ login แล้ว และไม่ใช่การรับที่สำนักงาน)
