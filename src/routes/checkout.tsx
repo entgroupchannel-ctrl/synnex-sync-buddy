@@ -149,6 +149,25 @@ function CheckoutPage() {
   const [discount, setDiscount] = useState<DiscountApplied | null>(null);
   const [codeError, setCodeError] = useState<string | null>(null);
 
+  // Meta Pixel: InitiateCheckout ตอนเข้าหน้านี้
+  useEffect(() => {
+    if (items.length === 0) return;
+    import("@/lib/meta-pixel").then(({ trackMetaEvent }) => {
+      trackMetaEvent(
+        "InitiateCheckout",
+        {
+          currency: "THB",
+          value: items.reduce((sum, i) => sum + i.price * i.qty, 0),
+          content_ids: items.map((i) => i.sku),
+          content_type: "product",
+        },
+        crypto.randomUUID(),
+      );
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+
   // Guard: cart must be non-empty
   useEffect(() => {
     if (items.length === 0 && !orderCreated) {
