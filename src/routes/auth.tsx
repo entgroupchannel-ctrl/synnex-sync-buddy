@@ -148,8 +148,10 @@ function LineIcon({ className }: { className?: string }) {
 
 type OAuthProvider = "google" | "facebook" | "custom:line";
 
-/** ปิดเป็น false ได้ที่จุดเดียวนี้ ถ้ายังตั้งค่า LINE provider ใน Supabase ไม่เสร็จ */
-const SHOW_LINE_LOGIN = true;
+/** ปิดไว้ชั่วคราว: LINE Channel ยังไม่ได้รับอนุมัติ Email address permission
+ *  (Supabase คืน "Error getting user email from external provider")
+ *  เปิดเป็น true ได้ทันทีเมื่อสถานะใน LINE Developers Console เป็น Approved */
+const SHOW_LINE_LOGIN = false;
 
 const PROVIDER_LABEL: Record<OAuthProvider, string> = {
   google: "Google",
