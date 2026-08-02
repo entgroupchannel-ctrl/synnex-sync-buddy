@@ -16,7 +16,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { User, Building2, LogIn } from "lucide-react";
-import { GoogleIcon } from "@/components/icons/google-icon";
+
 
 
 const searchSchema = z.object({
