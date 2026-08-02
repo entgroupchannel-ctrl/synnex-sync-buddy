@@ -24,3 +24,6 @@ verify_jwt = true
 
 [functions.ginee-sync-products]
 verify_jwt = true
+
+[functions.omise-webhook]
+verify_jwt = false
