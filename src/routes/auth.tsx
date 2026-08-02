@@ -152,14 +152,22 @@ function OAuthButtons({ nextPath, labelPrefix = "เข้าสู่ระบ�
       options: { redirectTo: window.location.origin + "/auth/callback" },
     });
     if (error) {
-      // Facebook provider ยังไม่ได้เปิดใช้งานใน Supabase → ข้อความ error มาตรฐานคือ "Unsupported provider"
+      const m = error.message.toLowerCase();
+      const providerName = provider === "facebook" ? "Facebook" : "Google";
+      const notConfigured =
+        m.includes("provider") ||
+        m.includes("redirect") ||
+        m.includes("domain") ||
+        m.includes("not enabled") ||
+        m.includes("client");
       toast.error(
-        error.message.toLowerCase().includes("provider")
-          ? "ยังไม่ได้เปิดใช้งาน Facebook Login — ติดต่อผู้ดูแลระบบ"
+        notConfigured
+          ? `ยังตั้งค่า ${providerName} Login ไม่เสร็จ — ใช้อีเมล/รหัสผ่านเข้าสู่ระบบได้ตามปกติ`
           : error.message,
       );
       setBusyProvider(null);
     }
+
     // สำเร็จแล้วเบราว์เซอร์จะ redirect ออกจากหน้านี้เอง
   };
 
