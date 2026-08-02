@@ -15,9 +15,22 @@ export const Route = createFileRoute("/auth/callback")({
   component: AuthCallback,
 });
 
+const NEXT_KEY = "auth:nextPath";
+
+function takeNext(): string {
+  try {
+    const v = window.sessionStorage.getItem(NEXT_KEY);
+    window.sessionStorage.removeItem(NEXT_KEY);
+    return v || "/";
+  } catch {
+    return "/";
+  }
+}
+
 function AuthCallback() {
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
+
 
   useEffect(() => {
     (async () => {
