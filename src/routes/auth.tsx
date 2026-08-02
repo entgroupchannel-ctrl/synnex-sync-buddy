@@ -387,7 +387,7 @@ const b2bSchema = z
     wants_tax_invoice: z.boolean(),
   });
 
-function SignUpB2BForm() {
+function SignUpB2BForm({ alreadySignedIn }: { alreadySignedIn: boolean }) {
   const [form, setForm] = useState({
     company_name: "",
     tax_id: "",
@@ -403,13 +403,41 @@ function SignUpB2BForm() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const p = b2bSchema.safeParse(form);
+    const schema = alreadySignedIn ? b2bSchema.omit({ email: true, password: true }) : b2bSchema;
+    const p = schema.safeParse(form);
     if (!p.success) {
       toast.error(p.error.issues[0].message);
       return;
     }
     setBusy(true);
+
+    if (alreadySignedIn) {
+      const { data: userData } = await supabase.auth.getUser();
+      const { error } = await supabase
+        .from("user_profiles")
+        .update({
+          user_type: "b2b",
+          full_name: form.full_name,
+          phone: form.phone,
+          company_name: form.company_name,
+          tax_id: form.tax_id,
+          company_address: form.company_address,
+          position: form.position,
+          wants_tax_invoice: form.wants_tax_invoice,
+          account_status: "pending_approval",
+        })
+        .eq("id", userData.user!.id);
+      setBusy(false);
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+      toast.success("ลงทะเบียน B2B สำเร็จ! ทีมงานจะติดต่อยืนยันบัญชีภายใน 1 วันทำการ", { duration: 6000 });
+      return;
+    }
+
     const { error } = await supabase.auth.signUp({
+
       email: form.email,
       password: form.password,
       options: {
