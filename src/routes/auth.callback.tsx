@@ -15,9 +15,22 @@ export const Route = createFileRoute("/auth/callback")({
   component: AuthCallback,
 });
 
+const NEXT_KEY = "auth:nextPath";
+
+function takeNext(): string {
+  try {
+    const v = window.sessionStorage.getItem(NEXT_KEY);
+    window.sessionStorage.removeItem(NEXT_KEY);
+    return v || "/";
+  } catch {
+    return "/";
+  }
+}
+
 function AuthCallback() {
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
+
 
   useEffect(() => {
     (async () => {
@@ -43,7 +56,7 @@ function AuthCallback() {
           if (exchangeErr) throw exchangeErr;
           window.history.replaceState({}, "", window.location.pathname);
           toast.success("เข้าสู่ระบบสำเร็จ");
-          navigate({ to: "/" });
+          navigate({ to: takeNext() as never });
           return;
         }
 
@@ -77,7 +90,7 @@ function AuthCallback() {
         } else {
           toast.success("เข้าสู่ระบบสำเร็จ");
         }
-        navigate({ to: "/" });
+        navigate({ to: takeNext() as never });
       } catch (e: any) {
         setError(e?.message ?? "เกิดข้อผิดพลาด");
       }

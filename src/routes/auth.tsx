@@ -46,16 +46,29 @@ function AuthPage() {
   const raw = (useSearch({ strict: false, shouldThrow: false }) ?? {}) as { tab?: "signin" | "b2c" | "b2b"; redirect?: string };
   const search = { tab: raw.tab ?? "signin", redirect: raw.redirect ?? "/" };
   const [tab, setTab] = useState<"signin" | "b2c" | "b2b">(search.tab);
+  const [profileType, setProfileType] = useState<string | null>(null);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      if (data.user) navigate({ to: search.redirect as never, replace: true });
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) return;
+      const { data: profile } = await supabase
+        .from("user_profiles")
+        .select("user_type")
+        .eq("id", data.user.id)
+        .maybeSingle();
+      // เพิ่ง Google login มาบนแท็บ B2B แต่ยังไม่ได้กรอกข้อมูลบริษัท → ค้างอยู่หน้านี้
+      if (search.tab === "b2b" && profile?.user_type === "b2c") {
+        setProfileType("b2c");
+        return;
+      }
+      navigate({ to: search.redirect as never, replace: true });
     });
-  }, [navigate, search.redirect]);
+  }, [navigate, search.redirect, search.tab]);
 
   useEffect(() => {
     setTab(search.tab);
   }, [search.tab]);
+
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -87,7 +100,7 @@ function AuthPage() {
               <SignUpB2CForm />
             </TabsContent>
             <TabsContent value="b2b" className="mt-6">
-              <SignUpB2BForm />
+              <SignUpB2BForm alreadySignedIn={profileType === "b2c"} />
             </TabsContent>
           </Tabs>
         </div>
@@ -117,14 +130,18 @@ function GoogleIcon({ className }: { className?: string }) {
   );
 }
 
-function GoogleAuthButton({ label = "เข้าสู่ระบบด้วย Google" }: { label?: string }) {
+function GoogleAuthButton({ label = "เข้าสู่ระบบด้วย Google", nextPath }: { label?: string; nextPath?: string }) {
   const [busy, setBusy] = useState(false);
   const onClick = async () => {
     setBusy(true);
+    try {
+      if (nextPath) window.sessionStorage.setItem("auth:nextPath", nextPath);
+    } catch { /* sessionStorage ใช้ไม่ได้ ข้ามไป */ }
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: { redirectTo: window.location.origin + "/auth/callback" },
     });
+
     if (error) {
       toast.error(error.message);
       setBusy(false);
@@ -370,7 +387,7 @@ const b2bSchema = z
     wants_tax_invoice: z.boolean(),
   });
 
-function SignUpB2BForm() {
+function SignUpB2BForm({ alreadySignedIn }: { alreadySignedIn: boolean }) {
   const [form, setForm] = useState({
     company_name: "",
     tax_id: "",
@@ -386,13 +403,41 @@ function SignUpB2BForm() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const p = b2bSchema.safeParse(form);
+    const schema = alreadySignedIn ? b2bSchema.omit({ email: true, password: true }) : b2bSchema;
+    const p = schema.safeParse(form);
     if (!p.success) {
       toast.error(p.error.issues[0].message);
       return;
     }
     setBusy(true);
+
+    if (alreadySignedIn) {
+      const { data: userData } = await supabase.auth.getUser();
+      const { error } = await supabase
+        .from("user_profiles")
+        .update({
+          user_type: "b2b",
+          full_name: form.full_name,
+          phone: form.phone,
+          company_name: form.company_name,
+          tax_id: form.tax_id,
+          company_address: form.company_address,
+          position: form.position,
+          wants_tax_invoice: form.wants_tax_invoice,
+          account_status: "pending_approval",
+        })
+        .eq("id", userData.user!.id);
+      setBusy(false);
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+      toast.success("ลงทะเบียน B2B สำเร็จ! ทีมงานจะติดต่อยืนยันบัญชีภายใน 1 วันทำการ", { duration: 6000 });
+      return;
+    }
+
     const { error } = await supabase.auth.signUp({
+
       email: form.email,
       password: form.password,
       options: {
@@ -422,6 +467,18 @@ function SignUpB2BForm() {
       <div className="rounded-lg bg-orange-50 p-3 text-xs text-orange-800">
         บัญชี B2B จะต้องรอทีมงานยืนยัน (1 วันทำการ) — คุณสามารถซื้อสินค้าในฐานะ Guest ระหว่างรอได้
       </div>
+      {!alreadySignedIn && (
+        <GoogleAuthButton
+          label="สมัคร B2B ด้วย Google (กรอกข้อมูลบริษัทต่อหลังล็อกอิน)"
+          nextPath="/auth?tab=b2b"
+        />
+      )}
+      {alreadySignedIn && (
+        <div className="rounded-lg bg-green-50 p-3 text-xs text-green-800">
+          ✅ ล็อกอินด้วย Google แล้ว — กรอกข้อมูลบริษัทให้ครบเพื่อส่งคำขอ B2B
+        </div>
+      )}
+
       <div>
         <Label>ชื่อบริษัท *</Label>
         <Input value={form.company_name} onChange={(e) => setForm({ ...form, company_name: e.target.value })} required maxLength={200} />
@@ -454,20 +511,22 @@ function SignUpB2BForm() {
           <Input value={form.position} onChange={(e) => setForm({ ...form, position: e.target.value })} maxLength={100} />
         </div>
       </div>
-      <div className="grid gap-3 sm:grid-cols-2">
-        <div>
-          <Label>เบอร์โทรศัพท์ *</Label>
-          <Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} required placeholder="0812345678" maxLength={10} />
-        </div>
-        <div>
-          <Label>อีเมล *</Label>
-          <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
-        </div>
-      </div>
       <div>
-        <Label>รหัสผ่าน * (≥ 8 ตัว)</Label>
-        <PasswordInput autoComplete="new-password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required minLength={8} />
+        <Label>เบอร์โทรศัพท์ *</Label>
+        <Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} required placeholder="0812345678" maxLength={10} />
       </div>
+      {!alreadySignedIn && (
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div>
+            <Label>อีเมล *</Label>
+            <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
+          </div>
+          <div>
+            <Label>รหัสผ่าน * (≥ 8 ตัว)</Label>
+            <PasswordInput autoComplete="new-password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required minLength={8} />
+          </div>
+        </div>
+      )}
       <div>
         <Label className="mb-2 block">ต้องการใบกำกับภาษี</Label>
         <RadioGroup
@@ -480,7 +539,8 @@ function SignUpB2BForm() {
         </RadioGroup>
       </div>
       <Button type="submit" disabled={busy} className="w-full bg-[color:var(--brand-orange)] hover:bg-[color:var(--brand-orange-dark)]">
-        {busy ? "กำลังสมัคร..." : "สมัครสมาชิก B2B"}
+        {busy ? "กำลังบันทึก..." : alreadySignedIn ? "ส่งคำขอสมัคร B2B" : "สมัครสมาชิก B2B"}
+
       </Button>
     </form>
   );
