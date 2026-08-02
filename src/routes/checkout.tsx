@@ -21,6 +21,7 @@ import { insertOrderItems } from "@/lib/order-items.functions";
 import { logOrderCreated as logCreated } from "@/lib/order-confirmation.functions";
 
 import { useSupabaseUser } from "@/lib/auth-sheet";
+import { getFreshAccessToken } from "@/lib/auth-session";
 import { bahtFmt, creditIsUsable, dueDateFrom, useCreditAccount } from "@/lib/credit";
 import {
   getWeightBasedShippingFee,
