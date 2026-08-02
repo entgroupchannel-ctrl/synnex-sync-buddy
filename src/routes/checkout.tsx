@@ -369,24 +369,37 @@ function CheckoutPage() {
       }
 
       // cost_price / brand / category เติมฝั่งเซิร์ฟเวอร์ ไม่ส่งออกมาที่เบราว์เซอร์
-      await insertOrderItems({
-        data: {
-          items: items.map((it) => ({
-            order_id: order.id,
-            product_sku: it.sku,
-            product_name: it.name,
-            product_image_url: it.image_url,
-            distributor: it.distributor ?? "OTHER",
-            unit_price: it.price,
-            quantity: it.qty,
-            subtotal: it.price * it.qty,
-            category: (it as { category?: string | null }).category ?? null,
-          })),
-        },
-      });
+      try {
+        await insertOrderItems({
+          data: {
+            items: items.map((it) => ({
+              order_id: order.id,
+              product_sku: it.sku,
+              product_name: it.name,
+              product_image_url: it.image_url,
+              distributor: it.distributor ?? "OTHER",
+              unit_price: it.price,
+              quantity: it.qty,
+              subtotal: it.price * it.qty,
+              category: (it as { category?: string | null }).category ?? null,
+            })),
+          },
+        });
+      } catch (itemsErr) {
+        // ไม่ปล่อยออเดอร์เปล่า (ไม่มีรายการสินค้า) ค้างไว้ในระบบ
+        console.error("[checkout] บันทึกรายการสินค้าไม่สำเร็จ ยกเลิกออเดอร์", itemsErr);
+        await supabase
+          .from("orders")
+          .update({ status: "cancelled", admin_note: "ยกเลิกอัตโนมัติ: บันทึกรายการสินค้าไม่สำเร็จ" })
+          .eq("id", order.id);
+        throw itemsErr;
+      }
 
+      // บันทึกประวัติสถานะ — ไม่ควรบล็อกการซื้อถ้าล้ม
+      logCreated({ data: { orderId: order.id, changedBy: user?.email ?? "customer" } }).catch((e) =>
+        console.warn("[order status history]", e),
+      );
 
-      await logCreated({ data: { orderId: order.id, changedBy: user?.email ?? "customer" } });
 
       // B2B credit purchase — record the drawdown on the credit account
       if (payment === "credit" && creditAccount && user) {
