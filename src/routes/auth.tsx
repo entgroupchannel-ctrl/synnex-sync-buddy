@@ -273,25 +273,8 @@ function SignInForm({ redirectTo }: { redirectTo: string }) {
         {busy ? "กำลังเข้าสู่ระบบ..." : "เข้าสู่ระบบ"}
       </Button>
 
-      <div className="relative py-1">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t border-border" />
-        </div>
-        <div className="relative flex justify-center">
-          <span className="bg-card px-2 text-xs text-muted-foreground">หรือ</span>
-        </div>
-      </div>
+      <GoogleAuthButton label="เข้าสู่ระบบด้วย Google" />
 
-      <Button
-        type="button"
-        variant="outline"
-        disabled={googleBusy}
-        onClick={onGoogleSignIn}
-        className="w-full gap-2"
-      >
-        <GoogleIcon className="h-4 w-4" />
-        {googleBusy ? "กำลังเชื่อมต่อ..." : "เข้าสู่ระบบด้วย Google"}
-      </Button>
     </form>
   );
 }
