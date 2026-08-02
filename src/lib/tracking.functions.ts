@@ -6,7 +6,8 @@ const inputSchema = z.object({ orderNumber: z.string().min(3).max(64) });
 export const getPublicTracking = createServerFn({ method: "GET" })
   .inputValidator((data: unknown) => inputSchema.parse(data))
   .handler(async ({ data }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { getAdminClient } = await import("@/lib/supabase-admin.server");
+    const supabaseAdmin = getAdminClient();
     const sb = supabaseAdmin;
 
     const { data: order, error } = await sb

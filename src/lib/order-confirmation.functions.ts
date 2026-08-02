@@ -7,7 +7,8 @@ const orderNumberSchema = z.object({ orderNumber: z.string().min(3).max(64) });
 export const getOrderConfirmation = createServerFn({ method: "GET" })
   .inputValidator((data: unknown) => orderNumberSchema.parse(data))
   .handler(async ({ data }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { getAdminClient } = await import("@/lib/supabase-admin.server");
+    const supabaseAdmin = getAdminClient();
     const { data: order, error } = await supabaseAdmin
       .from("orders")
       .select(`
@@ -27,7 +28,8 @@ const paymentStatusSchema = z.object({ orderId: z.string().uuid() });
 export const getOrderPaymentStatus = createServerFn({ method: "GET" })
   .inputValidator((data: unknown) => paymentStatusSchema.parse(data))
   .handler(async ({ data }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { getAdminClient } = await import("@/lib/supabase-admin.server");
+    const supabaseAdmin = getAdminClient();
     const { data: order } = await supabaseAdmin
       .from("orders").select("payment_status").eq("id", data.orderId).maybeSingle();
     return { payment_status: order?.payment_status ?? null };
@@ -37,7 +39,8 @@ const submitSlipSchema = z.object({ orderNumber: z.string().min(3).max(64), path
 export const submitPaymentSlip = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => submitSlipSchema.parse(data))
   .handler(async ({ data }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { getAdminClient } = await import("@/lib/supabase-admin.server");
+    const supabaseAdmin = getAdminClient();
     const sb = supabaseAdmin;
     const { data: order, error: findErr } = await sb
       .from("orders").select("id, status").eq("order_number", data.orderNumber).maybeSingle();
@@ -58,7 +61,8 @@ const linkGuestSchema = z.object({ orderNumber: z.string().min(3).max(64), userI
 export const linkGuestOrderToAccount = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => linkGuestSchema.parse(data))
   .handler(async ({ data }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { getAdminClient } = await import("@/lib/supabase-admin.server");
+    const supabaseAdmin = getAdminClient();
     const sb = supabaseAdmin;
     const { data: order, error: findErr } = await sb
       .from("orders").select("id, user_id").eq("order_number", data.orderNumber).maybeSingle();
@@ -78,7 +82,8 @@ const orderIdSchema = z.object({ orderId: z.string().uuid() });
 export const getOrderStatusHistory = createServerFn({ method: "GET" })
   .inputValidator((data: unknown) => orderIdSchema.parse(data))
   .handler(async ({ data }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { getAdminClient } = await import("@/lib/supabase-admin.server");
+    const supabaseAdmin = getAdminClient();
     const { data: rows, error } = await supabaseAdmin
       .from("order_status_history")
       .select("id, status, note, created_at")
@@ -92,7 +97,8 @@ export const getOrderStatusHistory = createServerFn({ method: "GET" })
 export const getOrderSlipStatus = createServerFn({ method: "GET" })
   .inputValidator((data: unknown) => orderIdSchema.parse(data))
   .handler(async ({ data }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { getAdminClient } = await import("@/lib/supabase-admin.server");
+    const supabaseAdmin = getAdminClient();
     const { data: row, error } = await supabaseAdmin
       .from("slip_verifications")
       .select("risk_flags, auto_approved, error_message")
@@ -113,7 +119,8 @@ const createdHistorySchema = z.object({
 export const logOrderCreated = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => createdHistorySchema.parse(data))
   .handler(async ({ data }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { getAdminClient } = await import("@/lib/supabase-admin.server");
+    const supabaseAdmin = getAdminClient();
     const { error } = await supabaseAdmin.from("order_status_history").insert({
       order_id: data.orderId,
       status: "pending",
