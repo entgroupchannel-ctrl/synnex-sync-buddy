@@ -16,6 +16,8 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { User, Building2, LogIn } from "lucide-react";
+import { GoogleIcon } from "@/components/icons/google-icon";
+
 
 const searchSchema = z.object({
   tab: fallback(z.enum(["signin", "b2c", "b2b"]), "signin").default("signin"),
@@ -126,6 +128,21 @@ function SignInForm({ redirectTo }: { redirectTo: string }) {
   const [forgotBusy, setForgotBusy] = useState(false);
   const navigate = useNavigate();
 
+  const [googleBusy, setGoogleBusy] = useState(false);
+  const onGoogleSignIn = async () => {
+    setGoogleBusy(true);
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: window.location.origin + "/auth/callback" },
+    });
+    if (error) {
+      toast.error(error.message);
+      setGoogleBusy(false);
+    }
+    // สำเร็จแล้วเบราว์เซอร์จะ redirect ออกจากหน้านี้เอง
+  };
+
+
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy(true);
@@ -225,7 +242,30 @@ function SignInForm({ redirectTo }: { redirectTo: string }) {
       <Button type="submit" disabled={busy} className="w-full bg-[color:var(--brand-navy)] hover:bg-[color:var(--brand-navy-2)]">
         {busy ? "กำลังเข้าสู่ระบบ..." : "เข้าสู่ระบบ"}
       </Button>
+
+      <div className="relative py-1">
+        <div className="absolute inset-0 flex items-center">
+          <span className="w-full border-t border-border" />
+        </div>
+        <div className="relative flex justify-center">
+          <span className="bg-card px-2 text-xs text-muted-foreground">หรือ</span>
+        </div>
+      </div>
+
+      <Button
+        type="button"
+        variant="outline"
+        disabled={googleBusy}
+        onClick={onGoogleSignIn}
+        className="w-full gap-2"
+      >
+        <GoogleIcon className="h-4 w-4" />
+        {googleBusy ? "กำลังเชื่อมต่อ..." : "เข้าสู่ระบบด้วย Google"}
+      </Button>
     </form>
+  );
+}
+
   );
 }
 
