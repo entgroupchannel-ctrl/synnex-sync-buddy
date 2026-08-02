@@ -424,7 +424,7 @@ function CheckoutPage() {
 
       // Credit card charge — charge ทันทีหลังสร้างออเดอร์เสร็จ
       if (payment === "credit_card") {
-        const { data: sessionData } = await supabase.auth.getSession();
+        const freshToken = await getFreshAccessToken();
         const chargeBody: Record<string, unknown> = { order_id: order.id };
         if (!useNewCard && selectedSavedCardId) {
           chargeBody.saved_card_id = selectedSavedCardId;
@@ -436,7 +436,7 @@ function CheckoutPage() {
         }
         const { data: chargeData, error: chargeErr } = await supabase.functions.invoke("create-omise-card-charge", {
           body: chargeBody,
-          headers: sessionData.session ? { Authorization: `Bearer ${sessionData.session.access_token}` } : undefined,
+          headers: freshToken ? { Authorization: `Bearer ${freshToken}` } : undefined,
         });
         if (chargeErr || chargeData?.error) {
           throw new Error(chargeData?.error ?? "ชำระเงินด้วยบัตรไม่สำเร็จ");
