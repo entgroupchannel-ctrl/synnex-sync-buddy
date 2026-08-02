@@ -39,6 +39,8 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { WorkFooter } from "@/components/work-footer";
+import { SecretsHealthBanner } from "@/components/secrets-health-banner";
+
 
 // แคชผลเช็คสิทธิ์ admin ไว้ในหน่วยความจำ เพื่อไม่ต้อง query ซ้ำทุกครั้งที่สลับหน้า
 let adminCheckCache: { userId: string; isAdmin: boolean } | null = null;
