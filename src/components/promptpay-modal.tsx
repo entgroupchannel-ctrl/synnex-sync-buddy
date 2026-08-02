@@ -1,10 +1,10 @@
 /**
- * PromptPay QR — สร้างเองฝั่ง client ด้วย library promptpay-qr (มาตรฐาน EMVCo)
+ * PromptPay QR — สร้างเองฝั่ง client ด้วย src/lib/promptpay.ts (มาตรฐาน EMVCo, ไม่พึ่ง Buffer)
  * ไม่ต้องพึ่ง payment gateway; ยืนยันการชำระเงินด้วยการแนบสลิป → SlipOK ตรวจอัตโนมัติ
  */
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import generatePayload from "promptpay-qr";
+import generatePayload from "@/lib/promptpay";
 import { QRCodeSVG } from "qrcode.react";
 import { CheckCircle2, CreditCard, Upload, X } from "lucide-react";
 import { toast } from "sonner";
