@@ -1,23 +1,14 @@
 import { createServerFn } from "@tanstack/react-start";
+import { insertOrderItemsSchema, type OrderItemInput } from "@/lib/order-items.schema";
 
-export type OrderItemInput = {
-  order_id: string;
-  product_sku: string;
-  product_name: string | null;
-  product_image_url: string | null;
-  distributor: string;
-  unit_price: number;
-  quantity: number;
-  subtotal: number;
-  category: string | null;
-};
+export type { OrderItemInput };
 
 /**
  * บันทึก order_items พร้อมเติม cost_price / brand / category จากฝั่งเซิร์ฟเวอร์
  * client ส่งเฉพาะข้อมูลที่ตัวเองรู้อยู่แล้ว และ handler ไม่คืน cost_price กลับไป
  */
 export const insertOrderItems = createServerFn({ method: "POST" })
-  .inputValidator((input: { items: OrderItemInput[] }) => input)
+  .inputValidator((input: unknown) => insertOrderItemsSchema.parse(input))
   .handler(async ({ data }) => {
     const { getAdminClient } = await import("@/lib/supabase-admin.server");
     const supabaseAdmin = getAdminClient();
@@ -26,10 +17,11 @@ export const insertOrderItems = createServerFn({ method: "POST" })
 
     const skus = [...new Set(data.items.map((i) => i.product_sku).filter(Boolean))];
 
-    const { data: productRows } = await supabaseAdmin
+    const { data: productRows, error: productsError } = await supabaseAdmin
       .from("synnex_products")
       .select("sku, cost_price, brand, category")
       .in("sku", skus);
+    if (productsError) throw new Error(`ตรวจสอบข้อมูลสินค้าไม่สำเร็จ: ${productsError.message}`);
 
     const meta = new Map(
       (productRows ?? []).map((p) => [
@@ -57,7 +49,10 @@ export const insertOrderItems = createServerFn({ method: "POST" })
     });
 
     const { error } = await supabaseAdmin.from("order_items").insert(rows);
-    if (error) throw new Error(error.message);
+    if (error) {
+      console.error("[order-items] insert failed", { code: error.code, message: error.message });
+      throw new Error(`บันทึกรายการสินค้าไม่สำเร็จ: ${error.message}`);
+    }
 
     return { inserted: rows.length };
   });

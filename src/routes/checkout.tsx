@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -91,6 +92,7 @@ function CheckoutPage() {
 
   const { items, total: subtotal, clear } = useCart();
   const navigate = useNavigate();
+  const saveOrderItems = useServerFn(insertOrderItems);
   const { user } = useSupabaseUser();
 
   const [f, setF] = useState<Fields>({
@@ -431,7 +433,7 @@ function CheckoutPage() {
 
       // cost_price / brand / category เติมฝั่งเซิร์ฟเวอร์ ไม่ส่งออกมาที่เบราว์เซอร์
       try {
-        await insertOrderItems({
+        await saveOrderItems({
           data: {
             items: items.map((it) => ({
               order_id: order.id,

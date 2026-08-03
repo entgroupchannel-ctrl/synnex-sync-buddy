@@ -8,7 +8,7 @@ import generatePayload from "@/lib/promptpay";
 import { QRCodeSVG } from "qrcode.react";
 import { CheckCircle2, CreditCard, Upload, X } from "lucide-react";
 import { toast } from "sonner";
-import { Dialog, DialogContent, DialogPortal, DialogOverlay } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { bahtFmt, COMPANY_INFO } from "@/lib/order-helpers";
 import { getOrderPaymentStatus } from "@/lib/order-confirmation.functions";
 
@@ -66,14 +66,16 @@ export function PromptPayPaymentModal({ orderId, orderNumber, amount, onPaid }: 
   return (
     <>
       <Dialog open={open} onOpenChange={() => { /* prevent outside/esc close */ }}>
-        <DialogPortal>
-          <DialogOverlay className="backdrop-blur-sm bg-black/20" />
-          <DialogContent
-            className="max-w-sm gap-0 border border-gray-100 p-0 shadow-2xl [&>button]:hidden"
-            onPointerDownOutside={(e) => e.preventDefault()}
-            onEscapeKeyDown={(e) => e.preventDefault()}
-            onInteractOutside={(e) => e.preventDefault()}
-          >
+        <DialogContent
+          className="max-w-sm gap-0 border border-gray-100 p-0 shadow-2xl [&>button]:hidden"
+          onPointerDownOutside={(e) => e.preventDefault()}
+          onEscapeKeyDown={(e) => e.preventDefault()}
+          onInteractOutside={(e) => e.preventDefault()}
+        >
+            <DialogTitle className="sr-only">ชำระเงินด้วย PromptPay</DialogTitle>
+            <DialogDescription className="sr-only">
+              สแกน QR Code เพื่อชำระยอดคำสั่งซื้อ {orderNumber}
+            </DialogDescription>
             {paid ? (
               <div className="rounded-lg bg-white p-8 text-center">
                 <CheckCircle2 className="mx-auto h-20 w-20 animate-in zoom-in text-green-600" strokeWidth={2.5} />
@@ -145,8 +147,7 @@ export function PromptPayPaymentModal({ orderId, orderNumber, amount, onPaid }: 
                 </div>
               </div>
             )}
-          </DialogContent>
-        </DialogPortal>
+        </DialogContent>
       </Dialog>
 
       {/* Sticky button when modal dismissed & not paid */}
