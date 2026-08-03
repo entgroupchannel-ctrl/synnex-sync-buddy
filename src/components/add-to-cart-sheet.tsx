@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogClose } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { User, Building2, ShoppingCart, Check } from "lucide-react";
+import { User, Building2, ShoppingCart, Check, X } from "lucide-react";
 import { useAuthSheetListener } from "@/lib/auth-sheet";
 
 export function AddToCartSheet() {
@@ -12,6 +12,13 @@ export function AddToCartSheet() {
         className="max-w-lg rounded-2xl border-t-4 border-[color:var(--brand-green)] p-0"
       >
         <div className="relative p-6">
+          <DialogClose
+            aria-label="ปิด"
+            className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+          >
+            <X className="h-4 w-4" />
+          </DialogClose>
+
           <div className="mb-4 flex items-center gap-3 rounded-lg bg-green-50 p-3">
             <div className="grid h-10 w-10 place-items-center rounded-full bg-[color:var(--brand-green)] text-white">
               <Check className="h-5 w-5" />
