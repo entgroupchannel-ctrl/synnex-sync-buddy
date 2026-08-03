@@ -94,12 +94,6 @@ export const Route = createFileRoute("/product/$slug")({
       { name: "twitter:title", content: title },
       { name: "twitter:description", content: desc },
     ];
-    if (p?.image_url) {
-      meta.push({ property: "og:image", content: p?.image_url });
-      meta.push({ name: "twitter:image", content: p?.image_url });
-    }
-
-
     const scripts: Array<{ type: string; children: string }> = [
       {
         type: "application/ld+json",
