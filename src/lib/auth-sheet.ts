@@ -1,15 +1,33 @@
-// Simple event bus to open the "auth prompt" sheet from any Add-to-Cart button.
-import { useEffect, useState } from "react";
+// Simple module-level store for the "auth prompt" dialog so it survives
+// re-renders/remounts of SiteHeader and stays open until the user acts.
+import { useEffect, useState, useSyncExternalStore } from "react";
 
 export type AuthSheetItem = { name: string; sku: string; image_url: string | null };
 
-const EVT_OPEN = "auth-sheet:open";
+type SheetState = { open: boolean; item: AuthSheetItem | null };
+
+let state: SheetState = { open: false, item: null };
+const listeners = new Set<() => void>();
+
+function setState(next: SheetState) {
+  state = next;
+  listeners.forEach((l) => l());
+}
+
+function subscribe(l: () => void) {
+  listeners.add(l);
+  return () => listeners.delete(l);
+}
+
+const getSnapshot = () => state;
+const serverSnapshot: SheetState = { open: false, item: null };
+const getServerSnapshot = () => serverSnapshot;
 
 export function triggerAuthPrompt(item: AuthSheetItem) {
   if (typeof window === "undefined") return;
-  // Only show once per session unless user chose "no prompt yet"
+  // Only show once per session
   if (sessionStorage.getItem("ent_auth_prompted") === "1") return;
-  window.dispatchEvent(new CustomEvent(EVT_OPEN, { detail: item }));
+  setState({ open: true, item });
 }
 
 export function markPrompted() {
@@ -17,21 +35,16 @@ export function markPrompted() {
   sessionStorage.setItem("ent_auth_prompted", "1");
 }
 
-export function useAuthSheetListener() {
-  const [state, setState] = useState<{ open: boolean; item: AuthSheetItem | null }>({ open: false, item: null });
-  useEffect(() => {
-    const h = (e: Event) => setState({ open: true, item: (e as CustomEvent).detail });
-    window.addEventListener(EVT_OPEN, h);
-    return () => window.removeEventListener(EVT_OPEN, h);
-  }, []);
-  return {
-    ...state,
-    close: () => {
-      markPrompted();
-      setState({ open: false, item: null });
-    },
-  };
+export function closeAuthPrompt() {
+  markPrompted();
+  setState({ open: false, item: null });
 }
+
+export function useAuthSheetListener() {
+  const snap = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  return { ...snap, close: closeAuthPrompt };
+}
+
 
 // Track current user in header (Supabase session)
 export function useSupabaseUser() {
