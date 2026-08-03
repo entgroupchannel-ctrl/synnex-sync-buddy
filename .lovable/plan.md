@@ -1,16 +1,21 @@
-## สาเหตุที่ยืนยันได้
-ชื่อ provider `custom:line` ถูกต้องแล้ว เพราะ flow ผ่าน `/authorize` และมาถึง callback; error ใหม่เกิดจาก Supabase ไม่ได้รับ `email` จาก LINE โดยโค้ดปัจจุบันไม่ได้ส่ง scopes ให้ LINE และ LINE จะคืนอีเมลเฉพาะ channel ที่ได้รับ Email address permission เท่านั้น
+# แผนแก้การสั่งซื้อแล้ว QR Code ไม่แสดง
 
-## แผนแก้
-1. แก้ปุ่ม LINE ใน `src/routes/auth.tsx` ให้ส่ง scopes `openid profile email` โดยเฉพาะ LINE โดยไม่กระทบ Google/Facebook
-2. ปรับ `/auth/callback` ให้แสดงคำแนะนำตรงกับ error `Error getting user email from external provider` แทนข้อความทั่วไป
-3. ตรวจสอบ flow จริงว่าลิงก์ authorize มี `scope=openid profile email` และ callback กลับมาสร้าง session/redirect ได้
-4. ตั้งค่า LINE Developers Console → Channel → Basic settings → OpenID Connect → Email address permission ให้สถานะเป็น **Applied**; หากยังไม่ Applied ต้องยื่นขอสิทธิ์พร้อมภาพหน้าจออธิบายการใช้อีเมลก่อน เพราะ Supabase Auth ต้องมีอีเมลเพื่อสร้างผู้ใช้
+## สิ่งที่ตรวจพบ
+- ออเดอร์ล่าสุดแบบ PromptPay ถูกสร้างในฐานข้อมูล แต่มี `order_items` เป็นศูนย์รายการและถูกเปลี่ยนเป็น `cancelled` ก่อนนำลูกค้าไปหน้าคำสั่งซื้อ จึงไม่มีโอกาสเปิด QR
+- QR ที่ใช้งานจริงสร้างในเบราว์เซอร์จาก PromptPay payload ไม่ได้เรียก `create-omise-charge` จึงไม่มี Edge Function log สำหรับเหตุการณ์นี้
+- `PromptPayPaymentModal` ครอบ `DialogPortal` เอง ทั้งที่ `DialogContent` มี Portal และ Overlay อยู่แล้ว ทำให้โครงสร้าง Dialog ซ้อนกันและเสี่ยงต่อการไม่แสดงผล
+- มี hydration mismatch ใน `<head>` ระหว่าง JSON-LD และ `og:image` ซึ่งอาจทำให้ React สร้างหน้าใหม่ฝั่ง client ระหว่างโหลดหน้าคำสั่งซื้อ
 
-## ค่าที่ต้องคงไว้ใน Supabase
-- Provider identifier: `line` (SDK ใช้ `custom:line`)
-- Authorization URL: `https://access.line.me/oauth2/v2.1/authorize`
-- Token URL: `https://api.line.me/oauth2/v2.1/token`
-- Userinfo URL: `https://api.line.me/oauth2/v2.1/userinfo`
-- JWKS URI: `https://api.line.me/oauth2/v2.1/certs`
-- LINE callback URL: `https://wuieuiohusgfdilemplj.supabase.co/auth/v1/callback`
+## การแก้ไข
+1. แก้ขั้นตอนบันทึก `order_items` ให้ทำงานผ่าน server function อย่างถูกต้อง พร้อมตรวจ input และรายงานข้อความผิดพลาดที่ระบุสาเหตุจริง
+2. ทำให้การสร้างออเดอร์และรายการสินค้าไม่ทิ้งออเดอร์เปล่า; หากบันทึกรายการล้มเหลว ให้คงตะกร้าและแจ้งลูกค้าอย่างชัดเจน
+3. ปรับ PromptPay modal ให้ใช้ Dialog component เพียง Portal เดียว และให้ QR แสดงทั้งแบบเปิดอัตโนมัติและปุ่มเปิดซ้ำบนหน้าคำสั่งซื้อ
+4. แก้ลำดับ head metadata/JSON-LD ให้ SSR และ client ตรงกัน เพื่อตัด hydration error ที่รบกวนหน้าคำสั่งซื้อ
+5. เพิ่ม/ปรับการทดสอบสำหรับ PromptPay payload และเส้นทางสร้างออเดอร์ พร้อมทดสอบจริงตั้งแต่กดยืนยันคำสั่งซื้อจนเห็น QR และตรวจว่าออเดอร์มีรายการสินค้า
+
+## ผลลัพธ์ที่ต้องยืนยัน
+- กดสั่งซื้อด้วย PromptPay แล้วไปยังหน้าคำสั่งซื้อสำเร็จ
+- QR แสดงทันที สแกนได้ และยอดเงินตรงกับยอดออเดอร์
+- ออเดอร์ใหม่มี `order_items` ครบและไม่ถูกยกเลิกอัตโนมัติ
+- ปิด QR แล้วสามารถกดเปิดใหม่ได้
+- ไม่มี hydration หรือ Dialog error ใน console ระหว่างขั้นตอนชำระเงิน
